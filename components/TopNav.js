@@ -6,10 +6,26 @@ import {
   CgPin,
   CgSearch,
 } from 'react-icons/cg';
+import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
 import Logo from './Logo';
 
 const TopNav = (e) => {
+  const [activePage, setActivePage] = useState('');
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+    window.sessionStorage.setItem('activePage', page);
+  };
+
+  useEffect(() => {
+    const activePage = window.sessionStorage.getItem('activePage');
+    if (activePage) {
+      setActivePage(activePage);
+    }
+  }, []);
+
   return (
     <>
       <nav className="z-50 flex justify-center overflow-hidden fixed w-full top-0 left-0">
@@ -30,9 +46,14 @@ const TopNav = (e) => {
             </label>
           </div>
           <div className="flex items-center gap-2">
-            <button className="hidden lg:inline-flex btn btn-ghost btn-square">
-              <CgHome size={20} />
-            </button>
+            <Link href="/feed">
+              <button
+                onClick={(e) => handlePageChange('feed')}
+                className="hidden lg:inline-flex btn btn-ghost btn-square"
+              >
+                <CgHome size={20} />
+              </button>
+            </Link>
             <button className="btn btn-ghost btn-square">
               <CgAddR size={20} />
             </button>
@@ -42,9 +63,14 @@ const TopNav = (e) => {
             <button className="hidden lg:inline-flex btn btn-ghost btn-square">
               <CgBell size={20} />
             </button>
-            <button className="hidden lg:inline-flex btn btn-ghost btn-square">
-              <CgPin size={20} />
-            </button>
+            <Link href="/locator">
+              <button
+                onClick={(e) => handlePageChange('locator')}
+                className="hidden lg:inline-flex btn btn-ghost btn-square"
+              >
+                <CgPin size={20} />
+              </button>
+            </Link>
             <button className="btn btn-ghost btn-square hidden lg:inline-flex">
               <div className="avatar online">
                 <div className="w-7 h-7 rounded-full">

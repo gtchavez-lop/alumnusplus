@@ -3,7 +3,7 @@ import Feed from '../components/Feed';
 const Page_Landing = (e) => {
   return (
     <>
-      <Feed />
+      <p>Landing Page</p>
     </>
   );
 };

@@ -10,6 +10,7 @@ const Logo = ({ color }) => {
           style={{
             filter: 'invert(1)',
           }}
+          priority
           src={'/alumnusplus.svg'}
           layout="fill"
           // width={120}

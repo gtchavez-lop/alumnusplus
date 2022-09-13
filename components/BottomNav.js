@@ -1,30 +1,67 @@
 import { CgBell, CgHome, CgMail, CgPin, CgSearch } from 'react-icons/cg';
+import { useEffect, useState } from 'react';
+
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const BottomNav = (e) => {
+  const [activePage, setActivePage] = useState('');
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+    window.sessionStorage.setItem('activePage', page);
+  };
+
+  useEffect(() => {
+    const activePage = window.sessionStorage.getItem('activePage');
+    if (activePage) {
+      setActivePage(activePage);
+    }
+  }, []);
+
   return (
     <>
-      <div className="z-50 flex justify-center overflow-hidden fixed w-full bottom-0 left-0 lg:hidden">
-        <div className="w-full max-w-5xl flex items-center justify-between py-3 bg-base-200 px-5 rounded-lg">
-          <button className="btn btn-ghost btn-square">
+      <div className="btm-nav btm-nav-lg lg:hidden">
+        <Link href="/feed">
+          <motion.button
+            onClick={(e) => handlePageChange('feed')}
+            className={`text-primary ${activePage == 'feed' && 'active'}`}
+          >
             <CgHome size={20} />
-          </button>
-          <button className="btn btn-ghost btn-square">
-            <CgSearch size={20} />
-          </button>
-          <button className=" btn btn-ghost btn-square">
-            <CgBell size={20} />
-          </button>
-          <button className=" btn btn-ghost btn-square">
+          </motion.button>
+        </Link>
+        <motion.button
+          onClick={(e) => setActivePage('search')}
+          className={`text-primary ${activePage == 'search' && 'active'}`}
+        >
+          <CgSearch size={20} />
+        </motion.button>
+        <motion.button
+          onClick={(e) => setActivePage('notifications')}
+          className={`text-primary ${
+            activePage == 'notifications' && 'active'
+          }`}
+        >
+          <CgBell size={20} />
+        </motion.button>
+        <Link href="/locator">
+          <motion.button
+            onClick={(e) => handlePageChange('locator')}
+            className={`text-primary ${activePage == 'locator' && 'active'}`}
+          >
             <CgPin size={20} />
-          </button>
-          <button className="btn btn-ghost btn-square">
-            <div className="avatar online">
-              <div className="w-7 h-7 rounded-full">
-                <img src="https://avatars.dicebear.com/api/male/geraldchavez.svg" />
-              </div>
+          </motion.button>
+        </Link>
+        <motion.button
+          onClick={(e) => setActivePage('profile')}
+          className={`text-primary ${activePage == 'profile' && 'active'}`}
+        >
+          <div className="avatar online">
+            <div className="w-7 h-7 rounded-full">
+              <img src="https://avatars.dicebear.com/api/male/geraldchavez.svg" />
             </div>
-          </button>
-        </div>
+          </div>
+        </motion.button>
       </div>
     </>
   );
