@@ -1,5 +1,7 @@
 import { CgAdd, CgArrowDown, CgArrowUp, CgShare } from 'react-icons/cg';
 
+const list = Array(4).fill();
+
 const Feed = (e) => {
   return (
     <>
@@ -70,24 +72,22 @@ const Feed = (e) => {
               <p>Suggested for you</p>
 
               <div className="mt-5 flex flex-col gap-3">
-                {Array(5)
-                  .fill()
-                  .map((_, i) => (
-                    <div key={i} className="flex items-center gap-5">
-                      <div className="avatar ring-2 rounded-full ring-offset-4 ring-primary">
-                        <div className="w-9 h-9 rounded-full bg-slate-300">
-                          <img src="https://avatars.dicebear.com/api/male/geraldchavez.svg" />
-                        </div>
+                {list.map((_, i) => (
+                  <div key={i} className="flex items-center gap-5">
+                    <div className="avatar ring-2 rounded-full ring-offset-4 ring-primary">
+                      <div className="w-9 h-9 rounded-full bg-slate-300">
+                        <img src="https://avatars.dicebear.com/api/male/geraldchavez.svg" />
                       </div>
-                      <div className="flex flex-col">
-                        <p>Username goes here</p>
-                        <p className="text-xs">@theirAtSign</p>
-                      </div>
-                      <button className="btn btn-square btn-ghost ml-auto">
-                        <CgAdd size={20} />
-                      </button>
                     </div>
-                  ))}
+                    <div className="flex flex-col">
+                      <p>Username goes here</p>
+                      <p className="text-xs">@theirAtSign</p>
+                    </div>
+                    <button className="btn btn-square btn-ghost ml-auto">
+                      <CgAdd size={20} />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
