@@ -1,5 +1,7 @@
 import Feed from '../../components/Feed';
 import { motion } from 'framer-motion';
+import { useAccount } from '../../components/AccountContext';
+import { useEffect } from 'react';
 
 const Page_Feed = (e) => {
   return (
