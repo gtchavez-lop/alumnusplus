@@ -77,8 +77,8 @@ const Page_PostAuth = (e) => {
       >
         <p className="text-2xl">Welcome to Alumnus Plus</p>
         <p>
-          Your alumni network is now at your fingertips. But first, let's get
-          you set up.
+          Your alumni network is now at your fingertips. But first, let&apos;s
+          get you set up.
         </p>
 
         {/* forms */}
