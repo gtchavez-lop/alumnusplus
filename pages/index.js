@@ -10,21 +10,6 @@ import { useRouter } from 'next/router';
 
 const Page_Landing = (e) => {
   const router = useRouter();
-  // const { user, userData } = useAccount();
-
-  // useEffect(() => {
-  //   if (user && userData) {
-  //     router.push('/feed');
-  //   }
-
-  //   if (user && !userData) {
-  //     router.push('/me/postauth');
-  //   }
-
-  //   if (!user) {
-  //     router.push('/login');
-  //   }
-  // }, []);
 
   return (
     <>
