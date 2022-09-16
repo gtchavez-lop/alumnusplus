@@ -14,7 +14,7 @@ const Page_Locator = (e) => {
   const _search = async (e) => {
     setTimeout(() => {
       setFound(true);
-    }, 3000);
+    }, 1000 + results * 500);
   };
 
   useEffect(() => {
@@ -23,6 +23,42 @@ const Page_Locator = (e) => {
 
   return (
     <>
+      <motion.div
+        animate={{
+          opacity: !found ? 1 : 0,
+        }}
+        className="absolute top-0 left-0 w-full h-full overflow-hidden -z-50"
+      >
+        {/* scale pulse div */}
+        <motion.div
+          animate={{
+            scale: [0.25, 1.5],
+            opacity: [0, 0.25, 0],
+            translateX: ['-50%', '-50%'],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'circOut',
+          }}
+          className="absolute w-[400px] h-[400px] bottom-[-200px] left-1/2 rounded-full border-4 border-primary"
+        />
+        <motion.div
+          animate={{
+            scale: [0.25, 1.5],
+            opacity: [0, 0.25, 0],
+            translateX: ['-50%', '-50%'],
+          }}
+          transition={{
+            duration: 1.5,
+            delay: 0.75,
+            repeat: Infinity,
+            ease: 'circOut',
+          }}
+          className="absolute w-[400px] h-[400px] bottom-[-200px] left-1/2 rounded-full border-4 border-primary"
+        />
+      </motion.div>
+
       <motion.main
         variants={_Page_Transition}
         initial="initial"
@@ -37,37 +73,16 @@ const Page_Locator = (e) => {
             <motion.div
               exit={{
                 opacity: 0,
-                y: -100,
+                y: -50,
                 transition: { duration: 0.5, ease: 'circIn' },
               }}
-              className="flex flex-col items-center mt-16 relative w-screen h-screen overflow-hidden"
+              className="flex flex-col items-center mt-16 relative "
             >
               <p className="text-2xl font-medium">
                 Searching for people near you ...
               </p>
 
               <FiLoader className="animate-spin text-6xl mt-5" />
-
-              {/* scale pulse div */}
-              <motion.div
-                animate={{ scale: [0.5, 1], opacity: [0, 0.25, 0] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: 'circInOut',
-                }}
-                className="absolute mx-auto -top-[750px] w-[1000px] h-[1000px] rounded-full border-4 border-primary"
-              />
-              <motion.div
-                animate={{ scale: [0.5, 1], opacity: [0, 0.25, 0] }}
-                transition={{
-                  duration: 1.5,
-                  delay: 0.75,
-                  repeat: Infinity,
-                  ease: 'circInOut',
-                }}
-                className="absolute mx-auto -top-[750px] w-[1000px] h-[1000px] rounded-full border-4 border-primary"
-              />
 
               <p className=" font-thin mt-16">
                 This feature is currently in development
@@ -81,7 +96,7 @@ const Page_Locator = (e) => {
             <motion.div
               initial={{
                 opacity: 0,
-                y: 100,
+                y: 50,
               }}
               animate={{
                 opacity: 1,
@@ -94,7 +109,7 @@ const Page_Locator = (e) => {
               }}
               exit={{
                 opacity: 0,
-                y: -100,
+                y: -50,
                 transition: { duration: 0.5, ease: 'circIn' },
               }}
               className="flex flex-col items-center mt-16 w-full"

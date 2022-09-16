@@ -1,11 +1,11 @@
 import { FiLoader, FiSearch } from 'react-icons/fi';
 
-import ThemeSwitcher from '../components/ThemeSwitcher';
-import { _Page_Transition } from '../lib/_animations';
-import _supabase from '../lib/supabase';
+import ThemeSwitcher from '../../components/ThemeSwitcher';
+import { _Page_Transition } from '../../lib/_animations';
+import _supabase from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { useAuth } from '../components/AuthContext';
+import { useAuth } from '../../components/AuthContext';
 
 const Page_Me = (e) => {
   const { user, userData } = useAuth();
