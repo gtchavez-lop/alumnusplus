@@ -31,7 +31,7 @@ const Page_Messages = (e) => {
             {Array(10)
               .fill()
               .map((e, i) => (
-                <div className="flex items-center gap-5 w-full">
+                <div key={i} className="flex items-center gap-5 w-full">
                   <div className="flex items-center gap-5 overflow-hidden">
                     <img
                       src="https://picsum.photos/200"
