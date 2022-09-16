@@ -28,7 +28,7 @@ const BottomNavbar = () => {
 
   return (
     <>
-      {hasUser && (
+      {user && (
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}

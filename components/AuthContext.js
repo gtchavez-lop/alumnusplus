@@ -61,6 +61,7 @@ export const AuthWrapper = ({ children }) => {
 
         case 'SIGNED_OUT':
           setUser(null);
+          setUserData(null);
           router.replace('/');
           break;
 
