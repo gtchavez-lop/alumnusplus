@@ -1,3 +1,5 @@
+import { FiLogIn, FiUserPlus } from 'react-icons/fi';
+
 import Link from 'next/link';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { _Page_Transition } from '../lib/_animations';
@@ -54,10 +56,16 @@ const Home = () => {
             className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-2 w-full max-w-md"
           >
             <Link href={'/signin'}>
-              <button className="btn btn-primary btn-outline">sign in</button>
+              <button className="btn btn-primary btn-outline gap-5">
+                <span>Sign in</span>
+                <FiLogIn size={20} />
+              </button>
             </Link>
             <Link href={'/signup'}>
-              <button className="btn btn-primary">sign up</button>
+              <button className="btn btn-primary gap-5">
+                <span>Sign up</span>
+                <FiUserPlus size={20} />
+              </button>
             </Link>
           </motion.div>
 

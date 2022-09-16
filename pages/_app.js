@@ -3,9 +3,12 @@ import '../styles/globals.css';
 import { AnimatePresence } from 'framer-motion';
 import { AuthWrapper } from '../components/AuthContext';
 import BottomNavbar from '../components/BottomNavbar';
+import { FiX } from 'react-icons/fi';
+import { ToastBar } from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
 import TopNavbar from '../components/TopNavbar';
 import { themeChange } from 'theme-change';
+import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -33,7 +36,31 @@ function MyApp({ Component, pageProps }) {
         <BottomNavbar />
       </AuthWrapper>
 
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: 'transparent',
+            boxShadow: 'none',
+          },
+        }}
+      >
+        {(t) => (
+          <ToastBar toast={t}>
+            {({ icon, message }) => (
+              <div className="alert shadow-lg bg-base-100 border text-base-content">
+                {icon}
+                {message}
+                {t.type !== 'loading' && (
+                  <button onClick={() => toast.dismiss(t.id)}>
+                    <FiX size={20} />
+                  </button>
+                )}
+              </div>
+            )}
+          </ToastBar>
+        )}
+      </Toaster>
     </>
   );
 }

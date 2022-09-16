@@ -1,8 +1,26 @@
-import { FiSearch } from 'react-icons/fi';
+import { FiLoader, FiSearch } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+
+import { AnimatePresence } from 'framer-motion';
 import { _Page_Transition } from '../lib/_animations';
 import { motion } from 'framer-motion';
 
 const Page_Locator = (e) => {
+  const [found, setFound] = useState(false);
+
+  // randomize the number of results up to 10
+  const [results, setResults] = useState(Math.floor(Math.random() * 12) + 1);
+
+  const _search = async (e) => {
+    setTimeout(() => {
+      setFound(true);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    _search();
+  }, []);
+
   return (
     <>
       <motion.main
@@ -13,6 +31,110 @@ const Page_Locator = (e) => {
         className="flex flex-col items-center mt-32 pb-32"
       >
         <p className="text-4xl font-thin">Locator</p>
+
+        <AnimatePresence>
+          {!found && (
+            <motion.div
+              exit={{
+                opacity: 0,
+                y: -100,
+                transition: { duration: 0.5, ease: 'circIn' },
+              }}
+              className="flex flex-col items-center mt-16 relative w-screen h-screen overflow-hidden"
+            >
+              <p className="text-2xl font-medium">
+                Searching for people near you ...
+              </p>
+
+              <FiLoader className="animate-spin text-6xl mt-5" />
+
+              {/* scale pulse div */}
+              <motion.div
+                animate={{ scale: [0.5, 1], opacity: [0, 0.25, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'circInOut',
+                }}
+                className="absolute mx-auto -top-[750px] w-[1000px] h-[1000px] rounded-full border-4 border-primary"
+              />
+              <motion.div
+                animate={{ scale: [0.5, 1], opacity: [0, 0.25, 0] }}
+                transition={{
+                  duration: 1.5,
+                  delay: 0.75,
+                  repeat: Infinity,
+                  ease: 'circInOut',
+                }}
+                className="absolute mx-auto -top-[750px] w-[1000px] h-[1000px] rounded-full border-4 border-primary"
+              />
+
+              <p className=" font-thin mt-16">
+                This feature is currently in development
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {found && (
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 100,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  duration: 0.5,
+                  ease: 'circOut',
+                  delay: 0.75,
+                },
+              }}
+              exit={{
+                opacity: 0,
+                y: -100,
+                transition: { duration: 0.5, ease: 'circIn' },
+              }}
+              className="flex flex-col items-center mt-16 w-full"
+            >
+              <p className="text-2xl font-medium">
+                Found {results} {results > 1 ? 'people' : 'person'} near you
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full max-w-xl gap-5 gap-y-8 mt-5">
+                {Array(results)
+                  .fill()
+                  .map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        scale: [0, 1],
+                        opacity: [0, 1],
+                        transition: {
+                          duration: 0.5,
+                          ease: 'circOut',
+                          delay: 1 + i * 0.1,
+                        },
+                      }}
+                      className="flex flex-col items-center group cursor-pointer hover:bg-base-300 p-5 rounded"
+                    >
+                      <img
+                        src={`https://avatars.dicebear.com/api/micah/${
+                          Math.random() * i
+                        }something${i}.svg`}
+                        alt="profile"
+                        className="w-20 h-20 rounded-full bg-white group-hover:scale-110 transition-transform"
+                      />
+                      <p className="font-medium mt-2 ">John Doe</p>
+                      <p className="font-thin">1.2km away</p>
+                    </motion.div>
+                  ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.main>
     </>
   );

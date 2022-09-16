@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 
 const TopNavbar = (e) => {
   const router = useRouter();
-  const { user, useData } = useAuth();
+  const { user, userData } = useAuth();
 
   return (
     <>
@@ -22,37 +22,72 @@ const TopNavbar = (e) => {
           <p className="font-thin">
             Alumnus <span className="font-medium">Plus</span>
           </p>
-          {user && useData && (
+          {user && userData && (
             <div className="flex items-center gap-2">
               <button
-                className="btn btn-primary btn-square hidden lg:inline-flex"
+                className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"
                 onClick={() => router.push('/feed')}
               >
-                <FiGrid size={20} />
+                <FiGrid
+                  className={
+                    router && router.pathname === '/feed'
+                      ? ' stroke-primary'
+                      : ''
+                  }
+                  size={20}
+                />
               </button>
               <button
-                className="btn btn-primary btn-square hidden lg:inline-flex"
+                className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"
                 onClick={() => router.push('/search')}
               >
-                <FiSearch size={20} />
+                <FiSearch
+                  className={
+                    router && router.pathname === '/search'
+                      ? ' stroke-primary'
+                      : ''
+                  }
+                  size={20}
+                />
               </button>
               <button
-                className="btn btn-primary btn-square"
+                className="btn btn-sm btn-square btn-ghost"
                 onClick={() => router.push('/messages')}
               >
-                <FiMail size={20} />
+                <FiMail
+                  className={
+                    router && router.pathname === '/messages'
+                      ? ' stroke-primary'
+                      : ''
+                  }
+                  size={20}
+                />
               </button>
               <button
-                className="btn btn-primary btn-square hidden lg:inline-flex"
-                onClick={() => router.push('/profile')}
-              >
-                <FiUser size={20} />
-              </button>
-              <button
-                className="btn btn-primary btn-square hidden lg:inline-flex"
+                className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"
                 onClick={() => router.push('/locator')}
               >
-                <FiMapPin size={20} />
+                <FiMapPin
+                  className={
+                    router && router.pathname === '/locator'
+                      ? ' stroke-primary'
+                      : ''
+                  }
+                  size={20}
+                />
+              </button>
+              <button
+                className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"
+                onClick={() => router.push('/profile')}
+              >
+                <FiUser
+                  className={
+                    router && router.pathname === '/profile'
+                      ? ' stroke-primary'
+                      : ''
+                  }
+                  size={20}
+                />
               </button>
             </div>
           )}
