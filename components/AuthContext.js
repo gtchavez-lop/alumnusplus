@@ -65,18 +65,6 @@ export const AuthWrapper = ({ children }) => {
           router.replace('/');
           break;
 
-        case 'USER_UPDATED':
-          setUser(session.user);
-          break;
-
-        case 'PASSWORD_RECOVERY':
-          setUser(session.user);
-          break;
-
-        case 'USER_DELETED':
-          setUser(null);
-          break;
-
         default:
           break;
       }
