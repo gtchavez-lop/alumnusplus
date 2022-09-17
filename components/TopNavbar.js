@@ -28,8 +28,7 @@ const TopNavbar = (e) => {
         >
           <section className="w-full max-w-6xl flex items-center justify-between px-5">
             <p className="text-lg text-primary">
-              <span className="font-medium">Alumnus</span>
-              <span className="font-bold">Plus</span>
+              <Logo />
             </p>
             <div className="flex items-center gap-2">
               <button
