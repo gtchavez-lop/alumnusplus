@@ -2,6 +2,7 @@ import { FiLogIn, FiUserPlus } from 'react-icons/fi';
 
 import Link from 'next/link';
 import ThemeSwitcher from '../components/ThemeSwitcher';
+import ThemeSwitcherNew from '../components/ThemeSwitcherNew';
 import { _Page_Transition } from '../lib/_animations';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -72,8 +73,10 @@ const Home = () => {
           <motion.div
             animate={{ opacity: [0, 1] }}
             transition={{ duration: 1, delay: 3, ease: 'circOut' }}
+            className="mt-10 w-full max-w-md"
           >
-            <ThemeSwitcher className=" mt-16" />
+            <ThemeSwitcherNew className={'btn btn-block btn-primary'} />
+            {/* <ThemeSwitcher className=" mt-16" /> */}
           </motion.div>
         </section>
       </motion.main>

@@ -1,6 +1,7 @@
 import { FiLoader, FiSearch } from 'react-icons/fi';
 
 import ThemeSwitcher from '../../components/ThemeSwitcher';
+import ThemeSwitcherNew from '../../components/ThemeSwitcherNew';
 import { _Page_Transition } from '../../lib/_animations';
 import _supabase from '../../lib/supabase';
 import { motion } from 'framer-motion';
@@ -79,7 +80,10 @@ const Page_Me = (e) => {
 
             <div className="flex flex-col mt-5">
               <p className="text-xl font-medium">Select Theme</p>
-              <ThemeSwitcher />
+              <ThemeSwitcherNew
+                className="btn btn-primary"
+                text="Open theme pallete"
+              />
             </div>
 
             <div className="flex flex-col mt-5">
