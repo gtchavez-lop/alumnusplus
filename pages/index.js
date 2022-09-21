@@ -33,52 +33,71 @@ const Home = () => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen"
+        className="min-h-screen relative"
       >
-        <section className="flex flex-col items-center justify-center h-screen">
-          <motion.p
-            // animate character spacing
-            animate={{ letterSpacing: ['1rem', '0rem'], opacity: [0, 1] }}
-            transition={{ duration: 1, delay: 0.5, ease: 'circOut' }}
-            className="text-4xl font-thin opacity-0"
-          >
-            Alumnus Plus
-          </motion.p>
-          <motion.p
-            animate={{ opacity: [0, 1], y: [10, 0] }}
-            transition={{ duration: 1, delay: 1, ease: 'circOut' }}
-          >
-            Your Alumni Network at Your Fingertips
-          </motion.p>
+        {/* desktop */}
+        <section className="hidden lg:grid grid-cols-1 lg:grid-cols-2 min-h-screen lg:place-items-center py-16">
+          <div>
+            <img src="/mockup.svg" />
+          </div>
 
-          <motion.div
-            animate={{ opacity: [0, 1] }}
-            transition={{ duration: 1, delay: 2, ease: 'circOut' }}
-            className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-2 w-full max-w-md"
-          >
-            <Link href={'/signin'}>
-              <button className="btn btn-primary btn-outline gap-5">
-                <span>Sign in</span>
-                <FiLogIn size={20} />
-              </button>
-            </Link>
-            <Link href={'/signup'}>
-              <button className="btn btn-primary gap-5">
-                <span>Sign up</span>
-                <FiUserPlus size={20} />
-              </button>
-            </Link>
-          </motion.div>
+          <div className="flex-col w-full">
+            <motion.p className="text-4xl font-thin ">Alumnus Plus</motion.p>
+            <motion.p>Your Alumni Network at Your Fingertips</motion.p>
 
-          <motion.div
-            animate={{ opacity: [0, 1] }}
-            transition={{ duration: 1, delay: 3, ease: 'circOut' }}
-            className="mt-10 w-full max-w-md"
-          >
-            <ThemeSwitcherNew className={'btn btn-block btn-primary'} />
-            {/* <ThemeSwitcher className=" mt-16" /> */}
-          </motion.div>
+            <motion.div className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-2 w-full max-w-md">
+              <Link href={'/signin'}>
+                <button className="btn btn-primary btn-outline gap-5">
+                  <span>Sign in</span>
+                  <FiLogIn size={20} />
+                </button>
+              </Link>
+              <Link href={'/signup'}>
+                <button className="btn btn-primary gap-5">
+                  <span>Sign up</span>
+                  <FiUserPlus size={20} />
+                </button>
+              </Link>
+            </motion.div>
+          </div>
         </section>
+
+        {/* mobile */}
+        <section className="lg:hidden relative flex flex-col min-h-screen justify-end items-center overflow-hidden">
+          <div className="absolute -bottom-0 -z-10 w-[500px] h-screen flex items-center">
+            <img src="/mockup.svg" className="scale-125" />
+          </div>
+
+          <div className="w-full py-16 pt-8 bg-base-100">
+            <motion.p className="text-4xl font-thin ">Alumnus Plus</motion.p>
+            <motion.p>Your Alumni Network at Your Fingertips</motion.p>
+
+            <motion.div className="grid grid-cols-2 mt-5 gap-2 w-full">
+              <Link href={'/signin'}>
+                <button className="btn btn-primary btn-outline gap-5">
+                  <span>Sign in</span>
+                  <FiLogIn size={20} />
+                </button>
+              </Link>
+              <Link href={'/signup'}>
+                <button className="btn btn-primary gap-5">
+                  <span>Sign up</span>
+                  <FiUserPlus size={20} />
+                </button>
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* floating theme button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="fixed top-4 left-4 z-10"
+        >
+          <ThemeSwitcherNew className={'btn btn-accent'} />
+        </motion.div>
       </motion.main>
     </>
   );

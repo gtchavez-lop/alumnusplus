@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }) {
       </AuthWrapper>
 
       <Toaster
-        position="top-center"
+        position="top-right"
         toastOptions={{
           style: {
             background: 'transparent',
@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }) {
         {(t) => (
           <ToastBar toast={t}>
             {({ icon, message }) => (
-              <div className="px-5 py-4 rounded-lg flex flex-row items-center shadow-lg bg-base-100 border text-base-content">
+              <div className="px-5 py-4 rounded-lg flex flex-row items-center shadow-lg bg-base-100 border-2 border-primary text-base-content">
                 {icon}
                 {message}
                 {t.type !== 'loading' && (

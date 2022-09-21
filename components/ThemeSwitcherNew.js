@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { _Page_Transition } from '../lib/_animations';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const dayThemes = [
   {
@@ -131,6 +132,8 @@ const ThemeSwitcherNew = ({ className, text }) => {
 
     setSelectedTheme(theme);
     setIsVisible(false);
+
+    toast(`Theme changed to ${theme}`);
   };
 
   useEffect(() => {
@@ -159,7 +162,7 @@ const ThemeSwitcherNew = ({ className, text }) => {
             }}
             className="fixed z-[99] w-screen h-screen top-0 left-0 flex justify-center bg-base-100 transition-colors"
           >
-            <motion.div className=" z-[99] max-w-5xl p-5 w-screen h-screen bg-base-100 transition-colors grid gap-5 grid-cols-2 md:grid-cols-3 px-16 auto-rows-min overflow-y-auto pb-32">
+            <motion.div className=" z-[99] max-w-5xl p-5 w-screen h-screen bg-base-100 transition-colors grid gap-5 grid-cols-2 md:grid-cols-3 px-5 md:px-16 auto-rows-min overflow-y-auto pb-32">
               <p className="col-span-full text-4xl text-center my-10">
                 Theme List
               </p>
