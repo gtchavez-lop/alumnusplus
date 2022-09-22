@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }) {
       </AuthWrapper>
 
       <Toaster
-        position="top-right"
+        position="top-left"
         toastOptions={{
           style: {
             background: 'transparent',

@@ -1,15 +1,233 @@
+import { FeedWrapper, useFeed } from '../../components/FeedContext';
+import { FiArrowUp, FiEdit2, FiShare, FiShare2 } from 'react-icons/fi';
+
 import ThemeSwitcher from '../../components/ThemeSwitcher';
 import { _Page_Transition } from '../../lib/_animations';
+import _supabase from '../../lib/supabase';
+import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../components/AuthContext';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-const Page_Feed = (e) => {
+const FeedList = () => {
+  const { feed, setFeed } = useFeed();
   const { user, userData } = useAuth();
 
-  const router = useRouter();
+  const _createFeedPost = async (e) => {
+    e.preventDefault();
 
+    // console.log(e.target.post.value);
+
+    const { data, error } = await _supabase.from('user_feed').insert([
+      {
+        uploader_id: user.id,
+        uploader_handler: userData.user_handle,
+        content: e.target.post.value,
+        uploader_email: user.email,
+      },
+    ]);
+
+    toast.loading('Creating post...');
+
+    e.target.disabled = true;
+
+    if (error) {
+      toast.dismiss();
+      toast.error(error.message);
+    } else {
+      toast.dismiss();
+      toast.success('Post created!');
+      e.target.post.value = '';
+      setFeed([data[0], ...feed]);
+    }
+
+    e.target.disabled = false;
+  };
+
+  const _upvoteFeedPost = async (e, feedId) => {
+    // filter the feed to find the post that was upvoted
+    e.target.disabled = true;
+    const thisPost = feed.filter((post) => post.feed_id === feedId)[0];
+
+    // update the post and add the user to the upvoted_list array
+    const { data, error } = await _supabase
+      .from('user_feed')
+      .update({
+        upvotes:
+          // if the user has already upvoted the post, remove their upvote
+          // otherwise, add their upvote
+          thisPost.upvoted_list === null ||
+          !thisPost.upvoted_list.includes(user.id)
+            ? thisPost.upvotes + 1
+            : thisPost.upvotes - 1,
+
+        upvoted_list:
+          // if null, create an array with the user id, else add the user id to the array
+          thisPost.upvoted_list === null
+            ? [user.id]
+            : thisPost.upvoted_list.includes(user.id)
+            ? thisPost.upvoted_list.filter((id) => id !== user.id)
+            : [...thisPost.upvoted_list, user.id],
+      })
+      .match({ feed_id: feedId });
+
+    // update the feed state from the database
+    setFeed(
+      feed.map((post) =>
+        post.feed_id === feedId
+          ? {
+              ...post,
+              upvotes:
+                thisPost.upvoted_list === null ||
+                !thisPost.upvoted_list.includes(user.id)
+                  ? thisPost.upvotes + 1
+                  : thisPost.upvotes - 1,
+              upvoted_list:
+                thisPost.upvoted_list === null
+                  ? [user.id]
+                  : thisPost.upvoted_list.includes(user.id)
+                  ? thisPost.upvoted_list.filter((id) => id !== user.id)
+                  : [...thisPost.upvoted_list, user.id],
+            }
+          : post
+      )
+    );
+
+    e.target.disabled = false;
+  };
+
+  return (
+    <>
+      <section className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+        {/* feed */}
+        <div className="col-span-3">
+          <div className="flex flex-col gap-5">
+            {/* add post with text area */}
+            <form
+              className="form-control gap-5 bg-base-300 p-5 rounded-btn"
+              onSubmit={(e) => _createFeedPost(e)}
+            >
+              <label className="flex flex-col gap-3">
+                <span>
+                  <p className="text-xl font-bold">Add a Post</p>
+                </span>
+                <textarea
+                  name="post"
+                  placeholder="What's on your mind?"
+                  className="textarea w-full h-36 text-base-content placeholder-base-content resize-none bg-base-200"
+                />
+              </label>
+              <div className="flex justify-between items-center">
+                <p>Dev Mode</p>
+                <button type="submit" className="btn btn-primary">
+                  Post
+                </button>
+              </div>
+            </form>
+
+            <div className="divider" />
+
+            {/* users posts */}
+            {feed &&
+              feed.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col gap-5 p-5 bg-base-300 rounded-btn"
+                >
+                  <div className="flex flex-row gap-5">
+                    <div className="flex items-center">
+                      <img
+                        src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
+                        alt="profile"
+                        className="rounded-full w-12 h-12 bg-white"
+                      />
+                    </div>
+                    <div className="flex flex-col  justify-center">
+                      <p className=" text-lg">@{item.uploader_handler}</p>
+                      <p className="font-thin text-sm">
+                        {dayjs(item.created_at).format(
+                          'MMMM D, YYYY [at] h:mm A'
+                        )}
+                      </p>
+                    </div>
+                    {/* edit button from user only */}
+                    {item.uploader_id === user.id && (
+                      <div className="flex flex-row gap-2 ml-auto">
+                        <div
+                          className="tooltip"
+                          data-tip="This feature is in development"
+                        >
+                          <button className="btn btn-ghost btn-circle" disabled>
+                            <FiEdit2 />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-lg font-medium">{item.content}</p>
+                  </div>
+
+                  {/* upvote and share button */}
+                  <div className="flex flex-row gap-5 justify-between mt-10">
+                    <div
+                      className="tooltip"
+                      data-tip={
+                        item.upvoted_list === null ||
+                        !item.upvoted_list.includes(user.id)
+                          ? 'Upvote'
+                          : 'Remove Upvote'
+                      }
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.target.disabled = true;
+                          _upvoteFeedPost(e, item.feed_id);
+                        }}
+                        className={`
+                      btn btn-sm gap-2
+                      ${
+                        item.upvoted_list !== null &&
+                        item.upvoted_list.includes(user.id)
+                          ? 'btn-secondary'
+                          : 'btn-ghost'
+                      }
+                      `}
+                      >
+                        <FiArrowUp size={20} />
+                        <span>{item.upvotes}</span>
+                      </button>
+                    </div>
+                    <div
+                      className="tooltip"
+                      data-tip="This feature is in development"
+                    >
+                      <button className="btn btn-ghost btn-sm gap-2" disabled>
+                        <span>Share</span>
+                        <FiShare2 size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* recommended users */}
+        <div className="col-span-2 hidden lg:block">
+          <div className="flex flex-col">
+            <p className="text-2xl font-thin">Recommended Users</p>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+const Page_Feed = (e) => {
   return (
     <>
       <motion.main
@@ -17,78 +235,11 @@ const Page_Feed = (e) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="flex flex-col my-32"
+        className="flex flex-col py-32"
       >
-        <section className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-          {/* feed */}
-          <div className="col-span-3">
-            <div className="flex flex-col gap-5">
-              {/* add post with text area */}
-              <form className="form-control gap-5 bg-base-300 p-5 rounded">
-                <label className="flex flex-col gap-3">
-                  <span>
-                    <p className="text-xl font-thin">Add a Post</p>
-                  </span>
-                  <textarea
-                    name="post"
-                    placeholder="What's on your mind?"
-                    className="textarea w-full h-36 resize-none bg-base-200"
-                  />
-                </label>
-                <button className="btn btn-primary">Post</button>
-              </form>
-
-              <div className="divider" />
-
-              {/* users posts */}
-              {Array(10)
-                .fill()
-                .map((e, i) => (
-                  <div key={i} className="flex flex-col gap-5 p-5 bg-base-300">
-                    <div className="flex flex-row gap-5">
-                      <div className="flex items-center">
-                        <img
-                          src="https://picsum.photos/200"
-                          alt="profile"
-                          className="rounded-full w-12 h-12"
-                        />
-                      </div>
-                      <div className="flex flex-col  justify-center">
-                        <p className="text-xl ">
-                          <span>John Doe</span>
-                        </p>
-
-                        <p className="font-thin text-sm">
-                          <span>@johndoe</span>
-                          {' · '}
-                          <span>2 hours ago</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="text-lg font-medium">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Quisquam, quod.
-                      </p>
-                    </div>
-
-                    {/* upvote and share button */}
-                    <div className="flex flex-row gap-5 justify-between mt-10">
-                      <button className="btn btn-ghost btn-sm">Upvote</button>
-                      <button className="btn btn-ghost btn-sm">Share</button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {/* recommended users */}
-          <div className="col-span-2 hidden lg:block">
-            <div className="flex flex-col">
-              <p className="text-2xl font-thin">Recommended Users</p>
-            </div>
-          </div>
-        </section>
+        <FeedWrapper>
+          <FeedList />
+        </FeedWrapper>
       </motion.main>
     </>
   );

@@ -4,6 +4,7 @@ specifiers:
   '@supabase/supabase-js': ^1.35.6
   autoprefixer: ^10.4.11
   daisyui: ^2.27.0
+  dayjs: ^1.11.5
   dotenv: ^16.0.2
   eslint: 8.23.1
   eslint-config-next: 12.3.0
@@ -16,11 +17,13 @@ specifiers:
   react-hot-toast: ^2.4.0
   react-icons: ^4.4.0
   react-query: ^3.39.2
+  simplebar: ^5.3.8
   tailwindcss: ^3.1.8
   theme-change: ^2.2.0
 
 dependencies:
   daisyui: 2.27.0_6b4luod745iryv24jvdbvzbbsa
+  dayjs: 1.11.5
   framer-motion: 7.3.5_biqbaboplfbrettd7655fr4n2y
   next: 12.3.0_biqbaboplfbrettd7655fr4n2y
   next-pwa: 5.6.0_next@12.3.0
@@ -37,6 +40,7 @@ devDependencies:
   eslint-config-next: 12.3.0_eslint@8.23.1
   postcss: 8.4.16
   react-icons: 4.4.0_react@18.2.0
+  simplebar: 5.3.8
   tailwindcss: 3.1.8_postcss@8.4.16
   theme-change: 2.2.0
 
@@ -1308,6 +1312,10 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: false
 
+  /@juggle/resize-observer/3.4.0:
+    resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
+    dev: true
+
   /@motionone/animation/10.14.0:
     resolution: {integrity: sha512-h+1sdyBP8vbxEBW5gPFDnj+m2DCqdlAuf2g6Iafb1lcMnqjsRXWlPw1AXgvUMXmreyhqmPbJqoNfIKdytampRQ==}
     dependencies:
@@ -2050,6 +2058,10 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
+  /can-use-dom/0.1.0:
+    resolution: {integrity: sha512-ceOhN1DL7Y4O6M0j9ICgmTYziV89WMd96SvSl0REd8PMgrY0B/WBOPoed5S1KUmJqXgUXh8gzSe6E3ae27upsQ==}
+    dev: true
+
   /caniuse-lite/1.0.30001400:
     resolution: {integrity: sha512-Mv659Hn65Z4LgZdJ7ge5JTVbE3rqbJaaXgW5LEI9/tOaXclfIZ8DW7D7FCWWWmWiiPS7AC48S8kf3DApSxQdgA==}
 
@@ -2159,6 +2171,11 @@ packages:
     requiresBuild: true
     dev: true
 
+  /core-js/3.25.2:
+    resolution: {integrity: sha512-YB4IAT1bjEfxTJ1XYy11hJAKskO+qmhuDBM8/guIfMz4JvdsAQAqvyb97zXX7JgSrfPLG5mRGFWJwJD39ruq2A==}
+    requiresBuild: true
+    dev: true
+
   /cross-fetch/3.1.5:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
@@ -2219,6 +2236,10 @@ packages:
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
+
+  /dayjs/1.11.5:
+    resolution: {integrity: sha512-CAdX5Q3YW3Gclyo5Vpqkgpj8fSdLQcRuzfX6mC6Phy0nfJ0eGYOeS7m4mt2plDWLAtA4TqTakvbboHvUxfe4iA==}
+    dev: false
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -3335,7 +3356,10 @@ packages:
 
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
-    dev: false
+
+  /lodash.memoize/4.1.2:
+    resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
+    dev: true
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -3344,6 +3368,10 @@ packages:
   /lodash.sortby/4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
     dev: false
+
+  /lodash.throttle/4.1.1:
+    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
+    dev: true
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -4121,6 +4149,17 @@ packages:
     dependencies:
       is-arrayish: 0.3.2
     dev: false
+
+  /simplebar/5.3.8:
+    resolution: {integrity: sha512-LOHjyOcihx++zFN+vuktoZBGpCarFCtHIVDWXOf2VELbGDknq3Hw/sddafRp1aCg123VNkHWOFHUDHYEXAtufQ==}
+    dependencies:
+      '@juggle/resize-observer': 3.4.0
+      can-use-dom: 0.1.0
+      core-js: 3.25.2
+      lodash.debounce: 4.0.8
+      lodash.memoize: 4.1.2
+      lodash.throttle: 4.1.1
+    dev: true
 
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
