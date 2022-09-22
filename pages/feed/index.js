@@ -108,6 +108,13 @@ const FeedList = () => {
             <form
               className="form-control gap-5 bg-base-300 p-5 rounded-btn"
               onSubmit={(e) => _createFeedPost(e)}
+              onChange={(e) => {
+                if (e.target.value.length > 0) {
+                  e.currentTarget.postbutton.disabled = false;
+                } else {
+                  e.currentTarget.postbutton.disabled = true;
+                }
+              }}
             >
               <label className="flex flex-col gap-3">
                 <span>
@@ -121,7 +128,12 @@ const FeedList = () => {
               </label>
               <div className="flex justify-between items-center">
                 <p>Dev Mode</p>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  name="postbutton"
+                  type="submit"
+                  disabled
+                  className="btn btn-primary"
+                >
                   Post
                 </button>
               </div>
