@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 const FeedList = () => {
   const { feed, setFeed } = useFeed();
   const { user, userData } = useAuth();
+  const router = useRouter();
 
   const _createFeedPost = async (e) => {
     e.preventDefault();
@@ -65,6 +66,8 @@ const FeedList = () => {
 
         upvoted_list:
           // if null, create an array with the user id, else add the user id to the array
+          // if the user has already upvoted the post, remove their upvote
+          // otherwise, add their upvote
           thisPost.upvoted_list === null
             ? [user.id]
             : thisPost.upvoted_list.includes(user.id)
@@ -100,49 +103,70 @@ const FeedList = () => {
 
   return (
     <>
-      <section className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2, ease: 'circOut' }}
+        className="grid grid-cols-1 lg:grid-cols-5 gap-10"
+      >
         {/* feed */}
         <div className="col-span-3">
           <div className="flex flex-col gap-5">
             {/* add post with text area */}
-            <form
-              className="form-control gap-5 bg-base-300 p-5 rounded-btn"
-              onSubmit={(e) => _createFeedPost(e)}
-              onChange={(e) => {
-                if (e.target.value.length > 0) {
-                  e.currentTarget.postbutton.disabled = false;
-                } else {
-                  e.currentTarget.postbutton.disabled = true;
-                }
-              }}
-            >
-              <label className="flex flex-col gap-3">
-                <span>
-                  <p className="text-xl font-bold">Add a Post</p>
-                </span>
-                <textarea
-                  name="post"
-                  placeholder="What's on your mind?"
-                  className="textarea w-full h-36 text-base-content placeholder-base-content resize-none bg-base-200"
-                />
-              </label>
-              <div className="flex justify-between items-center">
-                <p>Dev Mode</p>
+            {userData && userData.hasId ? (
+              <form
+                className="form-control gap-5 bg-base-300 p-5 rounded-btn"
+                onSubmit={(e) => _createFeedPost(e)}
+                onChange={(e) => {
+                  if (e.target.value.length > 0) {
+                    e.currentTarget.postbutton.disabled = false;
+                  } else {
+                    e.currentTarget.postbutton.disabled = true;
+                  }
+                }}
+              >
+                <label className="flex flex-col gap-3">
+                  <span>
+                    <p className="text-xl font-bold">Add a Post</p>
+                  </span>
+                  <textarea
+                    name="post"
+                    placeholder="What's on your mind?"
+                    className="textarea w-full h-36 text-base-content placeholder-base-content resize-none bg-base-200"
+                  />
+                </label>
+                <div className="flex justify-between items-center">
+                  <p>Dev Mode</p>
+                  <button
+                    name="postbutton"
+                    type="submit"
+                    disabled
+                    className="btn btn-primary btn-sm"
+                  >
+                    Post
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="flex flex-col items-center gap-5">
+                <p className="text-warning">
+                  You need to upgrade your account to post on the feed.
+                </p>
                 <button
-                  name="postbutton"
-                  type="submit"
-                  disabled
-                  className="btn btn-primary"
+                  className="btn btn-warning btn-sm"
+                  onClick={() => router.push('/profile')}
                 >
-                  Post
+                  Jump to Profile
                 </button>
               </div>
-            </form>
+            )}
 
             <div className="divider" />
 
             {/* users posts */}
             {feed &&
+              user &&
+              userData &&
               feed.map((item, i) => (
                 <div
                   key={i}
@@ -164,17 +188,12 @@ const FeedList = () => {
                         )}
                       </p>
                     </div>
-                    {/* edit button from user only */}
+
                     {item.uploader_id === user.id && (
                       <div className="flex flex-row gap-2 ml-auto">
-                        <div
-                          className="tooltip"
-                          data-tip="This feature is in development"
-                        >
-                          <button className="btn btn-ghost btn-circle" disabled>
-                            <FiEdit2 />
-                          </button>
-                        </div>
+                        <button className="btn btn-ghost btn-circle" disabled>
+                          <FiEdit2 />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -182,24 +201,35 @@ const FeedList = () => {
                     <p className="text-lg font-medium">{item.content}</p>
                   </div>
 
-                  {/* upvote and share button */}
-                  <div className="flex flex-row gap-5 justify-between mt-10">
-                    <div
-                      className="tooltip"
-                      data-tip={
-                        item.upvoted_list === null ||
-                        !item.upvoted_list.includes(user.id)
-                          ? 'Upvote'
-                          : 'Remove Upvote'
-                      }
+                  {/* upvote and share */}
+                  <div className="flex justify-between mt-5">
+                    <button
+                      className={`btn btn-sm gap-5 ${
+                        item.upvoted_list && item.upvoted_list.includes(user.id)
+                          ? 'btn-primary'
+                          : 'btn-ghost'
+                      }`}
+                      onClick={(e) => _upvoteFeedPost(e, item.feed_id)}
                     >
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.target.disabled = true;
-                          _upvoteFeedPost(e, item.feed_id);
-                        }}
-                        className={`
+                      <FiArrowUp size={20} />
+                      <span>{item.upvotes}</span>
+                    </button>
+
+                    <button className="btn btn-ghost btn-sm gap-5" disabled>
+                      <FiShare2 size={20} />
+                      <span>Share</span>
+                    </button>
+                  </div>
+
+                  {/* 
+                  <div className="flex flex-row gap-5 justify-between mt-10">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.target.disabled = true;
+                        _upvoteFeedPost(e, item.feed_id);
+                      }}
+                      className={`
                       btn btn-sm gap-2
                       ${
                         item.upvoted_list !== null &&
@@ -208,11 +238,10 @@ const FeedList = () => {
                           : 'btn-ghost'
                       }
                       `}
-                      >
-                        <FiArrowUp size={20} />
-                        <span>{item.upvotes}</span>
-                      </button>
-                    </div>
+                    >
+                      <FiArrowUp size={20} />
+                      <span>{item.upvotes}</span>
+                    </button>
                     <div
                       className="tooltip"
                       data-tip="This feature is in development"
@@ -222,7 +251,7 @@ const FeedList = () => {
                         <FiShare2 size={20} />
                       </button>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               ))}
           </div>
@@ -234,7 +263,7 @@ const FeedList = () => {
             <p className="text-2xl font-thin">Recommended Users</p>
           </div>
         </div>
-      </section>
+      </motion.section>
     </>
   );
 };

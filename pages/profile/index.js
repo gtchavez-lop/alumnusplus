@@ -7,9 +7,11 @@ import _supabase from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../components/AuthContext';
+import { useRouter } from 'next/router';
 
 const Page_Me = (e) => {
   const { user, userData } = useAuth();
+  const router = useRouter();
 
   const _signOut = async () => {
     toast.loading('Signing out...');
@@ -33,6 +35,21 @@ const Page_Me = (e) => {
         className="flex flex-col items-center mt-32 pb-32"
       >
         <p className="text-4xl font-thin">Profile Page</p>
+
+        {userData && userData.hasId == false && (
+          <div className="flex flex-col items-center gap-5 my-16">
+            <p className="text-warning text-center max-w-sm">
+              To experience the full features of this app, you need to set an
+              ID. This ID will be used to identify you in the app.
+            </p>
+            <button
+              className="btn btn-warning btn-sm"
+              onClick={() => router.push('/upgrade')}
+            >
+              Upgrade Account now
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 w-full mt-16 gap-y-32 gap-x-5">
           {/* account details */}

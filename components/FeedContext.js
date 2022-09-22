@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
+import { FiLoader } from 'react-icons/fi';
 import _supabase from '../lib/supabase';
+import { motion } from 'framer-motion';
 
 const FeedContext = createContext();
 
@@ -24,9 +26,7 @@ const FeedWrapper = ({ children }) => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchFeed();
-  }, []);
+  useEffect(() => {}, []);
 
   // listen for changes to the user_feed table
   useEffect(() => {
@@ -37,13 +37,21 @@ const FeedWrapper = ({ children }) => {
         fetchFeed();
       })
       .subscribe();
+
+    fetchFeed();
   }, []);
 
   return (
     <FeedContext.Provider value={{ feed, setFeed }}>
       {loading ? (
         <>
-          <p>Loading Feed</p>
+          <motion.div
+            exit={{ opacity: 0, y: 20 }}
+            className="h-64 flex flex-col gap-5 justify-center items-center"
+          >
+            <FiLoader className="animate-spin" size={40} />
+            <p className="text-2xl">Loading Feed</p>
+          </motion.div>
         </>
       ) : (
         <>{children}</>

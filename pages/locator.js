@@ -6,10 +6,12 @@ import { FiLoader } from 'react-icons/fi';
 import { _Page_Transition } from '../lib/_animations';
 import { motion } from 'framer-motion';
 import { useAuth } from '../components/AuthContext';
+import { useRouter } from 'next/router';
 
 const Page_Locator = (e) => {
   const [found, setFound] = useState(false);
   const { userData } = useAuth();
+  const router = useRouter();
 
   // randomize the number of results up to 10
   const [results, setResults] = useState(Math.floor(Math.random() * 12) + 1);
@@ -170,10 +172,17 @@ const Page_Locator = (e) => {
               className="flex flex-col items-center mt-32 pb-32"
             >
               <p className="text-4xl font-thin">Locator</p>
-              <p className="mt-5 text-xl">
-                You must be Fully Verified to use this feature
-              </p>
-              {/* <p>Avail an Alumni ID by using this form</p> */}
+              <div className="flex flex-col items-center gap-5 mt-32">
+                <p className="text-warning">
+                  You need to upgrade your account to use this feature
+                </p>
+                <button
+                  className="btn btn-warning btn-sm"
+                  onClick={() => router.push('/profile')}
+                >
+                  Jump to Profile
+                </button>
+              </div>
             </motion.main>
           </>
         ))}

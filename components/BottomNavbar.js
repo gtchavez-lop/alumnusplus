@@ -32,7 +32,7 @@ const BottomNavbar = () => {
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5, ease: 'circOut' }}
+          transition={{ duration: 0.5, delay: 0.25, ease: 'circOut' }}
           className="btm-nav btm-nav-lg lg:hidden z-50"
         >
           <Link href={'/feed'}>
