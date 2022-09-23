@@ -16,6 +16,7 @@ export const AuthWrapper = ({ children }) => {
   let sharedState = {
     user,
     userData,
+    setUserData,
     loading,
   };
 
@@ -33,11 +34,14 @@ export const AuthWrapper = ({ children }) => {
 
     if (thisUserData) {
       setUserData(thisUserData);
+      sessionStorage.setItem('userData', JSON.stringify(thisUserData));
     }
 
     if (error) {
       console.log(error);
     }
+
+    setLoading(false);
   };
 
   // initialize supabase auth listener
@@ -69,8 +73,6 @@ export const AuthWrapper = ({ children }) => {
           break;
       }
     });
-
-    setLoading(false);
   }, []);
 
   // chgeck if user exists on page load

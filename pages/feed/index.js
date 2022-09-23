@@ -1,6 +1,16 @@
 import { FeedWrapper, useFeed } from '../../components/FeedContext';
-import { FiArrowUp, FiEdit2, FiShare, FiShare2 } from 'react-icons/fi';
+import {
+  FiArrowRight,
+  FiArrowUp,
+  FiEdit2,
+  FiPlusCircle,
+  FiShare,
+  FiShare2,
+  FiUser,
+} from 'react-icons/fi';
+import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
 import ThemeSwitcher from '../../components/ThemeSwitcher';
 import { _Page_Transition } from '../../lib/_animations';
 import _supabase from '../../lib/supabase';
@@ -8,43 +18,47 @@ import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../components/AuthContext';
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 const FeedList = () => {
-  const { feed, setFeed } = useFeed();
-  const { user, userData } = useAuth();
+  const { feed, setFeed, recommendedUsers, setRecommendedUsers } = useFeed();
+  const { user, userData, setUserData } = useAuth();
+  const [canPost, setCanPost] = useState(false);
   const router = useRouter();
 
   const _createFeedPost = async (e) => {
     e.preventDefault();
 
     // console.log(e.target.post.value);
-
-    const { data, error } = await _supabase.from('user_feed').insert([
-      {
-        uploader_id: user.id,
-        uploader_handler: userData.user_handle,
-        content: e.target.post.value,
-        uploader_email: user.email,
-      },
-    ]);
-
     toast.loading('Creating post...');
 
-    e.target.disabled = true;
+    if (canPost) {
+      e.target.disabled = true;
 
-    if (error) {
-      toast.dismiss();
-      toast.error(error.message);
+      const { data, error } = await _supabase.from('user_feed').insert([
+        {
+          uploader_id: user.id,
+          uploader_handler: userData.user_handle,
+          content: e.target.post.value,
+          uploader_email: user.email,
+        },
+      ]);
+
+      if (error) {
+        toast.dismiss();
+        toast.error(error.message);
+      } else {
+        toast.dismiss();
+        toast.success('Post created!');
+        e.target.post.value = '';
+
+        // update feed
+        _fetchFeed();
+      }
     } else {
       toast.dismiss();
-      toast.success('Post created!');
-      e.target.post.value = '';
-      setFeed([data[0], ...feed]);
+      toast.error('You cannot post right now');
     }
-
-    e.target.disabled = false;
   };
 
   const _upvoteFeedPost = async (e, feedId) => {
@@ -77,28 +91,74 @@ const FeedList = () => {
       .match({ feed_id: feedId });
 
     // update the feed state from the database
-    setFeed(
-      feed.map((post) =>
-        post.feed_id === feedId
-          ? {
-              ...post,
-              upvotes:
-                thisPost.upvoted_list === null ||
-                !thisPost.upvoted_list.includes(user.id)
-                  ? thisPost.upvotes + 1
-                  : thisPost.upvotes - 1,
-              upvoted_list:
-                thisPost.upvoted_list === null
-                  ? [user.id]
-                  : thisPost.upvoted_list.includes(user.id)
-                  ? thisPost.upvoted_list.filter((id) => id !== user.id)
-                  : [...thisPost.upvoted_list, user.id],
-            }
-          : post
-      )
-    );
+    setFeed((prev) => {
+      return prev.map((post) => {
+        if (post.feed_id === feedId) {
+          return {
+            ...post,
+            upvotes:
+              thisPost.upvoted_list === null ||
+              !thisPost.upvoted_list.includes(user.id)
+                ? thisPost.upvotes + 1
+                : thisPost.upvotes - 1,
+            upvoted_list:
+              thisPost.upvoted_list === null
+                ? [user.id]
+                : thisPost.upvoted_list.includes(user.id)
+                ? thisPost.upvoted_list.filter((id) => id !== user.id)
+                : [...thisPost.upvoted_list, user.id],
+          };
+        } else {
+          return post;
+        }
+      });
+    });
 
     e.target.disabled = false;
+  };
+
+  const _followUser = async (e, thisUser) => {
+    toast.loading('Following user...');
+    e.currentTarget.disabled = true;
+
+    const currentConnections = userData.connections
+      ? JSON.parse(userData.connections)
+      : [];
+
+    const { data, error } = await _supabase
+      .from('user_data')
+      .update({
+        // json array of user ids
+        connections: JSON.stringify([...currentConnections, thisUser.id]),
+      })
+      .match({ id: user.id });
+
+    if (error) {
+      toast.dismiss();
+      toast.error(error.message);
+      e.currentTarget.disabled = false;
+    } else {
+      // update the user data
+      const { data, error } = await _supabase
+        .from('user_data')
+        .select('*')
+        .match({ id: user.id });
+
+      if (error) {
+        toast.dismiss();
+        toast.error(error.message);
+        e.currentTarget.disabled = false;
+      } else {
+        setUserData(data[0]);
+
+        setRecommendedUsers(
+          recommendedUsers.filter((user) => user.id !== thisUser.id)
+        );
+
+        toast.dismiss();
+        toast.success('User followed!');
+      }
+    }
   };
 
   return (
@@ -107,7 +167,7 @@ const FeedList = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2, ease: 'circOut' }}
-        className="grid grid-cols-1 lg:grid-cols-5 gap-10"
+        className="grid grid-cols-1 lg:grid-cols-5 gap-10 relative"
       >
         {/* feed */}
         <div className="col-span-3">
@@ -118,11 +178,7 @@ const FeedList = () => {
                 className="form-control gap-5 bg-base-300 p-5 rounded-btn"
                 onSubmit={(e) => _createFeedPost(e)}
                 onChange={(e) => {
-                  if (e.target.value.length > 0) {
-                    e.currentTarget.postbutton.disabled = false;
-                  } else {
-                    e.currentTarget.postbutton.disabled = true;
-                  }
+                  setCanPost(e.currentTarget.post.value.length > 0);
                 }}
               >
                 <label className="flex flex-col gap-3">
@@ -140,7 +196,7 @@ const FeedList = () => {
                   <button
                     name="postbutton"
                     type="submit"
-                    disabled
+                    disabled={!canPost}
                     className="btn btn-primary btn-sm"
                   >
                     Post
@@ -220,47 +276,81 @@ const FeedList = () => {
                       <span>Share</span>
                     </button>
                   </div>
-
-                  {/* 
-                  <div className="flex flex-row gap-5 justify-between mt-10">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.target.disabled = true;
-                        _upvoteFeedPost(e, item.feed_id);
-                      }}
-                      className={`
-                      btn btn-sm gap-2
-                      ${
-                        item.upvoted_list !== null &&
-                        item.upvoted_list.includes(user.id)
-                          ? 'btn-secondary'
-                          : 'btn-ghost'
-                      }
-                      `}
-                    >
-                      <FiArrowUp size={20} />
-                      <span>{item.upvotes}</span>
-                    </button>
-                    <div
-                      className="tooltip"
-                      data-tip="This feature is in development"
-                    >
-                      <button className="btn btn-ghost btn-sm gap-2" disabled>
-                        <span>Share</span>
-                        <FiShare2 size={20} />
-                      </button>
-                    </div>
-                  </div> */}
                 </div>
               ))}
           </div>
         </div>
 
         {/* recommended users */}
-        <div className="col-span-2 hidden lg:block">
-          <div className="flex flex-col">
-            <p className="text-2xl font-thin">Recommended Users</p>
+        <div className="col-span-2 hidden lg:block ">
+          <div className="flex flex-col sticky top-32">
+            {/* current user */}
+            <div className="w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center">
+              <div className="flex flex-row gap-2 items-center">
+                <img
+                  src={`https://avatars.dicebear.com/api/micah/${userData.user_handle}.svg`}
+                  alt="profile"
+                  className="rounded-full w-12 h-12 bg-white"
+                />
+                <div className="flex flex-col">
+                  <p className="text-lg font-medium m-0">
+                    {userData.name_given} {userData.name_last}
+                  </p>
+                  <p className="text-sm font-thin m-0">
+                    @{userData.user_handle} ·{' '}
+                    {userData.connections
+                      ? JSON.parse(userData.connections).length
+                      : 0}{' '}
+                    connections
+                  </p>
+                </div>
+              </div>
+              <Link href={'/profile'}>
+                <button className="btn btn-ghost btn-sm btn-square">
+                  <FiUser size={20} />
+                </button>
+              </Link>
+            </div>
+            <div className="divider mx-10" />
+
+            {/* recommendeed users */}
+            <p className="text-2xl font-thin mb-5">Recommended Users</p>
+
+            {recommendedUsers &&
+              recommendedUsers.map((item, i) => {
+                return (
+                  <>
+                    <div
+                      key={i}
+                      className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
+                    >
+                      <div className="flex flex-row gap-2 items-center">
+                        <img
+                          src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                          alt="profile"
+                          className="rounded-full w-12 h-12 bg-white"
+                        />
+                        <div className="flex flex-col">
+                          <p className="text-lg font-medium">
+                            {item.name_given} {item.name_last}
+                          </p>
+                          <p className="text-sm font-thin">
+                            @{item.user_handle} •{' '}
+                            {item.connections ? item.connections.length : 0}{' '}
+                            followers
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => _followUser(e, item)}
+                        className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
+                      >
+                        <FiPlusCircle size={20} />
+                      </button>
+                    </div>
+                  </>
+                );
+              })}
           </div>
         </div>
       </motion.section>

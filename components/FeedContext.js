@@ -3,14 +3,41 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { FiLoader } from 'react-icons/fi';
 import _supabase from '../lib/supabase';
 import { motion } from 'framer-motion';
+import { useAuth } from './AuthContext';
 
 const FeedContext = createContext();
 
 const FeedWrapper = ({ children }) => {
+  const { userData } = useAuth();
   const [feed, setFeed] = useState([]);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sessionUserData, setSessionUserData] = useState(null);
+
+  // listen for changes to the user_feed table
+  useEffect(() => {
+    // get user data from session storage
+    const thisUserData = JSON.parse(sessionStorage.getItem('userData'));
+    setSessionUserData(thisUserData);
+
+    setTimeout(() => {
+      _supabase
+        .from('user_feed')
+        .on('*', (payload) => {
+          fetchFeed();
+        })
+        .subscribe();
+
+      fetchRecommendedUsers();
+      fetchFeed();
+    }, 100);
+  }, []);
 
   const fetchFeed = async () => {
+    // only show posts from the current user and their connections
+    let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+    let currentConnections = JSON.parse(sessiondata.connections);
+
     const { data: user_feed, error } = await _supabase
       .from('user_feed')
       .select('*')
@@ -19,30 +46,65 @@ const FeedWrapper = ({ children }) => {
 
     if (error) {
       console.log(error);
+      return;
     } else {
-      setFeed(user_feed);
-    }
+      const filteredFeed = user_feed.filter((post) => {
+        // if the post is from the current user, show it
+        if (post.uploader_id === sessiondata.id) {
+          return true;
+        }
 
-    setLoading(false);
+        // if the post is from a connection, show it
+        if (
+          currentConnections &&
+          currentConnections.includes(post.uploader_id)
+        ) {
+          return true;
+        }
+
+        return false;
+      });
+
+      setFeed(filteredFeed);
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {}, []);
+  // fetch recommended users
+  const fetchRecommendedUsers = async () => {
+    const { data: users, error } = await _supabase
+      .from('user_data')
+      .select('*')
+      .order('id', { ascending: false })
+      .neq('id', _supabase.auth.user().id)
+      .limit(5);
 
-  // listen for changes to the user_feed table
-  useEffect(() => {
-    _supabase
-      .from('user_feed')
-      .on('*', (payload) => {
-        console.log(payload);
-        fetchFeed();
-      })
-      .subscribe();
+    // filter out users that are already followed
+    const filteredUsers = users.filter((user) => {
+      if (userData && userData.connections != null) {
+        return !userData.connections.includes(user.id);
+      } else {
+        return true;
+      }
+    });
 
-    fetchFeed();
-  }, []);
+    if (error) {
+      console.log(error);
+    } else {
+      setRecommendedUsers(filteredUsers);
+    }
+  };
+
+  let sharedState = {
+    feed,
+    loading,
+    recommendedUsers,
+    setFeed,
+    setRecommendedUsers,
+  };
 
   return (
-    <FeedContext.Provider value={{ feed, setFeed }}>
+    <FeedContext.Provider value={sharedState}>
       {loading ? (
         <>
           <motion.div
