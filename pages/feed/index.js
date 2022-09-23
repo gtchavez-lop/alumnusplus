@@ -119,7 +119,7 @@ const FeedList = () => {
 
   const _followUser = async (e, thisUser) => {
     toast.loading('Following user...');
-    e.currentTarget.disabled = true;
+    e.currentTarget.visible = false;
 
     const currentConnections = userData.connections
       ? JSON.parse(userData.connections)
@@ -159,6 +159,17 @@ const FeedList = () => {
         toast.success('User followed!');
       }
     }
+
+    // update the user data on session storage
+    sessionStorage.setItem(
+      'userData',
+      JSON.stringify({ ...userData, connections: data[0].connections })
+    );
+
+    // update recommendedUsers
+    setRecommendedUsers(
+      recommendedUsers.filter((user) => user.id !== thisUser.id)
+    );
   };
 
   return (
@@ -223,61 +234,116 @@ const FeedList = () => {
             {feed &&
               user &&
               userData &&
-              feed.map((item, i) => (
-                <div
-                  key={`feed-${i}`}
-                  className="flex flex-col gap-5 p-5 bg-base-300 rounded-btn"
-                >
-                  <div className="flex flex-row gap-5">
-                    <div className="flex items-center">
-                      <img
-                        src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
-                        alt="profile"
-                        className="rounded-full w-12 h-12 bg-white"
-                      />
-                    </div>
-                    <div className="flex flex-col  justify-center">
-                      <p className=" text-lg">@{item.uploader_handler}</p>
-                      <p className="font-thin text-sm">
-                        {dayjs(item.created_at).format(
-                          'MMMM D, YYYY [at] h:mm A'
-                        )}
-                      </p>
-                    </div>
+              feed.map((item, i) => {
+                // check if item is blank
+                if (i == 1) {
+                  return (
+                    <>
+                      <div className="flex flex-col my-10 lg:hidden">
+                        <p className="mb-3 text-2xl">Recommended Users</p>
+                        {/* recommended users mobile */}
+                        {recommendedUsers &&
+                          recommendedUsers.map((item, i) => {
+                            return (
+                              <>
+                                <div
+                                  key={`recommended-${i}`}
+                                  className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
+                                >
+                                  <div className="flex flex-row gap-2 items-center">
+                                    <img
+                                      src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                                      alt="profile"
+                                      className="rounded-full w-12 h-12 bg-white"
+                                    />
+                                    <div className="flex flex-col">
+                                      <p className="text-lg font-medium">
+                                        {item.name_given} {item.name_last}
+                                      </p>
+                                      <p className="text-sm font-thin">
+                                        @{item.user_handle} •{' '}
+                                        {item.connections
+                                          ? item.connections.length
+                                          : 0}{' '}
+                                        connections
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={(e) => _followUser(e, item)}
+                                    className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
+                                  >
+                                    <FiPlusCircle size={20} />
+                                  </button>
+                                </div>
+                              </>
+                            );
+                          })}
+                      </div>
+                    </>
+                  );
+                } else {
+                  return (
+                    <div
+                      key={`feed-${i}`}
+                      className="flex flex-col gap-5 p-5 bg-base-300 rounded-btn"
+                    >
+                      <div className="flex flex-row gap-5">
+                        <div className="flex items-center">
+                          <img
+                            src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
+                            alt="profile"
+                            className="rounded-full w-12 h-12 bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col  justify-center">
+                          <p className=" text-lg">@{item.uploader_handler}</p>
+                          <p className="font-thin text-sm">
+                            {dayjs(item.created_at).format(
+                              'MMMM D, YYYY [at] h:mm A'
+                            )}
+                          </p>
+                        </div>
 
-                    {item.uploader_id === user.id && (
-                      <div className="flex flex-row gap-2 ml-auto">
-                        <button className="btn btn-ghost btn-circle" disabled>
-                          <FiEdit2 />
+                        {item.uploader_id === user.id && (
+                          <div className="flex flex-row gap-2 ml-auto">
+                            <button
+                              className="btn btn-ghost btn-circle"
+                              disabled
+                            >
+                              <FiEdit2 />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <p className="text-lg font-medium">{item.content}</p>
+                      </div>
+
+                      {/* upvote and share */}
+                      <div className="flex justify-between mt-5">
+                        <button
+                          className={`btn btn-sm gap-5 ${
+                            item.upvoted_list &&
+                            item.upvoted_list.includes(user.id)
+                              ? 'btn-primary'
+                              : 'btn-ghost'
+                          }`}
+                          onClick={(e) => _upvoteFeedPost(e, item.feed_id)}
+                        >
+                          <FiArrowUp size={20} />
+                          <span>{item.upvotes}</span>
+                        </button>
+
+                        <button className="btn btn-ghost btn-sm gap-5" disabled>
+                          <FiShare2 size={20} />
+                          <span>Share</span>
                         </button>
                       </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-lg font-medium">{item.content}</p>
-                  </div>
-
-                  {/* upvote and share */}
-                  <div className="flex justify-between mt-5">
-                    <button
-                      className={`btn btn-sm gap-5 ${
-                        item.upvoted_list && item.upvoted_list.includes(user.id)
-                          ? 'btn-primary'
-                          : 'btn-ghost'
-                      }`}
-                      onClick={(e) => _upvoteFeedPost(e, item.feed_id)}
-                    >
-                      <FiArrowUp size={20} />
-                      <span>{item.upvotes}</span>
-                    </button>
-
-                    <button className="btn btn-ghost btn-sm gap-5" disabled>
-                      <FiShare2 size={20} />
-                      <span>Share</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                    </div>
+                  );
+                }
+              })}
           </div>
         </div>
 
@@ -338,7 +404,7 @@ const FeedList = () => {
                             <p className="text-sm font-thin">
                               @{item.user_handle} •{' '}
                               {item.connections ? item.connections.length : 0}{' '}
-                              followers
+                              connections
                             </p>
                           </div>
                         </div>
@@ -370,9 +436,7 @@ const Page_Feed = (e) => {
         exit="exit"
         className="flex flex-col py-32"
       >
-        <FeedWrapper>
-          <FeedList />
-        </FeedWrapper>
+        <FeedList />
       </motion.main>
     </>
   );

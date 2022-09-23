@@ -61,11 +61,13 @@ export const AuthWrapper = ({ children }) => {
         case 'SIGNED_IN':
           setUser(session.user);
           checkUser(session.user);
+          sessionStorage.setItem('userData', JSON.stringify(session.user));
           break;
 
         case 'SIGNED_OUT':
           setUser(null);
           setUserData(null);
+          sessionStorage.removeItem('userData');
           router.replace('/');
           break;
 

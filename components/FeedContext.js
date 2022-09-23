@@ -15,17 +15,15 @@ const FeedWrapper = ({ children }) => {
 
   // listen for changes to the user_feed table
   useEffect(() => {
-    setTimeout(() => {
-      _supabase
-        .from('user_feed')
-        .on('*', (payload) => {
-          fetchFeed();
-        })
-        .subscribe();
+    _supabase
+      .from('user_feed')
+      .on('*', (payload) => {
+        fetchFeed();
+      })
+      .subscribe();
 
-      fetchRecommendedUsers();
-      fetchFeed();
-    }, 100);
+    fetchFeed();
+    fetchRecommendedUsers();
   }, []);
 
   const fetchFeed = async () => {
@@ -61,6 +59,10 @@ const FeedWrapper = ({ children }) => {
         return false;
       });
 
+      // add a blank object to filteredFeed to make room for recommended users on mobile
+      // add that in the second position
+      filteredFeed.splice(1, 0, {});
+
       setFeed(filteredFeed);
       setLoading(false);
     }
@@ -75,20 +77,22 @@ const FeedWrapper = ({ children }) => {
       .neq('id', _supabase.auth.user().id)
       .limit(5);
 
-    // filter out users that are already followed
-    const filteredUsers = users.filter((user) => {
-      let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
-      let currentConnections = JSON.parse(sessiondata.connections);
-
-      // return the users that are not in the current connections array
-      if (currentConnections && !currentConnections.includes(user.id)) {
-        return true;
-      }
-    });
+    let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+    let currentConnections = JSON.parse(sessiondata.connections);
 
     if (error) {
       console.log(error);
+      return;
     } else {
+      const filteredUsers = users.filter((user) => {
+        // if the user is already a connection, don't show them
+        if (currentConnections && currentConnections.includes(user.id)) {
+          return false;
+        }
+
+        return true;
+      });
+
       setRecommendedUsers(filteredUsers);
     }
   };

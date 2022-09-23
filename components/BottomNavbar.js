@@ -4,6 +4,7 @@ import {
   FiMail,
   FiMapPin,
   FiSearch,
+  FiShoppingCart,
   FiUser,
 } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
@@ -35,7 +36,7 @@ const BottomNavbar = () => {
           transition={{ duration: 0.5, delay: 0.25, ease: 'circOut' }}
           className="btm-nav btm-nav-lg lg:hidden z-50"
         >
-          <Link href={'/feed'}>
+          <Link href={'/feed'} scroll={false}>
             <button>
               <FiGrid size={20} />
               {router && router.pathname === '/feed' && (
@@ -43,7 +44,7 @@ const BottomNavbar = () => {
               )}
             </button>
           </Link>
-          <Link href={'/search'}>
+          <Link href={'/search'} scroll={false}>
             <button>
               <FiSearch size={20} />
               {router && router.pathname === '/search' && (
@@ -55,7 +56,7 @@ const BottomNavbar = () => {
               <FiMail size={20} />
               <span className="btm-nav-label">Messages</span>
             </button> */}
-          <Link href={'/locator'}>
+          <Link href={'/locator'} scroll={false}>
             <button>
               <FiMapPin size={20} />
               {router && router.pathname === '/locator' && (
@@ -63,7 +64,15 @@ const BottomNavbar = () => {
               )}
             </button>
           </Link>
-          <Link href={'/profile'}>
+          <Link href={'/shop'} scroll={false}>
+            <button>
+              <FiShoppingCart size={20} />
+              {router && router.pathname === '/shop' && (
+                <span className="btm-nav-label">Shop</span>
+              )}
+            </button>
+          </Link>
+          <Link href={'/profile'} scroll={false}>
             <button>
               <FiUser size={20} />
               {router && router.pathname === '/profile' && (

@@ -3,6 +3,7 @@ import '../styles/globals.css';
 import { AnimatePresence } from 'framer-motion';
 import { AuthWrapper } from '../components/AuthContext';
 import BottomNavbar from '../components/BottomNavbar';
+import { FeedWrapper } from '../components/FeedContext';
 import { FiX } from 'react-icons/fi';
 import { ToastBar } from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
@@ -28,7 +29,9 @@ function MyApp({ Component, pageProps }) {
         <main className="flex justify-center px-5 xl:px-0">
           <section className="w-full max-w-6xl">
             <AnimatePresence mode="wait">
-              <Component key={router.route} {...pageProps} />
+              <FeedWrapper>
+                <Component key={router.route} {...pageProps} />
+              </FeedWrapper>
             </AnimatePresence>
           </section>
         </main>

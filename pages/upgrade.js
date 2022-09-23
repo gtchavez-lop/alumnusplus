@@ -12,7 +12,7 @@ const Page_Upgrade = (e) => {
         className="flex flex-col py-32"
       >
         <div className="flex flex-col items-center justify-center">
-          <p className="text-2xl">Upgrade Account</p>
+          <p className="text-4xl font-thin">Upgrade Account</p>
 
           <p className="text-2xl font-thin mt-32">Coming Soon </p>
           <p className="text-center opacity-50">
