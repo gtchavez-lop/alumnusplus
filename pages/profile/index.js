@@ -18,6 +18,8 @@ import { useAuth } from '../../components/AuthContext';
 import { useFeed } from '../../components/FeedContext';
 import { useRouter } from 'next/router';
 
+// get the user's data from the database
+
 const Page_Me = (e) => {
   const { user, userData } = useAuth();
   const router = useRouter();

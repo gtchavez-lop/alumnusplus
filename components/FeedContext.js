@@ -47,7 +47,9 @@ const FeedWrapper = ({ children }) => {
       return;
     } else {
       let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
-      let currentConnections = JSON.parse(sessiondata.connections);
+      let currentConnections = sessiondata
+        ? JSON.parse(sessiondata.connections)
+        : [];
 
       const filteredFeed = user_feed.filter((post) => {
         // if the post is from the current user, show it
@@ -89,7 +91,9 @@ const FeedWrapper = ({ children }) => {
       return;
     } else {
       let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
-      let currentConnections = JSON.parse(sessiondata.connections);
+      let currentConnections = sessiondata.connections
+        ? JSON.parse(sessiondata.connections)
+        : [];
       const filteredUsers = users.filter((user) => {
         // if the user is already a connection, don't show them
         if (currentConnections && currentConnections.includes(user.id)) {
@@ -112,22 +116,7 @@ const FeedWrapper = ({ children }) => {
   };
 
   return (
-    <FeedContext.Provider value={sharedState}>
-      {/* {feed ? (
-        <>
-          <motion.div
-            exit={{ opacity: 0, y: 20 }}
-            className="h-screen flex flex-col gap-5 justify-center items-center"
-          >
-            <FiLoader className="animate-spin" size={40} />
-          </motion.div>
-        </>
-      ) : (
-        <>{children}</>
-      )} */}
-
-      <>{children}</>
-    </FeedContext.Provider>
+    <FeedContext.Provider value={sharedState}>{children}</FeedContext.Provider>
   );
 };
 

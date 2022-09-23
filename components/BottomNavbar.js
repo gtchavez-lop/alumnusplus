@@ -29,7 +29,7 @@ const BottomNavbar = () => {
 
   return (
     <>
-      {user && (
+      {user && userData && (
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
@@ -72,10 +72,10 @@ const BottomNavbar = () => {
               )}
             </button>
           </Link>
-          <Link href={'/profile'} scroll={false}>
+          <Link href={`/${userData.user_handle}`} scroll={false}>
             <button>
               <FiUser size={20} />
-              {router && router.pathname === '/profile' && (
+              {router && router.pathname === `/${userData.user_handle}` && (
                 <span className="btm-nav-label">Profile</span>
               )}
             </button>

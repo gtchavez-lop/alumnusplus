@@ -93,14 +93,11 @@ const TopNavbar = (e) => {
                   />
                 </button>
               </Link>
-              <Link href={'/profile'} scroll={false}>
-                <button
-                  className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"
-                  onClick={() => router.push('/profile')}
-                >
+              <Link href={`/${userData.user_handle}`} scroll={false}>
+                <button className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex">
                   <FiUser
                     className={
-                      router && router.pathname === '/profile'
+                      router && router.pathname === `/${userData.user_handle}`
                         ? ' stroke-primary'
                         : ''
                     }

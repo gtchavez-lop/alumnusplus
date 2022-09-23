@@ -35,7 +35,7 @@ const FeedList = () => {
     if (canPost) {
       e.target.disabled = true;
 
-      const { data, error } = await _supabase.from('user_feed').insert([
+      const { error } = await _supabase.from('user_feed').insert([
         {
           uploader_id: user.id,
           uploader_handler: userData.user_handle,
@@ -51,9 +51,6 @@ const FeedList = () => {
         toast.dismiss();
         toast.success('Post created!');
         e.target.post.value = '';
-
-        // update feed
-        _fetchFeed();
       }
     } else {
       toast.dismiss();
@@ -66,53 +63,47 @@ const FeedList = () => {
     e.target.disabled = true;
     const thisPost = feed.filter((post) => post.feed_id === feedId)[0];
 
+    // parse upvoted_by json object
+    const upvotedBy = thisPost.upvoted_by
+      ? JSON.parse(thisPost.upvoted_by)
+      : [];
+
+    // check if the user has already upvoted the post
+    const hasUpvoted = upvotedBy.filter((user) => user === userData.id);
+
+    // if the user has already upvoted the post, remove the user from the upvoted_by array
+    if (hasUpvoted.length > 0) {
+      const index = upvotedBy.indexOf(userData.id);
+      upvotedBy.splice(index, 1);
+    } else {
+      // if the user has not upvoted the post, add the user to the upvoted_by array
+      upvotedBy.push(userData.id);
+    }
+
     // update the post and add the user to the upvoted_list array
     const { data, error } = await _supabase
       .from('user_feed')
-      .update({
-        upvotes:
-          // if the user has already upvoted the post, remove their upvote
-          // otherwise, add their upvote
-          thisPost.upvoted_list === null ||
-          !thisPost.upvoted_list.includes(user.id)
-            ? thisPost.upvotes + 1
-            : thisPost.upvotes - 1,
+      .update({ upvoted_by: JSON.stringify(upvotedBy) })
+      .eq('feed_id', feedId);
 
-        upvoted_list:
-          // if null, create an array with the user id, else add the user id to the array
-          // if the user has already upvoted the post, remove their upvote
-          // otherwise, add their upvote
-          thisPost.upvoted_list === null
-            ? [user.id]
-            : thisPost.upvoted_list.includes(user.id)
-            ? thisPost.upvoted_list.filter((id) => id !== user.id)
-            : [...thisPost.upvoted_list, user.id],
-      })
-      .match({ feed_id: feedId });
+    if (error) {
+      console.log(error);
+    }
 
-    // update the feed state from the database
-    setFeed((prev) => {
-      return prev.map((post, i) => {
-        if (post.feed_id === feedId) {
-          return {
-            ...post,
-            upvotes:
-              thisPost.upvoted_list === null ||
-              !thisPost.upvoted_list.includes(user.id)
-                ? thisPost.upvotes + 1
-                : thisPost.upvotes - 1,
-            upvoted_list:
-              thisPost.upvoted_list === null
-                ? [user.id]
-                : thisPost.upvoted_list.includes(user.id)
-                ? thisPost.upvoted_list.filter((id) => id !== user.id)
-                : [...thisPost.upvoted_list, user.id],
-          };
-        } else {
-          return post;
-        }
-      });
+    // update the selected post in the feed state
+    const updatedFeed = feed.map((post) => {
+      if (post.feed_id === feedId) {
+        return {
+          ...post,
+          upvoted_by: JSON.stringify(upvotedBy),
+        };
+      } else {
+        return post;
+      }
     });
+
+    // update the feed state
+    setFeed(updatedFeed);
 
     e.target.disabled = false;
   };
@@ -250,25 +241,30 @@ const FeedList = () => {
                                   key={`recommended-${i}`}
                                   className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
                                 >
-                                  <div className="flex flex-row gap-2 items-center">
-                                    <img
-                                      src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
-                                      alt="profile"
-                                      className="rounded-full w-12 h-12 bg-white"
-                                    />
-                                    <div className="flex flex-col">
-                                      <p className="text-lg font-medium">
-                                        {item.name_given} {item.name_last}
-                                      </p>
-                                      <p className="text-sm font-thin">
-                                        @{item.user_handle} •{' '}
-                                        {item.connections
-                                          ? item.connections.length
-                                          : 0}{' '}
-                                        connections
-                                      </p>
+                                  <Link
+                                    href={`/${item.user_handle}`}
+                                    scroll={false}
+                                  >
+                                    <div className="flex flex-row gap-2 items-center">
+                                      <img
+                                        src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                                        alt="profile"
+                                        className="rounded-full w-12 h-12 bg-white"
+                                      />
+                                      <div className="flex flex-col">
+                                        <p className="text-lg font-medium">
+                                          {item.name_given} {item.name_last}
+                                        </p>
+                                        <p className="text-sm font-thin">
+                                          @{item.user_handle} •{' '}
+                                          {item.connections
+                                            ? item.connections.length
+                                            : 0}{' '}
+                                          connections
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
+                                  </Link>
                                   <button
                                     onClick={(e) => _followUser(e, item)}
                                     className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
@@ -289,13 +285,15 @@ const FeedList = () => {
                       className="flex flex-col gap-5 p-5 bg-base-300 rounded-btn"
                     >
                       <div className="flex flex-row gap-5">
-                        <div className="flex items-center">
-                          <img
-                            src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
-                            alt="profile"
-                            className="rounded-full w-12 h-12 bg-white"
-                          />
-                        </div>
+                        <Link href={`/${item.uploader_handler}`}>
+                          <div className="flex items-center">
+                            <img
+                              src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
+                              alt="profile"
+                              className="rounded-full w-12 h-12 bg-white"
+                            />
+                          </div>
+                        </Link>
                         <div className="flex flex-col  justify-center">
                           <p className=" text-lg">@{item.uploader_handler}</p>
                           <p className="font-thin text-sm">
@@ -324,15 +322,19 @@ const FeedList = () => {
                       <div className="flex justify-between mt-5">
                         <button
                           className={`btn btn-sm gap-5 ${
-                            item.upvoted_list &&
-                            item.upvoted_list.includes(user.id)
+                            item.upvoted_by &&
+                            JSON.parse(item.upvoted_by).includes(user.id)
                               ? 'btn-primary'
                               : 'btn-ghost'
                           }`}
                           onClick={(e) => _upvoteFeedPost(e, item.feed_id)}
                         >
                           <FiArrowUp size={20} />
-                          <span>{item.upvotes}</span>
+                          <span>
+                            {item.upvoted_by
+                              ? JSON.parse(item.upvoted_by).length
+                              : 0}
+                          </span>
                         </button>
 
                         <button className="btn btn-ghost btn-sm gap-5" disabled>
@@ -372,7 +374,7 @@ const FeedList = () => {
                     </p>
                   </div>
                 </div>
-                <Link href={'/profile'}>
+                <Link href={`/${userData.user_handle}`}>
                   <button className="btn btn-ghost btn-sm btn-square">
                     <FiUser size={20} />
                   </button>
@@ -391,23 +393,25 @@ const FeedList = () => {
                         key={`recommended-${i}`}
                         className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
                       >
-                        <div className="flex flex-row gap-2 items-center">
-                          <img
-                            src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
-                            alt="profile"
-                            className="rounded-full w-12 h-12 bg-white"
-                          />
-                          <div className="flex flex-col">
-                            <p className="text-lg font-medium">
-                              {item.name_given} {item.name_last}
-                            </p>
-                            <p className="text-sm font-thin">
-                              @{item.user_handle} •{' '}
-                              {item.connections ? item.connections.length : 0}{' '}
-                              connections
-                            </p>
+                        <Link href={`/${item.user_handle}`} scroll={false}>
+                          <div className="flex flex-row gap-2 items-center cursor-pointer">
+                            <img
+                              src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                              alt="profile"
+                              className="rounded-full w-12 h-12 bg-white"
+                            />
+                            <div className="flex flex-col">
+                              <p className="text-lg font-medium">
+                                {item.name_given} {item.name_last}
+                              </p>
+                              <p className="text-sm font-thin">
+                                @{item.user_handle} •{' '}
+                                {item.connections ? item.connections.length : 0}{' '}
+                                connections
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        </Link>
                         <button
                           onClick={(e) => _followUser(e, item)}
                           className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
