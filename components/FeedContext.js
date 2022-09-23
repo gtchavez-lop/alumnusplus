@@ -12,14 +12,9 @@ const FeedWrapper = ({ children }) => {
   const [feed, setFeed] = useState([]);
   const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sessionUserData, setSessionUserData] = useState(null);
 
   // listen for changes to the user_feed table
   useEffect(() => {
-    // get user data from session storage
-    const thisUserData = JSON.parse(sessionStorage.getItem('userData'));
-    setSessionUserData(thisUserData);
-
     setTimeout(() => {
       _supabase
         .from('user_feed')
@@ -35,8 +30,6 @@ const FeedWrapper = ({ children }) => {
 
   const fetchFeed = async () => {
     // only show posts from the current user and their connections
-    let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
-    let currentConnections = JSON.parse(sessiondata.connections);
 
     const { data: user_feed, error } = await _supabase
       .from('user_feed')
@@ -48,6 +41,9 @@ const FeedWrapper = ({ children }) => {
       console.log(error);
       return;
     } else {
+      let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+      let currentConnections = JSON.parse(sessiondata.connections);
+
       const filteredFeed = user_feed.filter((post) => {
         // if the post is from the current user, show it
         if (post.uploader_id === sessiondata.id) {
@@ -81,9 +77,11 @@ const FeedWrapper = ({ children }) => {
 
     // filter out users that are already followed
     const filteredUsers = users.filter((user) => {
-      if (userData && userData.connections != null) {
-        return !userData.connections.includes(user.id);
-      } else {
+      let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+      let currentConnections = JSON.parse(sessiondata.connections);
+
+      // return the users that are not in the current connections array
+      if (currentConnections && !currentConnections.includes(user.id)) {
         return true;
       }
     });

@@ -27,9 +27,9 @@ const TopNavbar = (e) => {
           className="flex justify-center bg-base-200 py-7 fixed w-full left-0 top-0 z-50"
         >
           <section className="w-full max-w-6xl flex items-center justify-between px-5">
-            <p className="text-lg text-primary">
+            <div className="text-lg text-primary">
               <Logo />
-            </p>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 className="btn btn-sm btn-square btn-ghost hidden lg:inline-flex"

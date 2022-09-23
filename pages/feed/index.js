@@ -92,7 +92,7 @@ const FeedList = () => {
 
     // update the feed state from the database
     setFeed((prev) => {
-      return prev.map((post) => {
+      return prev.map((post, i) => {
         if (post.feed_id === feedId) {
           return {
             ...post,
@@ -225,7 +225,7 @@ const FeedList = () => {
               userData &&
               feed.map((item, i) => (
                 <div
-                  key={i}
+                  key={`feed-${i}`}
                   className="flex flex-col gap-5 p-5 bg-base-300 rounded-btn"
                 >
                   <div className="flex flex-row gap-5">
@@ -282,77 +282,79 @@ const FeedList = () => {
         </div>
 
         {/* recommended users */}
-        <div className="col-span-2 hidden lg:block ">
-          <div className="flex flex-col sticky top-32">
-            {/* current user */}
-            <div className="w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center">
-              <div className="flex flex-row gap-2 items-center">
-                <img
-                  src={`https://avatars.dicebear.com/api/micah/${userData.user_handle}.svg`}
-                  alt="profile"
-                  className="rounded-full w-12 h-12 bg-white"
-                />
-                <div className="flex flex-col">
-                  <p className="text-lg font-medium m-0">
-                    {userData.name_given} {userData.name_last}
-                  </p>
-                  <p className="text-sm font-thin m-0">
-                    @{userData.user_handle} ·{' '}
-                    {userData.connections
-                      ? JSON.parse(userData.connections).length
-                      : 0}{' '}
-                    connections
-                  </p>
+        {user && userData && (
+          <div className="col-span-2 hidden lg:block ">
+            <div className="flex flex-col sticky top-32">
+              {/* current user */}
+              <div className="w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center">
+                <div className="flex flex-row gap-2 items-center">
+                  <img
+                    src={`https://avatars.dicebear.com/api/micah/${userData.user_handle}.svg`}
+                    alt="profile"
+                    className="rounded-full w-12 h-12 bg-white"
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-lg font-medium m-0">
+                      {userData.name_given} {userData.name_last}
+                    </p>
+                    <p className="text-sm font-thin m-0">
+                      @{userData.user_handle} ·{' '}
+                      {userData.connections
+                        ? JSON.parse(userData.connections).length
+                        : 0}{' '}
+                      connections
+                    </p>
+                  </div>
                 </div>
+                <Link href={'/profile'}>
+                  <button className="btn btn-ghost btn-sm btn-square">
+                    <FiUser size={20} />
+                  </button>
+                </Link>
               </div>
-              <Link href={'/profile'}>
-                <button className="btn btn-ghost btn-sm btn-square">
-                  <FiUser size={20} />
-                </button>
-              </Link>
-            </div>
-            <div className="divider mx-10" />
+              <div className="divider mx-10" />
 
-            {/* recommendeed users */}
-            <p className="text-2xl font-thin mb-5">Recommended Users</p>
+              {/* recommendeed users */}
+              <p className="text-2xl font-thin mb-5">Recommended Users</p>
 
-            {recommendedUsers &&
-              recommendedUsers.map((item, i) => {
-                return (
-                  <>
-                    <div
-                      key={i}
-                      className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
-                    >
-                      <div className="flex flex-row gap-2 items-center">
-                        <img
-                          src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
-                          alt="profile"
-                          className="rounded-full w-12 h-12 bg-white"
-                        />
-                        <div className="flex flex-col">
-                          <p className="text-lg font-medium">
-                            {item.name_given} {item.name_last}
-                          </p>
-                          <p className="text-sm font-thin">
-                            @{item.user_handle} •{' '}
-                            {item.connections ? item.connections.length : 0}{' '}
-                            followers
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => _followUser(e, item)}
-                        className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
+              {recommendedUsers &&
+                recommendedUsers.map((item, i) => {
+                  return (
+                    <>
+                      <div
+                        key={`recommended-${i}`}
+                        className="mb-2 w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center"
                       >
-                        <FiPlusCircle size={20} />
-                      </button>
-                    </div>
-                  </>
-                );
-              })}
+                        <div className="flex flex-row gap-2 items-center">
+                          <img
+                            src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                            alt="profile"
+                            className="rounded-full w-12 h-12 bg-white"
+                          />
+                          <div className="flex flex-col">
+                            <p className="text-lg font-medium">
+                              {item.name_given} {item.name_last}
+                            </p>
+                            <p className="text-sm font-thin">
+                              @{item.user_handle} •{' '}
+                              {item.connections ? item.connections.length : 0}{' '}
+                              followers
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={(e) => _followUser(e, item)}
+                          className="btn btn-primary btn-sm btn-square disabled:btn-ghost "
+                        >
+                          <FiPlusCircle size={20} />
+                        </button>
+                      </div>
+                    </>
+                  );
+                })}
+            </div>
           </div>
-        </div>
+        )}
       </motion.section>
     </>
   );

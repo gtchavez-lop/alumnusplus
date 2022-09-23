@@ -83,9 +83,7 @@ export const AuthWrapper = ({ children }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={sharedState}>
-      {!loading && children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={sharedState}>{children}</AuthContext.Provider>
   );
 };
 
