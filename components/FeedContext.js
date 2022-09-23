@@ -8,23 +8,30 @@ import { useAuth } from './AuthContext';
 const FeedContext = createContext();
 
 const FeedWrapper = ({ children }) => {
-  const { userData } = useAuth();
+  const { user, userData } = useAuth();
   const [feed, setFeed] = useState([]);
   const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // listen for changes to the user_feed table
   useEffect(() => {
-    _supabase
-      .from('user_feed')
-      .on('*', (payload) => {
-        fetchFeed();
-      })
-      .subscribe();
-
-    fetchFeed();
-    fetchRecommendedUsers();
+    setTimeout(() => {
+      _supabase
+        .from('user_feed')
+        .on('*', (payload) => {
+          fetchFeed();
+        })
+        .subscribe();
+    }, 100);
   }, []);
+
+  // listen to user update and fetch feed and recommended users
+  useEffect(() => {
+    if (user) {
+      fetchFeed();
+      fetchRecommendedUsers();
+    }
+  }, [user, userData]);
 
   const fetchFeed = async () => {
     // only show posts from the current user and their connections
@@ -74,16 +81,15 @@ const FeedWrapper = ({ children }) => {
       .from('user_data')
       .select('*')
       .order('id', { ascending: false })
-      .neq('id', _supabase.auth.user().id)
+      .neq('id', user.id)
       .limit(5);
-
-    let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
-    let currentConnections = JSON.parse(sessiondata.connections);
 
     if (error) {
       console.log(error);
       return;
     } else {
+      let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+      let currentConnections = JSON.parse(sessiondata.connections);
       const filteredUsers = users.filter((user) => {
         // if the user is already a connection, don't show them
         if (currentConnections && currentConnections.includes(user.id)) {
@@ -107,19 +113,20 @@ const FeedWrapper = ({ children }) => {
 
   return (
     <FeedContext.Provider value={sharedState}>
-      {loading ? (
+      {/* {feed ? (
         <>
           <motion.div
             exit={{ opacity: 0, y: 20 }}
-            className="h-64 flex flex-col gap-5 justify-center items-center"
+            className="h-screen flex flex-col gap-5 justify-center items-center"
           >
             <FiLoader className="animate-spin" size={40} />
-            <p className="text-2xl">Loading Feed</p>
           </motion.div>
         </>
       ) : (
         <>{children}</>
-      )}
+      )} */}
+
+      <>{children}</>
     </FeedContext.Provider>
   );
 };

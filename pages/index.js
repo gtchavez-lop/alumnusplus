@@ -96,7 +96,7 @@ const Home = () => {
           transition={{ delay: 0.2 }}
           className="fixed top-4 left-4 z-10"
         >
-          <ThemeSwitcherNew className={'btn btn-accent'} />
+          <ThemeSwitcherNew className={'btn btn-accent btn-sm'} />
         </motion.div>
       </motion.main>
     </>
