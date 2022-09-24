@@ -17,8 +17,23 @@ import { useAuth } from '../components/AuthContext';
 import { useFeed } from '../components/FeedContext';
 import { useRouter } from 'next/router';
 
-export const getServerSideProps = async (ctx) => {
-  const { username } = ctx.query;
+export const getStaticPaths = async () => {
+  const { data, error } = await _supabase
+    .from('user_data')
+    .select('user_handle');
+
+  const paths = data.map((user) => ({
+    params: { username: user.user_handle },
+  }));
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
+};
+
+export const getStaticProps = async (context) => {
+  const { username } = context.params;
 
   // fetch user userData and user's posts
   const { data, error } = await _supabase
@@ -39,6 +54,7 @@ export const getServerSideProps = async (ctx) => {
       userData: data,
       notFound: false,
     },
+    revalidate: 10,
   };
 };
 
