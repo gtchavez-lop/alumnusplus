@@ -46,7 +46,9 @@ const FeedWrapper = ({ children }) => {
       console.log(error);
       return;
     } else {
-      let sessiondata = JSON.parse(sessionStorage.getItem('userData'));
+      let sessiondata = sessionStorage.getItem('userData')
+        ? JSON.parse(sessionStorage.getItem('userData'))
+        : null;
       let currentConnections = sessiondata
         ? JSON.parse(sessiondata.connections)
         : [];

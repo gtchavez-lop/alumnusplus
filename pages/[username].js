@@ -151,7 +151,7 @@ const UserPosts = ({ userID, setPageCount }) => {
               <div className="flex flex-row gap-5">
                 <div className="flex items-center">
                   <img
-                    src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
+                    src={`https://avatars.dicebear.com/api/big-ears-neutral/${item.uploader_handler}.svg`}
                     alt="profile"
                     className="rounded-full w-12 h-12 bg-white"
                   />
@@ -284,6 +284,19 @@ const UserConnections = ({ userData }) => {
   const userConnections = userData && JSON.parse(userData.connections);
   const [selected, setSelected] = useState(null);
 
+  const _removeChat = (from, to) => {
+    _supabase
+      .from('user_chats')
+      .delete()
+      .match({ sent_from: from, sent_to: to })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const _fetchConnectedAccounts = async () => {
     const { data, error } = await _supabase
       .from('user_data')
@@ -322,12 +335,21 @@ const UserConnections = ({ userData }) => {
     const newConnectedUsers = connectedUsers.filter((item) => item.id !== id);
     setConnectedUsers(newConnectedUsers);
 
+    // set to session storage
+    sessionStorage.setItem(
+      'user_data',
+      JSON.stringify({
+        ...userData,
+        connections: JSON.stringify(newConnections),
+      })
+    );
+
     // toast
     toast.dismiss();
     toast.success('Connection removed');
 
-    // reload page
-    router.reload();
+    // remove chats from decentralized database
+    await _removeChat(userData.id, id);
   };
 
   useEffect(() => {
@@ -351,7 +373,7 @@ const UserConnections = ({ userData }) => {
               <>
                 <div className="flex flex-col items-center gap-5">
                   <img
-                    src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                    src={`https://avatars.dicebear.com/api/big-ears-neutral/${item.user_handle}.svg`}
                     className="w-20 h-20 rounded-full bg-white"
                   />
                   <div className="flex flex-col items-center">
@@ -397,7 +419,7 @@ const Page_SpecificUser = ({ userData }) => {
             <div className="flex justify-center w-full">
               <div className="flex items-center justify-between w-full max-w-4xl gap-10">
                 <img
-                  src={`https://avatars.dicebear.com/api/micah/${userData.user_handle}.svg`}
+                  src={`https://avatars.dicebear.com/api/big-ears-neutral/${userData.user_handle}.svg`}
                   alt="profile"
                   className="rounded-full w-24 h-24 sm:w-28 sm:h-28 md:w-48 md:h-48 bg-white"
                 />

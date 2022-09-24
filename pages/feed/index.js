@@ -247,7 +247,7 @@ const FeedList = () => {
                                   >
                                     <div className="flex flex-row gap-2 items-center">
                                       <img
-                                        src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                                        src={`https://avatars.dicebear.com/api/big-ears-neutral/${item.user_handle}.svg`}
                                         alt="profile"
                                         className="rounded-full w-12 h-12 bg-white"
                                       />
@@ -288,7 +288,7 @@ const FeedList = () => {
                         <Link href={`/${item.uploader_handler}`}>
                           <div className="flex items-center">
                             <img
-                              src={`https://avatars.dicebear.com/api/micah/${item.uploader_handler}.svg`}
+                              src={`https://avatars.dicebear.com/api/big-ears-neutral/${item.uploader_handler}.svg`}
                               alt="profile"
                               className="rounded-full w-12 h-12 bg-white"
                             />
@@ -357,7 +357,7 @@ const FeedList = () => {
               <div className="w-full bg-base-200 py-2 px-3 rounded-btn flex justify-between gap-2 items-center">
                 <div className="flex flex-row gap-2 items-center">
                   <img
-                    src={`https://avatars.dicebear.com/api/micah/${userData.user_handle}.svg`}
+                    src={`https://avatars.dicebear.com/api/big-ears-neutral/${userData.user_handle}.svg`}
                     alt="profile"
                     className="rounded-full w-12 h-12 bg-white"
                   />
@@ -396,7 +396,7 @@ const FeedList = () => {
                         <Link href={`/${item.user_handle}`} scroll={false}>
                           <div className="flex flex-row gap-2 items-center cursor-pointer">
                             <img
-                              src={`https://avatars.dicebear.com/api/micah/${item.user_handle}.svg`}
+                              src={`https://avatars.dicebear.com/api/big-ears-neutral/${item.user_handle}.svg`}
                               alt="profile"
                               className="rounded-full w-12 h-12 bg-white"
                             />
