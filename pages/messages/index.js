@@ -88,21 +88,11 @@ const Page_Messages = (e) => {
     }
   };
 
+  const listener = async () => {};
+
   useEffect(() => {
     // fetch user connections
     _fetchConnections();
-
-    // intialize supabase realtime listener
-    const mySubscription = _supabase
-      .from('user_chats')
-      .on('*', (payload) => {
-        _fetchChats();
-      })
-      .subscribe();
-
-    return () => {
-      mySubscription.unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
@@ -259,7 +249,7 @@ const Page_Messages = (e) => {
                             <div
                               className={`flex items-center px-4 py-3 rounded-full ${
                                 item.sent_from === user.id
-                                  ? 'bg-primary text-base-content'
+                                  ? 'bg-primary text-primary-content'
                                   : 'bg-base-300'
                               }`}
                             >
