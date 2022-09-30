@@ -96,7 +96,7 @@ const LoginPage = () => {
               <button className="btn btn-primary">Login</button>
 
               <div className="flex flex-row justify-center mt-4">
-                <span>Don't have an account?</span>
+                <span>Don&apos;t have an account?</span>
                 <Link href="/register">
                   <p className="link ml-2">Register here</p>
                 </Link>

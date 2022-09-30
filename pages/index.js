@@ -6,7 +6,7 @@ import { _PageTransition } from "../lib/animations";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
-export default (props) => {
+const Home = (props) => {
   const [themeVisible, setThemeVisible] = useState(false);
   const router = useRouter();
 
@@ -51,3 +51,5 @@ export default (props) => {
     </>
   );
 };
+
+export default Home;
