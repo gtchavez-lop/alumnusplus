@@ -93,7 +93,7 @@ const SignInPage = (e) => {
 
             {/* dont have account? */}
             <p className="text-center mt-5">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href={"/signup"}>
                 <span className="text-primary cursor-pointer">Sign up</span>
               </Link>
