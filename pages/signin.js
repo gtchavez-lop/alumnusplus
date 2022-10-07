@@ -53,6 +53,12 @@ const SignInPage = (e) => {
     });
   };
 
+  useEffect(() => {
+    if (__supabase.auth.user()) {
+      setHasUser(true);
+    }
+  }, []);
+
   return (
     <>
       <motion.main
@@ -104,9 +110,9 @@ const SignInPage = (e) => {
         {hasUser && (
           <div className="flex flex-col items-center mt-28">
             <p className="text-3xl">You are signed in</p>
-            <p className="text-xl mt-5">
-              You can now access the feed and create new posts
-            </p>
+            <Link href={"/feed"}>
+              <button className="btn btn-primary mt-10">Go to feed</button>
+            </Link>
           </div>
         )}
       </motion.main>

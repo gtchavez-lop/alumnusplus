@@ -12,7 +12,11 @@ const PageSignUp = (e) => {
 
   const [hasUser, setHasUser] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (__supabase.auth.user()) {
+      setHasUser(true);
+    }
+  }, []);
 
   const registerAccount = async (e) => {
     e.preventDefault();
@@ -202,7 +206,9 @@ const PageSignUp = (e) => {
         {hasUser && (
           <div className="flex flex-col items-center mt-28">
             <p className="text-2xl">You are already signed in</p>
-            <button className="btn btn-primary mt-10">Go back to home</button>
+            <Link href={"/feed"}>
+              <button className="btn btn-primary mt-10">Go back to feed</button>
+            </Link>
           </div>
         )}
       </motion.main>

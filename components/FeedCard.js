@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import __directus from "../lib/directus";
 import __supabase from "../lib/supabase";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 
 const FeedCard = ({ item }) => {
   const { feed_id, created_at, uploader_handler, content, upvoted_by } = item;
@@ -76,7 +77,7 @@ const FeedCard = ({ item }) => {
     <>
       {isLoaded && (
         <>
-          <div className="p-5 bg-base-300 rounded-btn max-w-xl w-full">
+          <div className="p-5 bg-base-300 rounded-btn max-w-xl w-full break-all">
             <div className="flex justify-between mb-10">
               <div className="flex items-center gap-3 w-full">
                 <img
@@ -101,21 +102,34 @@ const FeedCard = ({ item }) => {
 
             <div className="divider" />
             <div className="flex justify-between">
-              {upvoted ? (
-                <div
-                  onClick={handleUpvote}
-                  className="btn bg-red-500 border-red-500 hover:bg-red-600 btn-circle btn-sm text-white"
-                >
-                  <FiHeart />
-                </div>
-              ) : (
-                <div
-                  onClick={handleUpvote}
-                  className="btn btn-ghost btn-circle btn-sm"
-                >
-                  <FiHeart />
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {upvoted ? (
+                  <motion.div
+                    onClick={handleUpvote}
+                    className="btn btn-ghost btn-circle btn-sm text-lg text-white overflow-visible"
+                  >
+                    <motion.div animate={{ scale: [1, 2, 1] }}>
+                      <FiHeart
+                        fill="rgb(220, 38, 38)"
+                        stroke="rgb(220, 38, 38)"
+                      />
+                    </motion.div>
+                  </motion.div>
+                ) : (
+                  <div
+                    onClick={handleUpvote}
+                    className="btn btn-ghost btn-circle btn-sm text-lg"
+                  >
+                    <FiHeart />
+                  </div>
+                )}
+
+                <span className={`${upvvoteList.length < 1 && "text-xs"}`}>
+                  {upvvoteList.length > 0
+                    ? upvvoteList.length
+                    : "be the first to react"}
+                </span>
+              </div>
               <div className="btn btn-ghost btn-circle btn-sm">
                 <FiShare2 />
               </div>

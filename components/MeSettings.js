@@ -8,7 +8,7 @@ const MeSettings = ({ data }) => {
   const router = useRouter();
   const [userData, setUserData] = useState(data);
 
-  const { user_metadata, id, email } = data;
+  const { user_metadata, id, email } = userData;
 
   const SignOutUser = () => {
     toast.loading("Signing out...");
@@ -42,6 +42,17 @@ const MeSettings = ({ data }) => {
         if (error) {
           toast.error(error.message);
         } else {
+          // update user data
+          setUserData({
+            ...userData,
+            user_metadata: {
+              ...user_metadata,
+              first_name: first_name.value,
+              last_name: last_name.value,
+              username: username.value,
+            },
+          });
+
           toast.dismiss();
           toast.success("Updated user!");
         }

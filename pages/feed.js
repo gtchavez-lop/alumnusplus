@@ -19,6 +19,7 @@ const PageFeed = () => {
       toolbar: [["bold", "italic", "underline"]],
     },
     placeholder: "Compose an meaningful message to everyone...",
+    theme: "snow",
   });
 
   const getFeed = () => {
@@ -60,6 +61,10 @@ const PageFeed = () => {
         },
       ])
       .then(({ data, error }) => {
+        // reset feed
+        quill.root.innerHTML = "";
+        setFeed([]);
+
         if (error) {
           toast.dismiss();
           toast.error(error.message);
@@ -67,7 +72,7 @@ const PageFeed = () => {
           quill.root.innerHTML = "";
           toast.dismiss();
           toast.success("Posted feed!");
-          getFeed();
+          setFeed([data[0], ...feed]);
         }
       });
   };
@@ -84,8 +89,10 @@ const PageFeed = () => {
           <div className="col-span-full lg:col-span-3 flex flex-col items-center gap-4">
             {/* editor */}
             <div className="w-full max-w-xl h-52 mb-16 flex flex-col">
-              <div ref={quillRef} className="text-base-content" />
-              <div className="flex justify-end mt-5">
+              <div className="">
+                <div ref={quillRef} />
+              </div>
+              <div className="flex justify-end mt-16">
                 <button onClick={postFeed} className="btn btn-primary ">
                   Post
                 </button>
