@@ -1,10 +1,16 @@
-import { FiHeart, FiMoreHorizontal, FiShare2 } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiHeart,
+  FiMoreHorizontal,
+  FiShare2,
+  FiTrash2,
+} from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import __directus from "../lib/directus";
 import __supabase from "../lib/supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const FeedCard = ({ item }) => {
   const { feed_id, created_at, uploader_handler, content, upvoted_by } = item;
@@ -73,11 +79,25 @@ const FeedCard = ({ item }) => {
     }
   };
 
+  const deletePost = () => {
+    __supabase
+      .from("user_feed")
+      .delete()
+      .eq("feed_id", feed_id)
+      .then(({ data, error }) => {
+        if (error) {
+          console.log(error);
+        } else {
+          toast.success("Post deleted successfully!");
+        }
+      });
+  };
+
   return (
     <>
       {isLoaded && (
         <>
-          <div className="p-5 bg-base-300 rounded-btn max-w-xl w-full break-all">
+          <div className="p-5 bg-base-300 bg-opacity-20 rounded-btn max-w-xl w-full break-word overflow-hidden">
             <div className="flex justify-between mb-10">
               <div className="flex items-center gap-3 w-full">
                 <img
@@ -87,14 +107,14 @@ const FeedCard = ({ item }) => {
                 />
                 <div>
                   <h3 className="text-lg font-semibold">@{uploader_handler}</h3>
-                  <p className="text-sm text-base-content opacity-50">
+                  <p className="text-xs md:text-sm text-base-content opacity-50">
                     {owner.first_name} {owner.last_name} ·{" "}
                     {dayjs(created_at).format("D/M/YY h:mm A")}
                   </p>
                 </div>
-                <div className="btn btn-ghost ml-auto btn-circle">
+                {/* <div className="btn btn-ghost ml-auto btn-circle">
                   <FiMoreHorizontal />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -106,7 +126,7 @@ const FeedCard = ({ item }) => {
                 {upvoted ? (
                   <motion.div
                     onClick={handleUpvote}
-                    className="btn btn-ghost btn-circle btn-sm text-lg text-white overflow-visible"
+                    className="btn btn-ghost btn-circle text-lg text-white overflow-visible"
                   >
                     <motion.div animate={{ scale: [1, 2, 1] }}>
                       <FiHeart
@@ -118,7 +138,7 @@ const FeedCard = ({ item }) => {
                 ) : (
                   <div
                     onClick={handleUpvote}
-                    className="btn btn-ghost btn-circle btn-sm text-lg"
+                    className="btn btn-ghost btn-circle text-lg"
                   >
                     <FiHeart />
                   </div>
@@ -130,8 +150,39 @@ const FeedCard = ({ item }) => {
                     : "be the first to react"}
                 </span>
               </div>
-              <div className="btn btn-ghost btn-circle btn-sm">
-                <FiShare2 />
+              <div className="dropdown dropdown-top dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-circle ">
+                  <FiMoreHorizontal />
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow-lg mb-3 bg-base-100 rounded-box w-max"
+                >
+                  {/* only show delete option when its the user's post */}
+                  {__supabase.auth.user().id === item.uploader_id && (
+                    <li>
+                      <label
+                        htmlFor="deleteModal"
+                        className="modal-button text-red-500 font-bold"
+                      >
+                        <FiTrash2 className="inline-block" />
+                        Delete Post
+                      </label>
+                    </li>
+                  )}
+                  <li>
+                    <a>
+                      <FiAlertCircle className="inline-block" />
+                      Report
+                    </a>
+                  </li>
+                  <li>
+                    <a>
+                      <FiShare2 className="inline-block" />
+                      Share
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -141,13 +192,13 @@ const FeedCard = ({ item }) => {
       {/* skeleton if not loaded */}
       {!isLoaded && (
         <>
-          <div className="p-5 bg-base-300 rounded-btn max-w-xl w-full">
+          <div className="p-5 bg-base-200 bg-opacity-50 rounded-btn max-w-xl w-full">
             <div className="flex justify-between mb-10">
               <div className="flex items-center gap-3 w-full">
-                <div className="w-12 h-12 rounded-full bg-base-100 animate-pulse" />
+                <div className="w-12 h-12 rounded-full bg-base-300 animate-pulse" />
                 <div className="flex flex-col gap-1">
-                  <div className="w-32 h-4 rounded-full bg-base-100 animate-pulse" />
-                  <div className="w-24 h-4 rounded-full bg-base-100 animate-pulse" />
+                  <div className="w-32 h-4 rounded-full bg-base-300 animate-pulse" />
+                  <div className="w-24 h-4 rounded-full bg-base-300 animate-pulse" />
                 </div>
                 <div className="btn btn-ghost ml-auto btn-circle">
                   <FiMoreHorizontal />
@@ -155,7 +206,7 @@ const FeedCard = ({ item }) => {
               </div>
             </div>
 
-            <div className="w-full h-32 bg-base-100 animate-pulse" />
+            <div className="w-full h-32 bg-base-300 animate-pulse" />
 
             {/* <div className="divider" /> */}
             {/* <div className="flex justify-between">
@@ -169,6 +220,27 @@ const FeedCard = ({ item }) => {
           </div>
         </>
       )}
+
+      {/* delete post modal */}
+      <input type="checkbox" id="deleteModal" className="modal-toggle" />
+      <label htmlFor="deleteModal" className="modal cursor-pointer">
+        <label className="modal-box relative">
+          <h3 className="text-lg font-bold">
+            Are you sure you want to delete this post?
+          </h3>
+          <p className="text-base-content text-opacity-50">
+            This action cannot be undone.
+          </p>
+          <div className="grid grid-cols-2 gap-2 mt-10">
+            <button onClick={deletePost} className="btn btn-error ">
+              Delete
+            </button>
+            <label htmlFor="deleteModal" className="btn btn-ghost">
+              Cancel
+            </label>
+          </div>
+        </label>
+      </label>
     </>
   );
 };

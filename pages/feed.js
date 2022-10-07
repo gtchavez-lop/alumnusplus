@@ -46,35 +46,39 @@ const PageFeed = () => {
   }, []);
 
   const postFeed = async () => {
-    toast.loading("Posting feed...");
+    // check if the length of the content is greater than 0
+    if (quill.getLength() > 1) {
+      toast.loading("Posting feed...");
 
-    const content = quill.root.innerHTML;
+      const content = quill.root.innerHTML;
 
-    __supabase
-      .from("user_feed")
-      .insert([
-        {
-          content,
-          uploader_id: __supabase.auth.user().id,
-          uploader_handler: __supabase.auth.user().user_metadata.username,
-          uploader_email: __supabase.auth.user().email,
-        },
-      ])
-      .then(({ data, error }) => {
-        // reset feed
-        quill.root.innerHTML = "";
-        setFeed([]);
+      __supabase
+        .from("user_feed")
+        .insert([
+          {
+            content,
+            uploader_id: __supabase.auth.user().id,
+            uploader_handler: __supabase.auth.user().user_metadata.username,
+            uploader_email: __supabase.auth.user().email,
+          },
+        ])
+        .then(({ data, error }) => {
+          // reset feed
 
-        if (error) {
-          toast.dismiss();
-          toast.error(error.message);
-        } else {
-          quill.root.innerHTML = "";
-          toast.dismiss();
-          toast.success("Posted feed!");
-          setFeed([data[0], ...feed]);
-        }
-      });
+          if (error) {
+            toast.dismiss();
+            toast.error(error.message);
+          } else {
+            setFeed([]);
+            quill.root.innerHTML = "";
+            toast.dismiss();
+            toast.success("Posted feed!");
+            setFeed([data[0], ...feed]);
+          }
+        });
+    } else {
+      toast.error("Please enter some content!");
+    }
   };
 
   return (

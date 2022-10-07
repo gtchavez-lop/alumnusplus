@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import {
   FiDroplet,
   FiGrid,
@@ -8,7 +9,6 @@ import {
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ThemeSwticher from "./ThemeSwticher";
 import __supabase from "../lib/supabase";
@@ -54,109 +54,117 @@ const Navbar = () => {
   }, []);
 
   return (
-    <>
-      <nav className="fixed w-full flex justify-center items-center z-[999] bg-base-200 py-7">
-        <main className="w-full max-w-5xl px-5 lg:px-0 flex justify-between items-center">
-          {/* brand name */}
-          <Link href={"/"}>
-            <p className="select-none">SOMENAME</p>
-          </Link>
-          {/* mobile menu */}
-          <div className="dropdown dropdown-end lg:hidden">
-            <label tabIndex={0} className="btn btn-primary btn-square">
-              <FiMenu />
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              {visible && (
-                <>
-                  <li>
-                    <Link href={"/feed"}>
-                      <a>
-                        <FiGrid className="text-lg" /> Feed
-                      </a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={"/me"}>
-                      <a>
-                        <FiUser className="text-lg" /> Profile
-                      </a>
-                    </Link>
-                  </li>
-                </>
-              )}
-              {!visible && (
-                <>
-                  <li>
-                    <Link href={"/signin"}>
-                      <a>
-                        <FiUser className="text-lg" /> Sign In
-                      </a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={"/signup"}>
-                      <a>
-                        <FiMail className="text-lg" /> Sign Up
-                      </a>
-                    </Link>
-                  </li>
-                </>
-              )}
-              {/* theme picker */}
-              <li onClick={(e) => setThemeOpen(true)}>
-                <a>
-                  <FiDroplet className="text-lg" /> Theme
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* desktop bar */}
-          {visible && (
-            <>
-              {/* main links */}
-              <ul className="lg:flex gap-2 hidden">
-                <Link href={"/feed"}>
-                  <li className="btn btn-ghost btn-square btn-sm">
-                    <FiGrid className="text-lg" />
-                  </li>
-                </Link>
-                <li className="btn btn-ghost btn-square btn-sm">
-                  <FiMail className="text-lg" />
+    visible && (
+      <>
+        <motion.nav
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="fixed w-full flex justify-center items-center z-[999] bg-base-200 py-7"
+        >
+          <main className="w-full max-w-5xl px-5 lg:px-0 flex justify-between items-center">
+            {/* brand name */}
+            <Link href={"/"}>
+              <p className="select-none">SOMENAME</p>
+            </Link>
+            {/* mobile menu */}
+            <div className="dropdown dropdown-end lg:hidden">
+              <label tabIndex={0} className="btn btn-primary btn-square">
+                <FiMenu />
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                {visible && (
+                  <>
+                    <li>
+                      <Link href={"/feed"}>
+                        <a>
+                          <FiGrid className="text-lg" /> Feed
+                        </a>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"/me"}>
+                        <a>
+                          <FiUser className="text-lg" /> Profile
+                        </a>
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {!visible && (
+                  <>
+                    <li>
+                      <Link href={"/signin"}>
+                        <a>
+                          <FiUser className="text-lg" /> Sign In
+                        </a>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"/signup"}>
+                        <a>
+                          <FiMail className="text-lg" /> Sign Up
+                        </a>
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {/* theme picker */}
+                <li onClick={(e) => setThemeOpen(true)}>
+                  <a>
+                    <FiDroplet className="text-lg" /> Theme
+                  </a>
                 </li>
               </ul>
+            </div>
 
-              {/* links */}
-              <ul className="lg:flex gap-2 hidden">
-                <Link href={"/me"}>
+            {/* desktop bar */}
+            {visible && (
+              <>
+                {/* main links */}
+                <ul className="lg:flex gap-2 hidden">
+                  <Link href={"/feed"}>
+                    <li className="btn btn-ghost btn-square btn-sm">
+                      <FiGrid className="text-lg" />
+                    </li>
+                  </Link>
                   <li className="btn btn-ghost btn-square btn-sm">
-                    <FiUser className="text-lg" />
+                    <FiMail className="text-lg" />
                   </li>
-                </Link>
-                <li
-                  onClick={(e) => setThemeOpen(true)}
-                  className="btn btn-ghost btn-square btn-sm"
-                >
-                  <FiDroplet className="text-lg" />
-                </li>
-              </ul>
-            </>
-          )}
-        </main>
-      </nav>
+                </ul>
 
-      <AnimatePresence>
-        <ThemeSwticher
-          isOpen={themeOpen}
-          setOpen={setThemeOpen}
-          key={themeOpen}
-        />
-      </AnimatePresence>
-    </>
+                {/* links */}
+                <ul className="lg:flex gap-2 hidden">
+                  <Link href={"/me"}>
+                    <li className="btn btn-ghost btn-square btn-sm">
+                      <FiUser className="text-lg" />
+                    </li>
+                  </Link>
+                  <li
+                    onClick={(e) => setThemeOpen(true)}
+                    className="btn btn-ghost btn-square btn-sm"
+                  >
+                    <FiDroplet className="text-lg" />
+                  </li>
+                </ul>
+              </>
+            )}
+          </main>
+        </motion.nav>
+
+        <AnimatePresence>
+          <ThemeSwticher
+            isOpen={themeOpen}
+            setOpen={setThemeOpen}
+            key={themeOpen}
+          />
+        </AnimatePresence>
+      </>
+    )
   );
 };
 

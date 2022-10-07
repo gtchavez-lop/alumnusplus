@@ -23,6 +23,24 @@ const MeSettings = ({ data }) => {
     });
   };
 
+  const updateUserPosts = async (e) => {
+    // update all posts with new username
+    toast.loading("Updating posts...");
+
+    const { data, error } = await __supabase
+      .from("user_feed")
+      .update({ uploader_handler: user_metadata.username })
+      .eq("uploader_id", id);
+
+    if (error) {
+      toast.error(error.message);
+    }
+
+    toast.dismiss();
+    toast.success("Updated posts!");
+    router.reload();
+  };
+
   const editUser = (e) => {
     e.preventDefault();
 
@@ -55,6 +73,13 @@ const MeSettings = ({ data }) => {
 
           toast.dismiss();
           toast.success("Updated user!");
+
+          // only update posts if username changed
+          if (username.value !== user_metadata.username) {
+            updateUserPosts();
+          } else {
+            router.reload();
+          }
         }
       });
   };

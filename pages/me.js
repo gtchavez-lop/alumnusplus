@@ -73,16 +73,18 @@ const MePage = (e) => {
             duration: 0.2,
             ease: "circOut",
           }}
-          className="bg-primary w-screen fixed top-0 h-[310px] lg:h-[330px] left-0 opacity-0"
+          className="bg-primary w-screen fixed top-0 h-[310px] lg:h-[330px] left-0 opacity-0 hidden lg:block"
         />
+
         <motion.main
           variants={__PageTransition}
           initial="initial"
           animate="animate"
           exit="exit"
+          className="lg:mt-32"
         >
           {/* profile */}
-          <div className="flex gap-4 items-end relative mt-32">
+          <div className="flex gap-4 items-end relative">
             <img
               src={`https://dicebear.com/api/micah/${localUser.user_metadata.username}.svg`}
               className="rounded-full w-24 h-24 lg:w-32 lg:h-32 bg-secondary z-10"
@@ -136,7 +138,7 @@ const MePage = (e) => {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="flex flex-col gap-5 mx-5"
+                className="flex flex-col gap-5"
                 key={tabActive}
               >
                 {tabActive == "feed" && <MeFeed feed={localFeed} />}

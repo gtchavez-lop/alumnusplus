@@ -40,7 +40,15 @@ function MyApp({ Component, pageProps }) {
             </section>
           </main>
 
-          <Toaster position="top-left" />
+          <Toaster
+            position="top-left"
+            toastOptions={{
+              style: {
+                padding: "16px",
+                gap: "8px",
+              },
+            }}
+          />
         </>
       </AuthProvider>
     </>
