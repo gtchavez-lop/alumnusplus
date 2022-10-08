@@ -30,8 +30,7 @@ const FeedCard = ({ item }) => {
         if (error) {
           console.log(error);
         } else {
-          const parsedData = JSON.parse(data.data);
-          setOwner(parsedData);
+          setOwner(data.data);
           setIsLoaded(true);
         }
       });

@@ -15,24 +15,26 @@ const InnerParticle = (props) => {
     <Particles
       init={particlesInit}
       loaded={particlesLoaded}
-      className="absolute top-0 left-0 w-full h-full hover:opacity-0 transition-opacity duration-500"
+      className="absolute top-0 left-0 w-full h-full hover:opacity-0 transition-opacity duration-200"
       options={{
         // snowing particles without backgo9urnd
         fullScreen: false,
         particles: {
           number: {
-            value: 4,
+            value: 10,
           },
           move: {
             enable: true,
-            speed: 5,
-            direction: "left",
+            speed: 7,
+            straight: true,
+            direction: "right",
+            random: true,
           },
           color: {
             value: "#afafaf",
           },
           shape: {
-            type: "circle",
+            type: "square",
           },
           opacity: {
             value: 0.1,
@@ -46,6 +48,9 @@ const InnerParticle = (props) => {
           },
           size: {
             value: 100,
+          },
+          rotate: {
+            value: -10,
           },
         },
       }}

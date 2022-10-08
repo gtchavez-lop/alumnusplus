@@ -4,6 +4,7 @@ import { FiHeart, FiMoreHorizontal, FiShare2 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 import FeedCard from "../components/FeedCard";
+import FeedRecomUser from "../components/FeedRecomUser";
 import { __PageTransition } from "../lib/animtions";
 import __supabase from "../lib/supabase";
 import { motion } from "framer-motion";
@@ -11,8 +12,49 @@ import { toast } from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 import { useRouter } from "next/router";
 
-const PageFeed = () => {
-  const [feed, setFeed] = useState([]);
+export const getServerSideProps = async () => {
+  const feed = await __supabase
+    .from("user_feed")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(10)
+    .then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+      } else {
+        return data;
+      }
+    });
+
+  const recommendedUsers = await __supabase
+    .from("user_data")
+    .select("*")
+    .limit(5)
+    .then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let parsed = data.map((item) => {
+          return {
+            user_id: item.user_id,
+            data: JSON.parse(item.data),
+          };
+        });
+
+        return parsed;
+      }
+    });
+
+  return {
+    props: {
+      recommendedUsers,
+      feed,
+    },
+  };
+};
+
+const PageFeed = ({ recommendedUsers, feed }) => {
+  const [currentConnections, setCurrentConnections] = useState([]);
   const router = useRouter();
   const { quill, quillRef } = useQuill({
     modules: {
@@ -22,26 +64,16 @@ const PageFeed = () => {
     theme: "snow",
   });
 
-  const getFeed = () => {
-    __supabase
-      .from("user_feed")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) {
-          toast.error(error.message);
-        } else {
-          setFeed(data);
-        }
-      });
-  };
-
   useEffect(() => {
     // check if user is signed in
     if (!__supabase.auth.user()) {
       router.push("/signin");
     } else {
-      getFeed();
+      let connections = __supabase.auth.user().user_metadata.connections
+        ? JSON.parse(__supabase.auth.user().user_metadata.connections)
+        : [];
+
+      setCurrentConnections(connections);
     }
   }, []);
 
@@ -104,31 +136,46 @@ const PageFeed = () => {
             </div>
 
             {/* card */}
-            {feed &&
-              feed.map((item, index) => <FeedCard key={index} item={item} />)}
+            {/* loop the first two only first */}
+            {feed.map((item, index) => {
+              if (index < 2) {
+                return <FeedCard key={item.id} item={item} />;
+              }
+            })}
+
+            {/* loop 3 recommended users on mobile only */}
+            <div className="lg:hidden flex flex-col gap-3 w-full my-10 max-w-xl">
+              <p className="mx-5">
+                <span className="font-bold">Recommended</span> for you
+              </p>
+              {recommendedUsers &&
+                recommendedUsers.map((item, index) => {
+                  if (index < 4) {
+                    if (!currentConnections.includes(item.user_id)) {
+                      return <FeedRecomUser key={item.user_id} user={item} />;
+                    }
+                  }
+                })}
+            </div>
+
+            {/* continue the loop of the feed */}
+            {feed.map((item, index) => {
+              if (index > 1) {
+                return <FeedCard key={item.id} item={item} />;
+              }
+            })}
           </div>
           <div className="col-span-2 hidden lg:flex flex-col gap-5 sticky top-32 h-max">
             <p className="text-xl">Recommended Users</p>
 
             <div className="flex flex-col gap-3">
               {/* cards */}
-              {/* {Array(5)
-                .fill()
-                .map((e, index) => (
-                  <div className="w-full flex items-center p-5 bg-base-200">
-                    <img
-                      src="https://avatars.dicebear.com/api/micah/your-custom-seed.svg"
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full bg-white"
-                    />
-                    <div className="ml-3">
-                      <h3 className="text-lg ">@someone</h3>
-                      <p className="text-sm font-thin text-gray-500">
-                        Someone IKnow
-                      </p>
-                    </div>
-                  </div>
-                ))} */}
+              {recommendedUsers &&
+                recommendedUsers.map((item, index) => {
+                  if (!currentConnections.includes(item.user_id)) {
+                    return <FeedRecomUser key={item.user_id} user={item} />;
+                  }
+                })}
             </div>
           </div>
         </div>

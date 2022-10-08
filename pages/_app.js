@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }) {
           <Navbar />
 
           <main className="flex justify-center">
-            <section className="w-full max-w-5xl py-36 px-5 lg:px-0 min-h-screen">
+            <section className="w-full max-w-5xl py-32 px-5 lg:px-0 min-h-screen">
               <AnimatePresence mode="wait">
                 <Component {...pageProps} key={router.pathname} />
               </AnimatePresence>

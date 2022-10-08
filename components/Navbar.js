@@ -132,9 +132,11 @@ const Navbar = () => {
                       <FiGrid className="text-lg" />
                     </li>
                   </Link>
-                  <li className="btn btn-ghost btn-square btn-sm">
-                    <FiMail className="text-lg" />
-                  </li>
+                  <Link href={"/messages"}>
+                    <li className="btn btn-ghost btn-square btn-sm">
+                      <FiMail className="text-lg" />
+                    </li>
+                  </Link>
                 </ul>
 
                 {/* links */}

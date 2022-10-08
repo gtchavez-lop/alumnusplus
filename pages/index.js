@@ -10,11 +10,11 @@ import { useRouter } from "next/router";
 const Home = (e) => {
   // check if user is logged in then redirect to /feed
   const router = useRouter();
-  // useEffect(() => {
-  //   if (__supabase.auth.user()) {
-  //     router.push("/feed");
-  //   }
-  // }, [router.pathname]);
+  useEffect(() => {
+    if (__supabase.auth.user()) {
+      router.push("/feed");
+    }
+  }, [router.pathname]);
 
   return (
     <>
