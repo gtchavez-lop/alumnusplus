@@ -12,29 +12,29 @@ import { useRouter } from "next/router";
 
 const MePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
-  const [localFeed, setLocalFeed] = useState();
+  const [localFeed, setLocalFeed] = useState([]);
   const [localUser, setLocalUser] = useState();
-  const [localConnections, setLocalConnections] = useState();
+  const [localConnections, setLocalConnections] = useState([]);
   const [scrollYValue, setScrollYValue] = useState(0);
   const router = useRouter();
 
   const { scrollY } = useScroll();
 
-  const fetchConnections = () => {};
+  const fetchConnections = () => {
+    const connections = __supabase.auth.user().user_metadata.connections
+      ? JSON.parse(__supabase.auth.user().user_metadata.connections)
+      : [];
+    setLocalConnections(connections);
+  };
 
-  const fetchFeed = () => {
-    __supabase
-      .from("user_feed")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .eq("uploader_id", __supabase.auth.user().id)
-      .then(({ data, error }) => {
-        if (error) {
-          toast.error(error.message);
-        } else {
-          setLocalFeed(data);
-        }
-      });
+  const fetchFeed = async () => {
+    let user = await __supabase.auth.user();
+    const res = await fetch(
+      "/api/feed?" + new URLSearchParams({ id: user.id })
+    );
+    const { data } = await res.json();
+    // console.log(data);
+    setLocalFeed(data);
   };
 
   const fetchUser = () => {
@@ -43,6 +43,7 @@ const MePage = (e) => {
     if (user) {
       setLocalUser(user);
       fetchFeed();
+      fetchConnections();
     }
   };
 
@@ -142,9 +143,9 @@ const MePage = (e) => {
                 key={tabActive}
               >
                 {tabActive == "feed" && <MeFeed feed={localFeed} />}
-                {/* {tabActive == "connections" && (
+                {tabActive == "connections" && (
                   <MeConnections connections={localConnections} />
-                )} */}
+                )}
                 {tabActive == "settings" && <MeSettings data={localUser} />}
               </motion.div>
             </AnimatePresence>

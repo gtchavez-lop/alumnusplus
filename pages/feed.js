@@ -12,50 +12,12 @@ import { toast } from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 import { useRouter } from "next/router";
 
-export const getServerSideProps = async () => {
-  const feed = await __supabase
-    .from("user_feed")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10)
-    .then(({ data, error }) => {
-      if (error) {
-        console.log(error);
-      } else {
-        return data;
-      }
-    });
-
-  const recommendedUsers = await __supabase
-    .from("user_data")
-    .select("*")
-    .limit(5)
-    .then(({ data, error }) => {
-      if (error) {
-        console.log(error);
-      } else {
-        let parsed = data.map((item) => {
-          return {
-            user_id: item.user_id,
-            data: JSON.parse(item.data),
-          };
-        });
-
-        return parsed;
-      }
-    });
-
-  return {
-    props: {
-      recommendedUsers,
-      feed,
-    },
-  };
-};
-
-const PageFeed = ({ recommendedUsers, feed }) => {
-  const [currentConnections, setCurrentConnections] = useState([]);
+const PageFeed = ({}) => {
   const router = useRouter();
+  const [currentConnections, setCurrentConnections] = useState([]);
+  const [feed, setFeed] = useState([]);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { quill, quillRef } = useQuill({
     modules: {
       toolbar: [["bold", "italic", "underline"]],
@@ -63,6 +25,42 @@ const PageFeed = ({ recommendedUsers, feed }) => {
     placeholder: "Compose an meaningful message to everyone...",
     theme: "snow",
   });
+
+  const fetchFeed = async () => {
+    setFeed([]);
+    let user = await __supabase.auth.user();
+    const connections = user.user_metadata.connections
+      ? JSON.parse(user.user_metadata.connections)
+      : [];
+
+    const res = await fetch(
+      "/api/feed?" +
+        new URLSearchParams({
+          connectionsList: JSON.stringify(connections),
+          id: user.id,
+        })
+    );
+    const { data } = await res.json();
+    setFeed(data);
+  };
+
+  const fetchRecommendedUsers = async () => {
+    let user = await __supabase.auth.user();
+    const connections = user.user_metadata.connections
+      ? JSON.parse(user.user_metadata.connections)
+      : [];
+
+    const res = await fetch(
+      "/api/recommendedUsers?" +
+        new URLSearchParams({
+          id: __supabase.auth.user().id,
+          connectionsList: [...connections, user.id],
+        })
+    );
+    const data = await res.json();
+    console.log(data);
+    setRecommendedUsers(data);
+  };
 
   useEffect(() => {
     // check if user is signed in
@@ -74,6 +72,8 @@ const PageFeed = ({ recommendedUsers, feed }) => {
         : [];
 
       setCurrentConnections(connections);
+      fetchFeed();
+      fetchRecommendedUsers();
     }
   }, []);
 
@@ -114,73 +114,82 @@ const PageFeed = ({ recommendedUsers, feed }) => {
   };
 
   return (
-    <>
-      <motion.main
-        variants={__PageTransition}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        <div className="grid grid-cols-5 gap-4 relative min-h-screen">
-          <div className="col-span-full lg:col-span-3 flex flex-col items-center gap-4">
-            {/* editor */}
-            <div className="w-full max-w-xl h-52 mb-16 flex flex-col">
-              <div className="">
-                <div ref={quillRef} />
+    feed &&
+    recommendedUsers && (
+      <>
+        <motion.main
+          variants={__PageTransition}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <div className="grid grid-cols-5 gap-4 relative min-h-screen">
+            <div className="col-span-full lg:col-span-3 flex flex-col items-center gap-4">
+              {/* editor */}
+              <div className="w-full max-w-xl h-52 mb-16 flex flex-col">
+                <div className="">
+                  <div ref={quillRef} />
+                </div>
+                <div className="flex justify-end mt-16">
+                  <button onClick={postFeed} className="btn btn-primary ">
+                    Post
+                  </button>
+                </div>
               </div>
-              <div className="flex justify-end mt-16">
-                <button onClick={postFeed} className="btn btn-primary ">
-                  Post
-                </button>
-              </div>
-            </div>
 
-            {/* card */}
-            {/* loop the first two only first */}
-            {feed.map((item, index) => {
-              if (index < 2) {
-                return <FeedCard key={item.id} item={item} />;
-              }
-            })}
+              {/* card */}
+              {/* loop the first two only first */}
+              {feed.map((item, index) => {
+                if (index < 2) {
+                  return <FeedCard key={item.id} item={item} />;
+                }
+              })}
 
-            {/* loop 3 recommended users on mobile only */}
-            <div className="lg:hidden flex flex-col gap-3 w-full my-10 max-w-xl">
-              <p className="mx-5">
-                <span className="font-bold">Recommended</span> for you
-              </p>
-              {recommendedUsers &&
-                recommendedUsers.map((item, index) => {
-                  if (index < 4) {
-                    if (!currentConnections.includes(item.user_id)) {
-                      return <FeedRecomUser key={item.user_id} user={item} />;
-                    }
-                  }
-                })}
-            </div>
-
-            {/* continue the loop of the feed */}
-            {feed.map((item, index) => {
-              if (index > 1) {
-                return <FeedCard key={item.id} item={item} />;
-              }
-            })}
-          </div>
-          <div className="col-span-2 hidden lg:flex flex-col gap-5 sticky top-32 h-max">
-            <p className="text-xl">Recommended Users</p>
-
-            <div className="flex flex-col gap-3">
-              {/* cards */}
-              {recommendedUsers &&
-                recommendedUsers.map((item, index) => {
-                  if (!currentConnections.includes(item.user_id)) {
+              {/* loop 3 recommended users on mobile only */}
+              <div className="lg:hidden flex flex-col gap-3 w-full my-10 max-w-xl">
+                <p className="mx-5">
+                  <span className="font-bold">Recommended</span> for you
+                </p>
+                {recommendedUsers &&
+                  recommendedUsers.map((item, index) => {
                     return <FeedRecomUser key={item.user_id} user={item} />;
-                  }
-                })}
+                  })}
+              </div>
+
+              {/* continue the loop of the feed */}
+              {feed.map((item, index) => {
+                if (index > 1) {
+                  return <FeedCard key={item.id} item={item} />;
+                }
+              })}
+            </div>
+            <div className="col-span-2 hidden lg:flex flex-col gap-5 sticky top-32 h-max">
+              <p className="text-xl">Recommended Users</p>
+
+              <div className="flex flex-col gap-3">
+                {/* cards */}
+                {recommendedUsers &&
+                  recommendedUsers.map((item, index) => {
+                    return <FeedRecomUser key={item.user_id} user={item} />;
+                  })}
+
+                {/* if empty */}
+                {recommendedUsers.length === 0 && (
+                  <div className="flex flex-col">
+                    <p className="text-primary font-bold">
+                      No recommended users
+                    </p>
+                    <p className="text-primary text-sm">
+                      Try connecting later.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </motion.main>
-    </>
+        </motion.main>
+      </>
+    )
   );
 };
 
