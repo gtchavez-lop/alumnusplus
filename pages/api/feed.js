@@ -12,7 +12,7 @@ const getFeed = (req, res) => {
   __supabase
     .from("user_feed")
     .select("*")
-    .in("uploader_id", [...list, id])
+    .in("uploader_id", connectionsList ? list : [id])
     .order("created_at", { ascending: false })
     .then(({ data, error }) => {
       if (error) {

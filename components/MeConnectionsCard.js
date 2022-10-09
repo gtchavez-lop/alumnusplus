@@ -14,7 +14,9 @@ const MeConnectionCard = ({ userData }) => {
             <p className="">
               {userData.data.first_name} {userData.data.last_name}
             </p>
-            <p className="text-sm opacity-50 leading-none">Last name</p>
+            <p className="text-sm opacity-50 leading-none">
+              @{userData.data.username}
+            </p>
           </div>
         </div>
       </div>

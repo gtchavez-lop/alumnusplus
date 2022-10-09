@@ -14,7 +14,7 @@ const Home = (e) => {
     if (__supabase.auth.user()) {
       router.push("/feed");
     }
-  }, [router.pathname]);
+  }, []);
 
   return (
     <>

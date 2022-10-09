@@ -1,7 +1,13 @@
 import __supabase from "../lib/supabase";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const PageTest = (e) => {
+  const user = __supabase.auth.user();
+
+  // console.log(user.user_metadata.connections);
+  const sampleQuery = useQuery(["feed"]);
+
   const fetchFeed = async () => {
     let user = await __supabase.auth.user();
     let currentConnections = user.user_metadata.connections
@@ -48,7 +54,7 @@ const PageTest = (e) => {
   };
 
   useEffect(() => {
-    fetchUser();
+    // fetchUser();
     // fetchFeed();
     // fetchRecommendedUsers();
   }, []);
@@ -56,6 +62,19 @@ const PageTest = (e) => {
   return (
     <>
       <p>Test Area for API</p>
+
+      {/* {sampleQuery.isLoading ? (
+        <p>Loading...</p>
+      ) : sampleQuery.isError ? (
+        <p>Error:</p>
+      ) : (
+        <p>
+          Success:{" "}
+          {sampleQuery.data.map((e) => {
+            return <p>{e.feed_id}</p>;
+          })}
+        </p>
+      )} */}
     </>
   );
 };

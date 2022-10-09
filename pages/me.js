@@ -8,15 +8,27 @@ import MeFeed from "../components/MeFeed";
 import MeSettings from "../components/MeSettings";
 import { __PageTransition } from "../lib/animtions";
 import __supabase from "../lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 const MePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
-  const [localFeed, setLocalFeed] = useState([]);
   const [localUser, setLocalUser] = useState();
   const [localConnections, setLocalConnections] = useState([]);
   const [scrollYValue, setScrollYValue] = useState(0);
+  const user = __supabase.auth.user();
   const router = useRouter();
+  const __feed = useQuery(["feed"], async () => {
+    const res = await fetch(
+      "/api/feed?" +
+        new URLSearchParams({
+          id: user.id,
+        })
+    );
+
+    const { data } = await res.json();
+    return data;
+  });
 
   const { scrollY } = useScroll();
 
@@ -27,22 +39,11 @@ const MePage = (e) => {
     setLocalConnections(connections);
   };
 
-  const fetchFeed = async () => {
-    let user = await __supabase.auth.user();
-    const res = await fetch(
-      "/api/feed?" + new URLSearchParams({ id: user.id })
-    );
-    const { data } = await res.json();
-    // console.log(data);
-    setLocalFeed(data);
-  };
-
   const fetchUser = () => {
     const user = __supabase.auth.user();
 
     if (user) {
       setLocalUser(user);
-      fetchFeed();
       fetchConnections();
     }
   };
@@ -63,9 +64,9 @@ const MePage = (e) => {
 
   return (
     localUser &&
-    localFeed && (
+    __feed.isSuccess && (
       <>
-        <motion.div
+        {/* <motion.div
           animate={{
             opacity: scrollYValue > 10 ? 0 : 1,
             y: scrollYValue > 10 ? -100 : 0,
@@ -75,14 +76,14 @@ const MePage = (e) => {
             ease: "circOut",
           }}
           className="bg-primary w-screen fixed top-0 h-[310px] lg:h-[330px] left-0 opacity-0 hidden lg:block"
-        />
+        /> */}
 
         <motion.main
           variants={__PageTransition}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="lg:mt-32"
+          className="lg:mt-16"
         >
           {/* profile */}
           <div className="flex gap-4 items-end relative">
@@ -142,7 +143,7 @@ const MePage = (e) => {
                 className="flex flex-col gap-5"
                 key={tabActive}
               >
-                {tabActive == "feed" && <MeFeed feed={localFeed} />}
+                {tabActive == "feed" && <MeFeed feed={__feed.data} />}
                 {tabActive == "connections" && (
                   <MeConnections connections={localConnections} />
                 )}

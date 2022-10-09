@@ -3,6 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@directus/sdk': ^10.1.4
   '@supabase/supabase-js': ^1.35.7
+  '@tanstack/react-query': ^4.10.3
+  '@tanstack/react-query-devtools': ^4.10.4
   '@tiptap/react': 2.0.0-beta.199
   '@tiptap/starter-kit': 2.0.0-beta.199
   autoprefixer: ^10.4.12
@@ -31,6 +33,8 @@ specifiers:
 dependencies:
   '@directus/sdk': 10.1.4
   '@supabase/supabase-js': 1.35.7
+  '@tanstack/react-query': 4.10.3_biqbaboplfbrettd7655fr4n2y
+  '@tanstack/react-query-devtools': 4.10.4_vhepussragssjkevgznguhxexq
   '@tiptap/react': 2.0.0-beta.199_biqbaboplfbrettd7655fr4n2y
   '@tiptap/starter-kit': 2.0.0-beta.199
   daisyui: 2.31.0_5zjlt5w4ir2cay3te66iu3k3ji
@@ -1657,6 +1661,50 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@tanstack/match-sorter-utils/8.5.14:
+    resolution: {integrity: sha512-lVNhzTcOJ2bZ4IU+PeCPQ36vowBHvviJb2ZfdRFX5uhy7G0jM8N34zAMbmS5ZmVH8D2B7oU82OWo0e/5ZFzQrw==}
+    engines: {node: '>=12'}
+    dependencies:
+      remove-accents: 0.4.2
+    dev: false
+
+  /@tanstack/query-core/4.10.3:
+    resolution: {integrity: sha512-+ME02sUmBfx3Pjd+0XtEthK8/4rVMD2jcxvnW9DSgFONpKtpjzfRzjY4ykzpDw1QEo2eoPvl7NS8J5mNI199aA==}
+    dev: false
+
+  /@tanstack/react-query-devtools/4.10.4_vhepussragssjkevgznguhxexq:
+    resolution: {integrity: sha512-+V2wxeDyXYAUTSP/kUy6JsuFXDDHBouexBINaRCNTgPe0xcFP34syWAATVTvyarpqgYhIYLJtkYzT1JL2wM8TQ==}
+    peerDependencies:
+      '@tanstack/react-query': 4.10.3
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.5.14
+      '@tanstack/react-query': 4.10.3_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      superjson: 1.10.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/react-query/4.10.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-4OEJjkcsCTmG3ui7RjsVzsXerWQvInTe95CBKFyOV/GchMUlNztoFnnYmlMhX7hLUqJMhbG9l7M507V7+xU8Hw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.10.3
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
   /@tiptap/core/2.0.0-beta.199:
     resolution: {integrity: sha512-34GaXcBEmNFjW1R7nf1LSmOHo3Q81YjKqvLAXjDLLG7MTx+YTrQ4yWwUvMsZtmi4o/FchUzrs1NVCfr571Zxzg==}
     dependencies:
@@ -2410,6 +2458,13 @@ packages:
     resolution: {integrity: sha512-+OQdjP49zViI/6i7nIJpA8rAl4sV/JdPfU9nZs3VqOwGIgizICvuN2ru6fMd+4llL0tar18UYJXfZ/TWtmhUjA==}
     dependencies:
       safe-buffer: 5.1.2
+    dev: false
+
+  /copy-anything/3.0.2:
+    resolution: {integrity: sha512-CzATjGXzUQ0EvuvgOCI6A4BGOo2bcVx8B+eC2nF862iv9fopnPQwlrbACakNCHRIJbCSBj+J/9JeDf60k64MkA==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.7
     dev: false
 
   /core-js-compat/3.25.5:
@@ -3547,6 +3602,11 @@ packages:
     dependencies:
       call-bind: 1.0.2
 
+  /is-what/4.1.7:
+    resolution: {integrity: sha512-DBVOQNiPKnGMxRMLIYSwERAS5MVY1B7xYiGnpgctsOFvVDz9f9PFXXxMcTOHuoqYp4NK9qFYQaIC1NRRxLMpBQ==}
+    engines: {node: '>=12.13'}
+    dev: false
+
   /isexe/2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
@@ -4472,6 +4532,10 @@ packages:
       jsesc: 0.5.0
     dev: false
 
+  /remove-accents/0.4.2:
+    resolution: {integrity: sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==}
+    dev: false
+
   /require-from-string/2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -4750,6 +4814,13 @@ packages:
         optional: true
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /superjson/1.10.0:
+    resolution: {integrity: sha512-ks6I5fm5KXUbDqt4Epe1VwkKDaC9+kIj5HF7yhiHjChFne0EkFqsnTv1mdHE2IT6fq2CzLC3zeA/fw0BRIoNwA==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.2
     dev: false
 
   /supports-color/5.5.0:

@@ -11,30 +11,35 @@ import __supabase from "../lib/supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
 const FeedCard = ({ item }) => {
-  const { feed_id, created_at, uploader_handler, content, upvoted_by } = item;
+  const {
+    feed_id,
+    created_at,
+    uploader_handler,
+    content,
+    upvoted_by,
+    uploader_id,
+  } = item;
 
   const [owner, setOwner] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
   const [upvoted, setUpvoted] = useState(false);
   const [upvvoteList, setUpvoteList] = useState([]);
 
-  useEffect(() => {
-    __supabase
-      .from("user_data")
-      .select("*")
-      .eq("user_id", item.uploader_id)
-      .single()
-      .then(({ data, error }) => {
-        if (error) {
-          console.log(error);
-        } else {
-          setOwner(data.data);
-          setIsLoaded(true);
-        }
-      });
+  const __owner = useQuery([`user_${uploader_handler}`], async () => {
+    const res = await fetch(
+      "/api/singleUser?" +
+        new URLSearchParams({
+          id: uploader_id,
+        })
+    );
 
+    return await res.json();
+  });
+
+  useEffect(() => {
     if (upvoted_by) {
       const parsedUpvotedBy = JSON.parse(upvoted_by);
       setUpvoteList(parsedUpvotedBy);
@@ -94,7 +99,7 @@ const FeedCard = ({ item }) => {
 
   return (
     <>
-      {isLoaded && (
+      {__owner.isSuccess && __owner.data && (
         <>
           <div className="p-5 bg-base-300 bg-opacity-20 rounded-btn max-w-xl w-full break-word overflow-hidden">
             <div className="flex justify-between mb-10">
@@ -107,7 +112,7 @@ const FeedCard = ({ item }) => {
                 <div>
                   <h3 className="text-lg font-semibold">@{uploader_handler}</h3>
                   <p className="text-xs md:text-sm text-base-content opacity-50">
-                    {owner.first_name} {owner.last_name} ·{" "}
+                    {__owner.data.first_name} {__owner.data.last_name} ·{" "}
                     {dayjs(created_at).format("D/M/YY h:mm A")}
                   </p>
                 </div>
@@ -189,7 +194,7 @@ const FeedCard = ({ item }) => {
       )}
 
       {/* skeleton if not loaded */}
-      {!isLoaded && (
+      {__owner.isLoading && (
         <>
           <div className="p-5 bg-base-200 bg-opacity-50 rounded-btn max-w-xl w-full">
             <div className="flex justify-between mb-10">
