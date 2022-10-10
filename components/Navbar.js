@@ -26,9 +26,23 @@ const Navbar = () => {
   useEffect(() => {
     let user = __supabase.auth.user();
 
-    if (user) {
+    if (
+      (user && router.pathname !== "/signin") ||
+      router.pathname !== "/signup" ||
+      router.pathname !== "/"
+    ) {
       setUser(user);
       setVisible(true);
+    }
+
+    if (
+      !user ||
+      router.pathname === "/signin" ||
+      router.pathname === "/signup" ||
+      router.pathname === "/"
+    ) {
+      setUser(null);
+      setVisible(false);
     }
   }, []);
 
@@ -61,12 +75,13 @@ const Navbar = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
           transition={{ duration: 0.5, ease: "circOut" }}
-          className="fixed w-full flex justify-center items-center z-[999] bg-base-200 py-7"
+          className="fixed w-full justify-center items-center z-[999] bg-base-200 py-7"
         >
-          <main className="w-full max-w-5xl px-5 lg:px-0 flex justify-between items-center">
+          <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto hidden lg:flex justify-between items-center">
             {/* brand name */}
             <Link href={"/"}>
-              <p className="select-none">SOMENAME</p>
+              <img src="/wicket.svg" className="w-24" />
+              {/* <p className="select-none">SOMENAME</p> */}
             </Link>
             {/* mobile menu */}
             <div className="dropdown dropdown-end lg:hidden">
@@ -125,7 +140,6 @@ const Navbar = () => {
             {/* desktop bar */}
             {visible && (
               <>
-                {/* main links */}
                 <ul className="lg:flex gap-2 hidden">
                   <Link href={"/feed"}>
                     <li className="btn btn-ghost btn-square btn-sm">
@@ -137,10 +151,6 @@ const Navbar = () => {
                       <FiMail className="text-lg" />
                     </li>
                   </Link>
-                </ul>
-
-                {/* links */}
-                <ul className="lg:flex gap-2 hidden">
                   <Link href={"/me"}>
                     <li className="btn btn-ghost btn-square btn-sm">
                       <FiUser className="text-lg" />
@@ -156,6 +166,22 @@ const Navbar = () => {
               </>
             )}
           </main>
+
+          {(router.pathname !== "/" ||
+            router.pathname !== "/signin" ||
+            router.pathname !== "/signup") && (
+            <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto lg:hidden flex justify-between items-center">
+              <p className="text-xl font-bold">
+                {router.pathname === "/feed"
+                  ? "Feed"
+                  : router.pathname === "/me"
+                  ? "Profile"
+                  : router.pathname === "/messages"
+                  ? "Messages"
+                  : "Wicket"}
+              </p>
+            </main>
+          )}
         </motion.nav>
 
         <AnimatePresence>

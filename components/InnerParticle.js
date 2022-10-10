@@ -5,11 +5,11 @@ import { useCallback } from "react";
 const InnerParticle = (props) => {
   // particlejs
   const particlesInit = useCallback(async (engine) => {
-    console.log(engine);
+    // console.log(engine);
     await loadFull(engine);
   }, []);
   const particlesLoaded = useCallback(async (container) => {
-    await console.log(container);
+    // await console.log(container);
   }, []);
   return (
     <Particles

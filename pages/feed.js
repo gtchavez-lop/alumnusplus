@@ -146,6 +146,7 @@ const PageFeed = ({}) => {
         initial="initial"
         animate="animate"
         exit="exit"
+        className="pt-16 lg:pt-0"
       >
         {__feed.isLoading && (
           <div className="flex justify-center items-center h-[500px]">

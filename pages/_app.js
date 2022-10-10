@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "../components/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AnimatePresence } from "framer-motion";
+import BottomNav from "../components/BottomNav";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -25,18 +26,18 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <title>
           {router.pathname === "/"
-            ? "SOMENAME | Home"
+            ? "wicket | Home"
             : router.pathname === "/me"
-            ? "SOMENAME | Me"
+            ? "wicket | Me"
             : router.pathname === "/feed"
-            ? "SOMENAME | My Feed"
+            ? "wicket | My Feed"
             : router.pathname === "/signin"
-            ? "SOMENAME | Sign in"
+            ? "wicket | Sign in"
             : router.pathname === "/signup"
-            ? "SOMENAME | Sign up"
+            ? "wicket | Sign up"
             : router.pathname === "/messages"
-            ? "SOMENAME | My Messages"
-            : "SOMENAME | Page not registered"}
+            ? "wicket | My Messages"
+            : "wicket | Page not registered"}
         </title>
         <meta
           name="viewport"
@@ -51,12 +52,14 @@ function MyApp({ Component, pageProps }) {
             <Navbar />
 
             <main className="flex justify-center">
-              <section className="w-full max-w-5xl py-32 px-5 lg:px-0 min-h-screen">
+              <section className="w-full max-w-5xl py-32 pt-16 lg:pt-32 px-5 lg:px-0 min-h-screen">
                 <AnimatePresence mode="wait">
                   <Component {...pageProps} key={router.pathname} />
                 </AnimatePresence>
               </section>
             </main>
+
+            <BottomNav />
 
             <Toaster
               position="top-left"

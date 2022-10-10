@@ -83,10 +83,10 @@ const MePage = (e) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="lg:mt-16"
+          className=""
         >
           {/* profile */}
-          <div className="flex gap-4 items-end relative">
+          <div className="flex gap-4 items-end relative z-10 py-10 bg-base-100">
             <img
               src={`https://dicebear.com/api/micah/${localUser.user_metadata.username}.svg`}
               className="rounded-full w-24 h-24 lg:w-32 lg:h-32 bg-secondary z-10"
@@ -111,25 +111,27 @@ const MePage = (e) => {
           </div>
 
           {/* tabs */}
-          <div className="tabs tabs-boxed mt-10 lg:gap-2 justify-center md:justify-start">
-            <a
-              onClick={(e) => setTabActive("feed")}
-              className={`tab ${tabActive == "feed" && "tab-active"}`}
-            >
-              My Feed
-            </a>
-            <a
-              onClick={(e) => setTabActive("connections")}
-              className={`tab ${tabActive == "connections" && "tab-active"}`}
-            >
-              My Connections
-            </a>
-            <a
-              onClick={(e) => setTabActive("settings")}
-              className={`tab ${tabActive == "settings" && "tab-active"}`}
-            >
-              Settings
-            </a>
+          <div className="bg-base-100 sticky top-20 pt-10 pb-4">
+            <div className="tabs tabs-boxed lg:gap-2 justify-center md:justify-start">
+              <a
+                onClick={(e) => setTabActive("feed")}
+                className={`tab ${tabActive == "feed" && "tab-active"}`}
+              >
+                My Feed
+              </a>
+              <a
+                onClick={(e) => setTabActive("connections")}
+                className={`tab ${tabActive == "connections" && "tab-active"}`}
+              >
+                My Connections
+              </a>
+              <a
+                onClick={(e) => setTabActive("settings")}
+                className={`tab ${tabActive == "settings" && "tab-active"}`}
+              >
+                Settings
+              </a>
+            </div>
           </div>
 
           {/* tab content */}

@@ -1,4 +1,5 @@
 import { FiEdit2 } from "react-icons/fi";
+import ThemeSwticher from "./ThemeSwticher";
 import __supabase from "../lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
@@ -7,6 +8,7 @@ import { useState } from "react";
 const MeSettings = ({ data }) => {
   const router = useRouter();
   const [userData, setUserData] = useState(data);
+  const [themeOpen, setThemeOpen] = useState(false);
 
   const { user_metadata, id, email } = userData;
 
@@ -86,6 +88,8 @@ const MeSettings = ({ data }) => {
 
   return (
     <>
+      <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} />
+
       <div className="flex flex-col gap-[70px]">
         <div className="flex flex-col gap-2">
           <p className="text-xl">User Information</p>
@@ -161,9 +165,22 @@ const MeSettings = ({ data }) => {
           <p className="text-xl">User Settings</p>
           <div className="grid grid-cols-2 gap-5">
             {/* sign out button */}
-            <label htmlFor="signOutModal" className="btn modal-button">
+            <label
+              htmlFor="signOutModal"
+              className="btn btn-warning modal-button"
+            >
               Sign Out
             </label>
+
+            {/* change theme button */}
+            <button
+              onClick={() => {
+                setThemeOpen(true);
+              }}
+              className="btn btn-primary"
+            >
+              Change Theme
+            </button>
           </div>
         </div>
       </div>

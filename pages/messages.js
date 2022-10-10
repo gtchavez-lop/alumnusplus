@@ -24,11 +24,10 @@ const PageMessages = () => {
         initial="initial"
         animate="animate"
         exit="exit"
+        className="py-10 lg:py-0"
       >
         <div className="grid grid-cols-6 gap-5">
           <div className="col-span-full lg:col-span-2 flex flex-col gap-3">
-            <p className="mb-5 text-lg font-bold">Messages</p>
-
             {Array(20)
               .fill()
               .map((_, i) => (

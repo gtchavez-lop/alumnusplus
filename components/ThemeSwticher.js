@@ -70,7 +70,7 @@ const ThemeSwticher = ({ isOpen, setOpen }) => {
           onClick={() => setOpen(false)}
           className="transition-colors fixed top-0 left-0 w-full min-h-screen flex justify-center items-center bg-base-100 z-[999]"
         >
-          <div className="transition-colors duration-200 w-full max-w-xl grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 px-5 gap-4 items-center place-items-center">
+          <div className="transition-colors duration-200 w-full max-w-xl grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 px-5 gap-4 items-center place-items-center">
             {/* <div data-theme="light" className="btn-primary btn btn-circle" /> */}
             {themes.map((theme, i) => (
               <div data-tip={theme} key={`theme_${i + 1}`} className="tooltip">
