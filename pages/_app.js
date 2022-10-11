@@ -39,11 +39,14 @@ function MyApp({ Component, pageProps }) {
             ? "wicket | My Messages"
             : "wicket | Page not registered"}
         </title>
+
         <meta
           name="viewport"
           content="initial-scale=1.0, width=device-width"
           charSet="urf-8"
         />
+
+        <link rel="icon" href="/newlogo.svg" />
       </Head>
 
       <AuthProvider>

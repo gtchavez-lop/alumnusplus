@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 
 import Link from "next/link";
+import Logo from "./Logo";
 import ThemeSwticher from "./ThemeSwticher";
 import __supabase from "../lib/supabase";
 import toast from "react-hot-toast";
@@ -80,7 +81,8 @@ const Navbar = () => {
           <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto hidden lg:flex justify-between items-center">
             {/* brand name */}
             <Link href={"/"}>
-              <img src="/wicket.svg" className="w-24" />
+              <Logo color="red" />
+              {/* <img src="/wicket.svg" className="w-24" /> */}
               {/* <p className="select-none">SOMENAME</p> */}
             </Link>
             {/* mobile menu */}
