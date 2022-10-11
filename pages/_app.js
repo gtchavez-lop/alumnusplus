@@ -47,6 +47,9 @@ function MyApp({ Component, pageProps }) {
         />
 
         <link rel="icon" href="/newlogo.svg" />
+
+        {/* link manifest */}
+        <link rel="manifest" href="/manifest.json" />
       </Head>
 
       <AuthProvider>
