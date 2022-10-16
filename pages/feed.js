@@ -28,42 +28,6 @@ const PageFeed = ({}) => {
   });
   const user = __supabase.auth.user();
 
-  const fetchFeed = async () => {
-    setFeed([]);
-    let user = await __supabase.auth.user();
-    const connections = user.user_metadata.connections
-      ? JSON.parse(user.user_metadata.connections)
-      : [];
-
-    const res = await fetch(
-      "/api/feed?" +
-        new URLSearchParams({
-          connectionsList: JSON.stringify(connections),
-          id: user.id,
-        })
-    );
-    const { data } = await res.json();
-    setFeed(data);
-  };
-
-  const fetchRecommendedUsers = async () => {
-    let user = await __supabase.auth.user();
-    const connections = user.user_metadata.connections
-      ? JSON.parse(user.user_metadata.connections)
-      : [];
-
-    const res = await fetch(
-      "/api/recommendedUsers?" +
-        new URLSearchParams({
-          id: __supabase.auth.user().id,
-          connectionsList: [...connections, user.id],
-        })
-    );
-    const data = await res.json();
-    console.log(data);
-    setRecommendedUsers(data);
-  };
-
   // query for recommended users
   const __recommendedUsers = useQuery(["recommendedUsers"], async () => {
     let currentConnections = user.user_metadata.connections
@@ -146,7 +110,7 @@ const PageFeed = ({}) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="pt-16 lg:pt-0"
+        className="pt-24 lg:pt-14"
       >
         {__feed.isLoading && (
           <div className="flex justify-center items-center h-[500px]">

@@ -1,14 +1,15 @@
+import { useEffect, useState } from "react";
+
 import { FiEdit2 } from "react-icons/fi";
 import ThemeSwticher from "./ThemeSwticher";
 import __supabase from "../lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 const MeSettings = ({ data }) => {
   const router = useRouter();
   const [userData, setUserData] = useState(data);
-  const [themeOpen, setThemeOpen] = useState(false);
+  const [isDarkMode, setDarkMode] = useState();
 
   const { user_metadata, id, email } = userData;
 
@@ -86,9 +87,24 @@ const MeSettings = ({ data }) => {
       });
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("theme") === "wicket-dark") {
+      setDarkMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.setAttribute("data-theme", "wicket-dark");
+    } else {
+      document.body.setAttribute("data-theme", "wicket-light");
+    }
+    localStorage.setItem("theme", isDarkMode ? "wicket-dark" : "wicket-light");
+  }, [isDarkMode]);
+
   return (
     <>
-      <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} />
+      {/* <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} /> */}
 
       <div className="flex flex-col gap-[70px]">
         <div className="flex flex-col gap-2">
@@ -151,36 +167,44 @@ const MeSettings = ({ data }) => {
             </div>
 
             {/* submit edit */}
-            <div className="flex flex-col gap-2 col-start-1 mt-10">
+            <div className="flex flex-col gap-2 col-start-1">
               <label htmlFor="submit">Confirm Edit</label>
               <button className="btn btn-primary">
                 <FiEdit2 />
                 <span className="ml-2">Edit</span>
               </button>
             </div>
+            {/* sign out button */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="submit">Sign out current session</label>
+              <label
+                htmlFor="signOutModal"
+                className="btn btn-warning modal-button"
+              >
+                Sign Out
+              </label>
+            </div>
           </form>
         </div>
 
         <div className="flex flex-col gap-2">
           <p className="text-xl">User Settings</p>
-          <div className="grid grid-cols-2 gap-5">
-            {/* sign out button */}
-            <label
-              htmlFor="signOutModal"
-              className="btn btn-warning modal-button"
-            >
-              Sign Out
-            </label>
-
-            {/* change theme button */}
-            <button
-              onClick={() => {
-                setThemeOpen(true);
-              }}
-              className="btn btn-primary"
-            >
-              Change Theme
-            </button>
+          <div className="grid grid-cols-2 gap-5 items-center">
+            {/* change theme toggler */}
+            <div className="">
+              <label className="flex items-center justify-between">
+                <span className="ml-2">Dark Mode</span>
+                <input
+                  type="checkbox"
+                  className="toggle toggle-primary"
+                  checked={isDarkMode}
+                  onChange={(e) => {
+                    setDarkMode(e.target.checked);
+                    // setTheme();
+                  }}
+                />
+              </label>
+            </div>
           </div>
         </div>
       </div>

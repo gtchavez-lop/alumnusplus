@@ -85,8 +85,9 @@ const Navbar = () => {
               {/* <img src="/wicket.svg" className="w-24" /> */}
               {/* <p className="select-none">SOMENAME</p> */}
             </Link>
+
             {/* mobile menu */}
-            <div className="dropdown dropdown-end lg:hidden">
+            {/* <div className="dropdown dropdown-end lg:hidden">
               <label tabIndex={0} className="btn btn-primary btn-square">
                 <FiMenu />
               </label>
@@ -130,14 +131,13 @@ const Navbar = () => {
                     </li>
                   </>
                 )}
-                {/* theme picker */}
                 <li onClick={(e) => setThemeOpen(true)}>
                   <a>
                     <FiDroplet className="text-lg" /> Theme
                   </a>
                 </li>
               </ul>
-            </div>
+            </div> */}
 
             {/* desktop bar */}
             {visible && (
@@ -169,7 +169,7 @@ const Navbar = () => {
             )}
           </main>
 
-          {(router.pathname !== "/" ||
+          {/* {(router.pathname !== "/" ||
             router.pathname !== "/signin" ||
             router.pathname !== "/signup") && (
             <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto lg:hidden flex justify-between items-center">
@@ -183,7 +183,7 @@ const Navbar = () => {
                   : "Wicket"}
               </p>
             </main>
-          )}
+          )} */}
         </motion.nav>
 
         <AnimatePresence>

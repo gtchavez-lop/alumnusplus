@@ -26,15 +26,14 @@ const InnerParticle = (props) => {
           move: {
             enable: true,
             speed: 7,
-            straight: true,
-            direction: "right",
-            random: true,
+            direction: "left",
+            // random: true,
           },
           color: {
             value: "#afafaf",
           },
           shape: {
-            type: "square",
+            type: "circle",
           },
           opacity: {
             value: 0.1,
@@ -48,9 +47,7 @@ const InnerParticle = (props) => {
           },
           size: {
             value: 100,
-          },
-          rotate: {
-            value: -10,
+            random: true,
           },
         },
       }}

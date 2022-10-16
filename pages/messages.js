@@ -24,7 +24,7 @@ const PageMessages = () => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="py-10 lg:py-0"
+        className="pt-10 "
       >
         <div className="grid grid-cols-6 gap-5">
           <div className="col-span-full lg:col-span-2 flex flex-col gap-3">
@@ -56,7 +56,7 @@ const PageMessages = () => {
           {/* messages desktop */}
           <div
             ref={desktop_messages}
-            className="hidden lg:flex lg:col-span-4 flex-col sticky top-32"
+            className="hidden lg:flex lg:col-span-4 flex-col sticky top-28"
           >
             <AnimatePresence mode="wait">
               <motion.div

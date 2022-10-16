@@ -7,3 +7,52 @@
 * {
   font-family: "Poppins", sans-serif;
 }
+
+.btn {
+  @apply rounded-full py-3 min-h-0 h-auto transform-none;
+}
+.btn-ghosted {
+  @apply bg-transparent text-primary border-0 py-2;
+}
+
+.btn-ghosted:hover {
+  @apply bg-primary bg-opacity-50;
+}
+
+.btn:focus {
+  @apply ring-2 ring-offset-2 ring-neutral;
+}
+
+.btn-primary:focus {
+  @apply ring-primary;
+}
+.btn-secondary:focus {
+  @apply ring-secondary;
+}
+.btn-accent:focus {
+  @apply ring-accent;
+}
+.btn-success:focus {
+  @apply ring-success;
+}
+.btn-warning:focus {
+  @apply ring-warning;
+}
+.btn-error:focus {
+  @apply ring-error;
+}
+
+.btn-ghosted:focus {
+  @apply bg-primary bg-opacity-20 ring-2 ring-transparent outline-0 border-0;
+}
+
+/* feed card */
+.feed-card {
+  @apply rounded-lg p-2 px-3 bg-base-300 flex flex-col gap-5;
+}
+.feed-card .feed-card-body {
+  @apply flex flex-col;
+}
+.feed-card .feed-card-body {
+  @apply flex gap-2;
+}

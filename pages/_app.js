@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import BottomNav from "../components/BottomNav";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
+import NewNavbar from "../components/NewNavbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import { themeChange } from "theme-change";
@@ -19,6 +20,13 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     themeChange(false);
+
+    // check if localStorage has a theme
+    if (localStorage.getItem("theme")) {
+      document.body.setAttribute("data-theme", localStorage.getItem("theme"));
+    } else {
+      document.body.setAttribute("data-theme", "wicket-light");
+    }
   }, []);
 
   return (
@@ -55,17 +63,18 @@ function MyApp({ Component, pageProps }) {
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <>
-            <Navbar />
+            {/* <Navbar /> */}
+            <NewNavbar />
 
-            <main className="flex justify-center">
-              <section className="w-full max-w-5xl py-32 pt-16 lg:pt-32 px-5 lg:px-0 min-h-screen">
+            <main className="flex justify-center bg-base-100">
+              <section className="w-full max-w-5xl py-16 px-5 lg:px-0 min-h-screen">
                 <AnimatePresence mode="wait">
                   <Component {...pageProps} key={router.pathname} />
                 </AnimatePresence>
               </section>
             </main>
 
-            <BottomNav />
+            {/* <BottomNav /> */}
 
             <Toaster
               position="top-left"

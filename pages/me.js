@@ -83,10 +83,10 @@ const MePage = (e) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className=""
+          className="mt-16"
         >
           {/* profile */}
-          <div className="flex gap-4 items-end relative z-10 py-10 bg-base-100">
+          <div className="flex gap-4 items-end relative z-10 py-5 bg-base-100">
             <img
               src={`https://dicebear.com/api/micah/${localUser.user_metadata.username}.svg`}
               className="rounded-full w-24 h-24 lg:w-32 lg:h-32 bg-secondary z-10"
@@ -111,7 +111,7 @@ const MePage = (e) => {
           </div>
 
           {/* tabs */}
-          <div className="bg-base-100 sticky top-20 pt-10 pb-4">
+          <div className="bg-base-100 sticky top-28 pt-5 pb-2">
             <div className="tabs tabs-boxed lg:gap-2 justify-center md:justify-start">
               <a
                 onClick={(e) => setTabActive("feed")}

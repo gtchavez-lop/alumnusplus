@@ -1,34 +1,54 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![Logo](https://wicket.vercel.app/wicket.svg)
 
-## Getting Started
+# Wicket Journeys
 
-First, run the development server:
+A WEB3 Social Networking Progressive Web Application
+
+## Authors
+
+- Edriane Barcita | [@Edz.sasaki](https://www.facebook.com/Edz.sasaki)
+- Jaypee Bulaclac | [@johnphilip.bulaclac](https://www.facebook.com/johnphilip.bulaclac)
+- Gerald Chavez | [@gcMillion23](https://www.facebook.com/gcMillion23)
+- Kevin Corpin | [@kevin.Zafra.09](https://www.facebook.com/kevin.Zafra.09)
+- Carlo Diaz | [@xi3x.zxc](https://www.facebook.com/xi3x.zxc)
+- Mikkie Gregorio | [@miko.gregorio.3](https://www.facebook.com/miko.gregorio.3)
+- John Lloyd Igharas | [@jhnllyd04](https://www.facebook.com/jhnllyd04)
+- Trizhalyn Maglangit | [@trizharmy](https://www.facebook.com/trizharmy)
+- Novie Dame Marbas | [@iamnoviedame](https://www.facebook.com/iamnoviedame)
+- Gabrielle Napoto | [gabrielle.napoto.79](https://www.facebook.com/gabrielle.napoto.79)
+- Efrhaim Jay Riate | [@efrhaimjay.riate](https://www.facebook.com/efrhaimjay.riate)
+- Jaymar Walohan | [@jaymar99](https://www.facebook.com/jaymar99)
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
+  git clone https://github.com/million23/alumnusplus.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```bash
+  cd alumnusplus
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Install dependencies
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+  pnpm install
+```
 
-## Learn More
+Start the server
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+  pnpm dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Feedback
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+If you have any feedback, please reach out to us at wicket.journeys@gmail.com
 
-## Deploy on Vercel
+## Support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+For support, email wicket.journeys@gmail.com.

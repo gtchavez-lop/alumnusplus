@@ -2,37 +2,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const ThemeSwticher = ({ isOpen, setOpen }) => {
-  const themes = [
-    "light",
-    "dark",
-    "cupcake",
-    "bumblebee",
-    "emerald",
-    "corporate",
-    "synthwave",
-    "retro",
-    "cyberpunk",
-    "valentine",
-    "halloween",
-    "garden",
-    "forest",
-    "aqua",
-    "lofi",
-    "pastel",
-    "fantasy",
-    "wireframe",
-    "black",
-    "luxury",
-    "dracula",
-    "cmyk",
-    "autumn",
-    "business",
-    "acid",
-    "lemonade",
-    "night",
-    "coffee",
-    "winter",
-  ];
+  const themes = ["wicket-light", "wicket-dark"];
 
   const switchTheme = (theme) => {
     localStorage.setItem("theme", theme);
@@ -70,16 +40,18 @@ const ThemeSwticher = ({ isOpen, setOpen }) => {
           onClick={() => setOpen(false)}
           className="transition-colors fixed top-0 left-0 w-full min-h-screen flex justify-center items-center bg-base-100 z-[999]"
         >
-          <div className="transition-colors duration-200 w-full max-w-xl grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 px-5 gap-4 items-center place-items-center">
+          <div className="transition-colors duration-200 w-full max-w-xl grid grid-cols-1 sm:grid-cols-2 px-5 gap-4 items-center place-items-center">
             {/* <div data-theme="light" className="btn-primary btn btn-circle" /> */}
             {themes.map((theme, i) => (
-              <div data-tip={theme} key={`theme_${i + 1}`} className="tooltip">
-                <div
-                  data-theme={theme}
-                  onClick={(e) => switchTheme(theme)}
-                  className="btn-primary btn btn-circle ring-2 ring-offset-2 ring-secondary"
-                />
-              </div>
+              <button
+                onClick={() => switchTheme(theme)}
+                className="btn btn-primary w-full"
+                key={`theme-${i}`}
+              >
+                <span>
+                  wicket {theme === "wicket-light" ? "light" : "dark"}
+                </span>
+              </button>
             ))}
           </div>
         </motion.main>
