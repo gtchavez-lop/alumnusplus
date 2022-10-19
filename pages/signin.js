@@ -12,18 +12,13 @@ const SignInPage = (e) => {
   const router = useRouter();
 
   const writeUserMetaData = () => {
-    const stringifiedUserMetaData = JSON.stringify(
-      __supabase.auth.user().user_metadata
-    );
-
     __supabase
       .from("user_data")
       .upsert({
         user_id: __supabase.auth.user().id,
-        data: stringifiedUserMetaData,
+        data: __supabase.auth.user().user_metadata,
       })
-
-      .then(({ data, error }) => {
+      .then(({ error }) => {
         if (error) {
           toast.error(error.message);
           return;
@@ -46,7 +41,11 @@ const SignInPage = (e) => {
     __supabase.auth.signIn({ email, password }).then((data) => {
       if (data.error) {
         toast.dismiss();
-        toast.error(data.error.message);
+        if (data.error.message === "Email not confirmed") {
+          toast.error("Please check your email for a confirmation link.");
+        } else {
+          toast.error(data.error.message);
+        }
       } else {
         writeUserMetaData();
       }

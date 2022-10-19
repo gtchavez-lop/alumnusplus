@@ -1,6 +1,7 @@
 import { FiEdit2, FiGithub, FiMail } from "react-icons/fi";
 import { motion, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useFeed, useUserFeed } from "../lib/globalStates";
 
 import { AnimatePresence } from "framer-motion";
 import MeConnections from "../components/MeConnections";
@@ -15,69 +16,48 @@ const MePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
   const [localUser, setLocalUser] = useState();
   const [localConnections, setLocalConnections] = useState([]);
-  const [scrollYValue, setScrollYValue] = useState(0);
   const user = __supabase.auth.user();
   const router = useRouter();
-  const __feed = useQuery(["feed"], async () => {
-    const res = await fetch(
-      "/api/feed?" +
-        new URLSearchParams({
-          id: user.id,
-        })
-    );
-
-    const { data } = await res.json();
-    return data;
-  });
 
   const { scrollY } = useScroll();
 
+  // const { data, isLoading, isSuccess } = useUserFeed();
+
   const fetchConnections = () => {
-    const connections = __supabase.auth.user().user_metadata.connections
-      ? JSON.parse(__supabase.auth.user().user_metadata.connections)
-      : [];
-    setLocalConnections(connections);
+    const token = localStorage.getItem("supabase.auth.token");
+    const parsedToken = JSON.parse(token);
+    const user = parsedToken.currentSession.user;
+
+    setLocalConnections(user.user_metadata.connections);
   };
 
   const fetchUser = () => {
-    const user = __supabase.auth.user();
+    const user = window.localStorage.getItem("supabase.auth.token");
+    const parsedUser = JSON.parse(user);
+    const localUser = parsedUser.currentSession.user;
 
     if (user) {
-      setLocalUser(user);
+      setLocalUser(localUser);
       fetchConnections();
     }
   };
 
   useEffect(() => {
-    // check if user is signed in
-    if (!__supabase.auth.user()) {
-      router.push("/signin");
+    const token = window.localStorage.getItem("supabase.auth.token");
+    const session = JSON.parse(token);
+    const user = session.currentSession.user;
+
+    if (!user) {
+      router.push("/login");
     } else {
-      fetchUser();
+      setLocalUser(user);
+      fetchConnections();
     }
-    return () => {
-      scrollY.onChange((latest) => {
-        setScrollYValue(latest);
-      });
-    };
   }, []);
 
   return (
-    localUser &&
-    __feed.isSuccess && (
+    localUser && (
       <>
-        {/* <motion.div
-          animate={{
-            opacity: scrollYValue > 10 ? 0 : 1,
-            y: scrollYValue > 10 ? -100 : 0,
-          }}
-          transition={{
-            duration: 0.2,
-            ease: "circOut",
-          }}
-          className="bg-primary w-screen fixed top-0 h-[310px] lg:h-[330px] left-0 opacity-0 hidden lg:block"
-        /> */}
-
         <motion.main
           variants={__PageTransition}
           initial="initial"
@@ -145,7 +125,7 @@ const MePage = (e) => {
                 className="flex flex-col gap-5"
                 key={tabActive}
               >
-                {tabActive == "feed" && <MeFeed feed={__feed.data} />}
+                {/* {tabActive == "feed" && <MeFeed feed={data} />} */}
                 {tabActive == "connections" && (
                   <MeConnections connections={localConnections} />
                 )}

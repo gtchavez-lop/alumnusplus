@@ -1,94 +1,77 @@
-import { FiLoader, FiSearch, FiUsers } from "react-icons/fi";
+import {
+  FiLoader,
+  FiMail,
+  FiSearch,
+  FiUserMinus,
+  FiUsers,
+} from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import MeConnectionCard from "./MeConnectionsCard";
-import __supabase from "../lib/supabase";
-import { useQuery } from "@tanstack/react-query";
+import { useSelect } from "react-supabase";
 
 const MeConnections = ({ connections }) => {
-  const [connectedUserData, setConnectedUserData] = useState([]);
-  const user = __supabase.auth.user();
+  const [userList, setUserList] = useState([]);
+  const [{ data: userData, error: userError, fetching: userLoading }] =
+    useSelect("user_data", {
+      columns: "data, user_id, created_at",
+      order: "created_at",
+    });
 
-  const __connectedUsers = useQuery(["connectedUsers"], async () => {
-    const list = [...connections];
+  useEffect(() => {
+    if (userError) {
+      toast.error(error.message);
+    }
 
-    const res = await fetch(
-      "/api/userData?" +
-        new URLSearchParams({
-          idList: JSON.stringify(list),
-        })
+    if (userData) {
+      let filtered = userData.filter((e) => {
+        // return only users that are in the connections array
+        return connections.includes(e.user_id);
+      });
+      setUserList(filtered);
+    }
+  }, [userData]);
+
+  if (userLoading || !userList) {
+    return (
+      <div className="flex items-center justify-center">
+        <FiLoader className="animate-spin w-8 h-8 " />
+      </div>
     );
-
-    return res.json();
-  });
-
-  // const fetchUserData = async () => {
-  //   const user = await __supabase.auth.user();
-  //   const list = [...connections];
-
-  //   const res = await fetch(
-  //     "/api/userData?" + new URLSearchParams({ idList: JSON.stringify(list) })
-  //   );
-  //   const data = await res.json();
-  //   // console.log(data);
-  //   setConnectedUserData(data);
-  // };
-
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
+  }
 
   return (
-    <>
-      {__connectedUsers.isLoading && (
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <FiLoader className="text-xl animate-spin" />
-        </div>
-      )}
+    <div className="flex flex-col gap-2">
+      {userList.map((e) => (
+        <div
+          key={e.user_id}
+          className="flex items-center justify-between p-3 bg-base-200 rounded-md transition-all shadow-sm hover:shadow-md"
+        >
+          <div className="flex items-center gap-2">
+            <img
+              src={`https://avatars.dicebear.com/api/micah/${e.user_id}.svg`}
+              alt="avatar"
+              className="w-10 h-10 rounded-full bg-base-100"
+            />
+            <div className="flex flex-col">
+              <p className="font-semibold">@{e.data.username}</p>
+              <p className="text-sm text-opacity-50">
+                {e.data.first_name} {e.data.last_name}
+              </p>
+            </div>
+          </div>
 
-      {__connectedUsers.isError && (
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <p className="text-xl">Error</p>
-        </div>
-      )}
-
-      {__connectedUsers.isSuccess && (
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <div className="grid grid-cols-2 gap-2 mt-4 items-start sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {__connectedUsers.data.map((user, i) => {
-              let filtered = {
-                user_id: user.user_id,
-                data: JSON.parse(user.data),
-              };
-
-              return <MeConnectionCard userData={filtered} key={`card_${i}`} />;
-            })}
+          {/* actions */}
+          <div className="flex items-center gap-2">
+            <button className="btn btn-ghost btn-sm">
+              <FiMail />
+            </button>
+            <button className="btn btn-ghost btn-sm">
+              <FiUserMinus />
+            </button>
           </div>
         </div>
-      )}
-
-      {/* {connectedUserData?.length < 1 && (
-        <div className="flex flex-col items-center justify-center h-full mt-16">
-          <div className="flex flex-col items-center gap-2">
-            <FiUsers className="text-4xl" />
-            <p className="text-xl">No connections yet</p>
-          </div>
-        </div>
-      )}
-
-      {connectedUserData?.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 mt-4 items-start sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {connectedUserData.map((user, i) => {
-            let filtered = {
-              user_id: user.user_id,
-              data: JSON.parse(user.data),
-            };
-
-            return <MeConnectionCard userData={filtered} key={`card_${i}`} />;
-          })}
-        </div>
-      )} */}
-    </>
+      ))}
+    </div>
   );
 };
 

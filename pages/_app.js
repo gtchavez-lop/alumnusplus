@@ -9,7 +9,9 @@ import Head from "next/head";
 import Navbar from "../components/Navbar";
 import NewNavbar from "../components/NewNavbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Provider as SupbaseProvider } from "react-supabase";
 import { Toaster } from "react-hot-toast";
+import __supabase from "../lib/supabase";
 import { themeChange } from "theme-change";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -48,11 +50,8 @@ function MyApp({ Component, pageProps }) {
             : "wicket | Page not registered"}
         </title>
 
-        <meta
-          name="viewport"
-          content="initial-scale=1.0, width=device-width"
-          charSet="urf-8"
-        />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta charset="utf-8" />
 
         <link rel="icon" href="/newlogo.svg" />
 
@@ -60,7 +59,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <AuthProvider>
+      <SupbaseProvider value={__supabase}>
         <QueryClientProvider client={queryClient}>
           <>
             {/* <Navbar /> */}
@@ -85,10 +84,10 @@ function MyApp({ Component, pageProps }) {
                 },
               }}
             />
+            <ReactQueryDevtools initialIsOpen={false} />
           </>
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-      </AuthProvider>
+      </SupbaseProvider>
     </>
   );
 }

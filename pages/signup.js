@@ -55,6 +55,7 @@ const PageSignUp = (e) => {
         } else {
           toast.dismiss();
           toast.success("Signed up!");
+          toast("Please check your email for a confirmation link.");
           router.push("/signin");
         }
       });

@@ -1,4 +1,4 @@
-import FeedCard from "./FeedCard";
+// import FeedCard from "./FeedCard";
 import { FiSearch } from "react-icons/fi";
 
 const MeFeed = ({ feed }) => {
@@ -6,9 +6,9 @@ const MeFeed = ({ feed }) => {
     <>
       {feed.length > 0 && (
         <div className="flex flex-col space-y-4">
-          {feed.map((e) => (
-            <FeedCard key={e.id} item={e} />
-          ))}
+          {/* {feed.map((e, index) => (
+            <FeedCard key={`userfeed_${index}`} item={e} />
+          ))} */}
         </div>
       )}
 
