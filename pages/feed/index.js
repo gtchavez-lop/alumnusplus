@@ -89,10 +89,16 @@ const Feed = (e) => {
 
   if (feedLoading || recomUserLoading || !feed || !recommendedUsers || !user) {
     return (
-      <div className="fixed top-0 left-0 flex flex-col justify-center items-center w-full min-h-screen">
+      <motion.div
+        variants={__PageTransition}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="fixed top-0 left-0 flex flex-col justify-center items-center w-full min-h-screen"
+      >
         <FiLoader className="animate-spin text-lg" />
         <p>Loading...</p>
-      </div>
+      </motion.div>
     );
   }
 

@@ -19,7 +19,13 @@ const MePage = (e) => {
   const user = __supabase.auth.user();
   const router = useRouter();
 
-  const { scrollY } = useScroll();
+  useEffect(() => {
+    let token = localStorage.getItem("supabase.auth.token");
+
+    if (!token) {
+      router.push("/");
+    }
+  }, [router.pathname]);
 
   // const { data, isLoading, isSuccess } = useUserFeed();
 
@@ -29,17 +35,6 @@ const MePage = (e) => {
     const user = parsedToken.currentSession.user;
 
     setLocalConnections(user.user_metadata.connections);
-  };
-
-  const fetchUser = () => {
-    const user = window.localStorage.getItem("supabase.auth.token");
-    const parsedUser = JSON.parse(user);
-    const localUser = parsedUser.currentSession.user;
-
-    if (user) {
-      setLocalUser(localUser);
-      fetchConnections();
-    }
   };
 
   useEffect(() => {

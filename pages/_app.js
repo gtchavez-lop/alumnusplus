@@ -66,7 +66,7 @@ function MyApp({ Component, pageProps }) {
             <NewNavbar />
 
             <main className="flex justify-center bg-base-100">
-              <section className="w-full max-w-5xl py-16 px-5 lg:px-0 min-h-screen">
+              <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
                 <AnimatePresence mode="wait">
                   <Component {...pageProps} key={router.pathname} />
                 </AnimatePresence>
@@ -84,7 +84,7 @@ function MyApp({ Component, pageProps }) {
                 },
               }}
             />
-            <ReactQueryDevtools initialIsOpen={false} />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </>
         </QueryClientProvider>
       </SupbaseProvider>

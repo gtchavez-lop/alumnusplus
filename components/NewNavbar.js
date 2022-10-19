@@ -60,10 +60,10 @@ const NewNavbar = () => {
                 <FiGrid />
               </button>
             </Link>
-            <Link href={"/locator"} scroll={false}>
+            <Link href={"/finder"} scroll={false}>
               <button
                 className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/locator" &&
+                  router.pathname == "/finder" &&
                   "bg-primary text-primary-content"
                 }`}
               >
@@ -123,14 +123,11 @@ const NewNavbar = () => {
                   </button>
                 </div>
               </Link>
-              <Link href={"/locator"} scroll={false}>
-                <div
-                  className="tooltip tooltip-bottom "
-                  data-tip="User Locator"
-                >
+              <Link href={"/finder"} scroll={false}>
+                <div className="tooltip tooltip-bottom " data-tip="Finder">
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                      router.pathname == "/locator" &&
+                      router.pathname == "/finder" &&
                       "bg-primary text-primary-content"
                     }`}
                   >
