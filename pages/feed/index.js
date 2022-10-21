@@ -35,23 +35,25 @@ const Feed = (e) => {
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [postContent, setPostContent] = useState({});
+  const [page, setPage] = useState(1);
+  const [editorState] = useState(EditorState.createEmpty());
 
-  useEffect(() => {
+  const checkUser = async () => {
     const user = __supabase.auth.user();
-    if (!localStorage.getItem("supabase.auth.token")) {
+    if (!user) {
       router.push("/");
     } else {
-      const token = localStorage.getItem("supabase.auth.token");
-      const parsedToken = JSON.parse(token);
-      const user = parsedToken.currentSession.user;
       setUser(user);
     }
-  }, []);
+  };
 
   const [
     { data: feedData, error: feedError, fetching: feedLoading },
     FeedReExecute,
-  ] = useRealtime("user_feed");
+  ] = useRealtime("feed_data", {
+    columns: "*",
+    order: "created_at",
+  });
 
   const [
     { data: recomUserData, error: recomUserError, fetching: recomUserLoading },
@@ -66,12 +68,35 @@ const Feed = (e) => {
     FeedReExecute();
   }
 
+  // filter feed
+  // only show posts from connections and from the user
+  const filterFeed = async () => {
+    const user = __supabase.auth.user();
+    const connections = user.user_metadata.connections;
+
+    const filtered = feedData.filter((item) => {
+      if (item.uploader_email === user.email) {
+        return true;
+      } else {
+        return connections.includes(item.uploader_details.id);
+      }
+    });
+
+    // sort to most recent
+    const sorted = filtered.sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    setFeed(sorted);
+  };
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
   useEffect(() => {
     if (feedData) {
-      let sorted = feedData.sort((a, b) => {
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
-      setFeed(sorted);
+      filterFeed();
     }
 
     if (recomUserData) {
@@ -96,38 +121,42 @@ const Feed = (e) => {
         exit="exit"
         className="fixed top-0 left-0 flex flex-col justify-center items-center w-full min-h-screen"
       >
-        <FiLoader className="animate-spin text-lg" />
-        <p>Loading...</p>
+        <FiLoader className="animate-spin text-xl" />
       </motion.div>
     );
   }
 
-  const handlePost = () => {
-    if (postContent.blocks) {
-      toast("Posting...");
-      const token = localStorage.getItem("supabase.auth.token");
-      const parsedToken = JSON.parse(token);
-      const user = parsedToken.currentSession.user;
+  const handlePost = async () => {
+    if (postContent == null) {
+      toast.error("Please enter some text");
+      return;
+    }
 
-      __supabase
-        .from("user_feed")
-        .insert([
-          {
-            uploader_handler: user.user_metadata.username,
-            uploader_id: user.id,
-            body: postContent,
-            uploader_email: user.email,
+    if (postContent.blocks) {
+      const user = await __supabase.auth.user();
+
+      const { error } = await __supabase.from("feed_data").insert([
+        {
+          uploader_email: user.email,
+          uploader_details: {
+            email: user.email,
+            id: user.id,
+            user_metadata: {
+              first_name: user.user_metadata.first_name,
+              last_name: user.user_metadata.last_name,
+              username: user.user_metadata.username,
+            },
           },
-        ])
-        .then(({ error }) => {
-          toast.dismiss();
-          if (error) {
-            toast.error(error.message);
-          } else {
-            toast.success("Posted!");
-            setPostContent(null);
-          }
-        });
+          content: postContent,
+        },
+      ]);
+
+      if (error && editorState) {
+        toast.error(error.message);
+      } else {
+        toast.success("Posted!");
+        FeedReExecute();
+      }
     } else {
       toast.error("Please enter some text");
     }
@@ -140,7 +169,7 @@ const Feed = (e) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="pb-16 pt-24"
+        className="pb-16 lg:pt-24 pt-36"
       >
         <div className="grid grid-cols-5 gap-5">
           <div className="col-span-full lg:col-span-3 flex flex-col gap-10">
@@ -189,7 +218,7 @@ const Feed = (e) => {
             </div>
           </div>
 
-          <div className="hidden lg:block lg:col-span-2 sticky top-32 h-max">
+          <div className="hidden lg:block lg:col-span-2 sticky top-24 h-max">
             {recommendedUsers.length > 0 && (
               <>
                 <p className="text-xl font-semibold">Recommended Users</p>

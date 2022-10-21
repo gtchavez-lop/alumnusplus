@@ -16,38 +16,38 @@ const MePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
   const [localUser, setLocalUser] = useState();
   const [localConnections, setLocalConnections] = useState([]);
-  const user = __supabase.auth.user();
+  const [localFeed, setLocalFeed] = useState([]);
   const router = useRouter();
 
-  useEffect(() => {
-    let token = localStorage.getItem("supabase.auth.token");
+  const fetchData = async () => {
+    const connections = await __supabase.auth.user().user_metadata.connections;
+    const user = await __supabase.auth.user();
+    const { data, error } = await __supabase
+      .from("feed_data")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .eq("uploader_email", user.email);
 
-    if (!token) {
-      router.push("/");
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setLocalConnections(connections);
+      setLocalFeed(data);
     }
-  }, [router.pathname]);
+  };
 
-  // const { data, isLoading, isSuccess } = useUserFeed();
-
-  const fetchConnections = () => {
-    const token = localStorage.getItem("supabase.auth.token");
-    const parsedToken = JSON.parse(token);
-    const user = parsedToken.currentSession.user;
-
-    setLocalConnections(user.user_metadata.connections);
+  const checkUser = async () => {
+    const user = __supabase.auth.user();
+    if (!user) {
+      router.push("/");
+    } else {
+      setLocalUser(user);
+      fetchData();
+    }
   };
 
   useEffect(() => {
-    const token = window.localStorage.getItem("supabase.auth.token");
-    const session = JSON.parse(token);
-    const user = session.currentSession.user;
-
-    if (!user) {
-      router.push("/login");
-    } else {
-      setLocalUser(user);
-      fetchConnections();
-    }
+    checkUser();
   }, []);
 
   return (
@@ -58,7 +58,7 @@ const MePage = (e) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="mt-16"
+          className="pb-16 pt-36 lg:pt-24"
         >
           {/* profile */}
           <div className="flex gap-4 items-end relative z-10 py-5 bg-base-100">
@@ -120,7 +120,7 @@ const MePage = (e) => {
                 className="flex flex-col gap-5"
                 key={tabActive}
               >
-                {/* {tabActive == "feed" && <MeFeed feed={data} />} */}
+                {tabActive == "feed" && <MeFeed feed={localFeed} />}
                 {tabActive == "connections" && (
                   <MeConnections connections={localConnections} />
                 )}
