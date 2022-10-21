@@ -23,10 +23,16 @@ const Home = (e) => {
   const { scrollY } = useScroll();
 
   const router = useRouter();
-  useEffect(() => {
-    if (localStorage.getItem("supabase.auth.token")) {
+
+  const checkUser = async () => {
+    const user = __supabase.auth.user();
+    if (user) {
       router.push("/feed");
     }
+  };
+
+  useEffect(() => {
+    checkUser();
 
     // set interval for job list
     const interval = setInterval(() => {
