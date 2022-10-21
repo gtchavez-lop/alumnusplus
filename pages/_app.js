@@ -62,18 +62,15 @@ function MyApp({ Component, pageProps }) {
       <SupbaseProvider value={__supabase}>
         <QueryClientProvider client={queryClient}>
           <>
-            {/* <Navbar /> */}
             <NewNavbar />
 
-            <main className="flex justify-center bg-base-100">
+            <main className="flex justify-center bg-base-100 select-none">
               <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
                 <AnimatePresence mode="wait">
                   <Component {...pageProps} key={router.pathname} />
                 </AnimatePresence>
               </section>
             </main>
-
-            {/* <BottomNav /> */}
 
             <Toaster
               position="top-left"

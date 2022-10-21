@@ -140,7 +140,7 @@ const Feed = (e) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="py-16 pt-20 lg:pt-16"
+        className="pb-16 pt-24"
       >
         <div className="grid grid-cols-5 gap-5">
           <div className="col-span-full lg:col-span-3 flex flex-col gap-10">

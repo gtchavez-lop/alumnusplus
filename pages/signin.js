@@ -53,7 +53,8 @@ const SignInPage = (e) => {
   };
 
   useEffect(() => {
-    if (__supabase.auth.user()) {
+    const token = localStorage.getItem("supabase.auth.token");
+    if (token) {
       setHasUser(true);
     }
   }, []);
@@ -65,7 +66,7 @@ const SignInPage = (e) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="flex flex-col items-center"
+        className="flex flex-col items-center py-28"
       >
         <p className="text-3xl">Sign in to your account</p>
 
