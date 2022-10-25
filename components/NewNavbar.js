@@ -70,25 +70,26 @@ const NewNavbar = () => {
                 <FiMapPin />
               </button>
             </Link>
-            <Link href={"/jobs"} scroll={false}>
-              <button
-                className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/jobs" &&
-                  "bg-primary text-primary-content"
-                }`}
-              >
-                <FiPaperclip />
-              </button>
-            </Link>
-            <Link href={"/"} scroll={false}>
-              <button
-                className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/" && "bg-primary text-primary-content"
-                }`}
-              >
-                <FiPackage />
-              </button>
-            </Link>
+            {/* <Link href={"/jobs"} scroll={false}> */}
+            <button
+              disabled
+              className={`px-5 py-2 rounded-full ${
+                router.pathname == "/jobs" && "bg-primary text-primary-content"
+              }`}
+            >
+              <FiPaperclip />
+            </button>
+            {/* </Link> */}
+            {/* <Link href={"/"} scroll={false}> */}
+            <button
+              disabled
+              className={`px-5 py-2 rounded-full ${
+                router.pathname == "/" && "bg-primary text-primary-content"
+              }`}
+            >
+              <FiPackage />
+            </button>
+            {/* </Link> */}
             <Link href={"/me"} scroll={false}>
               <button
                 className={`px-5 py-2 rounded-full ${

@@ -47,6 +47,12 @@ function MyApp({ Component, pageProps }) {
             ? "wicket | Sign up"
             : router.pathname === "/messages"
             ? "wicket | My Messages"
+            : router.pathname === "/finder"
+            ? "wicket | Finder"
+            : router.pathname === "/jobs"
+            ? "wicket | Jobs"
+            : router.pathname === "/events"
+            ? "wicket | Events"
             : "wicket | Page not registered"}
         </title>
 

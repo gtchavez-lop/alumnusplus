@@ -7,6 +7,7 @@ import {
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
+import MeConnectionCard from "./MeConnectionsCard";
 import { useSelect } from "react-supabase";
 
 const MeConnections = ({ connections }) => {
@@ -41,36 +42,16 @@ const MeConnections = ({ connections }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      {userList.map((e) => (
-        <div
-          key={e.user_id}
-          className="flex items-center justify-between p-3 bg-base-200 rounded-md transition-all shadow-sm hover:shadow-md"
-        >
-          <div className="flex items-center gap-2">
-            <img
-              src={`https://avatars.dicebear.com/api/micah/${e.user_id}.svg`}
-              alt="avatar"
-              className="w-10 h-10 rounded-full bg-base-100"
-            />
-            <div className="flex flex-col">
-              <p className="font-semibold">@{e.data.username}</p>
-              <p className="text-sm text-opacity-50">
-                {e.data.first_name} {e.data.last_name}
-              </p>
-            </div>
-          </div>
-
-          {/* actions */}
-          <div className="flex items-center gap-2">
-            <button className="btn btn-ghost btn-sm">
-              <FiMail />
-            </button>
-            <button className="btn btn-ghost btn-sm">
-              <FiUserMinus />
-            </button>
-          </div>
-        </div>
+      {userList.map((e, index) => (
+        <MeConnectionCard key={`user_${index + 1}`} userData={e} />
       ))}
+
+      {userList.length === 0 && (
+        <div className="flex items-center justify-center gap-4 col-span-full">
+          <FiUsers className="w-8 h-8" />
+          <p className="text-xl font-semibold">No connections</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,8 +1,10 @@
 import __supabase from "../lib/supabase";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const FeedRecomUserNew = ({ user }) => {
   const { user_id, data } = user;
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const pushUpdateToUserData = (e) => {
     const token = localStorage.getItem("supabase.auth.token");
@@ -56,6 +58,7 @@ const FeedRecomUserNew = ({ user }) => {
         toast.dismiss();
         toast.success("Followed user!");
         pushUpdateToUserData();
+        setIsFollowing(true);
       });
   };
 
@@ -73,9 +76,16 @@ const FeedRecomUserNew = ({ user }) => {
         </p>
       </div>
 
-      <button className="btn btn-primary ml-auto" onClick={handleFollow}>
-        Follow
-      </button>
+      {!isFollowing && (
+        <button className="btn btn-primary ml-auto" onClick={handleFollow}>
+          Follow
+        </button>
+      )}
+      {isFollowing && (
+        <button disabled className="btn btn-ghost ml-auto">
+          Followed
+        </button>
+      )}
     </div>
   );
 };
