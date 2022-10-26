@@ -234,7 +234,7 @@ const FeedCardNew = ({ feedItem }) => {
 
         <div
           className="px-3"
-          dangerouslySetInnerHTML={{ __html: draftToHtml(content) }}
+          dangerouslySetInnerHTML={{ __html: content.text }}
         />
 
         <div className="flex flex-col gap-2">

@@ -1,19 +1,15 @@
 import "../styles/globals.css";
 
-import { AuthProvider, useAuth } from "../components/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
-import BottomNav from "../components/BottomNav";
 import Head from "next/head";
-import Navbar from "../components/Navbar";
 import NewNavbar from "../components/NewNavbar";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Provider as SupbaseProvider } from "react-supabase";
 import { Toaster } from "react-hot-toast";
 import __supabase from "../lib/supabase";
 import { themeChange } from "theme-change";
-import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }) {

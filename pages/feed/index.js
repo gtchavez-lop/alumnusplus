@@ -15,6 +15,7 @@ import { useRealtime, useSelect } from "react-supabase";
 
 import FeedCardNew from "../../components/FeedCardNew";
 import FeedRecomUserNew from "../../components/FeedRecomUserNew";
+import RichTextEditor from "../../components/RichTextEditor";
 import { __PageTransition } from "../../lib/animtions";
 import __supabase from "../../lib/supabase";
 import dynamic from "next/dynamic";
@@ -22,12 +23,12 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 
-const Editor = dynamic(
-  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
-  {
-    ssr: false,
-  }
-);
+// const Editor = dynamic(
+//   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+//   {
+//     ssr: false,
+//   }
+// );
 
 const Feed = (e) => {
   const [feed, setFeed] = useState([]);
@@ -126,42 +127,6 @@ const Feed = (e) => {
     );
   }
 
-  const handlePost = async () => {
-    if (postContent == null) {
-      toast.error("Please enter some text");
-      return;
-    }
-
-    if (postContent.blocks) {
-      const user = await __supabase.auth.user();
-
-      const { error } = await __supabase.from("feed_data").insert([
-        {
-          uploader_email: user.email,
-          uploader_details: {
-            email: user.email,
-            id: user.id,
-            user_metadata: {
-              first_name: user.user_metadata.first_name,
-              last_name: user.user_metadata.last_name,
-              username: user.user_metadata.username,
-            },
-          },
-          content: postContent,
-        },
-      ]);
-
-      if (error && editorState) {
-        toast.error(error.message);
-      } else {
-        toast.success("Posted!");
-        FeedReExecute();
-      }
-    } else {
-      toast.error("Please enter some text");
-    }
-  };
-
   return (
     <>
       <motion.main
@@ -180,23 +145,25 @@ const Feed = (e) => {
               />
 
               <div className="flex flex-col gap-2 rounded-box w-full">
-                <div className="p-3 bg-base-300 bg-opacity-40 rounded-box">
-                  {/* editor */}
-                  <Editor
+                {/* <div className="p-3 bg-base-300 bg-opacity-40 rounded-box"> */}
+                {/* editor */}
+                {/* <Editor
                     toolbarHidden
                     editorClassName="bg-transparent gap-0"
                     onEditorStateChange={(e) => {
                       let raw = convertToRaw(e.getCurrentContent());
                       setPostContent(raw);
                     }}
-                  />
-                </div>
-                <button
+                  /> */}
+                {/* </div> */}
+
+                <RichTextEditor />
+                {/* <button
                   onClick={handlePost}
                   className="btn btn-primary btn-sm mt-5"
                 >
                   Post
-                </button>
+                </button> */}
               </div>
             </div>
 

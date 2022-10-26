@@ -21,7 +21,7 @@ const NewNavbar = () => {
   const [hasUser, setHasUser] = useState(false);
 
   const checkUser = async () => {
-    const user = __supabase.auth.user();
+    const user = await __supabase.auth.user();
     if (!user) {
       setHasUser(false);
     } else {
@@ -31,7 +31,7 @@ const NewNavbar = () => {
 
   useEffect(() => {
     checkUser();
-  }, []);
+  }, [router.pathname]);
 
   return (
     hasUser && (
