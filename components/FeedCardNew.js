@@ -133,11 +133,11 @@ const FeedCardNew = ({ feedItem }) => {
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    toast.loading("Adding comment...");
 
     //check if pressed enter
     if (e.keyCode === 13) {
       const user = await __supabase.auth.user();
+      toast.loading("Adding comment...");
 
       const commentdata = {
         id: uuidv4(),
