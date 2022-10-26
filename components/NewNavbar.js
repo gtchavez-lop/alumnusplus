@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import Logo from "./Logo";
+import __supabase from "../lib/supabase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
@@ -19,11 +20,18 @@ const NewNavbar = () => {
   const router = useRouter();
   const [hasUser, setHasUser] = useState(false);
 
-  useEffect(() => {
-    if (localStorage.getItem("supabase.auth.token")) {
+  const checkUser = async () => {
+    const user = __supabase.auth.user();
+    if (!user) {
+      setHasUser(false);
+    } else {
       setHasUser(true);
     }
-  }, [router.pathname]);
+  };
+
+  useEffect(() => {
+    checkUser();
+  }, []);
 
   return (
     hasUser && (
@@ -42,7 +50,7 @@ const NewNavbar = () => {
               <button className="flex justify-center items-center p-2 bg-base-300 rounded-full ">
                 <FiSearch />
               </button>
-              <Link href={"/messages"} scroll={false}>
+              <Link href={"/messages"} scroll={false} legacyBehavior>
                 <button className="flex justify-center items-center p-2 bg-base-300 rounded-full">
                   <FiMail />
                 </button>
@@ -50,7 +58,7 @@ const NewNavbar = () => {
             </div>
           </main>
           <main className="grid grid-cols-5 w-full items-center place-items-center pb-1">
-            <Link href={"/feed"} scroll={false}>
+            <Link href={"/feed"} scroll={false} legacyBehavior>
               <button
                 className={`px-5 py-2 rounded-full ${
                   router.pathname == "/feed" &&
@@ -60,7 +68,7 @@ const NewNavbar = () => {
                 <FiGrid />
               </button>
             </Link>
-            <Link href={"/finder"} scroll={false}>
+            <Link href={"/finder"} scroll={false} legacyBehavior>
               <button
                 className={`px-5 py-2 rounded-full ${
                   router.pathname == "/finder" &&
@@ -90,7 +98,7 @@ const NewNavbar = () => {
               <FiPackage />
             </button>
             {/* </Link> */}
-            <Link href={"/me"} scroll={false}>
+            <Link href={"/me"} scroll={false} legacyBehavior>
               <button
                 className={`px-5 py-2 rounded-full ${
                   router.pathname == "/me" && "bg-primary text-primary-content"
@@ -112,7 +120,7 @@ const NewNavbar = () => {
           <main className="grid grid-cols-3 w-full items-center max-w-5xl">
             <Logo />
             <div className="flex justify-center gap-2">
-              <Link href={"/feed"} scroll={false}>
+              <Link href={"/feed"} scroll={false} legacyBehavior>
                 <div className="tooltip tooltip-bottom " data-tip="Update Feed">
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
@@ -124,7 +132,7 @@ const NewNavbar = () => {
                   </button>
                 </div>
               </Link>
-              <Link href={"/finder"} scroll={false}>
+              <Link href={"/finder"} scroll={false} legacyBehavior>
                 <div className="tooltip tooltip-bottom " data-tip="Finder">
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
@@ -136,7 +144,7 @@ const NewNavbar = () => {
                   </button>
                 </div>
               </Link>
-              <Link href={"/jobs"} scroll={false}>
+              <Link href={"/jobs"} scroll={false} legacyBehavior>
                 <div
                   className="tooltip tooltip-bottom "
                   data-tip="Job Postings"
@@ -151,7 +159,7 @@ const NewNavbar = () => {
                   </button>
                 </div>
               </Link>
-              <Link href={"/"} scroll={false}>
+              <Link href={"/"} scroll={false} legacyBehavior>
                 <div
                   className="tooltip tooltip-bottom "
                   data-tip="Featured Events"
@@ -168,7 +176,7 @@ const NewNavbar = () => {
               </Link>
             </div>
             <div className="flex justify-end gap-2">
-              <Link href={"/messages"} scroll={false}>
+              <Link href={"/messages"} scroll={false} legacyBehavior>
                 <button
                   className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
                     router.pathname == "/messages" &&
@@ -178,7 +186,7 @@ const NewNavbar = () => {
                   <FiMail />
                 </button>
               </Link>
-              <Link href={"/me"} scroll={false}>
+              <Link href={"/me"} scroll={false} legacyBehavior>
                 <button
                   className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
                     router.pathname == "/me" &&

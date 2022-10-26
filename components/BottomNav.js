@@ -47,7 +47,7 @@ const BottomNav = (e) => {
             </span>
             <span className="text-xs">Locator</span>
           </button>
-          <Link href={"/feed"} scroll={false}>
+          <Link href={"/feed"} scroll={false} legacyBehavior>
             <button className="flex flex-col px-5 w-[96px]">
               <span
                 className={`px-2 py-1 rounded-full flex justify-center ${
@@ -60,7 +60,7 @@ const BottomNav = (e) => {
               <span className="text-xs">Feed</span>
             </button>
           </Link>
-          <Link href={"/messages"} scroll={false}>
+          <Link href={"/messages"} scroll={false} legacyBehavior>
             <button className="flex flex-col px-5 w-[96px]">
               <span
                 className={`px-2 py-1 rounded-full flex justify-center ${
@@ -73,7 +73,7 @@ const BottomNav = (e) => {
               <span className="text-xs">Inbox</span>
             </button>
           </Link>
-          <Link href={"/me"} scroll={false}>
+          <Link href={"/me"} scroll={false} legacyBehavior>
             <button className="flex flex-col px-5 w-[96px]">
               <span
                 className={`px-2 py-1 rounded-full flex justify-center ${

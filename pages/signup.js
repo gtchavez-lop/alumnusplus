@@ -233,7 +233,7 @@ const PageSignUp = (e) => {
             </button>
 
             {/* already had an account */}
-            <Link href={"/signin"}>
+            <Link href={"/signin"} legacyBehavior>
               <p className="text-center mt-5">
                 Already have an account?{" "}
                 <span className="text-primary cursor-pointer">Login</span>
@@ -329,7 +329,7 @@ const PageSignUp = (e) => {
             </button>
 
             {/* already had an account */}
-            <Link href={"/signin"}>
+            <Link href={"/signin"} legacyBehavior>
               <p className="text-center mt-5">
                 Already have an account?{" "}
                 <span className="text-primary cursor-pointer">Login</span>
@@ -341,7 +341,7 @@ const PageSignUp = (e) => {
         {hasUser && (
           <div className="flex flex-col items-center mt-28">
             <p className="text-2xl">You are already signed in</p>
-            <Link href={"/feed"}>
+            <Link href={"/feed"} legacyBehavior>
               <button className="btn btn-primary mt-10">Go back to feed</button>
             </Link>
           </div>

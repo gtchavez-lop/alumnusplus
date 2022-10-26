@@ -37,15 +37,16 @@ const Finder = () => {
       console.log(error);
     } else {
       const user = __supabase.auth.user();
+      console.log(users);
       const filtered = users.filter(
         (e) =>
-          e.residing_city === user.user_metadata.residing_city &&
+          e.data.residingCity === user.user_metadata.residingCity &&
           e.user_id !== user.id
       );
       setSuggestedUsers(filtered);
       setTimeout(() => {
         setLoading(false);
-      }, 2000);
+      }, users.length * 200);
       // getDeviceLocation();
     }
   };
@@ -114,8 +115,7 @@ const Finder = () => {
             className="pb-16 lg:pt-24 pt-36"
           >
             <div className="flex flex-col justify-center items-center">
-              <h1 className="text-2xl font-bold">Nearby Hunters</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-16 gap-5 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 w-full">
                 {suggestedUsers.map((user, index) => (
                   <motion.div
                     animate={{ y: [10, 0], opacity: [0, 1] }}
@@ -130,7 +130,7 @@ const Finder = () => {
                     <img
                       src={`https://avatars.dicebear.com/api/micah/${user.user_id}.svg`}
                       alt="profile"
-                      className="w-20 h-20 rounded-full bg-base-100"
+                      className="w-20 h-20 rounded-full bg-base-100 mt-5"
                     />
                     <p className="mt-5 text-xs font-bold opacity-50">
                       @{user.data.username}

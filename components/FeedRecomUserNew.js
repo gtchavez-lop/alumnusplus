@@ -12,9 +12,6 @@ const FeedRecomUserNew = ({ user }) => {
     const user = session.currentSession.user;
 
     const userData = __supabase.auth.user().user_metadata;
-    toast.loading("Updating user...");
-
-    console.log(userData);
 
     __supabase
       .from("user_data")
@@ -27,7 +24,7 @@ const FeedRecomUserNew = ({ user }) => {
           toast.error(error.message);
         } else {
           toast.dismiss();
-          toast.success("Updated user!");
+          toast.success("Followed user!");
         }
       });
   };
@@ -56,7 +53,6 @@ const FeedRecomUserNew = ({ user }) => {
         }
 
         toast.dismiss();
-        toast.success("Followed user!");
         pushUpdateToUserData();
         setIsFollowing(true);
       });

@@ -204,9 +204,13 @@ const Feed = (e) => {
               <div className="flex flex-col gap-5 lg:hidden">
                 <p className="text-lg font-semibold">Recommended Users</p>
                 <div className="flex flex-col gap-5">
-                  {recommendedUsers.map((item, index) => (
-                    <FeedRecomUserNew user={item} key={`recom_user${index}`} />
-                  ))}
+                  {recommendedUsers.map((e, index) => {
+                    if (index < 3) {
+                      return (
+                        <FeedRecomUserNew user={e} key={`recom_user${index}`} />
+                      );
+                    }
+                  })}
                 </div>
               </div>
             )}
@@ -223,9 +227,13 @@ const Feed = (e) => {
               <>
                 <p className="text-xl font-semibold">Recommended Users</p>
                 <div className="flex flex-col mt-6 gap-3">
-                  {recommendedUsers.map((item, index) => (
-                    <FeedRecomUserNew user={item} key={`recom_user${index}`} />
-                  ))}
+                  {recommendedUsers.map((e, index) => {
+                    if (index < 5) {
+                      return (
+                        <FeedRecomUserNew user={e} key={`recom_user${index}`} />
+                      );
+                    }
+                  })}
                 </div>
               </>
             )}

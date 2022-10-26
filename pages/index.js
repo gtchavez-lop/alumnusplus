@@ -94,10 +94,10 @@ const Home = (e) => {
         </p>
 
         <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center  mt-10">
-          <Link href="/signup">
+          <Link href="/signup" legacyBehavior>
             <a className="btn btn-primary btn-sm mr-2">Sign up an account</a>
           </Link>
-          <Link href="/signin">
+          <Link href="/signin" legacyBehavior>
             <a className="btn btn-ghost btn-sm">Sign in your account</a>
           </Link>
         </div>

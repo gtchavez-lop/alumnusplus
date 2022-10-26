@@ -80,80 +80,27 @@ const Navbar = () => {
         >
           <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto hidden lg:flex justify-between items-center">
             {/* brand name */}
-            <Link href={"/"}>
+            <Link href={"/"} legacyBehavior>
               <Logo color="red" />
               {/* <img src="/wicket.svg" className="w-24" /> */}
               {/* <p className="select-none">SOMENAME</p> */}
             </Link>
 
-            {/* mobile menu */}
-            {/* <div className="dropdown dropdown-end lg:hidden">
-              <label tabIndex={0} className="btn btn-primary btn-square">
-                <FiMenu />
-              </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                {visible && (
-                  <>
-                    <li>
-                      <Link href={"/feed"}>
-                        <a>
-                          <FiGrid className="text-lg" /> Feed
-                        </a>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={"/me"}>
-                        <a>
-                          <FiUser className="text-lg" /> Profile
-                        </a>
-                      </Link>
-                    </li>
-                  </>
-                )}
-                {!visible && (
-                  <>
-                    <li>
-                      <Link href={"/signin"}>
-                        <a>
-                          <FiUser className="text-lg" /> Sign In
-                        </a>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={"/signup"}>
-                        <a>
-                          <FiMail className="text-lg" /> Sign Up
-                        </a>
-                      </Link>
-                    </li>
-                  </>
-                )}
-                <li onClick={(e) => setThemeOpen(true)}>
-                  <a>
-                    <FiDroplet className="text-lg" /> Theme
-                  </a>
-                </li>
-              </ul>
-            </div> */}
-
             {/* desktop bar */}
             {visible && (
               <>
                 <ul className="lg:flex gap-2 hidden">
-                  <Link href={"/feed"}>
+                  <Link href={"/feed"} legacyBehavior>
                     <li className="btn btn-ghost btn-square btn-sm">
                       <FiGrid className="text-lg" />
                     </li>
                   </Link>
-                  <Link href={"/messages"}>
+                  <Link href={"/messages"} legacyBehavior>
                     <li className="btn btn-ghost btn-square btn-sm">
                       <FiMail className="text-lg" />
                     </li>
                   </Link>
-                  <Link href={"/me"}>
+                  <Link href={"/me"} legacyBehavior>
                     <li className="btn btn-ghost btn-square btn-sm">
                       <FiUser className="text-lg" />
                     </li>
@@ -169,21 +116,6 @@ const Navbar = () => {
             )}
           </main>
 
-          {/* {(router.pathname !== "/" ||
-            router.pathname !== "/signin" ||
-            router.pathname !== "/signup") && (
-            <main className="w-full max-w-5xl px-5 lg:px-0 mx-auto lg:hidden flex justify-between items-center">
-              <p className="text-xl font-bold">
-                {router.pathname === "/feed"
-                  ? "Feed"
-                  : router.pathname === "/me"
-                  ? "Profile"
-                  : router.pathname === "/messages"
-                  ? "Messages"
-                  : "Wicket"}
-              </p>
-            </main>
-          )} */}
         </motion.nav>
 
         <AnimatePresence>

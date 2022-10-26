@@ -100,7 +100,7 @@ const SignInPage = (e) => {
             {/* dont have account? */}
             <p className="text-center mt-5">
               Don&apos;t have an account?{" "}
-              <Link href={"/signup"}>
+              <Link href={"/signup"} legacyBehavior>
                 <span className="text-primary cursor-pointer">Sign up</span>
               </Link>
             </p>
@@ -110,7 +110,7 @@ const SignInPage = (e) => {
         {hasUser && (
           <div className="flex flex-col items-center mt-28">
             <p className="text-3xl">You are signed in</p>
-            <Link href={"/feed"}>
+            <Link href={"/feed"} legacyBehavior>
               <button className="btn btn-primary mt-10">Go to feed</button>
             </Link>
           </div>
