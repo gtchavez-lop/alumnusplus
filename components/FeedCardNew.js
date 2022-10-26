@@ -36,6 +36,7 @@ const FeedCardNew = ({ feedItem }) => {
   const { user_metadata: uploader_data } = uploader_details;
   const [upvoterList, setUpvoterList] = useState(initialUpvoterList);
   const [localUser, setLocalUser] = useState(null);
+  const [showMore, setShowMore] = useState(false);
 
   const [theme, setTheme] = useState();
 
@@ -234,10 +235,29 @@ const FeedCardNew = ({ feedItem }) => {
           </div>
         </div>
 
-        <div
-          className="px-3"
+        <motion.div
+          animate={{
+            height: showMore
+              ? "auto"
+              : content.text.length < 200
+              ? "auto"
+              : "110px",
+          }}
+          transition={{ duration: 0.5 }}
+          className="px-3 overflow-hidden"
           dangerouslySetInnerHTML={{ __html: content.text }}
         />
+
+        {content.text.length > 200 && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowMore(!showMore)}
+              className="btn btn-link"
+            >
+              {showMore ? "Show less" : "Show more"}
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 ">

@@ -6,8 +6,8 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 
 const RichTextEditor = () => {
-  const [toggleEditable, setToggleEditable] = useState(false);
   const [content, setContent] = useState("");
+  const [isCharMax, setIsCharMax] = useState(false);
 
   const handlePost = async () => {
     const user = await __supabase.auth.user();
@@ -47,14 +47,21 @@ const RichTextEditor = () => {
         html={content}
         placeholder="Enter some text"
         onChange={(e) => {
+          setIsCharMax(e.target.value.length > 500);
           setContent(e.target.value);
         }}
         className="p-2 px-4 rounded-box outline-none border border-primary mt-1"
       />
 
+      {isCharMax && (
+        <p className="text-red-500 text-sm">
+          You have reached the editing limit.
+        </p>
+      )}
+
       <button
         onClick={handlePost}
-        disabled={content.length < 5}
+        disabled={content.length < 5 || isCharMax}
         className="btn btn-primary btn-sm mt-5"
       >
         Post
