@@ -161,6 +161,8 @@ const FeedCardNew = ({ feedItem }) => {
         })
         .eq("id", feed_id);
 
+      toast.dismiss();
+
       if (error) {
         toast.error(error.message);
       } else {
@@ -247,14 +249,11 @@ const FeedCardNew = ({ feedItem }) => {
               {!upvoteLoading && (
                 <FiHeart
                   fill={upvoted ? "#DC2626" : "transparent"}
-                  stroke={
-                    upvoted
-                      ? "#DC2626"
-                      : theme == "wicket-light"
-                      ? "#2D2F34"
-                      : "#F3F4F6"
-                  }
+                  stroke={upvoted ? "#DC2626" : "#3c83f6"}
                 />
+              )}
+              {upvoterList.length > 0 && (
+                <span className="ml-2">{upvoterList.length}</span>
               )}
             </button>
             <button

@@ -75,7 +75,7 @@ function MyApp({ Component, pageProps }) {
             </main>
 
             <Toaster
-              position="top-left"
+              position="bottom"
               toastOptions={{
                 style: {
                   padding: "16px",
