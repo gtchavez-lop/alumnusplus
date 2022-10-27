@@ -115,7 +115,7 @@ const NewNavbar = () => {
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.5, ease: "circOut" }}
-          className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-5 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
+          className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
         >
           <main className="grid grid-cols-3 w-full items-center max-w-5xl">
             <Logo />
@@ -128,7 +128,7 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiGrid />
+                    <FiGrid className="text-xl" />
                   </button>
                 </div>
               </Link>
@@ -140,7 +140,7 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiMapPin />
+                    <FiMapPin className="text-xl" />
                   </button>
                 </div>
               </Link>
@@ -155,7 +155,7 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiPaperclip />
+                    <FiPaperclip className="text-xl" />
                   </button>
                 </div>
               </Link>
@@ -170,7 +170,7 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiPackage />
+                    <FiPackage className="text-xl" />
                   </button>
                 </div>
               </Link>
@@ -193,7 +193,7 @@ const NewNavbar = () => {
                     "bg-primary text-primary-content"
                   }`}
                 >
-                  <FiUser />
+                  <FiUser className="text-xl" />
                 </button>
               </Link>
             </div>

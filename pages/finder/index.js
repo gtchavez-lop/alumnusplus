@@ -37,7 +37,6 @@ const Finder = () => {
       console.log(error);
     } else {
       const user = __supabase.auth.user();
-      console.log(users);
       const filtered = users.filter(
         (e) =>
           e.data.residingCity === user.user_metadata.residingCity &&
@@ -152,6 +151,13 @@ const Finder = () => {
                   </motion.div>
                 ))}
               </div>
+
+              {suggestedUsers.length < 1 && (
+                <div className="flex flex-col h-64 justify-center items-center">
+                  <p className="font-bold text-xl">No users found</p>
+                  <p className="text-sm">Try again later</p>
+                </div>
+              )}
             </div>
           </motion.main>
         )}

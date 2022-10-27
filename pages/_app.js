@@ -30,27 +30,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>
-          {router.pathname === "/"
-            ? "wicket | Home"
-            : router.pathname === "/me"
-            ? "wicket | Me"
-            : router.pathname === "/feed"
-            ? "wicket | My Feed"
-            : router.pathname === "/signin"
-            ? "wicket | Sign in"
-            : router.pathname === "/signup"
-            ? "wicket | Sign up"
-            : router.pathname === "/messages"
-            ? "wicket | My Messages"
-            : router.pathname === "/finder"
-            ? "wicket | Finder"
-            : router.pathname === "/jobs"
-            ? "wicket | Jobs"
-            : router.pathname === "/events"
-            ? "wicket | Events"
-            : "wicket | Page not registered"}
-        </title>
+        <title>Wicket - A web3 social media platform</title>
 
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta charset="utf-8" />

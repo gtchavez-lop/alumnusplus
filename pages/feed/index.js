@@ -15,6 +15,7 @@ import { useRealtime, useSelect } from "react-supabase";
 
 import FeedCardNew from "../../components/FeedCardNew";
 import FeedRecomUserNew from "../../components/FeedRecomUserNew";
+import Head from "next/head";
 import RichTextEditor from "../../components/RichTextEditor";
 import { __PageTransition } from "../../lib/animtions";
 import __supabase from "../../lib/supabase";
@@ -129,6 +130,10 @@ const Feed = (e) => {
 
   return (
     <>
+      <Head>
+        <title>Feed | Wicket</title>
+      </Head>
+
       <motion.main
         variants={__PageTransition}
         initial="initial"

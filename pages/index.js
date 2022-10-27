@@ -1,10 +1,12 @@
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import InnerParticle from "../components/InnerParticle";
+import { FiArrowDown } from "react-icons/fi";
+import Footer from "../components/Footer";
 import Link from "next/link";
 import { __PageTransition } from "../lib/animtions";
 import __supabase from "../lib/supabase";
+import { useInView } from "framer-motion";
 import { useRouter } from "next/router";
 
 const Home = (e) => {
@@ -20,12 +22,22 @@ const Home = (e) => {
     "Product Designer",
   ];
   const [activeJob, setActiveJob] = useState(jobList[0]);
-  const { scrollY } = useScroll();
-
   const router = useRouter();
+  const [scrollYValue, setScrollYValue] = useState(0);
+
+  const desktopImg_1 = useRef(null);
+  const desktopImg_2 = useRef(null);
+  const desktopImg_1_inview = useInView(desktopImg_1, {
+    once: true,
+    margin: "-200px",
+  });
+  const desktopImg_2_inview = useInView(desktopImg_2, {
+    once: true,
+    margin: "-200px",
+  });
 
   const checkUser = async () => {
-    const user = __supabase.auth.user();
+    const user = await __supabase.auth.user();
     if (user) {
       router.push("/feed");
     }
@@ -34,12 +46,23 @@ const Home = (e) => {
   useEffect(() => {
     checkUser();
 
+    // set scrollYValue to window.scrollY
+    const handleScroll = () => {
+      setScrollYValue(window.scrollY);
+    };
+
+    // add event listener
+    window.addEventListener("scroll", handleScroll);
+
     // set interval for job list
     const interval = setInterval(() => {
       setActiveJob(jobList[Math.floor(Math.random() * jobList.length)]);
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -64,7 +87,7 @@ const Home = (e) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0  bg-transparent"
+        className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0 "
       >
         <img src="/wicket.svg" className="w-64 fill-primary" />
         <p className="text-3xl flex flex-col lg:flex-row lg:justify-center mt-5">
@@ -93,15 +116,138 @@ const Home = (e) => {
           </span>
         </p>
 
-        <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center  mt-10">
-          <Link href="/signup" legacyBehavior>
-            <a className="btn btn-primary btn-sm mr-2">Sign up an account</a>
+        <div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
+          <Link href="/signup" className="btn btn-primary btn-sm w-[250px]">
+            Sign up an account
           </Link>
-          <Link href="/signin" legacyBehavior>
-            <a className="btn btn-ghost btn-sm">Sign in your account</a>
+          <Link href="/signin" className="btn btn-ghost btn-sm w-[250px]">
+            Sign in your account
           </Link>
         </div>
+
+        {/* scroll down icon */}
+        <motion.div
+          animate={{
+            y: [-10, 10],
+          }}
+          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-0 w-full flex justify-center py-10"
+        >
+          <FiArrowDown
+            className={`text-3xl ${
+              scrollYValue > 200 && "rotate-180"
+            } duration-200`}
+          />
+        </motion.div>
       </motion.div>
+
+      <motion.div
+        ref={desktopImg_1}
+        className="relative grid grid-cols-1 lg:grid-cols-2 place-items-center place-content-center min-h-[50vh] px-2 lg:px-0 pb-16"
+      >
+        <motion.div
+          animate={{
+            opacity: desktopImg_1_inview ? 1 : 0,
+            x: desktopImg_1_inview ? 0 : 100,
+          }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="flex flex-col items-center lg:items-end justify-center text-center"
+        >
+          <img
+            src="/landing/Experts-cuate.svg"
+            className="w-[500px] h-[300px] lg:hidden"
+          />
+          <h4 className="text-2xl font-bold">
+            Providing jobs for ordinary people.
+          </h4>
+          <p className="text-sm opacity-70">
+            Today, in every way, I am capable of saying &apos;I can!&apos;
+          </p>
+        </motion.div>
+        <div className="hidden lg:flex flex-col items-end justify-center ">
+          <motion.img
+            animate={{
+              opacity: desktopImg_1_inview ? 1 : 0,
+              x: desktopImg_1_inview ? 0 : -100,
+            }}
+            transition={{ duration: 0.5, ease: "circOut" }}
+            src="/landing/Experts-cuate.svg"
+            className="w-[500px] h-[500px]"
+          />
+        </div>
+      </motion.div>
+
+      <motion.div
+        ref={desktopImg_2}
+        className="relative flex flex-col items-center min-h-[70vh] px-2 lg:px-0 mb-16"
+      >
+        <h2 className="text-center font-bold text-3xl">Platform Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
+          <motion.div
+            animate={{
+              opacity: desktopImg_2_inview ? 1 : 0,
+              y: desktopImg_2_inview ? 0 : 40,
+            }}
+            transition={{ duration: 0.5, ease: "circOut" }}
+            className="flex flex-col items-center p-5"
+          >
+            <img
+              src="/landing/Connecting-teams-cuate.svg"
+              className="w-[250px]"
+            />
+            <p className="text-xl">Find a suitable work for you</p>
+          </motion.div>
+          <motion.div
+            animate={{
+              opacity: desktopImg_2_inview ? 1 : 0,
+              y: desktopImg_2_inview ? 0 : 40,
+            }}
+            transition={{ duration: 0.5, ease: "circOut", delay: 0.2 }}
+            className="flex flex-col items-center p-5"
+          >
+            <img src="/landing/Marketing-cuate.svg" className="w-[250px]" />
+            <p className="text-xl">Share your activities</p>
+          </motion.div>
+          <motion.div
+            animate={{
+              opacity: desktopImg_2_inview ? 1 : 0,
+              y: desktopImg_2_inview ? 0 : 40,
+            }}
+            transition={{ duration: 0.5, ease: "circOut", delay: 0.4 }}
+            className="flex flex-col items-center p-5 justify-center col-span-full lg:col-span-1"
+          >
+            <img
+              src="/landing/Connected-world-cuate.svg"
+              className="w-[250px]"
+            />
+            <p className="text-xl">Connect to everyone</p>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      <motion.div className="relative flex flex-col items-center justify-center min-h-[50vh] px-2 lg:px-0">
+        {/* try this app now */}
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-center font-bold text-3xl">
+            Start your journey with us
+          </h2>
+          <p className="text-center text-sm opacity-70">
+            Join us now and create your future with us
+          </p>
+
+          {/* button */}
+          <div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
+            <Link href="/signup" className="btn btn-primary btn-sm w-[250px]">
+              Sign up an account
+            </Link>
+            <Link href="/signin" className="btn btn-ghost btn-sm w-[250px]">
+              Sign in your account
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+
+      <Footer />
     </>
   );
 };
