@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }) {
         <title>Wicket - A web3 social media platform</title>
 
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <meta charset="utf-8" />
+        <meta charSet="utf-8" />
 
         <link rel="icon" href="/newlogo.svg" />
 
