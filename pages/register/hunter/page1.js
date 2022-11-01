@@ -117,7 +117,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
                 placeholder="Doe"
               />
             </div>
-            '{/* divider */}
+            {/* divider */}
             <div className="col-span-full divider my-0 h-2  opacity-0" />
             {/* gender */}
             <div className="flex flex-col col-start-1">
@@ -161,8 +161,10 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
                 id="city"
                 className="select select-bordered select-primary w-full"
               >
-                {MM_Cities.map((city) => (
-                  <option value={city.name}>{city.name}</option>
+                {MM_Cities.map((city, index) => (
+                  <option key={`city_${index + 1}`} value={city.name}>
+                    {city.name}
+                  </option>
                 ))}
               </select>
             </div>
