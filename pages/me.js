@@ -9,6 +9,7 @@ import MeFeed from "../components/MeFeed";
 import MeSettings from "../components/MeSettings";
 import { __PageTransition } from "../lib/animtions";
 import __supabase from "../lib/supabase";
+import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
@@ -23,7 +24,7 @@ const MePage = (e) => {
     const connections = await __supabase.auth.user().user_metadata.connections;
     const user = await __supabase.auth.user();
     const { data, error } = await __supabase
-      .from("feed_data")
+      .from("hunt_blog")
       .select("*")
       .order("created_at", { ascending: false })
       .eq("uploader_email", user.email);

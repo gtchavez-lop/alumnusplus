@@ -4,7 +4,7 @@ import { SiDiscord } from "react-icons/si";
 
 const Footer = () => {
   return (
-    <footer className="footer footer-center p-10 text-primary-content mt-16">
+    <footer className="footer footer-center p-10 mt-16">
       <div>
         <img src="/wicket_short.svg" className="w-16 h-16" />
         <p className="font-bold">Wicket Journeys</p>

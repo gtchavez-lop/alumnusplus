@@ -1,3 +1,8 @@
+import { __PageTransition } from "../../../lib/animtions";
+import __supabase from "../../../lib/supabase";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+
 const MM_Cities = [
   { name: "Caloocan", province: "MM", city: true },
   { name: "Las Piñas", province: "MM", city: true },
@@ -19,23 +24,76 @@ const MM_Cities = [
 ];
 
 const Hunter_SignUp_Page1 = ({ setPage }) => {
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setPage(2);
+
+    const form = e.target;
+    const formData = {
+      username: form.username.value,
+      email: form.email.value,
+      password: form.password.value,
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      middleName: form.middleName.value,
+      gender: form.gender.value,
+      birthdate: form.birthdate.value,
+      address: form.address.value,
+      city: form.city.value,
+      postalCode: form.postalCode.value,
+      university: form.university.value,
+      connections: [],
+    };
+
+    form.disabled = true;
+    toast.loading("Creating account...");
+
+    // create user
+    const { user, error } = await __supabase.auth.signUp(
+      {
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        data: formData,
+      }
+    );
+
+    toast.dismiss();
+
+    if (error) {
+      toast.error(error.message);
+      form.disabled = false;
+    } else {
+      toast.success("Account created!");
+      setPage(2);
+    }
   };
 
   return (
-    <main className="relative py-16">
+    <motion.main
+      transition={{ duration: 0.3, ease: "circOut" }}
+      className="relative py-16"
+    >
       {/* img background with gradient filter */}
-      <div className="fixed w-full h-screen top-0 right-0 ">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed w-full h-screen top-0 right-0 "
+      >
         <div className="hidden lg:block absolute top-0 right-0 w-1/2 h-full bg-gradient-to-r from-base-100 to-transparent" />
         <img
           src="https://images.unsplash.com/photo-1613909207039-6b173b755cc1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&q=80"
           className="absolute top-0 right-0 hidden lg:block w-1/2 h-full object-cover -z-10 transition-all duration-300"
         />
-      </div>
+      </motion.div>
 
-      <div className="relative">
+      <motion.div
+        className="relative"
+        initial={{ opacity: 0, translateY: 50 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        exit={{ opacity: 0 }}
+      >
         <h1 className="text-3xl">Hunter Account</h1>
         <p className="opacity-50 max-w-md">
           A Hunter is a person who is looking for a job. They can be
@@ -195,14 +253,14 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
             <div className="col-span-full divider my-0 h-2  opacity-0" />
             {/* submit */}
             <div className="col-span-full flex flex-col col-start-1">
-              <button className="btn btn-primary" onClick={() => setPage(2)}>
-                Next
+              <button className="btn btn-primary" type="submit">
+                Submit
               </button>
             </div>
           </form>
         </div>
-      </div>
-    </main>
+      </motion.div>
+    </motion.main>
   );
 };
 

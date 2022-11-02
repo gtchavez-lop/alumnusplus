@@ -117,7 +117,7 @@ const Home = (e) => {
         </p>
 
         <div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
-          <Link href="/signup" className="btn btn-primary btn-sm w-[250px]">
+          <Link href="/register" className="btn btn-primary btn-sm w-[250px]">
             Sign up an account
           </Link>
           <Link href="/signin" className="btn btn-ghost btn-sm w-[250px]">

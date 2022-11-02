@@ -31,7 +31,7 @@ import { useRouter } from "next/router";
 //   }
 // );
 
-const Feed = (e) => {
+const Feed = ({}) => {
   const [feed, setFeed] = useState([]);
   const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [user, setUser] = useState(null);
@@ -52,15 +52,15 @@ const Feed = (e) => {
   const [
     { data: feedData, error: feedError, fetching: feedLoading },
     FeedReExecute,
-  ] = useRealtime("feed_data", {
+  ] = useRealtime("hunt_blog", {
     columns: "*",
     order: "created_at",
   });
 
   const [
     { data: recomUserData, error: recomUserError, fetching: recomUserLoading },
-  ] = useSelect("user_data", {
-    columns: "data, user_id, created_at",
+  ] = useSelect("user_hunter", {
+    columns: "user_id, created_at",
     order: "created_at",
     limit: 5,
   });
@@ -114,7 +114,7 @@ const Feed = (e) => {
     }
   }, [feedData, recomUserData]);
 
-  if (feedLoading || recomUserLoading || !feed || !recommendedUsers || !user) {
+  if (!user || !feed || !recommendedUsers) {
     return (
       <motion.div
         variants={__PageTransition}

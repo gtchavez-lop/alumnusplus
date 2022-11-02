@@ -12,11 +12,24 @@ const SignInPage = (e) => {
   const router = useRouter();
 
   const writeUserMetaData = () => {
+    const metaData = __supabase.auth.user().user_metadata;
+
     __supabase
-      .from("user_data")
+      .from("user_hunters")
       .upsert({
-        user_id: __supabase.auth.user().id,
-        data: __supabase.auth.user().user_metadata,
+        id: __supabase.auth.user().id,
+        firstName: metaData.firstName,
+        lastName: metaData.lastName,
+        middleName: metaData.middleName,
+        gender: metaData.gender,
+        email: __supabase.auth.user().email,
+        username: metaData.username,
+        birthdate: metaData.birthdate,
+        "address.address": metaData.address,
+        "address.city": metaData.city,
+        "address.postalCode": metaData.postalCode,
+        university: metaData.university,
+        connections: metaData.connections,
       })
       .then(({ error }) => {
         if (error) {
