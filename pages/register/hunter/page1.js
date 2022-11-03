@@ -2,6 +2,7 @@ import { __PageTransition } from "../../../lib/animtions";
 import __supabase from "../../../lib/supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const MM_Cities = [
@@ -27,90 +28,139 @@ const MM_Cities = [
 const Hunter_SignUp_Page1 = ({ setPage }) => {
   const [usernameTaken, setUsernameTaken] = useState(null);
   const [isAlreadyHunter, setIsAlreadyHunter] = useState(null);
+  const router = useRouter();
+
+  const checkIfUsernameIsTaken = async (username) => {
+    const { data, error } = await __supabase
+      .from("user_hunters")
+      .select("*")
+      .eq("username", username);
+    if (error) {
+      console.log(error);
+      return;
+    } else {
+      if (data.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
+  const checkIfEmailIsAlreadyHunter = async (email) => {
+    const { data, error } = await __supabase
+      .from("user_hunters")
+      .select("*")
+      .eq("email", email);
+    if (error) {
+      console.log(error);
+      return;
+    } else {
+      if (data.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const form = e.target;
     const formData = {
-      username: form.username.value,
-      email: form.email.value,
-      password: form.password.value,
-      firstName: form.firstName.value,
-      lastName: form.lastName.value,
-      middleName: form.middleName.value,
-      gender: form.gender.value,
-      birthdate: form.birthdate.value,
-      address: form.address.value,
-      city: form.city.value,
-      postalCode: form.postalCode.value,
-      university: form.university.value,
+      username: form.username.value || "",
+      email: form.email.value || "",
+      password: form.password.value || "",
+      firstName: form.firstName.value || "",
+      lastName: form.lastName.value || "",
+      middleName: form.middleName.value || "",
+      gender: form.gender.value || "",
+      birthdate: form.birthdate.value || "",
+      address: form.address.value || "",
+      city: form.city.value || "",
+      postalCode: form.postalCode.value || "",
+      university: form.university.value || "",
       connections: [],
     };
 
-    // check if all fields from formData are not filled
-    if (Object.values(formData).filter((value) => value === "").length > 0) {
-      toast.error("Please fill all fields");
+    if (
+      formData.username === "" ||
+      formData.email === "" ||
+      formData.password === "" ||
+      formData.firstName === "" ||
+      formData.lastName === "" ||
+      formData.address === "" ||
+      formData.city === "" ||
+      formData.postalCode === "" ||
+      formData.university === ""
+    ) {
+      toast.error("Please fill out all fields");
       return;
-    }
-
-    // check if username and email is taken
-    const { data: usernameCheck, error: usernameCheckError } = await __supabase
-      .from("user_hunters")
-      .select(`username, email`)
-      .or(`username.eq.${formData.username},email.eq.${formData.email}`)
-      .single();
-
-    console.log(usernameCheck, usernameCheckError);
-
-    if (usernameCheckError) {
-      toast.error(usernameCheckError.message);
-      return;
-    }
-
-    if (usernameCheck) {
-      setUsernameTaken(usernameCheck.username === formData.username);
-      setIsAlreadyHunter(usernameCheck.email === formData.email);
-
-      if (usernameCheck.username === formData.username) {
-        toast.error("Username is already taken");
-      }
-
-      if (usernameCheck.email === formData.email) {
-        toast.error("Email is already taken");
-      }
-
-      // scroll to  top smoothly
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-
-      return;
-    }
-
-    form.disabled = true;
-
-    // create user
-    const { user, error } = await __supabase.auth.signUp(
-      {
-        email: formData.email,
-        password: formData.password,
-      },
-      {
-        data: formData,
-      }
-    );
-
-    toast.dismiss();
-
-    if (error) {
-      toast.error(error.message);
-      form.disabled = false;
     } else {
-      toast.success("Account created!");
-      setPage(2);
+      checkIfUsernameIsTaken(formData.username).then((res) => {
+        if (res) {
+          setUsernameTaken(true);
+          toast.error("Username is already taken");
+          // smooth scroll to top
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+          return;
+        } else {
+          setUsernameTaken(false);
+
+          checkIfEmailIsAlreadyHunter(formData.email).then(async (res) => {
+            if (res) {
+              setIsAlreadyHunter(true);
+              toast.error("Email is already registered");
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+              return;
+            } else {
+              setIsAlreadyHunter(false);
+              toast.loading("Creating account...");
+
+              // create user
+              const { user, error } = await __supabase.auth.signUp(
+                {
+                  email: formData.email,
+                  password: formData.password,
+                },
+                {
+                  data: {
+                    username: form.username.value,
+                    email: form.email.value,
+                    firstName: form.firstName.value,
+                    lastName: form.lastName.value,
+                    middleName: form.middleName.value,
+                    gender: form.gender.value,
+                    birthdate: form.birthdate.value,
+                    address: form.address.value,
+                    city: form.city.value,
+                    postalCode: form.postalCode.value,
+                    university: form.university.value,
+                    connections: [],
+                  },
+                }
+              );
+
+              toast.dismiss();
+              if (error) {
+                toast.error(error.message);
+                return;
+              } else {
+                toast.success("Account created successfully");
+                toast("Please check your email for verification link");
+                router.push("/login");
+              }
+            }
+          });
+        }
+      });
     }
   };
 
@@ -205,7 +255,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
               />
             </div>
             <div className="flex flex-col">
-              <label htmlFor="middleName">Middle Name</label>
+              <label htmlFor="middleName">Middle Name (Optional)</label>
               <input
                 type="text"
                 name="middleName"

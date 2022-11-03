@@ -5,7 +5,6 @@ import { useState } from "react";
 const FeedRecomUserNew = ({ user }) => {
   const { created_at, firstName, id, lastName, middleName, username } = user;
   const [isFollowing, setIsFollowing] = useState(false);
-  return;
 
   const pushUpdateToUserData = async (e) => {
     const token = localStorage.getItem("supabase.auth.token");

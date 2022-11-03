@@ -74,20 +74,17 @@ const Feed = ({}) => {
     const user = __supabase.auth.user();
     const connections = user.user_metadata.connections;
 
-    const filtered = feedData.filter((item) => {
-      if (item.uploader_email === user.email) {
-        return true;
-      } else {
-        return connections.includes(item.uploader_details.id);
+    const filtered = feedData.filter((e) => {
+      if (
+        connections.includes(e.uploader_email) ||
+        e.uploader_email === user.email
+      ) {
+        return e;
       }
     });
 
-    // sort to most recent
-    const sorted = filtered.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-
-    setFeed(sorted);
+    console.log(filtered);
+    setFeed(filtered);
   };
 
   useEffect(() => {
@@ -96,6 +93,7 @@ const Feed = ({}) => {
 
   useEffect(() => {
     if (feedData) {
+      console.log(feed);
       filterFeed();
     }
 
