@@ -21,7 +21,8 @@ const MePage = (e) => {
   const router = useRouter();
 
   const fetchData = async () => {
-    const connections = await __supabase.auth.user().user_metadata.connections;
+    const connections =
+      (await __supabase.auth.user().user_metadata.connections) || [];
     const user = await __supabase.auth.user();
     const { data, error } = await __supabase
       .from("hunt_blog")
@@ -70,8 +71,8 @@ const MePage = (e) => {
 
             <div className="flex flex-col gap-2 z-10 ">
               <h1 className="text-2xl lg:text-3xl font-bold leading-3 lg:leading-3">
-                {localUser.user_metadata.first_name}{" "}
-                {localUser.user_metadata.last_name}
+                {localUser.user_metadata.firstName}{" "}
+                {localUser.user_metadata.lastName}
               </h1>
               <p className="opacity-50">@{localUser.user_metadata.username}</p>
             </div>

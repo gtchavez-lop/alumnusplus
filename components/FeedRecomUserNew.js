@@ -3,22 +3,23 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 
 const FeedRecomUserNew = ({ user }) => {
-  const { user_id, data } = user;
+  const { created_at, firstName, id, lastName, middleName, username } = user;
   const [isFollowing, setIsFollowing] = useState(false);
+  return;
 
-  const pushUpdateToUserData = (e) => {
+  const pushUpdateToUserData = async (e) => {
     const token = localStorage.getItem("supabase.auth.token");
     const session = JSON.parse(token);
     const user = session.currentSession.user;
 
-    const userData = __supabase.auth.user().user_metadata;
+    const userData = await __supabase.auth.user().user_metadata;
 
     __supabase
-      .from("user_data")
+      .from("user_hunters")
       .update({
-        data: userData,
+        connections: userData.connections,
       })
-      .eq("user_id", user.id)
+      .eq("id", user.id)
       .then(({ error }) => {
         if (error) {
           toast.error(error.message);
@@ -30,7 +31,7 @@ const FeedRecomUserNew = ({ user }) => {
   };
 
   const handleFollow = (e) => {
-    let oldConnections = __supabase.auth.user().user_metadata.connections;
+    let oldConnections = __supabase.auth.user().user_metaconnections;
     let newConnections = [...oldConnections, user_id];
 
     // remove duplicate id
@@ -61,14 +62,14 @@ const FeedRecomUserNew = ({ user }) => {
   return (
     <div className="flex items-center gap-3">
       <img
-        src={`https://avatars.dicebear.com/api/micah/${data.username}.svg`}
+        src={`https://avatars.dicebear.com/api/micah/${username}.svg`}
         alt="user"
         className="w-10 h-10 rounded-full bg-base-300"
       />
       <div className="flex flex-col">
-        <p className="font-semibold">@{data.username}</p>
+        <p className="font-semibold">@{username}</p>
         <p className="text-sm opacity-50">
-          {data.first_name} {data.last_name}
+          {firstName} {lastName}
         </p>
       </div>
 

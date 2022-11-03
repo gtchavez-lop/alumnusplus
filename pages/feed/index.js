@@ -59,8 +59,8 @@ const Feed = ({}) => {
 
   const [
     { data: recomUserData, error: recomUserError, fetching: recomUserLoading },
-  ] = useSelect("user_hunter", {
-    columns: "user_id, created_at",
+  ] = useSelect("user_hunters", {
+    columns: "id,created_at,username,firstName,lastName,middleName",
     order: "created_at",
     limit: 5,
   });
@@ -70,8 +70,6 @@ const Feed = ({}) => {
     FeedReExecute();
   }
 
-  // filter feed
-  // only show posts from connections and from the user
   const filterFeed = async () => {
     const user = __supabase.auth.user();
     const connections = user.user_metadata.connections;
@@ -106,9 +104,11 @@ const Feed = ({}) => {
       const parsedToken = JSON.parse(token);
       const user = parsedToken.currentSession.user;
       const connections = user.user_metadata.connections;
-      const filtered = recomUserData.filter((e) => {
-        return !connections.includes(e.user_id) && e.user_id !== user.id;
-      });
+      const filtered = connections
+        ? recomUserData.filter((e) => {
+            return !connections.includes(e.user_id) && e.user_id !== user.id;
+          })
+        : recomUserData;
 
       setRecommendedUsers(filtered);
     }

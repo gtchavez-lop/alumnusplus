@@ -28,19 +28,18 @@ const Finder = () => {
   // };
 
   const getSuggestedUsers = async () => {
+    const user = await __supabase.auth.user();
     // get 10 random users
     const { data: users, error } = await __supabase
-      .from("random_userdata")
+      .from("user_hunters")
       .select("*")
+      .eq('"address.city"', user.user_metadata.city)
       .limit(10);
     if (error) {
       console.log(error);
     } else {
-      const user = __supabase.auth.user();
       const filtered = users.filter(
-        (e) =>
-          e.data.residingCity === user.user_metadata.residingCity &&
-          e.user_id !== user.id
+        (e) => e.city === user.user_metadata.city && e.user_id !== user.id
       );
       setSuggestedUsers(filtered);
       setTimeout(() => {
@@ -137,9 +136,7 @@ const Finder = () => {
                     <h1 className="font-semibold text-sm">
                       {user.data.first_name} {user.data.last_name}
                     </h1>
-                    <p className="text-xs opacity-50">
-                      {user.data.residingCity}
-                    </p>
+                    <p className="text-xs opacity-50">{user.data.city}</p>
 
                     <p className="hidden lg:flex text-primary text-sm w-full items-center gap-2 mt-10 opacity-20 justify-between font-bold group-hover:opacity-100 transition-all duration-200">
                       Visit Profile <FiArrowRight />

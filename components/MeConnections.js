@@ -8,26 +8,28 @@ import {
 import { useEffect, useState } from "react";
 
 import MeConnectionCard from "./MeConnectionsCard";
+import toast from "react-hot-toast";
 import { useSelect } from "react-supabase";
 
 const MeConnections = ({ connections }) => {
   const [userList, setUserList] = useState([]);
   const [{ data: userData, error: userError, fetching: userLoading }] =
-    useSelect("user_data", {
-      columns: "data, user_id, created_at",
+    useSelect("user_hunters", {
+      columns:
+        "id,created_at,username,firstName,lastName,middleName,connections",
       order: "created_at",
     });
 
   useEffect(() => {
     if (userError) {
-      toast.error(error.message);
+      toast.error(userError.message);
     }
 
     if (userData) {
-      let filtered = userData.filter((e) => {
-        // return only users that are in the connections array
-        return connections.includes(e.user_id);
+      const filtered = userData.filter((item) => {
+        return connections.includes(item.id);
       });
+
       setUserList(filtered);
     }
   }, [userData]);

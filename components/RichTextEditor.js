@@ -5,6 +5,14 @@ import __supabase from "../lib/supabase";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
+const uuidv4 = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const RichTextEditor = () => {
   const [content, setContent] = useState("");
   const [isCharMax, setIsCharMax] = useState(false);
@@ -13,27 +21,19 @@ const RichTextEditor = () => {
     const user = await __supabase.auth.user();
     toast.loading("Posting...");
 
-    const { error } = await __supabase.from("feed_data").insert([
+    const { error } = await __supabase.from("hunt_blog").insert([
       {
+        id: uuidv4(),
+        uploaderData: user.user_metadata,
+        content: content,
+        created_at: new Date(),
         uploader_email: user.email,
-        uploader_details: {
-          email: user.email,
-          id: user.id,
-          user_metadata: {
-            first_name: user.user_metadata.first_name,
-            last_name: user.user_metadata.last_name,
-            username: user.user_metadata.username,
-          },
-        },
-        content: {
-          text: content,
-        },
       },
     ]);
 
     toast.dismiss();
 
-    if (error && editorState) {
+    if (error) {
       toast.error(error.message);
     } else {
       toast.success("Posted!");

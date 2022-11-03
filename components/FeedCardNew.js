@@ -25,16 +25,16 @@ const uuidv4 = () => {
 
 const FeedCardNew = ({ feedItem }) => {
   const {
-    comments,
+    id,
+    uploaderData,
     content,
-    created_at: createdAt,
-    id: feed_id,
-    uploader_details,
-    upvoter_list: initialUpvoterList,
+    created_at,
+    uploader_email,
+    upvoters,
+    comments,
   } = feedItem;
 
-  const { user_metadata: uploader_data } = uploader_details;
-  const [upvoterList, setUpvoterList] = useState(initialUpvoterList);
+  const [upvoterList, setUpvoterList] = useState(upvoters);
   const [localUser, setLocalUser] = useState(null);
   const [showMore, setShowMore] = useState(false);
 
@@ -50,20 +50,20 @@ const FeedCardNew = ({ feedItem }) => {
     const user = await __supabase.auth.user();
 
     const { data: latestUpvoterList } = await __supabase
-      .from("feed_data")
+      .from("hunt_blog")
       .select("*")
       .single()
-      .eq("id", feed_id);
+      .eq("id", id);
 
     if (upvoted) {
-      const newList = latestUpvoterList.upvoter_list.filter(
+      const newList = latestUpvoterList.upvoters.filter(
         (item) => item.id !== user.id
       );
 
       const { error } = await __supabase
-        .from("feed_data")
-        .update({ upvoter_list: newList })
-        .eq("id", feed_id);
+        .from("hunt_blog")
+        .update({ upvoters: newList })
+        .eq("id", id);
 
       if (error) {
         toast.error(error.message);
@@ -82,9 +82,9 @@ const FeedCardNew = ({ feedItem }) => {
       ];
 
       const { error } = await __supabase
-        .from("feed_data")
-        .update({ upvoter_list: newList })
-        .eq("id", feed_id);
+        .from("hunt_blog")
+        .update({ upvoters: newList })
+        .eq("id", id);
 
       if (error) {
         toast.error(error.message);
@@ -97,10 +97,8 @@ const FeedCardNew = ({ feedItem }) => {
   const checkIfUpvoted = async () => {
     const user = await __supabase.auth.user();
 
-    if (user) {
-      const upvoted = initialUpvoterList.some(
-        (upvoter) => upvoter.id === user.id
-      );
+    if (user && upvoters !== null) {
+      const upvoted = upvoters.some((upvoter) => upvoter.id === user.id);
       setUpvoted(upvoted);
     }
   };
@@ -109,16 +107,13 @@ const FeedCardNew = ({ feedItem }) => {
     const user = await __supabase.auth.user();
 
     if (user) {
-      const isSelfPost = user.id === uploader_details.id;
+      const isSelfPost = user.id === uploaderData.id;
       setIsSelfPost(isSelfPost);
     }
   };
 
   const handleDeletePost = async () => {
-    const { error } = await __supabase
-      .from("feed_data")
-      .delete()
-      .eq("id", feed_id);
+    const { error } = await __supabase.from("hunt_blog").delete().eq("id", id);
 
     if (error) {
       toast.error(error.message);
@@ -156,11 +151,11 @@ const FeedCardNew = ({ feedItem }) => {
       };
 
       const { error } = await __supabase
-        .from("feed_data")
+        .from("hunt_blog")
         .update({
           comments: [...comments, commentdata],
         })
-        .eq("id", feed_id);
+        .eq("id", id);
 
       toast.dismiss();
 
@@ -185,19 +180,19 @@ const FeedCardNew = ({ feedItem }) => {
   return (
     <>
       <div
-        id={`feed-card-${feed_id}`}
+        id={`feed-card-${id}`}
         className="p-3 border-b border-primary border-opacity-50 flex flex-col gap-4 last:border-b-transparent"
       >
         <div className="flex items-center">
           <img
-            src={`https://avatars.dicebear.com/api/micah/${uploader_data.username}.svg`}
+            src={`https://avatars.dicebear.com/api/micah/${uploaderData.username}.svg`}
             alt="avatar"
             className="w-10 h-10 rounded-full bg-base-300"
           />
           <div className="ml-2 flex flex-col gap-1">
-            <p className="font-bold leading-none">@{uploader_data.username}</p>
+            <p className="font-bold leading-none">@{uploaderData.username}</p>
             <p className="text-xs opacity-50 leading-none">
-              {dayjs(createdAt).format("MMM DD YYYY hh:mm A")}
+              {dayjs(created_at).format("MMM DD YYYY hh:mm A")}
             </p>
           </div>
           <div className="ml-auto">
@@ -220,7 +215,7 @@ const FeedCardNew = ({ feedItem }) => {
                 {isSelfPost && (
                   <li>
                     <label
-                      htmlFor={`delete-post-${feed_id}`}
+                      htmlFor={`delete-post-${id}`}
                       className="text-error flex"
                     >
                       <span>
@@ -237,18 +232,14 @@ const FeedCardNew = ({ feedItem }) => {
 
         <motion.div
           animate={{
-            height: showMore
-              ? "auto"
-              : content.text.length < 200
-              ? "auto"
-              : "110px",
+            height: showMore ? "auto" : content.length < 200 ? "auto" : "110px",
           }}
           transition={{ duration: 0.5 }}
           className="px-3 overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: content.text }}
+          dangerouslySetInnerHTML={{ __html: content }}
         />
 
-        {content.text.length > 200 && (
+        {content.length > 200 && (
           <div className="flex justify-end">
             <button
               onClick={() => setShowMore(!showMore)}
@@ -272,7 +263,7 @@ const FeedCardNew = ({ feedItem }) => {
                   stroke={upvoted ? "#DC2626" : "#3c83f6"}
                 />
               )}
-              {upvoterList.length > 0 && (
+              {upvoterList !== null && upvoterList.length > 0 && (
                 <span className="ml-2">{upvoterList.length}</span>
               )}
             </button>
@@ -281,7 +272,7 @@ const FeedCardNew = ({ feedItem }) => {
               className="btn btn-sm btn-ghost"
             >
               <FiMessageCircle />
-              {comments.length > 0 && (
+              {comments !== null && comments.length > 0 && (
                 <span className="ml-2">{comments.length}</span>
               )}
             </button>
@@ -354,11 +345,11 @@ const FeedCardNew = ({ feedItem }) => {
         <input
           type="checkbox"
           className="modal-toggle"
-          id={`delete-post-${feed_id}`}
+          id={`delete-post-${id}`}
         />
         <div className="modal">
           <label
-            htmlFor={`delete-post-${feed_id}`}
+            htmlFor={`delete-post-${id}`}
             className="btn btn-ghost btn-sm"
           />
           <div className="modal-box w-96">
@@ -380,10 +371,7 @@ const FeedCardNew = ({ feedItem }) => {
                 <button className="btn btn-error" onClick={handleDeletePost}>
                   Yes, delete it
                 </button>
-                <label
-                  htmlFor={`delete-post-${feed_id}`}
-                  className="btn btn-ghost"
-                >
+                <label htmlFor={`delete-post-${id}`} className="btn btn-ghost">
                   Cancel delete
                 </label>
               </div>

@@ -120,7 +120,7 @@ const Home = (e) => {
           <Link href="/register" className="btn btn-primary btn-sm w-[250px]">
             Sign up an account
           </Link>
-          <Link href="/signin" className="btn btn-ghost btn-sm w-[250px]">
+          <Link href="/login" className="btn btn-ghost btn-sm w-[250px]">
             Sign in your account
           </Link>
         </div>
@@ -240,7 +240,7 @@ const Home = (e) => {
             <Link href="/register" className="btn btn-primary btn-sm w-[250px]">
               Sign up an account
             </Link>
-            <Link href="/signin" className="btn btn-ghost btn-sm w-[250px]">
+            <Link href="/login" className="btn btn-ghost btn-sm w-[250px]">
               Sign in your account
             </Link>
           </div>

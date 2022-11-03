@@ -21,7 +21,7 @@ const MeSettings = ({ data }) => {
       } else {
         toast.dismiss();
         toast.success("Signed out!");
-        router.push("/signin");
+        router.push("/login");
       }
     });
   };
