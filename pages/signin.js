@@ -113,8 +113,8 @@ const SignInPage = (e) => {
             {/* dont have account? */}
             <p className="text-center mt-5">
               Don&apos;t have an account?{" "}
-              <Link href={"/signup"} legacyBehavior>
-                <span className="text-primary cursor-pointer">Sign up</span>
+              <Link href={"/register"} className="text-primary cursor-pointer">
+                Sign up
               </Link>
             </p>
           </form>

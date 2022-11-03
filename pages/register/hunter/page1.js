@@ -2,6 +2,7 @@ import { __PageTransition } from "../../../lib/animtions";
 import __supabase from "../../../lib/supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const MM_Cities = [
   { name: "Caloocan", province: "MM", city: true },
@@ -24,6 +25,9 @@ const MM_Cities = [
 ];
 
 const Hunter_SignUp_Page1 = ({ setPage }) => {
+  const [usernameTaken, setUsernameTaken] = useState(null);
+  const [isAlreadyHunter, setIsAlreadyHunter] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -44,8 +48,49 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
       connections: [],
     };
 
+    // check if all fields from formData are not filled
+    if (Object.values(formData).filter((value) => value === "").length > 0) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    // check if username and email is taken
+    const { data: usernameCheck, error: usernameCheckError } = await __supabase
+      .from("user_hunters")
+      .select(`username, email`)
+      .or(`username.eq.${formData.username},email.eq.${formData.email}`)
+      .single();
+
+    console.log(usernameCheck, usernameCheckError);
+
+    if (usernameCheckError) {
+      toast.error(usernameCheckError.message);
+      return;
+    }
+
+    if (usernameCheck) {
+      setUsernameTaken(usernameCheck.username === formData.username);
+      setIsAlreadyHunter(usernameCheck.email === formData.email);
+
+      if (usernameCheck.username === formData.username) {
+        toast.error("Username is already taken");
+      }
+
+      if (usernameCheck.email === formData.email) {
+        toast.error("Email is already taken");
+      }
+
+      // scroll to  top smoothly
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
     form.disabled = true;
-    toast.loading("Creating account...");
 
     // create user
     const { user, error } = await __supabase.auth.signUp(
@@ -112,15 +157,14 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
                 type="username"
                 name="username"
                 id="username"
-                className="input input-primary"
+                className={`input ${
+                  usernameTaken == true ? "input-error" : "input-primary"
+                }`}
                 placeholder="Username"
+                onChange={(e) => {
+                  setUsernameTaken(null);
+                }}
               />
-              <p>
-                <span className="text-green-500">✔</span> Username available
-              </p>
-              <p>
-                <span className="text-red-500">✖</span> Username taken
-              </p>
             </div>
             <div className="flex flex-col col-start-1">
               <label htmlFor="email">Email</label>
@@ -128,8 +172,13 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
                 type="email"
                 name="email"
                 id="email"
-                className="input input-primary"
+                className={`input ${
+                  isAlreadyHunter == true ? "input-error" : "input-primary"
+                } `}
                 placeholder="Email"
+                onChange={(e) => {
+                  setIsAlreadyHunter(null);
+                }}
               />
             </div>
             <div className="flex flex-col">

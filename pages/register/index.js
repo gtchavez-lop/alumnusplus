@@ -1,16 +1,31 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 import { FiLock } from "react-icons/fi";
 import Hunter_SignUp_Page1 from "./hunter/page1";
+import Link from "next/link";
 import Provisioner_SignUp_Page1 from "./provisioner/page1";
 import { __PageTransition } from "../../lib/animtions";
-import { useState } from "react";
+import __supabase from "../../lib/supabase";
 
 const RegisterPage = () => {
   const [type, setType] = useState("");
   const [page, setPage] = useState(0);
+  const [hasUser, setHasUser] = useState(false);
 
-  return (
+  const detectUser = async (e) => {
+    const user = await __supabase.auth.user();
+
+    if (user) {
+      setHasUser(true);
+    }
+  };
+
+  useEffect(() => {
+    detectUser();
+  }, []);
+
+  return !hasUser ? (
     <>
       <motion.main
         variants={__PageTransition}
@@ -103,6 +118,27 @@ const RegisterPage = () => {
       </motion.main>
 
       {/* modal goes here */}
+    </>
+  ) : (
+    <>
+      <motion.main
+        variants={__PageTransition}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="relative flex flex-col w-full py-16 pt-28"
+      >
+        {/* say that the user is already signed in */}
+        <div className="flex flex-col justify-center items-center w-full h-full bg-white bg-opacity-50">
+          <FiLock className="text-4xl" />
+          <h1 className="text-xl font-bold">You are already signed in</h1>
+
+          {/* redirect to /feed */}
+          <Link href="/feed" className="btn btn-primary mt-4">
+            Go to Feed
+          </Link>
+        </div>
+      </motion.main>
     </>
   );
 };
