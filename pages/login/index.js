@@ -25,9 +25,9 @@ const LogInPage = (e) => {
         email: __supabase.auth.user().email,
         username: metaData.username,
         birthdate: metaData.birthdate,
-        "address.address": metaData.address,
-        "address.city": metaData.city,
-        "address.postalCode": metaData.postalCode,
+        address_address: metaData.address,
+        address_city: metaData.city,
+        address_postalCode: metaData.postalCode,
         university: metaData.university,
         connections: metaData.connections,
       })
