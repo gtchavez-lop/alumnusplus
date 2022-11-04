@@ -108,6 +108,26 @@ const MeSettings = ({ data }) => {
 
       <div className="flex flex-col gap-[70px]">
         <div className="flex flex-col gap-2">
+          <p className="text-xl">User Settings</p>
+          <div className="grid grid-cols-2 gap-5 items-center">
+            {/* change theme toggler */}
+            <div className="">
+              <label className="flex items-center justify-between">
+                <span className="ml-2">Dark Mode</span>
+                <input
+                  type="checkbox"
+                  className="toggle toggle-primary"
+                  checked={isDarkMode}
+                  onChange={(e) => {
+                    setDarkMode(e.target.checked);
+                    // setTheme();
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
           <p className="text-xl">User Information</p>
 
           {/* user information input fields */}
@@ -185,27 +205,6 @@ const MeSettings = ({ data }) => {
               </label>
             </div>
           </form>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <p className="text-xl">User Settings</p>
-          <div className="grid grid-cols-2 gap-5 items-center">
-            {/* change theme toggler */}
-            <div className="">
-              <label className="flex items-center justify-between">
-                <span className="ml-2">Dark Mode</span>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-primary"
-                  checked={isDarkMode}
-                  onChange={(e) => {
-                    setDarkMode(e.target.checked);
-                    // setTheme();
-                  }}
-                />
-              </label>
-            </div>
-          </div>
         </div>
       </div>
 

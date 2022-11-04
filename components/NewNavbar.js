@@ -1,4 +1,5 @@
 import {
+  FiFileText,
   FiGrid,
   FiMail,
   FiMapPin,
@@ -6,6 +7,7 @@ import {
   FiPackage,
   FiPaperclip,
   FiSearch,
+  FiTv,
   FiUser,
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -155,14 +157,14 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiPaperclip className="text-xl" />
+                    <FiFileText className="text-xl" />
                   </button>
                 </div>
               </Link>
-              <Link href={"/"} scroll={false} legacyBehavior>
+              <Link href={"/events"} scroll={false} legacyBehavior>
                 <div
                   className="tooltip tooltip-bottom "
-                  data-tip="Featured Events"
+                  data-tip="Metaverse Events"
                 >
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
@@ -170,7 +172,7 @@ const NewNavbar = () => {
                       "bg-primary text-primary-content"
                     }`}
                   >
-                    <FiPackage className="text-xl" />
+                    <FiTv className="text-xl" />
                   </button>
                 </div>
               </Link>

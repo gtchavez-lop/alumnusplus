@@ -107,7 +107,7 @@ const FeedCardNew = ({ feedItem }) => {
     const user = await __supabase.auth.user();
 
     if (user) {
-      const isSelfPost = user.id === uploaderData.id;
+      const isSelfPost = user.email === uploaderData.email;
       setIsSelfPost(isSelfPost);
     }
   };

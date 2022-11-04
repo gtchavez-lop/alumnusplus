@@ -36,9 +36,7 @@ const Feed = ({}) => {
   const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [user, setUser] = useState(null);
   const router = useRouter();
-  const [postContent, setPostContent] = useState({});
   const [page, setPage] = useState(1);
-  const [editorState] = useState(EditorState.createEmpty());
 
   const checkUser = async () => {
     const user = __supabase.auth.user();
@@ -48,7 +46,6 @@ const Feed = ({}) => {
       setUser(user);
     }
   };
-
   const [
     { data: feedData, error: feedError, fetching: feedLoading },
     FeedReExecute,
@@ -59,8 +56,8 @@ const Feed = ({}) => {
 
   const [
     { data: recomUserData, error: recomUserError, fetching: recomUserLoading },
-  ] = useSelect("user_hunters", {
-    columns: "id,created_at,username,firstName,lastName,middleName",
+  ] = useSelect("random_hunters", {
+    columns: "id,created_at,username,firstName,lastName",
     order: "created_at",
     limit: 5,
   });
@@ -76,14 +73,12 @@ const Feed = ({}) => {
 
     const filtered = feedData.filter((e) => {
       if (
-        connections.includes(e.uploader_email) ||
+        (connections && connections.includes(e.uploader_email)) ||
         e.uploader_email === user.email
       ) {
         return e;
       }
     });
-
-    console.log(filtered);
     setFeed(filtered);
   };
 
@@ -93,7 +88,6 @@ const Feed = ({}) => {
 
   useEffect(() => {
     if (feedData) {
-      console.log(feed);
       filterFeed();
     }
 
@@ -104,7 +98,7 @@ const Feed = ({}) => {
       const connections = user.user_metadata.connections;
       const filtered = connections
         ? recomUserData.filter((e) => {
-            return !connections.includes(e.user_id) && e.user_id !== user.id;
+            return !connections.includes(e.id) && e.id !== user.id;
           })
         : recomUserData;
 
@@ -112,7 +106,7 @@ const Feed = ({}) => {
     }
   }, [feedData, recomUserData]);
 
-  if (!user || !feed || !recommendedUsers) {
+  if (!user || !feed || !recommendedUsers || feedLoading || recomUserLoading) {
     return (
       <motion.div
         variants={__PageTransition}
