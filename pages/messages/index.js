@@ -54,12 +54,12 @@ const PageMessages = () => {
                 >
                   <img
                     // dicebear avatar
-                    src={`https://avatars.dicebear.com/api/micah/${i}.svg`}
+                    src={`https://avatars.dicebear.com/api/bottts/${i}.svg`}
                     alt=""
                     className="w-12 h-12 rounded-full bg-white"
                   />
                   <div className="w-full overflow-hidden flex flex-col justify-center">
-                    <p className="text-lg font-semibold leading-none">Micah</p>
+                    <p className="text-lg font-semibold leading-none">bottts</p>
                     <p className="leading-none text-base-content text-opacity-50 truncate text-ellipsis ">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Quisquam, quod.
@@ -94,14 +94,14 @@ const PageMessages = () => {
                 <div className=" flex gap-3">
                   <img
                     // dicebear avatar
-                    src={`https://avatars.dicebear.com/api/micah/${selectedChat}.svg`}
+                    src={`https://avatars.dicebear.com/api/bottts/${selectedChat}.svg`}
                     alt=""
                     className="w-12 h-12 rounded-full bg-white"
                   />
                   <div className="flex flex-col justify-center">
-                    <p className="text-xl leading-none">Micah</p>
+                    <p className="text-xl leading-none">bottts</p>
                     <p className="text-sm text-opacity-50 leading-none">
-                      @micah
+                      @bottts
                     </p>
                   </div>
 
@@ -166,14 +166,14 @@ const PageMessages = () => {
                 <div className="flex gap-3 p-3 px-4 mt-32">
                   <img
                     // dicebear avatar
-                    src={`https://avatars.dicebear.com/api/micah/${selectedChat}.svg`}
+                    src={`https://avatars.dicebear.com/api/bottts/${selectedChat}.svg`}
                     alt=""
                     className="w-12 h-12 rounded-full bg-white"
                   />
                   <div className="flex flex-col justify-center">
-                    <p className="text-xl leading-none">Micah</p>
+                    <p className="text-xl leading-none">bottts</p>
                     <p className="text-sm text-opacity-50 leading-none">
-                      @micah
+                      @bottts
                     </p>
                   </div>
 

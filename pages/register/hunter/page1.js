@@ -81,6 +81,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
       city: form.city.value || "",
       postalCode: form.postalCode.value || "",
       university: form.university.value || "",
+      type: "hunter",
       connections: [],
     };
 
@@ -143,6 +144,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
                     city: form.city.value,
                     postalCode: form.postalCode.value,
                     university: form.university.value,
+                    type: "hunter",
                     connections: [],
                   },
                 }

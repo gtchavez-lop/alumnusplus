@@ -1,19 +1,18 @@
 import { FiEdit2, FiGithub, FiMail } from "react-icons/fi";
 import { motion, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useFeed, useUserFeed } from "../lib/globalStates";
 
 import { AnimatePresence } from "framer-motion";
-import MeConnections from "../components/MeConnections";
-import MeFeed from "../components/MeFeed";
-import MeSettings from "../components/MeSettings";
-import { __PageTransition } from "../lib/animtions";
-import __supabase from "../lib/supabase";
+import MeConnections from "../../components/MeConnections";
+import MeFeed from "../../components/MeFeed";
+import MeSettings from "../../components/MeSettings";
+import { __PageTransition } from "../../lib/animtions";
+import __supabase from "../../lib/supabase";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
-const MePage = (e) => {
+const ProfilePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
   const [localUser, setLocalUser] = useState();
   const [localConnections, setLocalConnections] = useState([]);
@@ -40,11 +39,11 @@ const MePage = (e) => {
 
   const checkUser = async () => {
     const user = __supabase.auth.user();
-    if (!user) {
-      router.push("/");
-    } else {
+    if (user) {
       setLocalUser(user);
       fetchData();
+    } else {
+      router.push("/");
     }
   };
 
@@ -67,6 +66,7 @@ const MePage = (e) => {
             <img
               src={`https://dicebear.com/api/micah/${localUser.user_metadata.username}.svg`}
               className="rounded-full w-24 h-24 lg:w-32 lg:h-32 bg-secondary z-10"
+              alt="profile"
             />
 
             <div className="flex flex-col gap-2 z-10 ">
@@ -90,28 +90,28 @@ const MePage = (e) => {
           {/* tabs */}
           <div className="bg-base-100 sticky top-28 pt-5 pb-2">
             <div className="tabs tabs-boxed lg:gap-2 justify-center md:justify-start">
-              <a
+              <button
                 onClick={(e) => setTabActive("feed")}
-                className={`tab ${tabActive == "feed" && "tab-active"}`}
+                className={`tab ${tabActive === "feed" && "tab-active"}`}
               >
                 My Feed
-              </a>
-              <a
+              </button>
+              <button
                 onClick={(e) => setTabActive("connections")}
-                className={`tab ${tabActive == "connections" && "tab-active"}`}
+                className={`tab ${tabActive === "connections" && "tab-active"}`}
               >
                 My Connections
-              </a>
-              <a
+              </button>
+              <button
                 onClick={(e) => setTabActive("settings")}
-                className={`tab ${tabActive == "settings" && "tab-active"}`}
+                className={`tab ${tabActive === "settings" && "tab-active"}`}
               >
                 Settings
-              </a>
+              </button>
             </div>
           </div>
 
-          {/* tab content */}
+          {/* edz pogi */}
           <div className="mt-10">
             <AnimatePresence mode="wait">
               <motion.div
@@ -122,11 +122,11 @@ const MePage = (e) => {
                 className="flex flex-col gap-5"
                 key={tabActive}
               >
-                {tabActive == "feed" && <MeFeed feed={localFeed} />}
-                {tabActive == "connections" && (
+                {tabActive === "feed" && <MeFeed feed={localFeed} />}
+                {tabActive === "connections" && (
                   <MeConnections connections={localConnections} />
                 )}
-                {tabActive == "settings" && <MeSettings data={localUser} />}
+                {tabActive === "settings" && <MeSettings data={localUser} />}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -136,4 +136,4 @@ const MePage = (e) => {
   );
 };
 
-export default MePage;
+export default ProfilePage;

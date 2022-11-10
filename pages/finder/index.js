@@ -107,7 +107,7 @@ const Finder = () => {
                   ease: "easeInOut",
                   repeat: Infinity,
                 }}
-                src={`https://avatars.dicebear.com/api/micah/${user.user_metadata.username}.svg`}
+                src={`https://avatars.dicebear.com/api/bottts/${user.user_metadata.username}.svg`}
                 className="w-24 h-24 rounded-full bg-base-300 z-10 shadow-lg"
               />
               <p className="absolute bottom-10">Searching</p>
@@ -139,7 +139,7 @@ const Finder = () => {
                       className="group flex flex-col w-full md:w-auto text-center justify-center items-center bg-base-300 rounded-box p-4 py-3 cursor-pointer"
                     >
                       <img
-                        src={`https://avatars.dicebear.com/api/micah/${user.user_id}.svg`}
+                        src={`https://avatars.dicebear.com/api/bottts/${user.user_id}.svg`}
                         alt="profile"
                         className="w-20 h-20 rounded-full bg-base-100 mt-5"
                       />

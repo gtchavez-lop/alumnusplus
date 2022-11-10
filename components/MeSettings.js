@@ -88,18 +88,18 @@ const MeSettings = ({ data }) => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("theme") === "wicket-dark") {
+    if (localStorage.getItem("theme") === "stability") {
       setDarkMode(true);
     }
   }, []);
 
   useEffect(() => {
     if (isDarkMode) {
-      document.body.setAttribute("data-theme", "wicket-dark");
+      document.body.setAttribute("data-theme", "stability");
     } else {
-      document.body.setAttribute("data-theme", "wicket-light");
+      document.body.setAttribute("data-theme", "success");
     }
-    localStorage.setItem("theme", isDarkMode ? "wicket-dark" : "wicket-light");
+    localStorage.setItem("theme", isDarkMode ? "stability" : "success");
   }, [isDarkMode]);
 
   return (

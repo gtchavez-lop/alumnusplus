@@ -1,0 +1,7 @@
+{
+  "prettier.trailingComma": "none",
+  "prettier.useTabs": false,
+  "prettier.documentSelectors": [
+    "*.{js,ts}"
+  ]
+}

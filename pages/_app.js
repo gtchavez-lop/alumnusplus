@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps }) {
     if (localStorage.getItem("theme")) {
       document.body.setAttribute("data-theme", localStorage.getItem("theme"));
     } else {
-      document.body.setAttribute("data-theme", "wicket-light");
+      document.body.setAttribute("data-theme", "stability");
     }
   }, []);
 

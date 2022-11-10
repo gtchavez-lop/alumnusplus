@@ -129,7 +129,7 @@ const RegisterPage = () => {
         className="relative flex flex-col w-full py-16 pt-28"
       >
         {/* say that the user is already signed in */}
-        <div className="flex flex-col justify-center items-center w-full h-full bg-white bg-opacity-50">
+        <div className="flex flex-col justify-center items-center w-full h-full  bg-opacity-50">
           <FiLock className="text-4xl" />
           <h1 className="text-xl font-bold">You are already signed in</h1>
 
