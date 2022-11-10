@@ -19,7 +19,7 @@ const Home = (e) => {
     "Mobile Developer",
     "UI/UX Designer",
     "Graphic Designer",
-    "Product Designer",
+    "Product Designer"
   ];
   const [activeJob, setActiveJob] = useState(jobList[0]);
   const router = useRouter();
@@ -29,11 +29,11 @@ const Home = (e) => {
   const desktopImg_2 = useRef(null);
   const desktopImg_1_inview = useInView(desktopImg_1, {
     once: true,
-    margin: "-200px",
+    margin: "-200px"
   });
   const desktopImg_2_inview = useInView(desktopImg_2, {
     once: true,
-    margin: "-200px",
+    margin: "-200px"
   });
 
   const checkUser = async () => {
@@ -71,7 +71,7 @@ const Home = (e) => {
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
-          transition: { duration: 0.5, ease: "circOut" },
+          transition: { duration: 0.5, ease: "circOut" }
         }}
         exit={{ opacity: 0, transition: { duration: 0.2, ease: "circIn" } }}
         className="absolute top-0 left-0 w-full h-full"
@@ -79,6 +79,7 @@ const Home = (e) => {
         <img
           src="./mainbg.svg"
           className="absolute w-full min-h-[50vh] top-0 object-contain object-top  opacity-40"
+          alt=""
         />
       </motion.div>
 
@@ -89,7 +90,7 @@ const Home = (e) => {
         exit="exit"
         className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0 "
       >
-        <img src="/wicket.svg" className="w-64 fill-primary" />
+        <img src="/wicket.svg" className="w-64 fill-primary" alt="" />
         <p className="text-3xl flex flex-col lg:flex-row lg:justify-center mt-5">
           Job hunting for{" "}
           <span className="text-primary relative">
@@ -100,12 +101,12 @@ const Home = (e) => {
                 animate={{
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.5, ease: "circOut" },
+                  transition: { duration: 0.5, ease: "circOut" }
                 }}
                 exit={{
                   opacity: 0,
                   y: -20,
-                  transition: { duration: 0.5, ease: "circOut" },
+                  transition: { duration: 0.5, ease: "circOut" }
                 }}
                 transition={{ duration: 0.5 }}
                 className="absolute top-0 lg:left-2 w-max font-bold bg-clip-text text-transparent bg-gradient-to-r to-primary from-blue-300"
@@ -128,7 +129,7 @@ const Home = (e) => {
         {/* scroll down icon */}
         <motion.div
           animate={{
-            y: [-10, 10],
+            y: [-10, 10]
           }}
           transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
           className="absolute bottom-0 w-full flex justify-center py-10"
@@ -148,7 +149,7 @@ const Home = (e) => {
         <motion.div
           animate={{
             opacity: desktopImg_1_inview ? 1 : 0,
-            x: desktopImg_1_inview ? 0 : 100,
+            x: desktopImg_1_inview ? 0 : 100
           }}
           transition={{ duration: 0.5, ease: "circOut" }}
           className="flex flex-col items-center lg:items-end justify-center text-center"
@@ -156,6 +157,7 @@ const Home = (e) => {
           <img
             src="/landing/Experts-cuate.svg"
             className="w-[500px] h-[300px] lg:hidden"
+            alt=""
           />
           <h4 className="text-2xl font-bold">
             Providing jobs for ordinary people.
@@ -168,7 +170,7 @@ const Home = (e) => {
           <motion.img
             animate={{
               opacity: desktopImg_1_inview ? 1 : 0,
-              x: desktopImg_1_inview ? 0 : -100,
+              x: desktopImg_1_inview ? 0 : -100
             }}
             transition={{ duration: 0.5, ease: "circOut" }}
             src="/landing/Experts-cuate.svg"
@@ -186,7 +188,7 @@ const Home = (e) => {
           <motion.div
             animate={{
               opacity: desktopImg_2_inview ? 1 : 0,
-              y: desktopImg_2_inview ? 0 : 40,
+              y: desktopImg_2_inview ? 0 : 40
             }}
             transition={{ duration: 0.5, ease: "circOut" }}
             className="flex flex-col items-center p-5"
@@ -194,24 +196,29 @@ const Home = (e) => {
             <img
               src="/landing/Connecting-teams-cuate.svg"
               className="w-[250px]"
+              alt=""
             />
             <p className="text-xl">Find a suitable work for you</p>
           </motion.div>
           <motion.div
             animate={{
               opacity: desktopImg_2_inview ? 1 : 0,
-              y: desktopImg_2_inview ? 0 : 40,
+              y: desktopImg_2_inview ? 0 : 40
             }}
             transition={{ duration: 0.5, ease: "circOut", delay: 0.2 }}
             className="flex flex-col items-center p-5"
           >
-            <img src="/landing/Marketing-cuate.svg" className="w-[250px]" />
+            <img
+              src="/landing/Marketing-cuate.svg"
+              className="w-[250px]"
+              alt=""
+            />
             <p className="text-xl">Share your activities</p>
           </motion.div>
           <motion.div
             animate={{
               opacity: desktopImg_2_inview ? 1 : 0,
-              y: desktopImg_2_inview ? 0 : 40,
+              y: desktopImg_2_inview ? 0 : 40
             }}
             transition={{ duration: 0.5, ease: "circOut", delay: 0.4 }}
             className="flex flex-col items-center p-5 justify-center col-span-full lg:col-span-1"
@@ -219,6 +226,7 @@ const Home = (e) => {
             <img
               src="/landing/Connected-world-cuate.svg"
               className="w-[250px]"
+              alt=""
             />
             <p className="text-xl">Connect to everyone</p>
           </motion.div>

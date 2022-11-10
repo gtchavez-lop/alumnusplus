@@ -39,6 +39,11 @@ const FeedPage = () => {
   const addPost = async (e) => {
     e.preventDefault();
 
+    if (blogContent.length < 1) {
+      toast.error("Please enter some content");
+      return;
+    }
+
     const uploaderMetadata = supabaseClient.auth.user().user_metadata;
 
     toast.loading("Uploading post...");

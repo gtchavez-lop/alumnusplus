@@ -3,6 +3,7 @@ import {
   FiHeart,
   FiMessageSquare,
   FiMoreHorizontal,
+  FiSend,
   FiTrash2,
   FiX
 } from "react-icons/fi";
@@ -31,6 +32,11 @@ const FeedCard = ({ feedData, index }) => {
   const supabase = useClient();
 
   const addComment = async () => {
+    if (commentInput.length < 1) {
+      toast.error("Please enter some content");
+      return;
+    }
+
     const newComment = {
       id: uuidv4(),
       content: commentInput,
@@ -196,6 +202,12 @@ const FeedCard = ({ feedData, index }) => {
                           }
                         }}
                       />
+                      <button
+                        onClick={addComment}
+                        className="btn btn-square btn-primary"
+                      >
+                        <FiSend />
+                      </button>
                     </div>
                   </div>
                   {feedData.comments?.map((comment, index) => {
@@ -285,7 +297,7 @@ const FeedCard = ({ feedData, index }) => {
                     </p>
                   </div>
                 </div>
-                <div className="p-4 border-2 border-white rounded-box">
+                <div className="p-4 ">
                   <ReactMarkdown
                     className="flex flex-col "
                     components={markdownRederers}
@@ -295,8 +307,9 @@ const FeedCard = ({ feedData, index }) => {
                     {feedData.content}
                   </ReactMarkdown>
                 </div>
+                <div className="divider mb-0 pb-0" />
                 {/* action buttons */}
-                <div className="flex gap-2 mt-2 items-center">
+                <div className="flex gap-2 items-center">
                   <button className="btn btn-ghost gap-2" onClick={likePost}>
                     <FiHeart
                       className={isLiked && "fill-red-500 stroke-red-500"}
