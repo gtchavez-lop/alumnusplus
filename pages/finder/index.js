@@ -142,9 +142,9 @@ const Finder = () => {
 												/>
 												<p className="mt-5 text-xs font-bold opacity-50">@{user.username}</p>
 												<h1 className="font-semibold text-sm">
-													{user.first_name} {user.last_name}
+													{user.firstName} {user.lastName}
 												</h1>
-												<p className="text-xs opacity-50">{user.city}</p>
+												<p className="text-xs opacity-50">{user.address_city}</p>
 
 												<p className="hidden lg:flex text-primary text-sm w-full items-center gap-2 mt-10 opacity-20 justify-between font-bold group-hover:opacity-100 transition-all duration-200">
 													Visit Profile <FiArrowRight />

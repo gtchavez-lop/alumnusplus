@@ -16,6 +16,15 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const queryClient = new QueryClient();
 
+  // const checkUser = async () => {
+  //   const user = await __supabase.auth.user();
+  //   if (!user) {
+  //     router.push("/feed");
+  //   } else {
+  //     router.push("/");
+  //   }
+  // }
+
   useEffect(() => {
     themeChange(false);
 
@@ -25,6 +34,8 @@ function MyApp({ Component, pageProps }) {
     } else {
       document.body.setAttribute("data-theme", "stability");
     }
+
+    // checkUser();
   }, []);
 
   return (

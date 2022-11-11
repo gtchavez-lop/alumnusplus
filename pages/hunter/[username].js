@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { FiFilter, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import { FiLoader } from "react-icons/fi";
+import FeedCard from "../feed/FeedCard";
 import Image from "next/image";
 import { __PageTransition } from "../../lib/animtions";
 import __supabase from "../../lib/supabase";
@@ -32,7 +33,10 @@ export const getServerSideProps = async (context) => {
 
 const HunterPage = ({ hunterData }) => {
 	const [hunterPosts, setHunterPosts] = useState([]);
+	const [filteredPosts, setFilteredPosts] = useState([]);
+	const [isFiltering, setIsFiltering] = useState(false);
 	const [tabSelected, setTabSelected] = useState("posts");
+	const router = useRouter()
 
 	const fetchHunterPosts = async () => {
 		const { data: posts, error } = await __supabase
@@ -44,13 +48,31 @@ const HunterPage = ({ hunterData }) => {
 			console.log(error);
 			return;
 		}
-		console.log(posts);
+		console.log(hunterData);
 
 		setHunterPosts(posts);
 	};
 
+	const checkIfSelf = () => {
+		const user = __supabase.auth.user();
+		if (user.email === hunterData.email) {
+			router.push("/me");
+		} else {
+			fetchHunterPosts();
+		}
+	}
+
+	const filterOptionsHandler = e => {
+		const input = e.target.value;
+		setIsFiltering(input.length >= 3)
+
+		const filtered = hunterPosts.filter(post => post.content.toLowerCase().includes(input.toLowerCase()))
+
+		setFilteredPosts(filtered)
+	}
+
 	useEffect(() => {
-		fetchHunterPosts();
+		checkIfSelf()
 	}, []);
 
 	// const [
@@ -79,7 +101,7 @@ const HunterPage = ({ hunterData }) => {
 				initial="initial"
 				animate="animate"
 				exit="exit"
-				className="pt-36 lg:pt-28 max-w-2xl mx-auto "
+				className="pt-36 lg:pt-28 max-w-2xl mx-auto pb-32"
 			>
 				{/* profile highlights */}
 				<div className="flex flex-col lg:flex-row ">
@@ -105,6 +127,11 @@ const HunterPage = ({ hunterData }) => {
 							{hunterData.firstName} {hunterData.lastName}
 						</p>
 						<p className="text-sm opacity-30">{hunterData.email}</p>
+
+						<div className="flex gap-5 mt-5">
+							<p><span className="font-bold text-primary">{hunterPosts.length}</span> posts</p>
+							<p><span className="font-bold text-primary">{hunterData.connections?.length}</span> connections</p>
+						</div>
 					</div>
 				</div>
 
@@ -112,17 +139,15 @@ const HunterPage = ({ hunterData }) => {
 				<div className="grid grid-cols-2 mt-16">
 					<div
 						onClick={() => setTabSelected("posts")}
-						className={`flex justify-center items-center border-b-4 py-3 cursor-pointer ${
-							tabSelected === "posts" ? "border-primary" : "border-transparent"
-						}`}
+						className={`flex justify-center items-center border-b-4 py-3 cursor-pointer ${tabSelected === "posts" ? "border-primary" : "border-transparent"
+							}`}
 					>
 						<p className="text-lg font-semibold">Posts</p>
 					</div>
 					<div
 						onClick={() => setTabSelected("connections")}
-						className={`flex justify-center items-center border-b-4 py-3 cursor-pointer ${
-							tabSelected === "connections" ? "border-primary" : "border-transparent"
-						}`}
+						className={`flex justify-center items-center border-b-4 py-3 cursor-pointer ${tabSelected === "connections" ? "border-primary" : "border-transparent"
+							}`}
 					>
 						<p className="text-lg font-semibold">Connections</p>
 					</div>
@@ -143,6 +168,39 @@ const HunterPage = ({ hunterData }) => {
 									<p className="text-lg font-semibold">No posts yet</p>
 								</motion.div>
 							)}
+
+							<motion.div
+								variants={__PageTransition}
+								initial="initial"
+								animate="animate"
+								exit="exit" className=" mt-5 gap-5">
+								<div className="flex flex-col">
+									<p>Filter Post by content</p>
+									<div className="flex w-full gap-2">
+										<input onChange={filterOptionsHandler} className="input input-primary w-full" />
+										<button className="btn btn-square btn-primary">
+											<FiFilter />
+										</button>
+									</div>
+								</div>
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-10">
+									{
+										isFiltering === false ?
+											hunterPosts.map((post, index) => (
+												<FeedCard feedData={post} key={index} />
+											)) :
+											filteredPosts.map((post, index) => (
+												<FeedCard feedData={post} key={index} />
+											))
+									}
+									{/* {
+										hunterPosts.length > 0 &&
+										hunterPosts.map((post, index) => (
+											<FeedCard feedData={post} key={index} />
+										))
+									} */}
+								</div>
+							</motion.div>
 						</div>
 					)}
 				</AnimatePresence>

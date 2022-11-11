@@ -10,26 +10,31 @@ import {
 import { useEffect, useState } from "react";
 
 import Image from "next/image";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import __supabase from "../../lib/supabase";
 import dayjs from "dayjs";
 import rehypeRaw from "rehype-raw";
 import toast from "react-hot-toast";
 import { useClient } from "react-supabase";
+import { useRouter } from "next/router";
 import uuidv4 from "../../lib/uuidv4";
 
 const markdownRederers = {
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
   ol: ({ children }) => <ol className="list-decimal">{children}</ol>,
-  li: ({ children }) => <li className="ml-4">{children}</li>
+  li: ({ children }) => <li className="ml-4">{children}</li>,
+  h2: ({ children }) => <h2 className="text-2xl">{children}</h2>,
 };
 
 const FeedCard = ({ feedData, index }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [contentOpen, setContentOpen] = useState(false);
   const [commentInput, setCommentInput] = useState("");
+  const [isSelfPost, setIsSelfPost] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const supabase = useClient();
+  const router = useRouter()
 
   const addComment = async () => {
     if (commentInput.length < 1) {
@@ -121,7 +126,30 @@ const FeedCard = ({ feedData, index }) => {
     }
   };
 
+  const handleDelete = async () => {
+    const { error } = await __supabase
+      .from("hunt_blog")
+      .delete()
+      .eq("id", feedData.id);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      router.reload()
+      toast.success("Post deleted");
+    }
+  }
+
   useEffect(() => {
+    // check if the post is from the user 
+    if (
+      feedData.uploaderData.id === supabase.auth.user().id ||
+      feedData.uploaderData.email === supabase.auth.user().email ||
+      feedData.uploaderData.username === supabase.auth.user().user_metadata.username
+    ) {
+      setIsSelfPost(true);
+    }
+
     // check if user already liked the post
     const userLiked = feedData.upvoters.find(
       (upvoter) =>
@@ -149,7 +177,7 @@ const FeedCard = ({ feedData, index }) => {
                   setCommentOpen(false);
                 }
               }}
-              className="fixed w-full h-screen top-0 left-0 bg-primary bg-opacity-20 flex justify-end z-50"
+              className="fixed w-full h-screen top-0 left-0 bg-base-300 bg-opacity-70 flex justify-end z-50"
             >
               <motion.div
                 initial={{ x: 100 }}
@@ -172,9 +200,8 @@ const FeedCard = ({ feedData, index }) => {
                   <div className="flex flex-col gap-2 my-10">
                     <div className="flex items-center gap-2">
                       <Image
-                        src={`https://avatars.dicebear.com/api/bottts/${
-                          supabase.auth.user().user_metadata.username
-                        }.svg`}
+                        src={`https://avatars.dicebear.com/api/bottts/${supabase.auth.user().user_metadata.username
+                          }.svg`}
                         width={45}
                         height={45}
                         className="rounded-full"
@@ -262,7 +289,7 @@ const FeedCard = ({ feedData, index }) => {
                   setContentOpen(false);
                 }
               }}
-              className="fixed w-full h-screen top-0 left-0 bg-primary bg-opacity-20 flex justify-end z-[40]"
+              className="fixed w-full h-screen top-0 left-0 bg-base-300 bg-opacity-70 flex justify-end z-[40]"
             >
               <motion.div
                 initial={{ x: 100 }}
@@ -330,12 +357,16 @@ const FeedCard = ({ feedData, index }) => {
                   </button>
                   {feedData.uploaderData.email ===
                     supabase.auth.user().email && (
-                    <button className="btn btn-error btn-sm ml-auto">
-                      <FiTrash2 />
-                      <span className="ml-2">Delete Post</span>
-                    </button>
-                  )}
+                      <label htmlFor="deletePostModal" className="btn btn-error btn-sm ml-auto">
+                        <FiTrash2 />
+                        <span className="ml-2">Delete Post</span>
+                      </label>
+                    )}
                 </div>
+                <p className="text-right text-sm opacity-50 max-w-lg self-end">
+                  Some actions like share and report are not yet implemented. <br />
+                  Please come back later.
+                </p>
 
                 {/* user only action buttons */}
               </motion.div>
@@ -343,7 +374,7 @@ const FeedCard = ({ feedData, index }) => {
           )}
         </AnimatePresence>
 
-        {/* card */}
+        {/* cards */}
         <motion.div
           key={`post_${index + 1}`}
           animate={{ opacity: [0, 1], y: [10, 0] }}
@@ -368,10 +399,14 @@ const FeedCard = ({ feedData, index }) => {
               />
             </div>
             <div className="flex flex-col">
-              <p className="text-sm leading-none">
-                {feedData.uploaderData.firstName}{" "}
-                {feedData.uploaderData.lastName}
-              </p>
+
+              <Link href={isSelfPost ? '/me' : `/hunter/${feedData.uploaderData.username}`}>
+                <p className="text-sm leading-none">
+                  {feedData.uploaderData.firstName}{" "}
+                  {feedData.uploaderData.lastName}
+                </p>
+
+              </Link>
               <p className="text-xs opacity-60 leading-none">
                 @{feedData.uploaderData.username}
               </p>
@@ -418,6 +453,40 @@ const FeedCard = ({ feedData, index }) => {
             </button>
           </div>
         </motion.div>
+
+        {/* delete modal */}
+        <input type="checkbox" id="deletePostModal" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <div className="flex justify-between items-center mb-5">
+              <h5 className="text-2xl">Delete Post</h5>
+              <label htmlFor="deletePostModal" className="btn btn-ghost">
+                <FiX />
+              </label>
+            </div>
+            <div className="modal-body mb-10">
+              <div className="text-lg">Are you sure?</div>
+              <p >
+                This action cannot be undone. This will permanently delete this
+                post.
+              </p>
+            </div>
+            <div className="flex justify-end items-center">
+              <div className="flex gap-2">
+                <button
+                  className="btn btn-error"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+                <label htmlFor="deletePostModal" className="btn btn-ghost">
+                  Cancel
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </>
     )
   );

@@ -64,7 +64,7 @@ const ProfilePage = (e) => {
           {/* profile */}
           <div className="flex gap-4 items-end relative z-10 py-5 bg-base-100">
             <img
-              src={`https://dicebear.com/api/micah/${localUser.user_metadata.username}.svg`}
+              src={`https://dicebear.com/api/bottts/${localUser.user_metadata.username}.svg`}
               className="rounded-full w-24 h-24 lg:w-32 lg:h-32 bg-secondary z-10"
               alt="profile"
             />

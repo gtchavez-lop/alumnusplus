@@ -135,7 +135,7 @@ const MeSettings = ({ data }) => {
             onSubmit={(e) => editUser(e)}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-"
           >
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
               <label htmlFor="first_name">First Name</label>
               <input
                 type="text"
@@ -186,15 +186,13 @@ const MeSettings = ({ data }) => {
               />
             </div>
 
-            {/* submit edit */}
             <div className="flex flex-col gap-2 col-start-1">
               <label htmlFor="submit">Confirm Edit</label>
               <button className="btn btn-primary">
                 <FiEdit2 />
                 <span className="ml-2">Edit</span>
               </button>
-            </div>
-            {/* sign out button */}
+            </div> */}
             <div className="flex flex-col gap-2">
               <label htmlFor="submit">Sign out current session</label>
               <label

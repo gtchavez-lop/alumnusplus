@@ -62,49 +62,42 @@ const NewNavbar = () => {
           <main className="grid grid-cols-5 w-full items-center place-items-center pb-1">
             <Link href={"/feed"} scroll={false} legacyBehavior>
               <button
-                className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/feed" &&
+                className={`px-5 py-2 rounded-full ${router.pathname == "/feed" &&
                   "bg-primary text-primary-content"
-                }`}
+                  }`}
               >
                 <FiGrid />
               </button>
             </Link>
             <Link href={"/finder"} scroll={false} legacyBehavior>
               <button
-                className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/finder" &&
+                className={`px-5 py-2 rounded-full ${router.pathname == "/finder" &&
                   "bg-primary text-primary-content"
-                }`}
+                  }`}
               >
                 <FiMapPin />
               </button>
             </Link>
-            {/* <Link href={"/jobs"} scroll={false}> */}
-            <button
-              disabled
-              className={`px-5 py-2 rounded-full ${
-                router.pathname == "/jobs" && "bg-primary text-primary-content"
-              }`}
-            >
-              <FiPaperclip />
-            </button>
-            {/* </Link> */}
-            {/* <Link href={"/"} scroll={false}> */}
-            <button
-              disabled
-              className={`px-5 py-2 rounded-full ${
-                router.pathname == "/" && "bg-primary text-primary-content"
-              }`}
-            >
-              <FiPackage />
-            </button>
-            {/* </Link> */}
+            <Link href={"/jobs"} scroll={false}>
+              <button
+                className={`px-5 py-2 rounded-full ${router.pathname == "/jobs" && "bg-primary text-primary-content"
+                  }`}
+              >
+                <FiPaperclip />
+              </button>
+            </Link>
+            <Link href={"/events"} scroll={false}>
+              <button
+                className={`px-5 py-2 rounded-full ${router.pathname == "/events" && "bg-primary text-primary-content"
+                  }`}
+              >
+                <FiPackage />
+              </button>
+            </Link>
             <Link href={"/me"} scroll={false} legacyBehavior>
               <button
-                className={`px-5 py-2 rounded-full ${
-                  router.pathname == "/me" && "bg-primary text-primary-content"
-                }`}
+                className={`px-5 py-2 rounded-full ${router.pathname == "/me" && "bg-primary text-primary-content"
+                  }`}
               >
                 <FiUser />
               </button>
@@ -125,10 +118,9 @@ const NewNavbar = () => {
               <Link href={"/feed"} scroll={false} legacyBehavior>
                 <div className="tooltip tooltip-bottom " data-tip="Update Feed">
                   <button
-                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                      router.pathname == "/feed" &&
+                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/feed" &&
                       "bg-primary text-primary-content"
-                    }`}
+                      }`}
                   >
                     <FiGrid className="text-xl" />
                   </button>
@@ -137,10 +129,9 @@ const NewNavbar = () => {
               <Link href={"/finder"} scroll={false} legacyBehavior>
                 <div className="tooltip tooltip-bottom " data-tip="Finder">
                   <button
-                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                      router.pathname == "/finder" &&
+                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/finder" &&
                       "bg-primary text-primary-content"
-                    }`}
+                      }`}
                   >
                     <FiMapPin className="text-xl" />
                   </button>
@@ -152,10 +143,9 @@ const NewNavbar = () => {
                   data-tip="Job Postings"
                 >
                   <button
-                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                      router.pathname == "/jobs" &&
+                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/jobs" &&
                       "bg-primary text-primary-content"
-                    }`}
+                      }`}
                   >
                     <FiFileText className="text-xl" />
                   </button>
@@ -167,10 +157,9 @@ const NewNavbar = () => {
                   data-tip="Metaverse Events"
                 >
                   <button
-                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                      router.pathname == "/" &&
+                    className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/" &&
                       "bg-primary text-primary-content"
-                    }`}
+                      }`}
                   >
                     <FiTv className="text-xl" />
                   </button>
@@ -180,20 +169,18 @@ const NewNavbar = () => {
             <div className="flex justify-end gap-2">
               <Link href={"/messages"} scroll={false} legacyBehavior>
                 <button
-                  className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                    router.pathname == "/messages" &&
+                  className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/messages" &&
                     "bg-primary text-primary-content"
-                  }`}
+                    }`}
                 >
                   <FiMail />
                 </button>
               </Link>
               <Link href={"/me"} scroll={false} legacyBehavior>
                 <button
-                  className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
-                    router.pathname == "/me" &&
+                  className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${router.pathname == "/me" &&
                     "bg-primary text-primary-content"
-                  }`}
+                    }`}
                 >
                   <FiUser className="text-xl" />
                 </button>

@@ -1,4 +1,5 @@
 import {
+  FiFilter,
   FiHeart,
   FiLoader,
   FiMessageSquare,
@@ -21,11 +22,15 @@ import uuidv4 from "../../lib/uuidv4";
 
 const FeedPage = () => {
   const [blogContent, setBlogContent] = useState("");
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [filterMode, setFilterMode] = useState('content');
   const supabaseClient = useClient();
+
   const feedFilter = useFilter(
     (query) => query.order("created_at", { ascending: false }),
     []
   );
+
   const [
     {
       count: blogCount,
@@ -61,8 +66,9 @@ const FeedPage = () => {
         middleName: uploaderMetadata.middleName,
         postalCode: uploaderMetadata.address_postalCode,
         university: uploaderMetadata.university,
-        username: uploaderMetadata.username
+        username: uploaderMetadata.username,
       },
+      created_at: new Date().getUTCDate(),
       content: blogContent,
       uploader_email: supabaseClient.auth.user().email
     });
@@ -91,6 +97,25 @@ const FeedPage = () => {
     );
   }
 
+  const filterPostHandler = e => {
+    const input = e.target.value;
+    if (input.length >= 3) {
+      const filtered = filterMode === 'content'
+        ? blogData.filter(post => post.content.toLowerCase().includes(input.toLowerCase()))
+        : filterMode === 'uploader_email'
+          ? blogData.filter(post => post.uploader_email.toLowerCase().includes(input.toLowerCase()))
+          : filterMode === 'username'
+            ? blogData.filter(post => post.uploaderData.username.toLowerCase().includes(input.toLowerCase()))
+            : filterMode === 'fullname'
+              ? blogData.filter(post => post.uploaderData.firstName.toLowerCase().includes(input.toLowerCase()) || post.uploaderData.lastName.toLowerCase().includes(input.toLowerCase()))
+              : blogData.filter(post => post.content.toLowerCase().includes(input.toLowerCase()));
+
+      setFilteredPosts(filtered);
+    } else {
+      setFilteredPosts([]);
+    }
+  }
+
   return (
     !blogLoading &&
     blogData && (
@@ -102,11 +127,34 @@ const FeedPage = () => {
           exit="exit"
           className="pb-16 lg:pt-24 pt-36"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="flex items-end gap-2 w-full">
+            <div className="flex flex-col">
+              <label className="ml-4">
+                Search for something
+              </label>
+              <input
+                type="text"
+                placeholder="Search posts..."
+                className="flex w-full input input-primary"
+                onChange={filterPostHandler}
+              />
+            </div>
+            <select onChange={e => {
+              setFilterMode(e.target.value);
+            }} className="select select-primary select-bordered">
+              <option disabled selected>Set Filter Options</option>
+              <option value="content">Content</option>
+              <option value="uploader_email">Uploader Email</option>
+              <option value="username">Username</option>
+              <option value="fullname">Fullname</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-16">
             {/* add post modal toggler */}
             <label
               htmlFor="addPostModal"
-              className="cursor-pointer hover:scale-95 transition-all bg-base-200 rounded-box min-h-[250px] py-3 px-4 flex flex-col gap-2 justify-center items-center"
+              className="cursor-pointer hover:scale-95 transition-all bg-base-200 rounded-box min-h-[175px] md:min-h-[250px] py-3 px-4 flex flex-col gap-2 justify-center items-center"
             >
               <div className="flex justify-center items-center flex-col gap-2 ">
                 <FiPlusCircle className="text-6xl" />
@@ -115,13 +163,25 @@ const FeedPage = () => {
             </label>
 
             {/* mini blogs */}
-            {blogData?.map((blog, index) => (
-              <FeedCard
-                key={`feedcard_${index + 1}`}
-                feedData={blog}
-                index={index}
-              />
-            ))}
+            {
+              filteredPosts.length >= 1 ? (
+                filteredPosts.map((blog, index) => (
+                  <FeedCard
+                    key={`feedcard_${index + 1}`}
+                    feedData={blog}
+                    index={index}
+                  />
+                ))
+              ) : (
+                blogData?.map((blog, index) => (
+                  <FeedCard
+                    key={`feedcard_${index + 1}`}
+                    feedData={blog}
+                    index={index}
+                  />
+                ))
+              )
+            }
           </div>
         </motion.main>
 
@@ -156,14 +216,14 @@ const FeedPage = () => {
                     const newContent = content.replace(/\n/g, "<br />");
                     setBlogContent(newContent);
                   }}
-                  // onKeyUp={(e) => {
-                  //   if (e.key === "Enter") {
-                  //     e.preventDefault();
-                  //     const val = e.target.value;
-                  //     const newVal = val.replace(/\r?\n/g, "<br/>");
-                  //     e.target.value = newVal;
-                  //   }
-                  // }}
+                // onKeyUp={(e) => {
+                //   if (e.key === "Enter") {
+                //     e.preventDefault();
+                //     const val = e.target.value;
+                //     const newVal = val.replace(/\r?\n/g, "<br/>");
+                //     e.target.value = newVal;
+                //   }
+                // }}
                 />
                 <p className="text-sm opacity-40">
                   You can add markdown syntax here
