@@ -124,7 +124,7 @@ const Finder = () => {
 							<div className="flex flex-col justify-center items-center">
 								<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 w-full">
 									{suggestedUsers.map((user, index) => (
-										<Link href={`/hunter/${user.username}`} key={`user_${key}`}>
+										<Link href={`/hunter/${user.username}`} key={`user_${index + 1}`}>
 											<motion.div
 												animate={{ y: [10, 0], opacity: [0, 1] }}
 												transition={{
