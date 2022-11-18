@@ -1,15 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import __directus from "../lib/directus";
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [$userAuth, $set_userAuth] = useState(null);
+  const [$userData, $set_userData] = useState(null);
 
   let value = {
-    user,
-    setUser,
+    $userAuth,
+    $set_userAuth,
+    $userData,
+    $set_userData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

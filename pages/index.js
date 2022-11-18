@@ -118,10 +118,10 @@ const Home = (e) => {
         </p>
 
         <div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
-          <Link href="/register" className="btn btn-primary btn-sm w-[250px]">
+          <Link href="/register" className="btn btn-primary w-[250px]">
             Sign up an account
           </Link>
-          <Link href="/login" className="btn btn-ghost btn-sm w-[250px]">
+          <Link href="/login" className="btn btn-ghost w-[250px]">
             Sign in your account
           </Link>
         </div>
@@ -135,9 +135,8 @@ const Home = (e) => {
           className="absolute bottom-0 w-full flex justify-center py-10"
         >
           <FiArrowDown
-            className={`text-3xl ${
-              scrollYValue > 200 && "rotate-180"
-            } duration-200`}
+            className={`text-3xl ${scrollYValue > 200 && "rotate-180"
+              } duration-200`}
           />
         </motion.div>
       </motion.div>
@@ -245,10 +244,10 @@ const Home = (e) => {
 
           {/* button */}
           <div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
-            <Link href="/register" className="btn btn-primary btn-sm w-[250px]">
+            <Link href="/register" className="btn btn-primary w-[250px]">
               Sign up an account
             </Link>
-            <Link href="/login" className="btn btn-ghost btn-sm w-[250px]">
+            <Link href="/login" className="btn btn-ghost w-[250px]">
               Sign in your account
             </Link>
           </div>

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
+import { AuthProvider } from '../components/AuthContext'
 import Head from "next/head";
 import NewNavbar from "../components/NewNavbar";
 import { Provider as SupbaseProvider } from "react-supabase";
@@ -52,32 +53,34 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <SupbaseProvider value={__supabase}>
-        <QueryClientProvider client={queryClient}>
-          <>
-            <NewNavbar />
+      <AuthProvider>
+        <SupbaseProvider value={__supabase}>
+          <QueryClientProvider client={queryClient}>
+            <>
+              <NewNavbar />
 
-            <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
-              <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
-                <AnimatePresence mode="wait">
-                  <Component {...pageProps} key={router.pathname} />
-                </AnimatePresence>
-              </section>
-            </main>
+              <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
+                <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
+                  <AnimatePresence mode="wait">
+                    <Component {...pageProps} key={router.pathname} />
+                  </AnimatePresence>
+                </section>
+              </main>
 
-            <Toaster
-              position="bottom"
-              toastOptions={{
-                style: {
-                  padding: "16px",
-                  gap: "8px",
-                },
-              }}
-            />
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-          </>
-        </QueryClientProvider>
-      </SupbaseProvider>
+              <Toaster
+                position="bottom"
+                toastOptions={{
+                  style: {
+                    padding: "16px",
+                    gap: "8px",
+                  },
+                }}
+              />
+              {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            </>
+          </QueryClientProvider>
+        </SupbaseProvider>
+      </AuthProvider>
     </>
   );
 }
