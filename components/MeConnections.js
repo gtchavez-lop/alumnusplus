@@ -28,14 +28,14 @@ const MeConnections = ({ connections }) => {
 
 	if (userLoading || !userList) {
 		return (
-			<div className="flex items-center justify-center">
+			<div className="flex items-center justify-center w-full">
 				<FiLoader className="animate-spin w-8 h-8 " />
 			</div>
 		);
 	}
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
 			{userList.map((e, index) => (
 				<MeConnectionCard key={`user_${index + 1}`} userData={e} />
 			))}

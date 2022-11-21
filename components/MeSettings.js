@@ -7,135 +7,133 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 
 const MeSettings = ({ data }) => {
-  const router = useRouter();
-  const [userData, setUserData] = useState(data);
-  const [isDarkMode, setDarkMode] = useState();
+	const router = useRouter();
+	const [userData, setUserData] = useState(data);
+	const [isDarkMode, setDarkMode] = useState();
 
-  const { user_metadata, id, email } = userData;
+	const { user_metadata, id, email } = userData;
 
-  const SignOutUser = () => {
-    toast.loading("Signing out...");
-    __supabase.auth.signOut().then(({ error }) => {
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.dismiss();
-        toast.success("Signed out!");
-        router.push("/login");
-      }
-    });
-  };
+	const SignOutUser = () => {
+		toast.loading("Signing out...");
+		__supabase.auth.signOut().then(({ error }) => {
+			if (error) {
+				toast.error(error.message);
+			} else {
+				toast.dismiss();
+				toast.success("Signed out!");
+				router.push("/login");
+			}
+		});
+	};
 
-  const updateUserPosts = async (e) => {
-    // update all posts with new username
-    toast.loading("Updating posts...");
+	const updateUserPosts = async (e) => {
+		// update all posts with new username
+		toast.loading("Updating posts...");
 
-    const { data, error } = await __supabase
-      .from("user_feed")
-      .update({ uploader_handler: user_metadata.username })
-      .eq("uploader_id", id);
+		const { data, error } = await __supabase
+			.from("user_feed")
+			.update({ uploader_handler: user_metadata.username })
+			.eq("uploader_id", id);
 
-    if (error) {
-      toast.error(error.message);
-    }
+		if (error) {
+			toast.error(error.message);
+		}
 
-    toast.dismiss();
-    toast.success("Updated posts!");
-    router.reload();
-  };
+		toast.dismiss();
+		toast.success("Updated posts!");
+		router.reload();
+	};
 
-  const editUser = (e) => {
-    e.preventDefault();
+	const editUser = (e) => {
+		e.preventDefault();
 
-    const { first_name, last_name, username } = e.target;
+		const { first_name, last_name, username } = e.target;
 
-    toast.loading("Updating user...");
+		toast.loading("Updating user...");
 
-    __supabase.auth
-      .update({
-        data: {
-          first_name: first_name.value,
-          last_name: last_name.value,
-          username: username.value,
-        },
-      })
-      .then(({ error }) => {
-        if (error) {
-          toast.error(error.message);
-        } else {
-          // update user data
-          setUserData({
-            ...userData,
-            user_metadata: {
-              ...user_metadata,
-              first_name: first_name.value,
-              last_name: last_name.value,
-              username: username.value,
-            },
-          });
+		__supabase.auth
+			.update({
+				data: {
+					first_name: first_name.value,
+					last_name: last_name.value,
+					username: username.value,
+				},
+			})
+			.then(({ error }) => {
+				if (error) {
+					toast.error(error.message);
+				} else {
+					// update user data
+					setUserData({
+						...userData,
+						user_metadata: {
+							...user_metadata,
+							first_name: first_name.value,
+							last_name: last_name.value,
+							username: username.value,
+						},
+					});
 
-          toast.dismiss();
-          toast.success("Updated user!");
+					toast.dismiss();
+					toast.success("Updated user!");
 
-          // only update posts if username changed
-          if (username.value !== user_metadata.username) {
-            updateUserPosts();
-          } else {
-            router.reload();
-          }
-        }
-      });
-  };
+					// only update posts if username changed
+					if (username.value !== user_metadata.username) {
+						updateUserPosts();
+					} else {
+						router.reload();
+					}
+				}
+			});
+	};
 
-  useEffect(() => {
-    if (localStorage.getItem("theme") === "stability") {
-      setDarkMode(true);
-    }
-  }, []);
+	useEffect(() => {
+		if (localStorage.getItem("theme") === "stability") {
+			setDarkMode(true);
+		}
+	}, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.setAttribute("data-theme", "stability");
-    } else {
-      document.body.setAttribute("data-theme", "success");
-    }
-    localStorage.setItem("theme", isDarkMode ? "stability" : "success");
-  }, [isDarkMode]);
+	useEffect(() => {
+		if (isDarkMode) {
+			document.body.setAttribute("data-theme", "stability");
+			localStorage.setItem("theme", "stability");
+		} else {
+			document.body.setAttribute("data-theme", "success");
+			localStorage.setItem("theme", "success");
+		}
+	}, [isDarkMode]);
 
-  return (
-    <>
-      {/* <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} /> */}
+	return (
+		<>
+			{/* <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} /> */}
 
-      <div className="flex flex-col gap-[70px]">
-        <div className="flex flex-col gap-2">
-          <p className="text-xl">User Settings</p>
-          <div className="grid grid-cols-2 gap-5 items-center">
-            {/* change theme toggler */}
-            <div className="">
-              <label className="flex items-center justify-between">
-                <span className="ml-2">Dark Mode</span>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-primary"
-                  checked={isDarkMode}
-                  onChange={(e) => {
-                    setDarkMode(e.target.checked);
-                    // setTheme();
-                  }}
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-xl">User Information</p>
+			<div className="flex flex-col gap-[70px]">
+				<div className="flex flex-col gap-2">
+					<p className="text-xl">User Settings</p>
+					<div className="grid grid-cols-2 gap-5 items-center">
+						{/* change theme toggler */}
+						<div className="">
+							<label className="flex items-center justify-between">
+								<span className="ml-2">Dark Mode</span>
+								<input
+									type="checkbox"
+									className="toggle toggle-primary"
+									checked={isDarkMode}
+									onChange={(e) => {
+										setDarkMode(e.target.checked);
+										// setTheme();
+									}}
+								/>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div className="flex flex-col gap-2">
+					<p className="text-xl">User Information</p>
 
-          {/* user information input fields */}
-          <form
-            onSubmit={(e) => editUser(e)}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-"
-          >
-            {/* <div className="flex flex-col gap-2">
+					{/* user information input fields */}
+					<form onSubmit={(e) => editUser(e)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-">
+						{/* <div className="flex flex-col gap-2">
               <label htmlFor="first_name">First Name</label>
               <input
                 type="text"
@@ -193,39 +191,34 @@ const MeSettings = ({ data }) => {
                 <span className="ml-2">Edit</span>
               </button>
             </div> */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="submit">Sign out current session</label>
-              <label
-                htmlFor="signOutModal"
-                className="btn btn-warning modal-button"
-              >
-                Sign Out
-              </label>
-            </div>
-          </form>
-        </div>
-      </div>
+						<div className="flex flex-col gap-2">
+							<label htmlFor="submit">Sign out current session</label>
+							<label htmlFor="signOutModal" className="btn btn-warning modal-button">
+								Sign Out
+							</label>
+						</div>
+					</form>
+				</div>
+			</div>
 
-      {/* sign out modal */}
-      <input type="checkbox" id="signOutModal" className="modal-toggle" />
-      <div className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Sign out account</h3>
-          <p className="py-4">
-            Are you sure you want to sign out of your account?
-          </p>
-          <div className="modal-action">
-            <label htmlFor="signOutModal" className="btn btn-ghost">
-              Cancel
-            </label>
-            <button className="btn btn-primary" onClick={SignOutUser}>
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+			{/* sign out modal */}
+			<input type="checkbox" id="signOutModal" className="modal-toggle" />
+			<div className="modal">
+				<div className="modal-box">
+					<h3 className="font-bold text-lg">Sign out account</h3>
+					<p className="py-4">Are you sure you want to sign out of your account?</p>
+					<div className="modal-action">
+						<label htmlFor="signOutModal" className="btn btn-ghost">
+							Cancel
+						</label>
+						<button className="btn btn-primary" onClick={SignOutUser}>
+							Sign Out
+						</button>
+					</div>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default MeSettings;
