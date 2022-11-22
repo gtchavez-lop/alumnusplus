@@ -1,5 +1,5 @@
-import { __PageTransition } from "../../lib/animtions";
-import { motion } from "framer-motion";
+import { __PageTransition } from '../../lib/animtions';
+import { motion } from 'framer-motion';
 
 const JobListingPage = () => {
   return (
@@ -13,6 +13,7 @@ const JobListingPage = () => {
       >
         <p className="text-center text-2xl">Job Listing Page</p>
         <p className="text-center text-2xl">Job Listing Page</p>
+        <p className="text-center text-2xl">meow</p>
 
         <p className="text-center max-w-xl mx-auto">
           This page is for job listings that are posted from provisioners. This
