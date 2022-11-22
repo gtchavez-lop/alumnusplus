@@ -12,6 +12,7 @@ const JobListingPage = () => {
         className="pb-16 lg:pt-24 pt-36"
       >
         <p className="text-center text-2xl">Job Listing Page</p>
+        <p className="text-center text-2xl">Job Listing Page</p>
 
         <p className="text-center max-w-xl mx-auto">
           This page is for job listings that are posted from provisioners. This
