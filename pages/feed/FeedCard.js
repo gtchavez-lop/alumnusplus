@@ -3,9 +3,11 @@ import {
   FiEye,
   FiHeart,
   FiLoader,
+  FiMessageCircle,
   FiMessageSquare,
   FiMoreHorizontal,
   FiSend,
+  FiShare2,
   FiTrash2,
   FiX
 } from "react-icons/fi";
@@ -27,10 +29,12 @@ const markdownRederers = {
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
   ol: ({ children }) => <ol className="list-decimal">{children}</ol>,
   li: ({ children }) => <li className="ml-4">{children}</li>,
-  h2: ({ children }) => <h2 className="text-2xl">{children}</h2>
+  h2: ({ children }) => <h2 className="text-2xl">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-xl">{children}</h3>,
+  h4: ({ children }) => <h4 className="text-lg">{children}</h4>
 };
 
-const FeedCard = ({ feedData, index }) => {
+const FeedCard = ({ feedData: blogPostData, index }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [contentOpen, setContentOpen] = useState(false);
   const [commentInput, setCommentInput] = useState("");
@@ -48,7 +52,7 @@ const FeedCard = ({ feedData, index }) => {
 
     const newComment = $schema_blogComment;
 
-    newComment.blogId = feedData.id;
+    newComment.blogId = blogPostData.id;
     newComment.content = commentInput;
     newComment.createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
     newComment.id = uuidv4();
@@ -66,15 +70,15 @@ const FeedCard = ({ feedData, index }) => {
     const { data, error } = await supabase
       .from("hunt_blog")
       .update({
-        comments: [...feedData.comments, newComment]
+        comments: [...blogPostData.comments, newComment]
       })
-      .eq("id", feedData.id);
+      .eq("id", blogPostData.id);
 
     if (error) {
       toast.error(error.message);
       return;
     } else {
-      feedData.comments = [...feedData.comments, newComment];
+      blogPostData.comments = [...blogPostData.comments, newComment];
       toast.success("Comment added");
       setCommentInput("");
     }
@@ -87,7 +91,7 @@ const FeedCard = ({ feedData, index }) => {
       .from("hunt_blog")
       .select("upvoters")
       .single()
-      .eq("id", feedData.id);
+      .eq("id", blogPostData.id);
 
     const upvoters = [...prevData.upvoters];
 
@@ -95,7 +99,7 @@ const FeedCard = ({ feedData, index }) => {
       upvoters.findIndex((e) => e.userId === supabase.auth.user().id) !== -1;
 
     const newUpvoter = {
-      blogId: feedData.id,
+      blogId: blogPostData.id,
       createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       id: uuidv4(),
       type: "upvote",
@@ -124,12 +128,12 @@ const FeedCard = ({ feedData, index }) => {
             )
           ]
         })
-        .eq("id", feedData.id);
+        .eq("id", blogPostData.id);
 
       if (newDataError) {
         toast.error(error.message);
       } else {
-        feedData.upvoters = prevData.upvoters.filter(
+        blogPostData.upvoters = prevData.upvoters.filter(
           (item) => item.userId !== supabase.auth.user().id
         );
         setIsLiked(false);
@@ -141,12 +145,12 @@ const FeedCard = ({ feedData, index }) => {
         .update({
           upvoters: [...prevData.upvoters, newUpvoter]
         })
-        .eq("id", feedData.id);
+        .eq("id", blogPostData.id);
 
       if (newDataError) {
         toast.error(error.message);
       } else {
-        feedData.upvoters = [...prevData.upvoters, newUpvoter];
+        blogPostData.upvoters = [...prevData.upvoters, newUpvoter];
         setIsLiked(true);
       }
     }
@@ -158,7 +162,7 @@ const FeedCard = ({ feedData, index }) => {
     const { error } = await __supabase
       .from("hunt_blog")
       .delete()
-      .eq("id", feedData.id);
+      .eq("id", blogPostData.id);
 
     if (error) {
       toast.error(error.message);
@@ -170,20 +174,20 @@ const FeedCard = ({ feedData, index }) => {
 
   useEffect(() => {
     // check if the post is from the user
-    if (supabase.auth.user().id === feedData.uploader.userId) {
+    if (supabase.auth.user().id === blogPostData.uploader.userId) {
       setIsSelfPost(true);
     }
 
     // check if user already liked the post
     const isLiked =
-      feedData.upvoters.findIndex(
+      blogPostData.upvoters.findIndex(
         (e) => e.userId === supabase.auth.user().id
       ) !== -1;
     setIsLiked(isLiked);
   }, []);
 
   return (
-    feedData && (
+    blogPostData && (
       <>
         {/* comment section */}
         <AnimatePresence>
@@ -208,7 +212,12 @@ const FeedCard = ({ feedData, index }) => {
                 className="bg-base-100 rounded-box w-full max-w-xl h-screen flex flex-col gap-2 p-4 lg:pt-24 pt-36 overflow-y-auto"
               >
                 <div className="flex justify-between items-center">
-                  <p className="text-xl">Comments</p>
+                  <motion.p
+                    layoutId={`comment_${blogPostData.id}`}
+                    className="text-xl"
+                  >
+                    Comments
+                  </motion.p>
                   <button
                     onClick={() => setCommentOpen(false)}
                     className="btn btn-circle btn-ghost"
@@ -234,7 +243,7 @@ const FeedCard = ({ feedData, index }) => {
                           {supabase.auth.user().user_metadata.username}
                         </p>
                         <p className="text-xs opacity-50">
-                          {dayjs(feedData.createdAt).format(
+                          {dayjs(blogPostData.createdAt).format(
                             "DD MMM YYYY H:mm a"
                           )}
                         </p>
@@ -261,7 +270,7 @@ const FeedCard = ({ feedData, index }) => {
                       </button>
                     </div>
                   </div>
-                  {feedData.comments?.map((comment, index) => {
+                  {blogPostData.comments?.map((comment, index) => {
                     return (
                       <div key={comment.id} className="border-2 rounded-box">
                         <div className="flex flex-col p-2">
@@ -291,7 +300,7 @@ const FeedCard = ({ feedData, index }) => {
                     );
                   })}
 
-                  {feedData.comments.length === 0 && (
+                  {blogPostData.comments.length === 0 && (
                     <p className="mt-10">No comments yet</p>
                   )}
                 </div>
@@ -299,7 +308,6 @@ const FeedCard = ({ feedData, index }) => {
             </motion.main>
           )}
         </AnimatePresence>
-
         {/* content section */}
         <AnimatePresence>
           {contentOpen && (
@@ -333,16 +341,20 @@ const FeedCard = ({ feedData, index }) => {
                 </div>
                 <div className="flex items-center">
                   <Image
-                    src={`https://avatars.dicebear.com/api/bottts/${feedData.uploader.username}.svg`}
+                    src={`https://avatars.dicebear.com/api/bottts/${blogPostData.uploader.username}.svg`}
                     width={45}
                     height={45}
                     className="rounded-full"
                     alt="avatar"
                   />
                   <div className="flex flex-col ml-2">
-                    <p className="leading-none">{feedData.uploader.username}</p>
+                    <p className="leading-none">
+                      {blogPostData.uploader.username}
+                    </p>
                     <p className="text-xs opacity-50">
-                      {dayjs(feedData.created_at).format("DD MMM YYYY hh:mm a")}
+                      {dayjs(blogPostData.created_at).format(
+                        "DD MMM YYYY hh:mm a"
+                      )}
                     </p>
                   </div>
                 </div>
@@ -353,7 +365,7 @@ const FeedCard = ({ feedData, index }) => {
                     skipHtml={false}
                     rehypePlugins={[rehypeRaw]}
                   >
-                    {feedData.content}
+                    {blogPostData.content}
                   </ReactMarkdown>
                 </div>
                 <div className="divider mb-0 pb-0" />
@@ -368,8 +380,8 @@ const FeedCard = ({ feedData, index }) => {
                       <FiHeart
                         className={isLiked && "fill-red-500 stroke-red-500"}
                       />
-                      {feedData.upvoters.length > 0
-                        ? feedData.upvoters.length
+                      {blogPostData.upvoters.length > 0
+                        ? blogPostData.upvoters.length
                         : null}
                     </button>
                   )}
@@ -379,11 +391,12 @@ const FeedCard = ({ feedData, index }) => {
                     onClick={() => setCommentOpen(true)}
                   >
                     <FiMessageSquare />
-                    {feedData.comments.length > 0
-                      ? feedData.comments.length
+                    {blogPostData.comments.length > 0
+                      ? blogPostData.comments.length
                       : null}
                   </button>
-                  {feedData.uploader.email === supabase.auth.user().email && (
+                  {blogPostData.uploader.email ===
+                    supabase.auth.user().email && (
                     <label
                       htmlFor="deletePostModal"
                       className="btn btn-error btn-sm ml-auto"
@@ -404,9 +417,106 @@ const FeedCard = ({ feedData, index }) => {
             </motion.main>
           )}
         </AnimatePresence>
-
         {/* cards */}
-        <motion.div
+
+        <div className="flex gap-2 w-full">
+          <img
+            className="w-10 h-10"
+            alt="profile"
+            src={`https://avatars.dicebear.com/api/bottts/${blogPostData.uploader.username}.svg`}
+          />
+          <div className="flex flex-col gap-4 w-full">
+            <div className="mt-2">
+              <Link
+                href={
+                  blogPostData.uploader.email === __supabase.auth.user()?.email
+                    ? "/me"
+                    : `/hunter/${blogPostData.uploader.username}`
+                }
+                className="font-semibold text-primary hover:underline underline-offset-4 cursor-pointer"
+              >
+                {blogPostData.uploader.firstName}{" "}
+                {blogPostData.uploader.middleName ?? null}{" "}
+                {blogPostData.uploader.lastName}{" "}
+              </Link>{" "}
+              <br className="md:hidden" />
+              <span className="opacity-50 ">
+                {dayjs(blogPostData.created_at).format("DD MMM YYYY hh:mm a")}
+              </span>
+            </div>
+            <ReactMarkdown
+              className="flex flex-col w-full"
+              components={markdownRederers}
+              // skipHtml={false}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {blogPostData.content}
+            </ReactMarkdown>
+            <div className="flex justify-between mt-3 items-center">
+              <div className="flex items-center gap-7">
+                {likeProcessing ? (
+                  <p>
+                    <FiLoader className="animate-spin" />
+                  </p>
+                ) : (
+                  <p
+                    onClick={() => likePost()}
+                    className="relative flex items-center gap-2 group transition-all hover:underline underline-offset-4 cursor-pointer"
+                  >
+                    <FiHeart className=" transition-all" />
+                    {blogPostData.upvoters.length ?? null}{" "}
+                    <span className="hidden lg:block">Likes</span>
+                    {/* list of upvoters */}
+                    {blogPostData.upvoters.length > 0 && (
+                      <div className="absolute w-max px-5 py-3 bg-base-300 top-[150%] left-5 hidden group-hover:flex flex-col rounded-btn">
+                        {blogPostData.upvoters.map((upvoter, index) => {
+                          // only show 5 upvoters
+                          // if it is greater than 5 then show a count
+                          if (index < 5) {
+                            return (
+                              <p className="text-xs">
+                                {upvoter.upvoterDetails.firstName}{" "}
+                                {upvoter.upvoterDetails.lastName}
+                              </p>
+                            );
+                          } else if (index === 5) {
+                            return (
+                              <p className="text-xs">
+                                {blogPostData.upvoters.length - 5} more
+                              </p>
+                            );
+                          }
+                        })}
+                      </div>
+                    )}
+                  </p>
+                )}
+                <p
+                  onClick={() => setCommentOpen(true)}
+                  className="flex items-center gap-2 group transition-all hover:underline underline-offset-4 cursor-pointer"
+                >
+                  <FiMessageCircle className=" transition-all" />
+                  {blogPostData.comments.length ?? null}{" "}
+                  <motion.span className="hidden lg:block">
+                    Comments
+                  </motion.span>
+                </p>
+              </div>
+              <div className="flex gap-7">
+                <p className="flex gap-2 items-center underline-offset-4 hover:underline">
+                  <FiShare2 className=" transition-all" />
+                  <span className="hidden md:block">Share</span>
+                </p>
+                <p className="flex gap-2 items-center underline-offset-4 hover:underline">
+                  <FiMoreHorizontal className=" transition-all" />
+                  <span className="hidden md:block">More</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* <motion.div
           key={`post_${index + 1}`}
           animate={{ opacity: [0, 1], y: [10, 0] }}
           transition={{
@@ -435,7 +545,7 @@ const FeedCard = ({ feedData, index }) => {
                 </div>
               </div>
             </div>
-            {/* content */}
+            
             <div className="h-full flex items-center">
               <ReactMarkdown
                 className="flex "
@@ -446,7 +556,7 @@ const FeedCard = ({ feedData, index }) => {
                 {feedData.content}
               </ReactMarkdown>
             </div>
-            {/* actions */}
+            
             <div className="flex flex-col">
               <div className="flex justify-end">
                 {likeProcessing ? (
@@ -553,9 +663,9 @@ const FeedCard = ({ feedData, index }) => {
             >
               <FiMoreHorizontal />
             </button>
-          </div> */}
-        </motion.div>
-
+          </div> 
+        </motion.div> 
+*/}
         {/* delete modal */}
         <input type="checkbox" id="deletePostModal" className="modal-toggle" />
         <div className="modal">
