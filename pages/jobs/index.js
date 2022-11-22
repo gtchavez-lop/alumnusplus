@@ -18,10 +18,7 @@ const JobListingPage = () => {
           includes jobs that are happening in the Wicket community.
         </p>
 
-        <p className="text-center max-w-xl mx-auto">
-          This page is for job listings that are posted from provisioners. This
-          includes jobs that are happening in the Wicket community.
-        </p>
+
 
         <p className="text-lg font-bold mt-16 text-center max-w-lg text-warning mx-auto">
           This feature is still in development. Please check back later for more
