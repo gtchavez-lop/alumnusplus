@@ -9,6 +9,7 @@ import {
   FiMessageSquare,
   FiMoreHorizontal,
   FiPlusCircle,
+  FiSearch,
   FiShare2,
   FiX
 } from "react-icons/fi";
@@ -22,6 +23,7 @@ import __supabase from "../../lib/supabase";
 import dayjs from "dayjs";
 import reactMarkdown from "react-markdown";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import uuidv4 from "../../lib/uuidv4";
 
@@ -32,6 +34,7 @@ const FeedPage = () => {
   const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const supabaseClient = useClient();
+  const router = useRouter();
 
   const feedFilter = useFilter(
     (query) => query.order("createdAt", { ascending: false }),
@@ -51,7 +54,7 @@ const FeedPage = () => {
   const addPost = async (e) => {
     e.preventDefault();
 
-    if (blogContent.length < 1) {
+    if (blogContent.length < 5) {
       toast.error("Please enter some content");
       return;
     }
@@ -158,11 +161,47 @@ const FeedPage = () => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-3 gap-4 pt-24"
+          className="relative min-h-screen w-full grid grid-cols-1 lg:grid-cols-3 gap-4 pt-24 pb-36"
         >
           {/* feed */}
           <div className="col-span-2 flex flex-col gap-16">
             {/* create post */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setCreatePostModalOpen(true)}
+                className="btn btn-primary gap-2 btn-sm lg:btn-md"
+              >
+                <FiPlusCircle className="text-xl" />
+                <p>Create Post</p>
+              </button>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const searchQuery = e.target[0].value;
+                  if (searchQuery.length >= 5) {
+                    // trim last whitespace
+                    const trimmedQuery = searchQuery.trim();
+                    // make the searchQuery URL friendly
+                    const urlFriendlyQuery = trimmedQuery.replace(/\s/g, "+");
+                    // redirect to search page
+                    router.push(`/search?query=${urlFriendlyQuery}`);
+                  } else {
+                    toast.error("Please enter a valid search query");
+                  }
+                }}
+                className="w-full input-group"
+              >
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="input input-primary input-sm lg:input-md w-full max-w-md"
+                />
+                <span>
+                  <FiSearch />
+                </span>
+              </form>
+            </div>
 
             {/* cards */}
             {filteredPosts.length >= 1
@@ -183,17 +222,7 @@ const FeedPage = () => {
           </div>
 
           {/* sidebar */}
-          <div className="hidden lg:flex flex-col gap-4">
-            <div className="p-5 bg-base-200 rounded-btn">
-              {/* search for someone */}
-              <div>
-                <form className="w-full">
-                  <span className="">Search for someone</span>
-                  <input className="input input-primary input-bordered w-full" />
-                </form>
-              </div>
-            </div>
-          </div>
+          <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24"></div>
         </motion.main>
 
         {/* add post modal */}

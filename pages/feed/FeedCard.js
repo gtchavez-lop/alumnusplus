@@ -39,6 +39,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
   const [contentOpen, setContentOpen] = useState(false);
   const [commentInput, setCommentInput] = useState("");
   const [isSelfPost, setIsSelfPost] = useState(false);
+  const [seeMore, setSeeMore] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likeProcessing, setLikeProcessing] = useState(false);
   const supabase = useClient();
@@ -444,14 +445,20 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                 {dayjs(blogPostData.created_at).format("DD MMM YYYY hh:mm a")}
               </span>
             </div>
-            <ReactMarkdown
-              className="flex flex-col w-full"
-              components={markdownRederers}
-              // skipHtml={false}
-              rehypePlugins={[rehypeRaw]}
-            >
-              {blogPostData.content}
-            </ReactMarkdown>
+            <div onClick={() => setSeeMore(!seeMore)}>
+              <ReactMarkdown
+                className={`flex flex-col w-full overflow-y-hidden ${
+                  seeMore
+                    ? "max-h-full cursor-n-resize"
+                    : "max-h-[205px] cursor-s-resize hover:opacity-50"
+                }`}
+                components={markdownRederers}
+                // skipHtml={false}
+                rehypePlugins={[rehypeRaw]}
+              >
+                {blogPostData.content}
+              </ReactMarkdown>
+            </div>
             <div className="flex justify-between mt-3 items-center">
               <div className="flex items-center gap-7">
                 {likeProcessing ? (
@@ -463,7 +470,9 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                     onClick={() => likePost()}
                     className="relative flex items-center gap-2 group transition-all hover:underline underline-offset-4 cursor-pointer"
                   >
-                    <FiHeart className=" transition-all" />
+                    <FiHeart
+                      className={isLiked ? "stroke-red-500 fill-red-500" : ""}
+                    />
                     {blogPostData.upvoters.length ?? null}{" "}
                     <span className="hidden lg:block">Likes</span>
                     {/* list of upvoters */}
