@@ -1,6 +1,6 @@
-import { __PageTransition } from '../../lib/animtions';
-import { motion } from 'framer-motion';
-import JobPreview from './JobPreview';
+import JobPreview from "./jobPreview";
+import { __PageTransition } from "../../lib/animtions";
+import { motion } from "framer-motion";
 
 const JobListingPage = () => {
   return (

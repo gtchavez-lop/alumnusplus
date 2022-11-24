@@ -1,13 +1,7 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { icons } from "react-icons";
 import { FiBookmark, FiMoreHorizontal } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import Image from "next/image";
+
 import __supabase from "../../lib/supabase";
-import dayjs from "dayjs";
-import { useClient } from "react-supabase";
-import { useRouter } from "next/router";
-import uuidv4 from "../../lib/uuidv4";
 
 const JobPreview = () => {
   const [bookMark, setBookMark] = useState(false);
