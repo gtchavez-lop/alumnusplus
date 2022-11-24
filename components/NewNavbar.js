@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 const NewNavbar = () => {
   const router = useRouter();
   const [hasUser, setHasUser] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const checkUser = async () => {
     const user = await __supabase.auth.user();
@@ -45,15 +46,24 @@ const NewNavbar = () => {
           transition={{ duration: 0.5, ease: "circOut" }}
           className="lg:hidden fixed top-0 left-0 w-full z-[999] pt-5 pb-5 px-5 flex flex-col gap-5 justify-center backdrop-blur-md bg-base-100 bg-opacity-50"
         >
-          <main className="grid grid-cols-3 w-full items-center ">
+          <main className="flex w-full items-center gap-5">
             <Logo />
-            <div />
-            <div className="flex justify-end gap-2 items-center">
-              <button className="flex justify-center items-center p-2 bg-base-300 rounded-full ">
-                <FiSearch />
-              </button>
+            <div className="flex justify-end gap-2 items-center w-full">
+              <div className="flex justify-end items-center w-full">
+                {isSearching && (
+                  <input className="input input-primary input-bordered w-full max-w-md" />
+                )}
+                <button
+                  onClick={() => {
+                    if (!isSearching) setIsSearching(true);
+                  }}
+                  className="btn btn-circle btn-ghost"
+                >
+                  <FiSearch />
+                </button>
+              </div>
               <Link href={"/messages"} scroll={false} legacyBehavior={true}>
-                <button className="flex justify-center items-center p-2 bg-base-300 rounded-full">
+                <button className="btn btn-circle btn-ghost">
                   <FiMail />
                 </button>
               </Link>

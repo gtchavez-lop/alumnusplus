@@ -5,9 +5,12 @@ import {
   FiFilter,
   FiHeart,
   FiLoader,
+  FiMessageCircle,
   FiMessageSquare,
   FiMoreHorizontal,
   FiPlusCircle,
+  FiSearch,
+  FiShare2,
   FiX
 } from "react-icons/fi";
 import { useClient, useFilter, useRealtime, useSelect } from "react-supabase";
@@ -20,6 +23,7 @@ import __supabase from "../../lib/supabase";
 import dayjs from "dayjs";
 import reactMarkdown from "react-markdown";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import uuidv4 from "../../lib/uuidv4";
 
@@ -30,6 +34,7 @@ const FeedPage = () => {
   const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const supabaseClient = useClient();
+  const router = useRouter();
 
   const feedFilter = useFilter(
     (query) => query.order("createdAt", { ascending: false }),
@@ -49,7 +54,7 @@ const FeedPage = () => {
   const addPost = async (e) => {
     e.preventDefault();
 
-    if (blogContent.length < 1) {
+    if (blogContent.length < 5) {
       toast.error("Please enter some content");
       return;
     }
@@ -156,103 +161,71 @@ const FeedPage = () => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="min-h-screen absolute top-0 left-0 w-full flex justify-center"
+          className="relative min-h-screen w-full grid grid-cols-1 lg:grid-cols-3 gap-4 pt-24 pb-36"
         >
-          {/* cards carousel */}
-          <div className="h-screen carousel carousel-vertical w-full max-w-xl">
-            {/* add post screen */}
-            <div className="carousel-item h-full px-5 relative">
-              <div className="flex flex-col w-full justify-center max-w-2xl mx-auto">
-                <h1 className="text-2xl font-bold mb-5">
-                  Add Post as{" "}
-                  <span className="text-secondary underline underline-offset-4">
-                    {supabaseClient.auth.user().user_metadata?.username}
-                  </span>
-                </h1>
+          {/* feed */}
+          <div className="col-span-2 flex flex-col gap-16">
+            {/* create post */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setCreatePostModalOpen(true)}
+                className="btn btn-primary gap-2 btn-sm lg:btn-md"
+              >
+                <FiPlusCircle className="text-xl" />
+                <p>Create Post</p>
+              </button>
 
-                <div
-                  onClick={() => setCreatePostModalOpen(true)}
-                  className="w-full rounded-btn hover:scale-95 transition-all cursor-pointer min-h-[20vh] flex justify-center items-center bg-primary text-2xl text-primary-content"
-                >
-                  <FiPlusCircle />
-                </div>
-              </div>
-
-              {/* arrow down */}
-              <div className="absolute bottom-24 left-0 w-full flex flex-col items-center">
-                <p className="mb-5">
-                  <span className="lg:hidden">Swipe up to </span>
-                  See stories from other people
-                </p>
-                <FiChevronsDown className="text-4xl animate-bounce hidden lg:block" />
-              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const searchQuery = e.target[0].value;
+                  if (searchQuery.length >= 5) {
+                    // trim last whitespace
+                    const trimmedQuery = searchQuery.trim();
+                    // make the searchQuery URL friendly
+                    const urlFriendlyQuery = trimmedQuery.replace(/\s/g, "+");
+                    // redirect to search page
+                    router.push(`/search?query=${urlFriendlyQuery}`);
+                  } else {
+                    toast.error("Please enter a valid search query");
+                  }
+                }}
+                className="w-full input-group"
+              >
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="input input-primary input-sm lg:input-md w-full max-w-md"
+                />
+                <span>
+                  <FiSearch />
+                </span>
+              </form>
             </div>
 
             {/* cards */}
-            {
-              // if there are filtered posts, show them
-              filteredPosts.length > 0
-                ? filteredPosts.map((post) => (
-                    <div className="carousel-item h-full px-5 relative">
-                      <FeedCard feedData={post} />
-                    </div>
-                  ))
-                : blogData.map((post) => (
-                    <div className="carousel-item h-full px-5 relative">
-                      <FeedCard feedData={post} />
-                    </div>
-                  ))
-            }
+            {filteredPosts.length >= 1
+              ? filteredPosts.map((blog, index) => (
+                  <FeedCard
+                    key={`feedcard_${index + 1}`}
+                    feedData={blog}
+                    index={index}
+                  />
+                ))
+              : blogData?.map((blog, index) => (
+                  <FeedCard
+                    key={`feedcard_${index + 1}`}
+                    feedData={blog}
+                    index={index}
+                  />
+                ))}
           </div>
 
-          {/* <div className="flex items-end gap-2 w-full">
-						<div className="flex flex-col">
-							<label className="ml-4">Search for something</label>
-							<input
-								type="text"
-								placeholder="Search posts..."
-								className="flex w-full input input-primary"
-								onChange={filterPostHandler}
-							/>
-						</div>
-						<select
-							onChange={(e) => {
-								setFilterMode(e.target.value);
-							}}
-							className="select select-primary select-bordered"
-						>
-							<option disabled={true} selected={true}>
-								Set Filter Options
-							</option>
-							<option value="content">Content</option>
-							<option value="uploader_email">Uploader Email</option>
-							<option value="username">Username</option>
-							<option value="fullname">Fullname</option>
-						</select>
-					</div>
-
-					<div className="flex flex-col gap-5 mt-16">
-						<div
-							onClick={() => setCreatePostModalOpen(true)}
-							className="cursor-pointer hover:scale-95 transition-all bg-base-200 rounded-box min-h-[175px] md:min-h-[250px] py-3 px-4 flex flex-col gap-2 justify-center items-center"
-						>
-							<div className="flex justify-center items-center flex-col gap-2 ">
-								<FiPlusCircle className="text-6xl" />
-								<p>Add Post</p>
-							</div>
-						</div>
-
-						{filteredPosts.length >= 1
-							? filteredPosts.map((blog, index) => (
-									<FeedCard key={`feedcard_${index + 1}`} feedData={blog} index={index} />
-							  ))
-							: blogData?.map((blog, index) => (
-									<FeedCard key={`feedcard_${index + 1}`} feedData={blog} index={index} />
-							  ))}
-					</div> */}
+          {/* sidebar */}
+          <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24"></div>
         </motion.main>
 
-        {/* new add post modal */}
+        {/* add post modal */}
         <AnimatePresence key={"createPostModal"}>
           {createPostModalOpen && (
             <motion.div
@@ -392,57 +365,6 @@ const FeedPage = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* add post modal */}
-        {/* <input type="checkbox" id="addPostModal" className="modal-toggle" />
-				<div className="modal" id="addPostModal">
-					<div className="modal-box">
-						<div className="modal-title flex justify-between items-center">
-							<h5>
-								Add Post as{" "}
-								<span className="text-secondary underline underline-offset-4">
-									{supabaseClient.auth.user().user_metadata?.username}
-								</span>
-							</h5>
-							<label className="btn btn-ghost btn-circle" htmlFor="addPostModal">
-								<FiX />
-							</label>
-						</div>
-						<div className="modal-body flex flex-col gap-2">
-							<form onSubmit={(e) => addPost(e)}>
-								<textarea
-									name="content"
-									className="textarea textarea-bordered w-full"
-									onChange={(e) => {
-										e.target.style.height = "auto";
-										e.target.style.height = `${e.target.scrollHeight}px`;
-
-										const content = e.target.value;
-										const newContent = content.replace(/\n/g, "<br />");
-										setBlogContent(newContent);
-									}}
-									// onKeyUp={(e) => {
-									//   if (e.key === "Enter") {
-									//     e.preventDefault();
-									//     const val = e.target.value;
-									//     const newVal = val.replace(/\r?\n/g, "<br/>");
-									//     e.target.value = newVal;
-									//   }
-									// }}
-								/>
-								<p className="text-sm opacity-40">You can add markdown syntax here</p>
-								<div className="modal-action">
-									<label className="btn btn-ghost" htmlFor="addPostModal">
-										Cancel
-									</label>
-									<button type="submit" className="btn btn-primary">
-										Add
-									</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div> */}
       </>
     )
   );
