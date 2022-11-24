@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   FiEye,
   FiHeart,
@@ -10,20 +10,20 @@ import {
   FiShare2,
   FiTrash2,
   FiX
-} from "react-icons/fi";
-import { useEffect, useState } from "react";
+} from 'react-icons/fi';
+import { useEffect, useState } from 'react';
 
-import { $schema_blogComment } from "../../schemas/blog";
-import Image from "next/image";
-import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import __supabase from "../../lib/supabase";
-import dayjs from "dayjs";
-import rehypeRaw from "rehype-raw";
-import toast from "react-hot-toast";
-import { useClient } from "react-supabase";
-import { useRouter } from "next/router";
-import uuidv4 from "../../lib/uuidv4";
+import { $schema_blogComment } from '../../schemas/blog';
+import Image from 'next/image';
+import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import __supabase from '../../lib/supabase';
+import dayjs from 'dayjs';
+import rehypeRaw from 'rehype-raw';
+import toast from 'react-hot-toast';
+import { useClient } from 'react-supabase';
+import { useRouter } from 'next/router';
+import uuidv4 from '../../lib/uuidv4';
 
 const markdownRederers = {
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
@@ -37,7 +37,7 @@ const markdownRederers = {
 const FeedCard = ({ feedData: blogPostData, index }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [contentOpen, setContentOpen] = useState(false);
-  const [commentInput, setCommentInput] = useState("");
+  const [commentInput, setCommentInput] = useState('');
   const [isSelfPost, setIsSelfPost] = useState(false);
   const [seeMore, setSeeMore] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -47,7 +47,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
   const addComment = async () => {
     if (commentInput.length < 1) {
-      toast.error("Please enter some content");
+      toast.error('Please enter some content');
       return;
     }
 
@@ -55,10 +55,10 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
     newComment.blogId = blogPostData.id;
     newComment.content = commentInput;
-    newComment.createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    newComment.createdAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
     newComment.id = uuidv4();
-    newComment.type = "comment";
-    newComment.updatedAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    newComment.type = 'comment';
+    newComment.updatedAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
     newComment.uploaderDetails = {
       firstName: supabase.auth.user().user_metadata.fullname.first,
       lastName: supabase.auth.user().user_metadata.fullname.last,
@@ -69,19 +69,19 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
     // add comment
     const { data, error } = await supabase
-      .from("hunt_blog")
+      .from('hunt_blog')
       .update({
         comments: [...blogPostData.comments, newComment]
       })
-      .eq("id", blogPostData.id);
+      .eq('id', feedData.id);
 
     if (error) {
       toast.error(error.message);
       return;
     } else {
-      blogPostData.comments = [...blogPostData.comments, newComment];
-      toast.success("Comment added");
-      setCommentInput("");
+      feedData.comments = [...feedData.comments, newComment];
+      toast.success('Comment added');
+      setCommentInput('');
     }
   };
 
@@ -89,10 +89,10 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     setLikeProcessing(true);
     // fetch likes
     const { data: prevData, error: prevDataError } = await __supabase
-      .from("hunt_blog")
-      .select("upvoters")
+      .from('hunt_blog')
+      .select('upvoters')
       .single()
-      .eq("id", blogPostData.id);
+      .eq('id', feedData.id);
 
     const upvoters = [...prevData.upvoters];
 
@@ -100,11 +100,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
       upvoters.findIndex((e) => e.userId === supabase.auth.user().id) !== -1;
 
     const newUpvoter = {
-      blogId: blogPostData.id,
-      createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      blogId: feedData.id,
+      createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       id: uuidv4(),
-      type: "upvote",
-      updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      type: 'upvote',
+      updatedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       userId: supabase.auth.user().id,
       upvoterDetails: {
         firstName: supabase.auth.user().user_metadata.fullname.first,
@@ -121,7 +121,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
       // remove upvote
       const { error: newDataError } = await __supabase
-        .from("hunt_blog")
+        .from('hunt_blog')
         .update({
           upvoters: [
             ...prevData.upvoters.filter(
@@ -129,7 +129,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
             )
           ]
         })
-        .eq("id", blogPostData.id);
+        .eq('id', feedData.id);
 
       if (newDataError) {
         toast.error(error.message);
@@ -142,11 +142,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     } else {
       // add upvote
       const { error: newDataError } = await __supabase
-        .from("hunt_blog")
+        .from('hunt_blog')
         .update({
           upvoters: [...prevData.upvoters, newUpvoter]
         })
-        .eq("id", blogPostData.id);
+        .eq('id', feedData.id);
 
       if (newDataError) {
         toast.error(error.message);
@@ -161,15 +161,15 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
   const handleDelete = async () => {
     const { error } = await __supabase
-      .from("hunt_blog")
+      .from('hunt_blog')
       .delete()
-      .eq("id", blogPostData.id);
+      .eq('id', feedData.id);
 
     if (error) {
       toast.error(error.message);
     } else {
       router.reload();
-      toast.success("Post deleted");
+      toast.success('Post deleted');
     }
   };
 
@@ -207,8 +207,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
             >
               <motion.div
                 initial={{ x: 100 }}
-                animate={{ x: 0, transition: { ease: "easeOut" } }}
-                exit={{ x: 100, transition: { ease: "easeIn" } }}
+                animate={{ x: 0, transition: { ease: 'easeOut' } }}
+                exit={{ x: 100, transition: { ease: 'easeIn' } }}
                 transition={{ duration: 0.2 }}
                 className="bg-base-100 rounded-box w-full max-w-xl h-screen flex flex-col gap-2 p-4 lg:pt-24 pt-36 overflow-y-auto"
               >
@@ -244,8 +244,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                           {supabase.auth.user().user_metadata.username}
                         </p>
                         <p className="text-xs opacity-50">
-                          {dayjs(blogPostData.createdAt).format(
-                            "DD MMM YYYY H:mm a"
+                          {dayjs(feedData.createdAt).format(
+                            'DD MMM YYYY H:mm a'
                           )}
                         </p>
                       </div>
@@ -258,7 +258,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                         value={commentInput}
                         onChange={(e) => setCommentInput(e.target.value)}
                         onKeyUp={(e) => {
-                          if (e.key === "Enter") {
+                          if (e.key === 'Enter') {
                             addComment();
                           }
                         }}
@@ -289,7 +289,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                               </p>
                               <p className="text-xs opacity-50">
                                 {dayjs(comment.createdAt).format(
-                                  "DD MMM YYYY hh:mm a"
+                                  'DD MMM YYYY hh:mm a'
                                 )}
                               </p>
                             </div>
@@ -326,8 +326,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
             >
               <motion.div
                 initial={{ x: 100 }}
-                animate={{ x: 0, transition: { ease: "easeOut" } }}
-                exit={{ x: 100, transition: { ease: "easeIn" } }}
+                animate={{ x: 0, transition: { ease: 'easeOut' } }}
+                exit={{ x: 100, transition: { ease: 'easeIn' } }}
                 transition={{ duration: 0.2 }}
                 className="bg-base-100 rounded-box w-full max-w-xl h-screen flex flex-col gap-2 p-4 lg:pt-24 pt-36"
               >
@@ -353,9 +353,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                       {blogPostData.uploader.username}
                     </p>
                     <p className="text-xs opacity-50">
-                      {dayjs(blogPostData.created_at).format(
-                        "DD MMM YYYY hh:mm a"
-                      )}
+                      {dayjs(feedData.created_at).format('DD MMM YYYY hh:mm a')}
                     </p>
                   </div>
                 </div>
@@ -379,7 +377,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   ) : (
                     <button className="btn btn-ghost gap-2" onClick={likePost}>
                       <FiHeart
-                        className={isLiked && "fill-red-500 stroke-red-500"}
+                        className={isLiked && 'fill-red-500 stroke-red-500'}
                       />
                       {blogPostData.upvoters.length > 0
                         ? blogPostData.upvoters.length
@@ -408,7 +406,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   )}
                 </div>
                 <p className="text-right text-sm opacity-50 max-w-lg self-end">
-                  Some actions like share and report are not yet implemented.{" "}
+                  Some actions like share and report are not yet implemented.{' '}
                   <br />
                   Please come back later.
                 </p>
@@ -530,11 +528,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
           animate={{ opacity: [0, 1], y: [10, 0] }}
           transition={{
             duration: 0.5,
-            ease: "circOut",
+            ease: 'circOut',
             delay: (index + 1) * 0.1
           }}
           className={
-            "rounded-box my-24 lg:my-18 lg:mb-10 w-full p-5 flex flex-col gap-2 opacity-0 border-primary border-2"
+            'rounded-box my-24 lg:my-18 lg:mb-10 w-full p-5 flex flex-col gap-2 opacity-0 border-primary border-2'
           }
         >
           <div className="flex flex-col justify-between w-full h-full">
@@ -549,7 +547,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                 <div className="flex flex-col justify-center">
                   <p className="leading-none">{feedData.uploader.username}</p>
                   <p className="text-xs opacity-50">
-                    {dayjs(feedData.created_at).format("DD MMM YYYY hh:mm a")}
+                    {dayjs(feedData.created_at).format('DD MMM YYYY hh:mm a')}
                   </p>
                 </div>
               </div>
@@ -575,7 +573,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                 ) : (
                   <button className="btn btn-ghost gap-2" onClick={likePost}>
                     <FiHeart
-                      className={isLiked && "fill-red-500 stroke-red-500"}
+                      className={isLiked && 'fill-red-500 stroke-red-500'}
                     />
                     {feedData.upvoters.length > 0
                       ? feedData.upvoters.length
