@@ -93,16 +93,6 @@ const MeSettings = ({ data }) => {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (isDarkMode) {
-			document.body.setAttribute("data-theme", "stability");
-			localStorage.setItem("theme", "stability");
-		} else {
-			document.body.setAttribute("data-theme", "success");
-			localStorage.setItem("theme", "success");
-		}
-	}, [isDarkMode]);
-
 	return (
 		<>
 			{/* <ThemeSwticher isOpen={themeOpen} setOpen={setThemeOpen} /> */}
@@ -117,11 +107,14 @@ const MeSettings = ({ data }) => {
 								<span className="ml-2">Dark Mode</span>
 								<input
 									type="checkbox"
+									data-toggle-theme="stability,success"
 									className="toggle toggle-primary"
 									checked={isDarkMode}
 									onChange={(e) => {
 										setDarkMode(e.target.checked);
-										// setTheme();
+										document.body.setAttribute(
+											"data-theme", e.target.checked ? "stability" : "success"
+										);
 									}}
 								/>
 							</label>

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
-import { AuthProvider } from '../components/AuthContext'
+import { AuthProvider } from "../components/AuthContext";
 import Head from "next/head";
 import NewNavbar from "../components/NewNavbar";
 import { Provider as SupbaseProvider } from "react-supabase";
@@ -71,9 +71,9 @@ function MyApp({ Component, pageProps }) {
                 position="bottom"
                 toastOptions={{
                   style: {
-                    padding: "16px",
-                    gap: "8px",
-                  },
+                    padding: "5px",
+                    gap: "8px"
+                  }
                 }}
               />
               {/* <ReactQueryDevtools initialIsOpen={false} /> */}

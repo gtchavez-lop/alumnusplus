@@ -4,22 +4,25 @@ import FeedCard from "../pages/feed/FeedCard";
 import { FiSearch } from "react-icons/fi";
 
 const MeFeed = ({ feed }) => {
-	return (
-		<>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-				{feed.length > 0 && feed.map((e, index) => <FeedCard feedData={e} key={`feed_item_${index}`} />)}
-			</div>
+  return (
+    <>
+      <div className="flex flex-col gap-10 w-full max-w-xl relative">
+        {feed.length > 0 &&
+          feed.map((e, index) => (
+            <FeedCard feedData={e} key={`feed_item_${index}`} />
+          ))}
+      </div>
 
-			{feed.length < 1 && (
-				<div className="flex flex-col items-center justify-center h-full mt-16">
-					<div className="flex flex-col items-center gap-2">
-						<FiSearch className="text-4xl" />
-						<p className="text-xl">No posts yet</p>
-					</div>
-				</div>
-			)}
-		</>
-	);
+      {feed.length < 1 && (
+        <div className="flex flex-col items-center justify-center h-full mt-16">
+          <div className="flex flex-col items-center gap-2">
+            <FiSearch className="text-4xl" />
+            <p className="text-xl">No posts yet</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default MeFeed;

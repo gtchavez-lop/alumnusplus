@@ -194,9 +194,9 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 					A Hunter is a person who is looking for a job. They can be freelancers, contractors, or full-time employees.
 				</p>
 
-				<div className="grid grid-cols-1 lg:grid-cols-2 z-10">
+				<div className="grid grid-cols-1 lg:grid-cols-3 z-10">
 					<form
-						className="grid grid-cols-2 gap-5 mt-16 gap-y-2"
+						className="grid grid-cols-2 gap-5 mt-16 gap-y-2 lg:col-span-2"
 						onSubmit={(e) => handleSubmit(e)}
 						onChange={(e) => {
 							const form = e.target.form;
@@ -204,21 +204,8 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 							e.target.classList.remove("input-error");
 						}}
 					>
-						{/* email and password */}
-						<div className="flex flex-col">
-							<label htmlFor="username">Username</label>
-							<input
-								type="username"
-								name="username"
-								id="username"
-								className={`input ${usernameTaken === true ? "input-error" : "input-primary"}`}
-								placeholder="Username"
-								onChange={(e) => {
-									setUsernameTaken(null);
-								}}
-							/>
-						</div>
-						<div className="flex flex-col col-start-1">
+							{/* email and password */}
+						<div className="flex flex-col col-span-full">
 							<label htmlFor="email">Email</label>
 							<input
 								type="email"
@@ -231,7 +218,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 								}}
 							/>
 						</div>
-						<div className="flex flex-col">
+						<div className="flex flex-col col-span-full">
 							<label htmlFor="password">Password</label>
 							<input
 								type="password"
@@ -244,6 +231,19 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 						{/* divider */}
 						<div className="col-span-full divider my-5" />
 						{/* name */}
+						<div className="flex flex-col col-span-full">
+							<label htmlFor="username">Username</label>
+							<input
+								type="username"
+								name="username"
+								id="username"
+								className={`input ${usernameTaken === true ? "input-error" : "input-primary"}`}
+								placeholder="Username"
+								onChange={(e) => {
+									setUsernameTaken(null);
+								}}
+							/>
+						</div>
 						<div className="flex flex-col">
 							<label htmlFor="firstName">First Name</label>
 							<input
@@ -255,16 +255,6 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 							/>
 						</div>
 						<div className="flex flex-col">
-							<label htmlFor="middleName">Middle Name</label>
-							<input
-								type="text"
-								name="middleName"
-								id="middleName"
-								className="input input-primary"
-								placeholder="Middle Name"
-							/>
-						</div>
-						<div className="flex flex-col">
 							<label htmlFor="lastName">Last Name</label>
 							<input
 								type="text"
@@ -272,6 +262,16 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 								id="lastName"
 								className="input input-primary"
 								placeholder="Last Name"
+							/>
+						</div>
+						<div className="flex flex-col">
+							<label htmlFor="middleName">Middle Name (optional)</label>
+							<input
+								type="text"
+								name="middleName"
+								id="middleName"
+								className="input input-primary"
+								placeholder="Middle Name"
 							/>
 						</div>
 						{/* divider */}
@@ -295,7 +295,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 								placeholder="Birthdate"
 							/>
 						</div>
-						<div className="flex flex-col">
+						<div className="flex flex-col col-span-full">
 							<label htmlFor="birthplace">Birthplace</label>
 							<input
 								type="text"
@@ -307,7 +307,7 @@ const Hunter_SignUp_Page1 = ({ setPage }) => {
 						</div>
 						{/* divider */}
 						<div className="col-span-full divider my-0 h-2  opacity-0" />
-						<div className="flex flex-col">
+						<div className="flex flex-col col-span-full">
 							<label htmlFor="address">Address</label>
 							<input type="text" name="address" id="address" className="input input-primary" placeholder="Address" />
 						</div>

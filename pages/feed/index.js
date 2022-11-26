@@ -11,6 +11,7 @@ import {
   FiPlusCircle,
   FiSearch,
   FiShare2,
+  FiUserPlus,
   FiX
 } from "react-icons/fi";
 import { useClient, useFilter, useRealtime, useSelect } from "react-supabase";
@@ -18,6 +19,7 @@ import { useClient, useFilter, useRealtime, useSelect } from "react-supabase";
 import { $schema_blog } from "../../schemas/blog";
 import FeedCard from "./FeedCard";
 import Image from "next/image";
+import Link from "next/link";
 import { __PageTransition } from "../../lib/animtions";
 import __supabase from "../../lib/supabase";
 import dayjs from "dayjs";
@@ -41,6 +43,10 @@ const FeedPage = () => {
     []
   );
 
+  const randomHunterFilter = useFilter((query) =>
+    query.not("email", "eq", __supabase.auth.user().email)
+  );
+
   const [
     {
       count: blogCount,
@@ -50,6 +56,17 @@ const FeedPage = () => {
     },
     reexecuteHunterBlog
   ] = useSelect("hunt_blog", { filter: feedFilter });
+
+  const [
+    {
+      data: randomHunters,
+      error: randomHuntersError,
+      fetching: randomHuntersLoading
+    },
+    reexecuteRandomHunters
+  ] = useSelect("recommended_hunters", {
+    filter: randomHunterFilter
+  });
 
   const addPost = async (e) => {
     e.preventDefault();
@@ -166,15 +183,14 @@ const FeedPage = () => {
           {/* feed */}
           <div className="col-span-2 flex flex-col gap-16">
             {/* create post */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col-reverse lg:flex-row lg:items-center gap-4">
               <button
                 onClick={() => setCreatePostModalOpen(true)}
-                className="btn btn-primary gap-2 btn-sm lg:btn-md"
+                className="btn btn-primary gap-2 btn-sm lg:btn-md w-full max-w-md lg:w-max"
               >
                 <FiPlusCircle className="text-xl" />
                 <p>Create Post</p>
               </button>
-
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -222,7 +238,40 @@ const FeedPage = () => {
           </div>
 
           {/* sidebar */}
-          <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24"></div>
+          <div className="hidden lg:flex flex-col gap-4 relative max-h-screen">
+            <div className="flex flex-col p-4 bg-base-200 bg-opacity-75 gap-2 rounded-btn sticky top-10">
+              <p className="text-lg font-bold ml-2 mb-4">Recommended Hunters</p>
+              {!randomHuntersLoading ? (
+                randomHunters.map((hunter, index) => (
+                  <div className="p-3 bg-base-300 rounded-btn flex items-center gap-3">
+                    <Image
+                      src={`https://avatars.dicebear.com/api/bottts/${hunter.username}.svg`}
+                      width={30}
+                      height={30}
+                    />
+                    <div>
+                      <Link
+                        href={`/hunter/${hunter.username}`}
+                        className="text-sm font-semibold leading-none"
+                      >
+                        {hunter.fullname.first} {hunter.fullname.last}
+                      </Link>
+                      <p className="text-xs opacity-50 leading-none">
+                        @{hunter.username}
+                      </p>
+                    </div>
+                    <div className=" ml-auto">
+                      <button className="btn btn-ghost btn-sm btn-circle">
+                        <FiUserPlus className="text-lg" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>Loading...</p>
+              )}
+            </div>
+          </div>
         </motion.main>
 
         {/* add post modal */}
@@ -247,12 +296,20 @@ const FeedPage = () => {
               }}
             >
               <motion.div
-                initial={{ x: -50 }}
+                initial={{
+                  clipPath: "inset(0 0 100% 0)",
+                  y: "-50px"
+                }}
                 animate={{
-                  x: 0,
+                  clipPath: "inset(0 0 0% 0)",
+                  y: "0px",
                   transition: { duration: 0.3, ease: "circOut" }
                 }}
-                exit={{ x: -50, transition: { duration: 0.3, ease: "circIn" } }}
+                exit={{
+                  clipPath: "inset(100% 0 0% 0)",
+                  y: "50px",
+                  transition: { duration: 0.3, ease: "circIn" }
+                }}
                 className="absolute w-full max-w-xl h-screen max-h-screen overflow-y-auto top-0 left-0 bg-base-100 py-36 lg:py-24 px-5"
               >
                 <div className="modal-title flex justify-between items-center">

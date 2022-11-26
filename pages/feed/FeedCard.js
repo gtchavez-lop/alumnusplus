@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from "framer-motion";
 import {
   FiEye,
   FiHeart,
@@ -10,20 +10,20 @@ import {
   FiShare2,
   FiTrash2,
   FiX
-} from 'react-icons/fi';
-import { useEffect, useState } from 'react';
+} from "react-icons/fi";
+import { useEffect, useState } from "react";
 
-import { $schema_blogComment } from '../../schemas/blog';
-import Image from 'next/image';
-import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
-import __supabase from '../../lib/supabase';
-import dayjs from 'dayjs';
-import rehypeRaw from 'rehype-raw';
-import toast from 'react-hot-toast';
-import { useClient } from 'react-supabase';
-import { useRouter } from 'next/router';
-import uuidv4 from '../../lib/uuidv4';
+import { $schema_blogComment } from "../../schemas/blog";
+import Image from "next/image";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import __supabase from "../../lib/supabase";
+import dayjs from "dayjs";
+import rehypeRaw from "rehype-raw";
+import toast from "react-hot-toast";
+import { useClient } from "react-supabase";
+import { useRouter } from "next/router";
+import uuidv4 from "../../lib/uuidv4";
 
 const markdownRederers = {
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
@@ -37,7 +37,7 @@ const markdownRederers = {
 const FeedCard = ({ feedData: blogPostData, index }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [contentOpen, setContentOpen] = useState(false);
-  const [commentInput, setCommentInput] = useState('');
+  const [commentInput, setCommentInput] = useState("");
   const [isSelfPost, setIsSelfPost] = useState(false);
   const [seeMore, setSeeMore] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -47,7 +47,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
   const addComment = async () => {
     if (commentInput.length < 1) {
-      toast.error('Please enter some content');
+      toast.error("Please enter some content");
       return;
     }
 
@@ -55,10 +55,10 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
     newComment.blogId = blogPostData.id;
     newComment.content = commentInput;
-    newComment.createdAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    newComment.createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
     newComment.id = uuidv4();
-    newComment.type = 'comment';
-    newComment.updatedAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    newComment.type = "comment";
+    newComment.updatedAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
     newComment.uploaderDetails = {
       firstName: supabase.auth.user().user_metadata.fullname.first,
       lastName: supabase.auth.user().user_metadata.fullname.last,
@@ -69,19 +69,19 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
     // add comment
     const { data, error } = await supabase
-      .from('hunt_blog')
+      .from("hunt_blog")
       .update({
         comments: [...blogPostData.comments, newComment]
       })
-      .eq('id', feedData.id);
+      .eq("id", blogPostData.id);
 
     if (error) {
       toast.error(error.message);
       return;
     } else {
-      feedData.comments = [...feedData.comments, newComment];
-      toast.success('Comment added');
-      setCommentInput('');
+      blogPostData.comments = [...blogPostData.comments, newComment];
+      toast.success("Comment added");
+      setCommentInput("");
     }
   };
 
@@ -89,10 +89,10 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     setLikeProcessing(true);
     // fetch likes
     const { data: prevData, error: prevDataError } = await __supabase
-      .from('hunt_blog')
-      .select('upvoters')
+      .from("hunt_blog")
+      .select("upvoters")
       .single()
-      .eq('id', feedData.id);
+      .eq("id", blogPostData.id);
 
     const upvoters = [...prevData.upvoters];
 
@@ -100,11 +100,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
       upvoters.findIndex((e) => e.userId === supabase.auth.user().id) !== -1;
 
     const newUpvoter = {
-      blogId: feedData.id,
-      createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      blogId: blogPostData.id,
+      createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       id: uuidv4(),
-      type: 'upvote',
-      updatedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      type: "upvote",
+      updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       userId: supabase.auth.user().id,
       upvoterDetails: {
         firstName: supabase.auth.user().user_metadata.fullname.first,
@@ -121,7 +121,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
       // remove upvote
       const { error: newDataError } = await __supabase
-        .from('hunt_blog')
+        .from("hunt_blog")
         .update({
           upvoters: [
             ...prevData.upvoters.filter(
@@ -129,7 +129,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
             )
           ]
         })
-        .eq('id', feedData.id);
+        .eq("id", blogPostData.id);
 
       if (newDataError) {
         toast.error(error.message);
@@ -142,11 +142,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     } else {
       // add upvote
       const { error: newDataError } = await __supabase
-        .from('hunt_blog')
+        .from("hunt_blog")
         .update({
           upvoters: [...prevData.upvoters, newUpvoter]
         })
-        .eq('id', feedData.id);
+        .eq("id", blogPostData.id);
 
       if (newDataError) {
         toast.error(error.message);
@@ -161,15 +161,15 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
   const handleDelete = async () => {
     const { error } = await __supabase
-      .from('hunt_blog')
+      .from("hunt_blog")
       .delete()
-      .eq('id', feedData.id);
+      .eq("id", blogPostData.id);
 
     if (error) {
       toast.error(error.message);
     } else {
       router.reload();
-      toast.success('Post deleted');
+      toast.success("Post deleted");
     }
   };
 
@@ -206,10 +206,20 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
               className="fixed w-full h-screen top-0 left-0 bg-base-300 bg-opacity-70 flex justify-end z-50"
             >
               <motion.div
-                initial={{ x: 100 }}
-                animate={{ x: 0, transition: { ease: 'easeOut' } }}
-                exit={{ x: 100, transition: { ease: 'easeIn' } }}
-                transition={{ duration: 0.2 }}
+                initial={{
+                  clipPath: "inset(0 0 100% 0)",
+                  y: "-50px"
+                }}
+                animate={{
+                  clipPath: "inset(0 0 0% 0)",
+                  y: "0px",
+                  transition: { duration: 0.5, ease: "circOut" }
+                }}
+                exit={{
+                  clipPath: "inset(100% 0 0% 0)",
+                  y: "50px",
+                  transition: { duration: 0.2, ease: "circIn" }
+                }}
                 className="bg-base-100 rounded-box w-full max-w-xl h-screen flex flex-col gap-2 p-4 lg:pt-24 pt-36 overflow-y-auto"
               >
                 <div className="flex justify-between items-center">
@@ -244,8 +254,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                           {supabase.auth.user().user_metadata.username}
                         </p>
                         <p className="text-xs opacity-50">
-                          {dayjs(feedData.createdAt).format(
-                            'DD MMM YYYY H:mm a'
+                          {dayjs(blogPostData.createdAt).format(
+                            "DD MMM YYYY H:mm a"
                           )}
                         </p>
                       </div>
@@ -258,7 +268,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                         value={commentInput}
                         onChange={(e) => setCommentInput(e.target.value)}
                         onKeyUp={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             addComment();
                           }
                         }}
@@ -289,7 +299,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                               </p>
                               <p className="text-xs opacity-50">
                                 {dayjs(comment.createdAt).format(
-                                  'DD MMM YYYY hh:mm a'
+                                  "DD MMM YYYY hh:mm a"
                                 )}
                               </p>
                             </div>
@@ -326,8 +336,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
             >
               <motion.div
                 initial={{ x: 100 }}
-                animate={{ x: 0, transition: { ease: 'easeOut' } }}
-                exit={{ x: 100, transition: { ease: 'easeIn' } }}
+                animate={{ x: 0, transition: { ease: "easeOut" } }}
+                exit={{ x: 100, transition: { ease: "easeIn" } }}
                 transition={{ duration: 0.2 }}
                 className="bg-base-100 rounded-box w-full max-w-xl h-screen flex flex-col gap-2 p-4 lg:pt-24 pt-36"
               >
@@ -353,7 +363,9 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                       {blogPostData.uploader.username}
                     </p>
                     <p className="text-xs opacity-50">
-                      {dayjs(feedData.created_at).format('DD MMM YYYY hh:mm a')}
+                      {dayjs(blogPostData.created_at).format(
+                        "DD MMM YYYY hh:mm a"
+                      )}
                     </p>
                   </div>
                 </div>
@@ -377,7 +389,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   ) : (
                     <button className="btn btn-ghost gap-2" onClick={likePost}>
                       <FiHeart
-                        className={isLiked && 'fill-red-500 stroke-red-500'}
+                        className={isLiked && "fill-red-500 stroke-red-500"}
                       />
                       {blogPostData.upvoters.length > 0
                         ? blogPostData.upvoters.length
@@ -406,7 +418,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   )}
                 </div>
                 <p className="text-right text-sm opacity-50 max-w-lg self-end">
-                  Some actions like share and report are not yet implemented.{' '}
+                  Some actions like share and report are not yet implemented.{" "}
                   <br />
                   Please come back later.
                 </p>
@@ -440,7 +452,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
               </Link>{" "}
               <br className="md:hidden" />
               <span className="opacity-50 ">
-                {dayjs(blogPostData.created_at).format("DD MMM YYYY hh:mm a")}
+                {dayjs(blogPostData.createdAt).format("DD MMM YYYY hh:mm a")}
               </span>
             </div>
             <div onClick={() => setSeeMore(!seeMore)}>
@@ -523,156 +535,6 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
           </div>
         </div>
 
-        {/* <motion.div
-          key={`post_${index + 1}`}
-          animate={{ opacity: [0, 1], y: [10, 0] }}
-          transition={{
-            duration: 0.5,
-            ease: 'circOut',
-            delay: (index + 1) * 0.1
-          }}
-          className={
-            'rounded-box my-24 lg:my-18 lg:mb-10 w-full p-5 flex flex-col gap-2 opacity-0 border-primary border-2'
-          }
-        >
-          <div className="flex flex-col justify-between w-full h-full">
-            <div className="flex flex-col items-start">
-              <div className="flex items-center gap-2">
-                <Image
-                  src={`https://avatars.dicebear.com/api/bottts/${feedData.uploader.username}.svg`}
-                  width={45}
-                  height={45}
-                  alt="avatar"
-                />
-                <div className="flex flex-col justify-center">
-                  <p className="leading-none">{feedData.uploader.username}</p>
-                  <p className="text-xs opacity-50">
-                    {dayjs(feedData.created_at).format('DD MMM YYYY hh:mm a')}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="h-full flex items-center">
-              <ReactMarkdown
-                className="flex "
-                components={markdownRederers}
-                skipHtml={false}
-                rehypePlugins={[rehypeRaw]}
-              >
-                {feedData.content}
-              </ReactMarkdown>
-            </div>
-            
-            <div className="flex flex-col">
-              <div className="flex justify-end">
-                {likeProcessing ? (
-                  <button className="btn btn-ghost gap-2" disabled={true}>
-                    <FiLoader className="animate-spin" />
-                  </button>
-                ) : (
-                  <button className="btn btn-ghost gap-2" onClick={likePost}>
-                    <FiHeart
-                      className={isLiked && 'fill-red-500 stroke-red-500'}
-                    />
-                    {feedData.upvoters.length > 0
-                      ? feedData.upvoters.length
-                      : null}
-                  </button>
-                )}
-                <button
-                  className="btn btn-ghost gap-2"
-                  onClick={() => setCommentOpen(true)}
-                >
-                  <FiMessageSquare />
-                  {feedData.comments.length > 0
-                    ? feedData.comments.length
-                    : null}
-                </button>
-
-                <button
-                  className="btn btn-ghost gap-2"
-                  onClick={() => setContentOpen(true)}
-                >
-                  <FiMoreHorizontal />
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* <div className="flex items-center gap-2">
-            <div className="relative">
-              <Image
-                width={40}
-                height={40}
-                priority={true}
-                className="rounded-full bg-base-100"
-                alt="profile"
-                src={`https://avatars.dicebear.com/api/bottts/${feedData.uploader.username}.svg`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <Link
-                href={
-                  isSelfPost ? "/me" : `/hunter/${feedData.uploader.username}`
-                }
-              >
-                <p className="text-sm leading-none">
-                  {feedData.uploader.firstName} {feedData.uploader.lastName}
-                </p>
-              </Link>
-              <p className="text-xs opacity-60 leading-none">
-                @{feedData.uploader.username}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="text-xs opacity-70 ml-2 mt-2">
-              {dayjs(feedData.created_at).format("MMM D YYYY | HH:MM A")}
-            </p>
-            <div
-              className="px-2 max-h-full overflow-ellipsis cursor-pointer relative"
-              onClick={() => setContentOpen(true)}
-            >
-              <div className="absolute top-0 left-0 w-full h-full bg-base-100 opacity-0 hover:opacity-80 transition-all flex justify-center items-center">
-                <p>See More</p>
-              </div>
-              <ReactMarkdown
-                className="flex flex-col min-h-[100px] max-h-[100px] truncate"
-                components={markdownRederers}
-                skipHtml={false}
-                rehypePlugins={[rehypeRaw]}
-              >
-                {feedData.content}
-              </ReactMarkdown>
-            </div>
-          </div>
-          <div className="flex gap-2 items-center mt-auto">
-            {likeProcessing ? (
-              <button className="btn btn-ghost gap-3" disabled={true}>
-                <FiLoader className="animate-spin" />
-              </button>
-            ) : (
-              <button onClick={likePost} className="btn btn-ghost gap-3">
-                <FiHeart className={isLiked && "fill-red-500 stroke-red-500"} />
-                {feedData.upvoters.length > 0 ? feedData.upvoters.length : null}
-              </button>
-            )}
-            <button
-              onClick={(e) => setCommentOpen(!commentOpen)}
-              className="btn btn-ghost gap-3"
-            >
-              <FiMessageSquare />
-              {feedData.comments.length > 0 ? feedData.comments.length : null}
-            </button>
-            <button
-              onClick={() => setContentOpen(true)}
-              className="btn btn-ghost btn-square ml-auto"
-            >
-              <FiMoreHorizontal />
-            </button>
-          </div> 
-        </motion.div> 
-*/}
         {/* delete modal */}
         <input type="checkbox" id="deletePostModal" className="modal-toggle" />
         <div className="modal">
