@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FiArrowDown } from "react-icons/fi";
 import Footer from "../components/Footer";
 import Link from "next/link";
+import Pricing from "../components/LandingPricing";
 import { __PageTransition } from "../lib/animtions";
 import __supabase from "../lib/supabase";
 import { useInView } from "framer-motion";
@@ -235,6 +236,9 @@ const Home = (e) => {
           </motion.div>
         </div>
       </motion.div>
+
+      {/* pricing */}
+      <Pricing/>
 
       <motion.div className="relative flex flex-col items-center justify-center min-h-[50vh] px-2 lg:px-0">
         {/* try this app now */}

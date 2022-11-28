@@ -32,7 +32,7 @@ const Finder = () => {
 		const user = await __supabase.auth.user();
 		// get 10 random users
 		const { data: users, error } = await __supabase
-			.from("random_hunters")
+			.from("recommended_hunters")
 			.select("*")
 			.eq("address_city", user.user_metadata.city)
 			.limit(10);

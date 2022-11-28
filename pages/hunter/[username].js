@@ -54,7 +54,6 @@ const HunterPage = ({ blogs, userData }) => {
       } else {
         setHunterData(hunterData);
       }
-
     }
   };
 
