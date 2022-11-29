@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FiCheck, FiX } from "react-icons/fi";
+import { FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 
 import { useState } from "react";
 
 const Pricing = (e) => {
   const [accountType, setAccountType] = useState("hunter");
+  const [mobileAccordionTab, setMobileAccordionTab] = useState("");
 
   return (
     <>
@@ -391,6 +392,458 @@ const Pricing = (e) => {
             </AnimatePresence>
           </div>
         </>
+      </main>
+
+      {/* mobile */}
+      <main className="min-h-[50vh] lg:hidden">
+        <h2 className="text-center font-bold text-3xl">
+          Find the right plan for you
+        </h2>
+        <p className="text-center">
+          Subscribe to our plans and get access to all our features.
+        </p>
+
+        {/* picker */}
+        <div className="w-full relative max-w-xl gap-4 grid grid-cols-2 p-2 rounded-full mx-auto my-10">
+          {/* animated slider */}
+          <motion.div
+            animate={{
+              x: accountType === "hunter" ? 0 : "100%"
+            }}
+            transition={{ duration: 0.5, ease: [0.87, 0.29, 0.13, 0.8] }}
+            className="absolute w-1/2 h-full bg-base-300 rounded-full"
+          />
+          {/* buttons */}
+          <button
+            onClick={() => setAccountType("hunter")}
+            className="rounded-full z-10"
+          >
+            Hunters
+          </button>
+          <button
+            onClick={() => setAccountType("provisioner")}
+            className="rounded-full z-10"
+          >
+            Provisioners
+          </button>
+        </div>
+
+        {/* accordion */}
+        {
+          <AnimatePresence>
+            {accountType === "hunter" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5, ease: [0.87, 0.29, 0.13, 0.8] }}
+              >
+                {/* Junior tier */}
+                <div tabIndex={0} className="collapse">
+                  <div className="collapse-title pr-0 flex justify-between text-xl font-medium">
+                    <span>Junior Tier</span>
+                    <span className="text-2xl font-bold flex items-center">
+                      ₱0
+                      <FiChevronDown />
+                    </span>
+                  </div>
+                  <div className="collapse-content">
+                    {/* blog feed */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Blog Feed</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Blog Post</span>
+                        <span>5 per day</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments in posts</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Advertisement Cards</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Hunter Suggestion</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Finder */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Finder</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Finder Proximity</span>
+                        <span>50m</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Prioritization</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Metaverse */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Metaverse</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Metaverse Access</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Voice Chatting</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Avatar Customization</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Wicket Profile */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Wicket Profile</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Customization</span>
+                        <span>Basic</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Storage Limit</span>
+                        <span>100mb</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Bio Template Options</span>
+                        <span>Basic</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Application Prioritization</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Job Seeking */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Job Seeking</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Career Tagging</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Proximity</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Communication */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Communication</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Audio Call</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Text based Messaging</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {/* Senior tier */}
+                <div tabIndex={0} className="collapse">
+                  <div className="collapse-title pr-0 flex justify-between text-xl font-medium">
+                    <span>Senior Tier</span>
+                    <span className="text-2xl font-bold flex items-center">
+                      ₱148/m
+                      <FiChevronDown />
+                    </span>
+                  </div>
+                  <div className="collapse-content">
+                    {/* blog feed */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Blog Feed</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Blog Post</span>
+                        <span>15 per day</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments in posts</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Advertisement Cards</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Hunter Suggestion</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Finder */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Finder</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Finder Proximity</span>
+                        <span>1.2km</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Prioritization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Metaverse */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Metaverse</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Metaverse Access</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Voice Chatting</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Avatar Customization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Wicket Profile */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Wicket Profile</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Customization</span>
+                        <span>Limited</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Storage Limit</span>
+                        <span>250mb</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Bio Template Options</span>
+                        <span>Junior + 5</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Application Prioritization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Job Seeking */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Job Seeking</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Career Tagging</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Proximity</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Communication */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Communication</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Audio Call</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Text based Messaging</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {/* Expert tier */}
+                <div tabIndex={0} className="collapse">
+                  <div className="collapse-title pr-0 flex justify-between text-xl font-medium">
+                    <span>Senior Tier</span>
+                    <span className="text-2xl font-bold flex items-center">
+                      ₱198/m
+                      <FiChevronDown />
+                    </span>
+                  </div>
+                  <div className="collapse-content">
+                    {/* blog feed */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Blog Feed</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Blog Post</span>
+                        <span>UNLIMITED</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments in posts</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Advertisement Cards</span>
+                        <span>
+                          <FiX className="text-red-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Hunter Suggestion</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Finder */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Finder</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Finder Proximity</span>
+                        <span>1.8km</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Prioritization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Metaverse */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Metaverse</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Metaverse Access</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Voice Chatting</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Avatar Customization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Wicket Profile */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Wicket Profile</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Customization</span>
+                        <span>Customized</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Storage Limit</span>
+                        <span>500mb</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Profile Bio Template Options</span>
+                        <span>UNLIMITED</span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Job Application Prioritization</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Job Seeking */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Job Seeking</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Career Tagging</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Prioritization by Proximity</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                    {/* Communication */}
+                    <div className="mb-5 flex flex-col gap-1 w-full">
+                      <p className="text-lg font-bold">Communication</p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Audio Call</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Text based Messaging</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                      <p className="flex justify-between w-full items-center">
+                        <span>Image Attachments</span>
+                        <span>
+                          <FiCheck className="text-green-500" />
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        }
       </main>
     </>
   );
