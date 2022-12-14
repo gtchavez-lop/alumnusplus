@@ -29,6 +29,9 @@ export const getServerSideProps = async (context) => {
 const HunterPage = ({ hunterData, error: hunterDataError }) => {
   const router = useRouter();
 
+  const [hunterPosts, setHunterPosts] = useState([]);
+  const [tabSelected, setTabSelected] = useState("posts");
+
   const checkIfHasUser = async () => {
     const {
       data: { user },
@@ -42,22 +45,6 @@ const HunterPage = ({ hunterData, error: hunterDataError }) => {
   useEffect(() => {
     checkIfHasUser();
   }, []);
-
-  if (!hunterData) {
-    return (
-      <main className="min-h-screen flex flex-col justify-center items-center">
-        <FiLoader className="animate-spin text-xl" />
-      </main>
-    );
-  }
-
-  if (hunterDataError) {
-    return (
-      <main className="min-h-screen flex flex-col justify-center items-center">
-        <p>Something went wrong. Please try again later</p>
-      </main>
-    );
-  }
 
   const {
     address,
@@ -80,9 +67,6 @@ const HunterPage = ({ hunterData, error: hunterDataError }) => {
     savedJobs,
   } = hunterData;
 
-  const [hunterPosts, setHunterPosts] = useState([]);
-  const [tabSelected, setTabSelected] = useState("posts");
-
   const fetchHunterPosts = async () => {
     let { data, error } = await __supabase.rpc("gethunterpostsbyid", {
       id_input: id,
@@ -99,6 +83,22 @@ const HunterPage = ({ hunterData, error: hunterDataError }) => {
   useEffect(() => {
     fetchHunterPosts();
   }, []);
+
+  if (!hunterData) {
+    return (
+      <main className="min-h-screen flex flex-col justify-center items-center">
+        <FiLoader className="animate-spin text-xl" />
+      </main>
+    );
+  }
+
+  if (hunterDataError) {
+    return (
+      <main className="min-h-screen flex flex-col justify-center items-center">
+        <p>Something went wrong. Please try again later</p>
+      </main>
+    );
+  }
 
   return (
     <>

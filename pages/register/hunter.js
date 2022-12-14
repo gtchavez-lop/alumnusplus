@@ -220,8 +220,9 @@ const RegisterHunter = () => {
               City
             </label>
             <select name="city" id="city" className="select">
-              {Cities.map((city) => (
+              {Cities.map((city, index) => (
                 <option
+                  key={`city-${index}`}
                   selected={city.city === "Caloocan City"}
                   value={city.city}
                 >
@@ -250,8 +251,10 @@ const RegisterHunter = () => {
           <div className="flex flex-col bg-base-200 p-3 rounded-btn">
             <label htmlFor="primarySkill">Primary Skill</label>
             <select name="primarySkill" id="primarySkill" className="select">
-              {SkillList.map((skill) => (
-                <option value={skill}>{skill}</option>
+              {SkillList.map((skill, index) => (
+                <option key={`skill_${index}`} value={skill}>
+                  {skill}
+                </option>
               ))}
             </select>
 
@@ -273,8 +276,9 @@ const RegisterHunter = () => {
                   skill
                     .toLowerCase()
                     .includes(secondarySkillInput.toLowerCase())
-                ).map((skill) => (
+                ).map((skill, index) => (
                   <div
+                    key={`secondarySkill_${index}`}
                     className="badge badge-primary cursor-pointer hover:badge-secondary"
                     onClick={() => {
                       setSelectedSecondarySkills([
@@ -291,8 +295,11 @@ const RegisterHunter = () => {
             )}
             {selectedSecondarySkills.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
-                {selectedSecondarySkills.map((skill) => (
-                  <div className="flex items-center gap-2 bg-base-300 p-2 rounded-btn">
+                {selectedSecondarySkills.map((skill, index) => (
+                  <div
+                    key={`secondarySkillSelected_${index}`}
+                    className="flex items-center gap-2 bg-base-300 p-2 rounded-btn"
+                  >
                     <p>{skill}</p>
                     <button
                       type="button"

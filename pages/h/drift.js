@@ -60,8 +60,9 @@ const DriftPage = () => {
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
           {/* mock data from users */}
-          {driftData.map((user) => (
+          {driftData.map((user, index) => (
             <Link
+              key={`user-${index}`}
               href={`/h/${user.username}`}
               className="flex flex-col gap-4 px-4 py-3 bg-base-300 rounded-btn cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all"
             >
