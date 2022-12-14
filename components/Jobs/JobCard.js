@@ -5,7 +5,12 @@ import { motion } from "framer-motion";
 
 const JobCard = ({ job }) => {
   return (
-    <motion.div className="p-3 bg-base-200 rounded-btn flex gap-4 justify-start h-max ">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "circOut", delay: 0.2 }}
+      className="p-3 bg-base-200 rounded-btn flex gap-4 justify-start h-max "
+    >
       <Image
         src={`https://avatars.dicebear.com/api/initials/${job.uploader_legal_name}.svg`}
         width={48}

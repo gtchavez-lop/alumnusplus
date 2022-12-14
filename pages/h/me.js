@@ -43,10 +43,10 @@ const ProfilePage = (e) => {
     } = await __supabase.auth.getUser();
 
     const { data: userData, error: userError } = await __supabase
-      .rpc("gethunterbyusername", {
-        username_input: user.user_metadata?.username,
-      })
-      .single();
+      .from("user_hunters")
+      .select("*")
+      .single()
+      .eq("id", user.id);
 
     const connections = userData.connections;
 
@@ -62,7 +62,7 @@ const ProfilePage = (e) => {
       return;
     }
 
-    // console.log(userData);
+    console.log(userData);
 
     setLocalUser(userData);
     setLocalConnections(connections);
@@ -76,7 +76,6 @@ const ProfilePage = (e) => {
       data: { user },
     } = await __supabase.auth.getUser();
     if (user) {
-      setLocalUser(user);
       fetchData();
     } else {
       router.push("/");
@@ -108,7 +107,8 @@ const ProfilePage = (e) => {
 
               <div className="flex flex-col gap-2 z-10 ">
                 <h1 className="text-2xl lg:text-3xl font-bold leading-3 lg:leading-3">
-                  {localUser?.fullname?.first} {localUser?.fullname?.last}
+                  {localUser?.fullName?.firstName}{" "}
+                  {localUser?.fullName?.lastName}
                 </h1>
                 <p className="opacity-50">@{localUser?.username}</p>
               </div>

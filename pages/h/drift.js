@@ -6,6 +6,7 @@ import Link from "next/link";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const DriftPage = () => {
   const [driftLoading, setDriftLoading] = useState(true);
@@ -16,13 +17,20 @@ const DriftPage = () => {
       data: { user },
     } = await __supabase.auth.getUser();
 
-    const { data, error } = await __supabase.rpc("getpeoplebylocation", {
-      in_location: user.user_metadata?.address?.city,
-    });
+    // const { data, error } = await __supabase.rpc("getpeoplebylocation", {
+    //   in_location: user.user_metadata?.address?.city,
+    // });
 
-    const filtered = data.filter(
-      (thisUser) => thisUser.username !== user.user_metadata.username
-    );
+    const { data, error } = await __supabase
+      .from("user_hunters")
+      .select("*")
+      .match({ address: { city: user.user_metadata?.address?.city } });
+
+    const filtered =
+      data &&
+      data.filter(
+        (thisUser) => thisUser.username !== user.user_metadata.username
+      );
 
     if (error) {
       toast.error(error.message);
@@ -30,7 +38,7 @@ const DriftPage = () => {
     }
 
     setDriftLoading(false);
-    setDriftData(filtered);
+    setDriftData(filtered ?? []);
   };
 
   useEffect(() => {

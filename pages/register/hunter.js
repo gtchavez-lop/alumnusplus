@@ -73,6 +73,7 @@ const RegisterHunter = () => {
       // });
     }
 
+    toast.dismiss();
     toast.success("Registered successfully!");
 
     router.push("/login");
@@ -132,36 +133,36 @@ const RegisterHunter = () => {
               required
             />
 
-            <label htmlFor="firstname" className="mt-2">
+            <label htmlFor="firstName" className="mt-2">
               First Name
             </label>
             <input
               type="text"
-              name="firstname"
-              id="firstname"
+              name="firstName"
+              id="firstName"
               className="input"
               placeholder="John"
               required
             />
 
-            <label htmlFor="middlename" className="mt-2">
+            <label htmlFor="middleName" className="mt-2">
               Middle Name
             </label>
             <input
               type="text"
-              name="middlename"
-              id="middlename"
+              name="middleName"
+              id="middleName"
               className="input"
               placeholder="Doe"
             />
 
-            <label htmlFor="lastname" className="mt-2">
+            <label htmlFor="lastName" className="mt-2">
               Last Name
             </label>
             <input
               type="text"
-              name="lastname"
-              id="lastname"
+              name="lastName"
+              id="lastName"
               className="input"
               placeholder="Doe"
               required
