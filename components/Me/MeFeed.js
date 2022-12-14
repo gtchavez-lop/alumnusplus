@@ -6,7 +6,7 @@ const MeFeed = ({ feed }) => {
       <div className="flex justify-start w-full">
         <div className="flex flex-col gap-5 w-full max-w-xl">
           {feed.map((post, index) => (
-            <FeedCard feedData={post} index={index} />
+            <FeedCard feedData={post} index={index} key={`feedcard_${index}`} />
           ))}
         </div>
       </div>

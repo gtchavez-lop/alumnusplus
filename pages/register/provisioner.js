@@ -207,8 +207,9 @@ const RegisterProvisioner = () => {
               <option value="" disabled selected>
                 Select a city
               </option>
-              {Cities.map((city) => (
+              {Cities.map((city, index) => (
                 <option
+                  key={`city-${index}`}
                   selected={city.city === "Caloocan City"}
                   value={city.city}
                 >

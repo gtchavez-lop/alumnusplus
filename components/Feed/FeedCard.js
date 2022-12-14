@@ -430,7 +430,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
         </AnimatePresence>
         {/* cards */}
 
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-2 w-full" key={`card_${index}`}>
           <img
             className="w-10 h-10"
             alt="profile"
@@ -493,14 +493,17 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                           // if it is greater than 5 then show a count
                           if (index < 5) {
                             return (
-                              <p className="text-xs">
+                              <p className="text-xs" key={`upvoters_${index}`}>
                                 {upvoter.upvoterDetails.firstName}{" "}
                                 {upvoter.upvoterDetails.lastName}
                               </p>
                             );
                           } else if (index === 5) {
                             return (
-                              <p className="text-xs">
+                              <p
+                                key={`upvoter_${5 + index}`}
+                                className="text-xs"
+                              >
                                 {blogPostData.upvoters.length - 5} more
                               </p>
                             );
