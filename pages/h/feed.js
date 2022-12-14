@@ -2,11 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiArrowDown, FiLoader, FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
+import { $schema_blog } from "../../schemas/blog";
 import FeedCard from "../../components/Feed/FeedCard";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
+import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import uuidv4 from "../../lib/uuidv4";
 
 const Feed = (e) => {
   const [blogContent, setBlogContent] = useState("");
@@ -41,6 +44,56 @@ const Feed = (e) => {
       setUser(data);
       fetchBlogs();
     }
+  };
+
+  const addPost = async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const content = formData.get("content");
+
+    if (content.length < 1) {
+      toast.error("Please enter some content");
+      return;
+    }
+
+    const {
+      data: { user: localUser },
+      error: userError,
+    } = await __supabase.auth.getUser();
+    const blogSchema = $schema_blog;
+
+    blogSchema.id = uuidv4();
+    blogSchema.content = content;
+    blogSchema.uploader.email = localUser.email;
+    blogSchema.uploader.id = localUser.id;
+    blogSchema.uploader.username = localUser.user_metadata.username;
+    blogSchema.uploader.firstName = localUser.user_metadata.fullName.first;
+    blogSchema.uploader.lastName = localUser.user_metadata.fullName.last;
+    blogSchema.uploader.middleName = localUser.user_metadata.fullName.middle;
+    blogSchema.type = "hunt_blog";
+    blogSchema.createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    blogSchema.updatedAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+    toast.loading("Posting blog...");
+
+    const { data, error } = await __supabase
+      .from("hunt_blog")
+      .insert(blogSchema);
+
+    if (error) {
+      toast.dismiss();
+      toast.error(error.message);
+      return;
+    }
+
+    toast.dismiss();
+    toast.success("Blog posted!");
+    setBlogContent("");
+    setCreatePostModalOpen(false);
+    fetchBlogs();
   };
 
   useEffect(() => {

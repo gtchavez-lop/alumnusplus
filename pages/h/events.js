@@ -1,4 +1,4 @@
-import { __PageTransition } from "../lib/animation";
+import { __PageTransition } from "../../lib/animation";
 import { motion } from "framer-motion";
 
 const EventsPage = () => {

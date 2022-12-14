@@ -20,7 +20,10 @@ const JobPosting = () => {
     if (error) {
       console.log(error);
     }
-    setJobs(data);
+
+    setTimeout(() => {
+      setJobs(data);
+    }, 200);
   };
 
   const getRecommendedJobs = async () => {

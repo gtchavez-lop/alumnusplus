@@ -46,7 +46,7 @@ const LogInPage = (e) => {
       data: { user },
     } = await __supabase.auth.getUser();
 
-    const { data, error } = await __supabase.from("user_hunters").insert({
+    const { error } = await __supabase.from("user_hunters").insert({
       id: user.id,
       username: user.user_metadata.username,
       gender: user.user_metadata.gender,
@@ -57,7 +57,7 @@ const LogInPage = (e) => {
       address: user.user_metadata.address,
       birthplace: user.user_metadata.birthplace,
       education: user.user_metadata.education || null,
-      fullname: user.user_metadata.fullname,
+      fullName: user.user_metadata.fullName,
       skillPrimary: user.user_metadata.skillPrimary,
       skillSecondary: user.user_metadata.skillSecondary,
     });
@@ -70,7 +70,6 @@ const LogInPage = (e) => {
     toast.dismiss();
 
     toast.success("Signed in!");
-    router.push("/feed");
   };
 
   const writeProvData = async () => {
@@ -104,7 +103,7 @@ const LogInPage = (e) => {
     }
 
     toast.dismiss();
-    router.push("/prov/feed");
+    router.push("/p/feed");
   };
 
   const signInAccount = async (e) => {

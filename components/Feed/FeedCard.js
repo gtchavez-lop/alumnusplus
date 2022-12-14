@@ -44,6 +44,11 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
   const [user, setUser] = useState(null);
 
   const addComment = async () => {
+    const {
+      data: { user: localUser },
+      error: userError,
+    } = await __supabase.auth.getUser();
+
     if (commentInput.length < 1) {
       toast.error("Please enter some content");
       return;
@@ -58,15 +63,15 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     newComment.type = "comment";
     newComment.updatedAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
     newComment.uploaderDetails = {
-      firstName: user?.user_metadata.fullname.first,
-      lastName: user?.user_metadata.fullname.last,
-      middleName: user?.user_metadata.fullname.middle,
-      username: user?.user_metadata.username,
+      firstName: localUser?.user_metadata.fullName.first,
+      lastName: localUser?.user_metadata.fullName.last,
+      middleName: localUser?.user_metadata.fullName.middle,
+      username: localUser?.user_metadata.username,
     };
-    newComment.userId = __user?.id;
+    newComment.userId = localUser?.id;
 
     // add comment
-    const { data, error } = await supabase
+    const { data, error } = await __supabase
       .from("hunt_blog")
       .update({
         comments: [...blogPostData.comments, newComment],
@@ -85,6 +90,12 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
   const likePost = async () => {
     setLikeProcessing(true);
+
+    const {
+      data: { user: localUser },
+      error: userError,
+    } = await __supabase.auth.getUser();
+
     // fetch likes
     const { data: prevData, error: prevDataError } = await __supabase
       .from("hunt_blog")
@@ -94,7 +105,8 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
 
     const upvoters = [...prevData.upvoters];
 
-    const isLiked = upvoters.findIndex((e) => e.userId === user?.id) !== -1;
+    const isLiked =
+      upvoters.findIndex((e) => e.userId === localUser?.id) !== -1;
 
     const newUpvoter = {
       blogId: blogPostData.id,
@@ -102,26 +114,24 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
       id: uuidv4(),
       type: "upvote",
       updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      userId: user?.id,
+      userId: localUser?.id,
       upvoterDetails: {
-        firstName: user?.user_metadata.fullname.first,
-        lastName: user?.user_metadata.fullname.last,
-        middleName: user?.user_metadata.fullname.middle,
-        username: user?.user_metadata.username,
+        firstName: localUser?.user_metadata.fullName.first,
+        lastName: localUser?.user_metadata.fullName.last,
+        middleName: localUser?.user_metadata.fullName.middle,
+        username: localUser?.user_metadata.username,
       },
     };
 
     if (isLiked) {
-      const newList = prevData.upvoters.filter(
-        (item) => item.userId !== user?.id
-      );
-
       // remove upvote
       const { error: newDataError } = await __supabase
         .from("hunt_blog")
         .update({
           upvoters: [
-            ...prevData.upvoters.filter((item) => item.userId !== user?.id),
+            ...prevData.upvoters.filter(
+              (item) => item.userId !== localUser?.id
+            ),
           ],
         })
         .eq("id", blogPostData.id);
@@ -130,7 +140,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
         toast.error(error.message);
       } else {
         blogPostData.upvoters = prevData.upvoters.filter(
-          (item) => item.userId !== user?.id
+          (item) => item.userId !== localUser?.id
         );
         setIsLiked(false);
       }
