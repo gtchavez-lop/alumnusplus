@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
+
+const withPWA = require("next-pwa")({
+  dest: "public",
+});
+
 const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: ["avatars.dicebear.com"],
+  },
   async headers() {
     return [
       {
@@ -20,11 +30,8 @@ const nextConfig = {
       },
     ];
   },
-  reactStrictMode: true,
-  swcMinify: true,
-  images: {
-    domains: ["avatars.dicebear.com"],
-  },
 };
 
-module.exports = nextConfig;
+module.exports = withPWA({
+  ...nextConfig,
+});
