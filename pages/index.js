@@ -47,7 +47,7 @@ const Home = (e) => {
         if (thisUser.user_metadata.type === "hunter") {
           router.push("/h/feed");
         } else if (thisUser.user_metadata.type === "provisioner") {
-          router.push("/p/feed");
+          router.push("/p/dashboard");
         }
       }
     } catch (error) {

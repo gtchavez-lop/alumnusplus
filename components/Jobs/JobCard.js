@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, userType }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -20,7 +20,7 @@ const JobCard = ({ job }) => {
       />
       <div className="flex flex-col">
         <Link
-          href={`jobs/${job.id}`}
+          href={`/jobs/${job.id}`}
           className="text-lg font-bold link hover:link-primary"
         >
           {job.job_title
@@ -55,11 +55,13 @@ const JobCard = ({ job }) => {
           ({job.job_mode} - {job.job_type})
         </p>
       </div>
-      <div className="flex flex-col ml-auto">
-        <button className="btn btn-square btn-ghost">
-          <FiBookmark className="text-lg" />
-        </button>
-      </div>
+      {userType === "hunter" && (
+        <div className="flex flex-col ml-auto">
+          <button className="btn btn-square btn-ghost">
+            <FiBookmark className="text-lg" />
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 };

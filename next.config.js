@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+
+const withPWA = require("next-pwa")({
+  dest: "public",
+});
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -8,7 +13,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
@@ -27,4 +32,6 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withPWA({
+  ...nextConfig,
+});
