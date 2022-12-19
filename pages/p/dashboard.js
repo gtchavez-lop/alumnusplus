@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 
 const ProvFeed = () => {
   const [provData, setProvData] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [provJobs, setProvJobs] = useState([]);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const fetchProvJobs = async (uploaderEmail) => {
     const { data: provJobs, error: provJobsError } = await __supabase

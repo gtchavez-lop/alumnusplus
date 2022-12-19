@@ -13,16 +13,17 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import Logo from "./Logo";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const Navbar = () => {
   const router = useRouter();
   const [hasUser, setHasUser] = useState(false);
   const [userData, setUserData] = useState({});
   const [isSearching, setIsSearching] = useState(false);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const checkUser = async () => {
     const {

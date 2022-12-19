@@ -4,14 +4,15 @@ import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { __PageTransition } from "../../lib/animation";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const DriftPage = () => {
   const [driftLoading, setDriftLoading] = useState(true);
   const [driftData, setDriftData] = useState([]);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const fetchDriftData = async () => {
     const {

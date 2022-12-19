@@ -15,9 +15,10 @@ import MeConnections from "../../components/Me/MeConnections";
 import MeFeed from "../../components/Me/MeFeed";
 import MeSettings from "../../components/Me/MeSettings";
 import { __PageTransition } from "../../lib/animation";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const ProfilePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
@@ -27,7 +28,7 @@ const ProfilePage = (e) => {
   const [localFeed, setLocalFeed] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   // tabs
   const tabContainer = useRef(null);

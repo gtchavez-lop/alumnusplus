@@ -17,11 +17,12 @@ import { $schema_blogComment } from "../../schemas/blog";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import rehypeRaw from "rehype-raw";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
 
 const markdownRederers = {
@@ -43,7 +44,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
   const [likeProcessing, setLikeProcessing] = useState(false);
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const addComment = async () => {
     const {
