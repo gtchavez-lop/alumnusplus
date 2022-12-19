@@ -4,12 +4,13 @@ import FeedCard from "../../components/Feed/FeedCard";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export const getServerSideProps = async (context) => {
   const { username } = context.params;
+  const __supabase = useSupabaseClient();
 
   let { data, error } = await __supabase
     .rpc("gethunterbyusername", {

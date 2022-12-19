@@ -1,17 +1,20 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { FiArrowDown, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPage = () => {
   const router = useRouter();
+  const __supabase = useSupabaseClient();
 
   const { jobID } = router.query;
   const [jobData, setJobData] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [scrollYValue, setScrollYValue] = useState(0);
+  const { scrollY } = useScroll();
 
   const getJobData = async () => {
     const { data } = await __supabase
@@ -30,6 +33,13 @@ const JobPage = () => {
     getJobData();
   }, [jobID]);
 
+  useEffect(() => {
+    return scrollY.onChange((latest) => {
+      setScrollYValue(latest);
+      console.log(latest);
+    });
+  }, []);
+
   if (!isLoaded) {
     return (
       <motion.main
@@ -47,6 +57,16 @@ const JobPage = () => {
   return (
     jobData && (
       <>
+        <motion.img
+          animate={{
+            opacity: 0.2 - scrollYValue / 1000,
+            y: scrollYValue / 2,
+          }}
+          transition={{ duration: 0, ease: "linear" }}
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
+          src={`https://picsum.photos/seed/${jobData.id}/3000`}
+        />
+
         <AnimatePresence>
           <motion.main
             key={jobData.id}

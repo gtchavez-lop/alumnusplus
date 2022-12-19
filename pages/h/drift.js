@@ -4,13 +4,14 @@ import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const DriftPage = () => {
   const [driftLoading, setDriftLoading] = useState(true);
   const [driftData, setDriftData] = useState([]);
+  const __supabase = useSupabaseClient();
 
   const fetchDriftData = async () => {
     const {
@@ -22,9 +23,9 @@ const DriftPage = () => {
     // });
 
     const { data, error } = await __supabase
-      .from("user_hunters")
+      .from("recommended_hunters")
       .select("*")
-      .match({ address: { city: user.user_metadata?.address?.city } });
+      .limit(10);
 
     const filtered =
       data &&

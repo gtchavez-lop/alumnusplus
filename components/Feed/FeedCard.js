@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  FiArrowUpRight,
   FiHeart,
   FiLoader,
   FiMessageCircle,
@@ -16,11 +17,11 @@ import { $schema_blogComment } from "../../schemas/blog";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import rehypeRaw from "rehype-raw";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
 
 const markdownRederers = {
@@ -42,6 +43,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
   const [likeProcessing, setLikeProcessing] = useState(false);
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const __supabase = useSupabaseClient();
 
   const addComment = async () => {
     const {
@@ -535,14 +537,45 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                 </p>
               </div>
               <div className="flex gap-7">
-                <p className="flex gap-2 items-center underline-offset-4 hover:underline">
+                <p
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/h/blog/${blogPostData.id}`
+                    );
+
+                    toast.success("Link Copied");
+                  }}
+                  className="flex gap-2 items-center underline-offset-4 hover:underline"
+                >
                   <FiShare2 className=" transition-all" />
                   <span className="hidden md:block">Share</span>
                 </p>
-                <p className="flex gap-2 items-center underline-offset-4 hover:underline">
-                  <FiMoreHorizontal className=" transition-all" />
-                  <span className="hidden md:block">More</span>
-                </p>
+                <div className="dropdown dropdown-end">
+                  <label
+                    tabIndex={0}
+                    className="flex gap-2 items-center underline-offset-4 hover:underline"
+                  >
+                    <FiMoreHorizontal className=" transition-all" />
+                    <span className="hidden md:block">More</span>
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu p-2 shadow bg-base-200 rounded-box min-w-[200px] mt-5"
+                  >
+                    <li>
+                      <a>
+                        <FiArrowUpRight />
+                        <span>Open in a new tab</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="text-warning">Report</a>
+                    </li>
+                    <li>
+                      <a className="text-error">Delete Post</a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
