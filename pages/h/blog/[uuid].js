@@ -115,10 +115,11 @@ const BlogPost = () => {
               {/* content */}
               <div className="mt-7">
                 <ReactMarkdown
-                  children={blogPost.content}
                   components={markdownRederers}
                   rehypePlugins={[rehypeRaw]}
-                />
+                >
+                  {blogPost.content}
+                </ReactMarkdown>
               </div>
 
               {/* react button, comment button, and share button */}
@@ -148,25 +149,6 @@ const BlogPost = () => {
                 </div>
               </div>
 
-              {/* [
-  {
-    "blogId": "abdf1298-cb40-4af9-be61-b749ae4f5838",
-    "comment": "",
-    "createdAt": "2022-12-17 07:36:22",
-    "id": "79697b77-870f-4596-9333-b9dacfc4b28f",
-    "type": "comment",
-    "updatedAt": "2022-12-17 07:36:22",
-    "userId": "cfcd8fea-ccff-43cc-87cf-9b5fd736670b",
-    "uploaderDetails": {
-      "firstName": "Gerald",
-      "lastName": "Chavez",
-      "middleName": "Torillos",
-      "username": "million23"
-    },
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-  }
-] */}
-
               {/* divider */}
               <div className="divider" />
 
@@ -190,8 +172,11 @@ const BlogPost = () => {
                 </form>
                 {/* all comments */}
                 <div className="flex flex-col gap-3">
-                  {blogPost.comments.map((comment) => (
-                    <div className="bg-base-300 p-5 rounded-btn">
+                  {blogPost.comments.map((comment, index) => (
+                    <div
+                      key={`comment-${index}`}
+                      className="bg-base-300 p-5 rounded-btn"
+                    >
                       <div className="flex items-center gap-3">
                         <Link href={`/h/${comment.uploaderDetails.username}`}>
                           <Image
@@ -214,10 +199,11 @@ const BlogPost = () => {
                       </div>
                       <div className="mt-3">
                         <ReactMarkdown
-                          children={comment.content}
                           components={markdownRederers}
                           rehypePlugins={[rehypeRaw]}
-                        />
+                        >
+                          {comment.content}
+                        </ReactMarkdown>
                       </div>
                     </div>
                   ))}
