@@ -17,7 +17,7 @@ const ProvFeed = () => {
     const { data: provJobs, error: provJobsError } = await __supabase
       .from("job_postings")
       .select("*")
-      .limit(3)
+      .limit(2)
       .eq("uploader_email", uploaderEmail);
 
     if (provJobs) {
@@ -84,7 +84,7 @@ const ProvFeed = () => {
           {/* active job postings */}
           <div className="flex flex-col gap-2">
             <p>Active Job Posts</p>
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {provJobs.map((job, index) => (
                 <JobCard job={job} key={index} />
               ))}
