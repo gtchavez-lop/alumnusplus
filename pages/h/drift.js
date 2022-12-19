@@ -24,23 +24,28 @@ const DriftPage = () => {
     // });
 
     const { data, error } = await __supabase
-      .from("recommended_hunters")
+      .from("user_provisioners")
       .select("*")
-      .limit(10);
+      .limit(100);
 
-    const filtered =
-      data &&
-      data.filter(
-        (thisUser) => thisUser.username !== user.user_metadata.username
-      );
+    // check for address
+    if (!user.user_metadata?.address?.city) {
+      toast.error("Please add your address to find people near you");
+      return;
+    }
+
+    // compare city
+    const filteredData = data.filter((company) => {
+      return company.address?.city === user.user_metadata?.address?.city;
+    });
 
     if (error) {
       toast.error(error.message);
       return;
     }
 
+    setDriftData(filteredData);
     setDriftLoading(false);
-    setDriftData(filtered ?? []);
   };
 
   useEffect(() => {
@@ -66,30 +71,24 @@ const DriftPage = () => {
         className="relative min-h-screen w-full pt-24 pb-36"
       >
         <h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
-          People near you
+          Companies near your area
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
-          {/* mock data from users */}
-          {driftData.map((user, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+          {driftData.map((company, index) => (
             <Link
-              key={`user-${index}`}
-              href={`/h/${user.username}`}
-              className="flex flex-col gap-4 px-4 py-3 bg-base-300 rounded-btn cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all"
+              key={`company-${index}`}
+              href={`/p/${company.legalName}`}
+              passHref
+              className="p-3 bg-base-300 rounded-btn"
             >
-              <Image
-                src={`https://avatars.dicebear.com/api/bottts/${user.username}.svg`}
-                width={70}
-                height={70}
-                className="self-center"
-              />
-
-              <div className="flex flex-col">
-                <p className="text-xl font-semibold text-center">
-                  {user.username}
-                </p>
-                <p className="text-center text-sm opacity-50">
-                  {user.address?.city}
-                </p>
+              <div className="flex flex-col items-center gap-2 cursor-pointer">
+                <Image
+                  src={`https://avatars.dicebear.com/api/bottts/${company.legalName}.svg`}
+                  width={100}
+                  height={100}
+                  className="rounded-full"
+                />
+                <p>{company.legalName}</p>
               </div>
             </Link>
           ))}
