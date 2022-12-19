@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { $schema_blog } from "../../schemas/blog";
 import FeedCard from "../../components/Feed/FeedCard";
 import { __PageTransition } from "../../lib/animation";
+import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
 
 const Feed = () => {
@@ -20,7 +21,7 @@ const Feed = () => {
   const [blogLoading, setBlogLoading] = useState(true);
   const [blogData, setBlogData] = useState([]);
   const [user, setUser] = useState(null);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
   const router = useRouter();
 
   const fetchBlogs = async () => {

@@ -4,28 +4,10 @@ import FeedCard from "../../components/Feed/FeedCard";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import { __PageTransition } from "../../lib/animation";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-
-// export const getServerSideProps = async (context) => {
-//   const { username } = context.params;
-//   const __supabase = useSupabaseClient();
-
-//   let { data, error } = await __supabase
-//     .rpc("gethunterbyusername", {
-//       username_input: username,
-//     })
-//     .single();
-
-//   if (error) return { props: { error: error.message } };
-
-//   return {
-//     props: {
-//       hunterData: data,
-//     },
-//   };
-// };
 
 const HunterPage = () => {
   const router = useRouter();
@@ -34,7 +16,7 @@ const HunterPage = () => {
   const [tabSelected, setTabSelected] = useState("posts");
   const [hunterData, setHunterData] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const fetchHunterPosts = async () => {
     // let { data, error } = await __supabase.rpc("gethunterpostsbyid", {

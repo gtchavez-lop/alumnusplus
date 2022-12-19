@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import { __PageTransition } from "../lib/animation";
-// import { __supabase } from "../supabase";
+import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const LogInPage = (e) => {
   const [hasUser, setHasUser] = useState(false);
   const router = useRouter();
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const checkHunterData = async () => {
     const {

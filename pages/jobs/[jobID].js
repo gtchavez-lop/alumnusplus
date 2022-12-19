@@ -3,12 +3,13 @@ import { FiArrowDown, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 import { __PageTransition } from "../../lib/animation";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPage = () => {
   const router = useRouter();
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const { jobID } = router.query;
   const [jobData, setJobData] = useState();

@@ -12,11 +12,12 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { __PageTransition } from "../../../lib/animation";
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../../supabase";
 import dayjs from "dayjs";
 import rehypeRaw from "rehype-raw";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const markdownRederers = {
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
@@ -29,7 +30,7 @@ const markdownRederers = {
 
 const BlogPost = () => {
   const router = useRouter();
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
   const [localUser, setLocalUser] = useState();
   const [loaded, setLoaded] = useState(false);
   const [blogPost, setBlogPost] = useState(null);
