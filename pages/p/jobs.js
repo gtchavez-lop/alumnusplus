@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 import IndustryTypes from "../../schemas/industryTypes.json";
 import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPostings = () => {
   const [provJobs, setProvJobs] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [addPostModalShown, setAddPostModalShown] = useState(false);
+  const __supabase = useSupabaseClient();
 
   const fetchProvJobs = async () => {
     const {

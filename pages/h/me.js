@@ -15,9 +15,9 @@ import MeConnections from "../../components/Me/MeConnections";
 import MeFeed from "../../components/Me/MeFeed";
 import MeSettings from "../../components/Me/MeSettings";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const ProfilePage = (e) => {
   const [tabActive, setTabActive] = useState("feed");
@@ -27,6 +27,7 @@ const ProfilePage = (e) => {
   const [localFeed, setLocalFeed] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
+  const __supabase = useSupabaseClient();
 
   // tabs
   const tabContainer = useRef(null);
@@ -36,6 +37,21 @@ const ProfilePage = (e) => {
   const tab1InView = useInView(tab1);
   const tab2InView = useInView(tab2);
   const tab3InView = useInView(tab3);
+
+  const fetchUserPosts = async (_userID) => {
+    const { data, error } = await __supabase
+      .from("hunt_blog")
+      .select("*")
+      .eq("uploaderID", _userID)
+      .order("createdAt", { ascending: false });
+
+    if (error) {
+      toast.error("Something went wrong");
+      return;
+    }
+
+    setLocalFeed(data);
+  };
 
   const fetchData = async () => {
     const {
@@ -50,23 +66,15 @@ const ProfilePage = (e) => {
 
     const connections = userData.connections;
 
-    const { data: feedData, error: feedError } = await __supabase.rpc(
-      "gethunterpostsbyid",
-      {
-        id_input: user.id,
-      }
-    );
-
-    if (userError || feedError || !user) {
+    if (userError || !user) {
       toast.error("Something went wrong");
       return;
     }
 
-    console.log(userData);
-
     setLocalUser(userData);
     setLocalConnections(connections);
-    setLocalFeed(feedData);
+
+    fetchUserPosts(user.id);
 
     setIsLoaded(true);
   };

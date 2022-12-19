@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 import { $schema_blog } from "../../schemas/blog";
 import FeedCard from "../../components/Feed/FeedCard";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
 
-const Feed = (e) => {
+const Feed = () => {
   const [blogContent, setBlogContent] = useState("");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [filterMode, setFilterMode] = useState("content");
@@ -20,6 +20,7 @@ const Feed = (e) => {
   const [blogLoading, setBlogLoading] = useState(true);
   const [blogData, setBlogData] = useState([]);
   const [user, setUser] = useState(null);
+  const __supabase = useSupabaseClient();
   const router = useRouter();
 
   const fetchBlogs = async () => {
@@ -79,9 +80,10 @@ const Feed = (e) => {
 
     toast.loading("Posting blog...");
 
-    const { data, error } = await __supabase
-      .from("hunt_blog")
-      .insert(blogSchema);
+    const { error } = await __supabase.from("hunt_blog").insert({
+      ...blogSchema,
+      uploaderID: localUser.id,
+    });
 
     if (error) {
       toast.dismiss();

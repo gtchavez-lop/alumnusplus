@@ -2,11 +2,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiBookmark, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import Image from "next/image";
 import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPosting = () => {
   const router = useRouter();
@@ -14,6 +13,7 @@ const JobPosting = () => {
   const [jobs, setJobs] = useState([]);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const __supabase = useSupabaseClient();
 
   const getAllJobs = async () => {
     const { data, error } = await __supabase.from("job_postings").select("*");

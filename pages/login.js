@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import { __PageTransition } from "../lib/animation";
-import { __supabase } from "../supabase";
+// import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const LogInPage = (e) => {
   const [hasUser, setHasUser] = useState(false);
   const router = useRouter();
+  const __supabase = useSupabaseClient();
 
   const checkHunterData = async () => {
     const {
@@ -159,7 +161,13 @@ const LogInPage = (e) => {
     } = await __supabase.auth.getUser();
 
     if (user) {
-      setHasUser(true);
+      if (user.user_metadata?.type === "hunter") {
+        router.push("/h/feed");
+      }
+
+      if (user.user_metadata?.type === "provisioner") {
+        router.push("/p/dashboard");
+      }
     }
   };
 
@@ -221,6 +229,15 @@ const LogInPage = (e) => {
                   className="text-primary cursor-pointer"
                 >
                   Sign up
+                </Link>
+              </p>
+              <p>
+                Forgot your password?{" "}
+                <Link
+                  href={"/util/recovery"}
+                  className="text-primary cursor-pointer"
+                >
+                  Reset password
                 </Link>
               </p>
             </form>
