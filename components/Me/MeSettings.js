@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../../supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const MeSettings = ({ data }) => {
   const router = useRouter();
   const [userData, setUserData] = useState(data);
   const [isDarkMode, setDarkMode] = useState();
-  const __supabase = useSupabaseClient();
+  // const __supabase = useSupabaseClient();
 
   const { user_metadata, id, email } = userData;
 

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiBookmark, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
+import CvBuilder from "../../components/Jobs/CvBuilder";
 import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -119,6 +120,7 @@ const JobPosting = () => {
                 </div>
               </motion.div>
             )}
+            {/* recommended jobs */}
             {tabSelected === "recommended" && (
               <motion.div
                 key={"recommended"}
@@ -141,6 +143,27 @@ const JobPosting = () => {
                     <JobCard job={item} key={`recommendedjob_${index + 1}`} />
                   ))}
                 </div>
+              </motion.div>
+            )}
+            {/* wicket cv builder */}
+            {tabSelected === "builder" && (
+              <motion.div
+                key={"builder"}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  transition: { duration: 0.2, ease: "circOut" },
+                }}
+                exit={{
+                  opacity: 0,
+                  x: -50,
+                  transition: { duration: 0.2, ease: "circIn" },
+                }}
+                className="mt-5"
+              >
+                <p className="text-2xl font-bold">Wicket CV Builder</p>
+                <CvBuilder />
               </motion.div>
             )}
           </AnimatePresence>

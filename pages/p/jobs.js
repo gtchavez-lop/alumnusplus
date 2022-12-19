@@ -7,6 +7,10 @@ import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
+import dayjs from "dayjs";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import uuidv4 from "../../lib/uuidv4";
 
 const JobPostings = () => {
   const [provJobs, setProvJobs] = useState([]);
@@ -90,6 +94,53 @@ const JobPostings = () => {
 };
 
 const AddJobPostModal = ({ setModalShown }) => {
+  const { reload } = useRouter();
+
+  const addJob = async (e) => {
+    e.preventDefault();
+
+    const {
+      data: { user },
+    } = await __supabase.auth.getUser();
+
+    const schema = {
+      id: uuidv4(),
+      created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      career_level: e.target.career_level.value,
+      job_benefits: e.target.job_benefits.value,
+      job_category: e.target.job_category.value,
+      job_location: e.target.job_location.value,
+      job_title: e.target.job_title.value,
+      job_description: e.target.job_description.value,
+      job_type: e.target.job_type.value,
+      job_mode: e.target.job_mode.value,
+      job_requirements: ["Wicket Profile"],
+      uploader_legal_name: user.user_metadata.legalName,
+      uploader_company_size: user.user_metadata.companySize,
+      uploader_email: user.email,
+      job_tags: [],
+      job_workingHours: e.target.job_workingHours.value,
+      job_expectedSalary: e.target.job_expectedSalary.value,
+    };
+
+    toast.loading("Adding job post...");
+
+    const { error: jobPostError } = await __supabase
+      .from("job_postings")
+      .insert([schema]);
+
+    if (jobPostError) {
+      toast.dismiss();
+      toast.error(jobPostError.message);
+      return;
+    }
+
+    toast.dismiss();
+    toast.success("Job post added successfully");
+    setModalShown(false);
+    reload();
+  };
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
@@ -116,7 +167,7 @@ const AddJobPostModal = ({ setModalShown }) => {
       >
         <p className="text-2xl font-bold">Add new Post</p>
 
-        <form className="mt-5" onSubmit={(e) => e.preventDefault()}>
+        <form className="mt-5" onSubmit={addJob}>
           <div className="flex flex-col">
             <label htmlFor="job_title">Job Title</label>
             <input

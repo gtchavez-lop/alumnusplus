@@ -316,7 +316,7 @@ const Navbar = () => {
                   >
                     <div
                       className="tooltip tooltip-bottom "
-                      data-tip="Update Feed"
+                      data-tip="Dashboard"
                     >
                       <button
                         className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
