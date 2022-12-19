@@ -3,15 +3,15 @@ import "../styles/globals.css";
 import { AnimatePresence } from "framer-motion";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
+// import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Toaster } from "react-hot-toast";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+// import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [supabase] = useState(() => createBrowserSupabaseClient());
+  // const [supabase] = useState(() => createBrowserSupabaseClient());
 
   return (
     <>
@@ -26,22 +26,23 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <SessionContextProvider
+      <Navbar />
+
+      <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
+        <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
+          <AnimatePresence mode="wait">
+            <Component {...pageProps} key={router.pathname} />
+          </AnimatePresence>
+        </section>
+      </main>
+
+      {/* <SessionContextProvider
         supabaseClient={supabase}
         initialSession={pageProps.initialSession}
       >
         <div>
-          <Navbar />
-
-          <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
-            <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
-              <AnimatePresence mode="wait">
-                <Component {...pageProps} key={router.pathname} />
-              </AnimatePresence>
-            </section>
-          </main>
         </div>
-      </SessionContextProvider>
+      </SessionContextProvider> */}
 
       <Toaster
         position="bottom"
