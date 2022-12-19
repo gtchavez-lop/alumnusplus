@@ -189,7 +189,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
     setUser(user);
 
     // check if the post is from the user
-    if (user === blogPostData.uploader.userId) {
+    if (user.id === blogPostData.uploaderID) {
       setIsSelfPost(true);
     }
 
@@ -551,7 +551,7 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   <FiShare2 className=" transition-all" />
                   <span className="hidden md:block">Share</span>
                 </p>
-                <div className="dropdown dropdown-end">
+                <div className="dropdown dropdown-end dropdown-left">
                   <label
                     tabIndex={0}
                     className="flex gap-2 items-center underline-offset-4 hover:underline"
@@ -561,20 +561,34 @@ const FeedCard = ({ feedData: blogPostData, index }) => {
                   </label>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content menu p-2 shadow bg-base-200 rounded-box min-w-[200px] mt-5"
+                    className="dropdown-content menu p-2 shadow bg-base-200 rounded-box min-w-[200px] mr-5"
                   >
                     <li>
-                      <a>
+                      <p
+                        onClick={() => {
+                          // open in a new tab
+                          window.open(
+                            `${window.location.origin}/h/blog/${blogPostData.id}`,
+                            "_blank"
+                          );
+                        }}
+                      >
                         <FiArrowUpRight />
                         <span>Open in a new tab</span>
-                      </a>
+                      </p>
                     </li>
                     <li>
                       <a className="text-warning">Report</a>
                     </li>
-                    <li>
-                      <a className="text-error">Delete Post</a>
-                    </li>
+                    {
+                      // if the user is the uploader of the post
+                      // then show the delete option
+                      isSelfPost && (
+                        <li>
+                          <a className="text-error">Delete Post</a>
+                        </li>
+                      )
+                    }
                   </ul>
                 </div>
               </div>

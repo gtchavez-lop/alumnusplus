@@ -1,9 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FiArrowDown, FiLoader, FiPlus, FiSearch, FiX } from "react-icons/fi";
+import {
+  FiArrowDown,
+  FiLoader,
+  FiPlus,
+  FiSearch,
+  FiUser,
+  FiX,
+} from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 import { $schema_blog } from "../../schemas/blog";
 import FeedCard from "../../components/Feed/FeedCard";
+import Link from "next/link";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
@@ -17,6 +25,7 @@ const Feed = () => {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [filterMode, setFilterMode] = useState("content");
   const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
+  const [recommendedHunters, setRecommendedHunters] = useState([]);
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [blogLoading, setBlogLoading] = useState(true);
   const [blogData, setBlogData] = useState([]);
@@ -24,16 +33,48 @@ const Feed = () => {
   // const __supabase = useSupabaseClient();
   const router = useRouter();
 
+  const fetchRecommendedUsers = async () => {
+    const {
+      data: { user },
+    } = await __supabase.auth.getUser();
+
+    const connections = user.user_metadata.connections;
+
+    const { data, error } = await __supabase
+      .from("recommended_hunters")
+      .select("id,fullname,email,username")
+      .limit(5);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    const filtered = data.filter((person) => {
+      if (!connections.includes(person.id) && person.id !== user.id) {
+        return person;
+      }
+    });
+
+    setRecommendedHunters(filtered);
+  };
+
   const fetchBlogs = async () => {
+    const {
+      data: { user },
+    } = await __supabase.auth.getUser();
+    const connections = user.user_metadata.connections;
+
     const { data, error } = await __supabase
       .from("hunt_blog")
       .select("*")
-      .order("createdAt", { ascending: false });
+      .in("uploaderID", [...connections, user.id]);
 
     if (error) {
       toast.error(error.message);
     } else {
       setBlogData(data);
+      fetchRecommendedUsers();
       setBlogLoading(false);
     }
   };
@@ -171,6 +212,35 @@ const Feed = () => {
                   index={index}
                 />
               ))}
+        </div>
+
+        {/* recommend friend */}
+        <div className="lg:flex flex-col gap-4 hidden overflow-hidden">
+          <p className="text-lg font-bold">You might know</p>
+          <div>
+            {recommendedHunters.length > 0 &&
+              recommendedHunters.map((hunter) => (
+                <Link
+                  href={`/h/${hunter.username}`}
+                  key={`recommended_hunter_${hunter.id}`}
+                  className="flex items-center gap-4 mt-4 bg-base-300 p-2 rounded-btn"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full">
+                    <img
+                      src={`https://avatars.dicebear.com/api/bottts/${hunter.username}.svg`}
+                      alt="avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-bold">@{hunter.username}</p>
+                    <p className="text-xs opacity-50">
+                      {hunter.fullname.first} {hunter.fullname.last}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+          </div>
         </div>
       </motion.main>
 

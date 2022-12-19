@@ -103,7 +103,7 @@ const ProfilePage = (e) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="pb-16 pt-36 lg:pt-24"
+          className="pb-36 lg:pt-24 pt-20"
         >
           <>
             {/* profile */}
@@ -116,8 +116,7 @@ const ProfilePage = (e) => {
 
               <div className="flex flex-col gap-2 z-10 ">
                 <h1 className="text-2xl lg:text-3xl font-bold leading-3 lg:leading-3">
-                  {localUser?.fullName?.firstName}{" "}
-                  {localUser?.fullName?.lastName}
+                  {localUser?.fullName?.first} {localUser?.fullName?.last}
                 </h1>
                 <p className="opacity-50">@{localUser?.username}</p>
               </div>
@@ -204,7 +203,7 @@ const ProfilePage = (e) => {
                 >
                   {tabActive === "feed" && <MeFeed feed={localFeed} />}
                   {tabActive === "connections" && (
-                    <MeConnections connections={localConnections} />
+                    <MeConnections connectionIDArray={localConnections} />
                   )}
                   {tabActive === "settings" && <MeSettings data={localUser} />}
                 </motion.div>
@@ -280,7 +279,7 @@ const ProfilePage = (e) => {
                       id="connections"
                       className="carousel-item w-full flex flex-col items-start"
                     >
-                      <MeConnections connections={localConnections} />
+                      <MeConnections connectionIDArray={localConnections} />
                     </motion.div>
                     <motion.div
                       ref={tab3}
