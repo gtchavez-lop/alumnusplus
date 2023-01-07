@@ -77,13 +77,13 @@ const DriftPage = () => {
           {driftData.map((company, index) => (
             <Link
               key={`company-${index}`}
-              href={`/p/${company.legalName}`}
+              href={`/p/${company.id}`}
               passHref
               className="p-3 bg-base-300 rounded-btn"
             >
               <div className="flex flex-col items-center gap-2 cursor-pointer">
                 <Image
-                  src={`https://avatars.dicebear.com/api/bottts/${company.legalName}.svg`}
+                  src={`https://avatars.dicebear.com/api/bottts/${company.id}.svg`}
                   width={100}
                   height={100}
                   className="rounded-full"

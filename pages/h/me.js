@@ -18,6 +18,7 @@ import { __PageTransition } from "../../lib/animation";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
 import toast from "react-hot-toast";
+import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 const ProfilePage = (e) => {
@@ -28,6 +29,7 @@ const ProfilePage = (e) => {
   const [localFeed, setLocalFeed] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
+  const [authState, setAuthState] = useLocalStorage("authState");
   // const __supabase = useSupabaseClient();
 
   // tabs
@@ -55,9 +57,7 @@ const ProfilePage = (e) => {
   };
 
   const fetchData = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
+    const user = authState;
 
     const { data: userData, error: userError } = await __supabase
       .from("user_hunters")
@@ -81,10 +81,7 @@ const ProfilePage = (e) => {
   };
 
   const checkUser = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-    if (user) {
+    if (authState) {
       fetchData();
     } else {
       router.push("/");

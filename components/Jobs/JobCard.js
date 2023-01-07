@@ -1,67 +1,85 @@
-import { FiBookmark } from "react-icons/fi";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { __supabase } from "../../supabase";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
+import rehypeRaw from "rehype-raw";
 
-const JobCard = ({ job, userType }) => {
-  return (
-    <Link href={`/jobs/${job.id}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: "circOut", delay: 0.2 }}
-        className="p-3 bg-base-200 rounded-btn flex gap-4 justify-start h-max "
+const markdownRederers = {
+  ul: ({ children }) => <ul className="list-disc my-5">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal my-5">{children}</ol>,
+  li: ({ children }) => <li className="ml-4">{children}</li>,
+  h1: ({ children }) => <h1 className="text-3xl font-bold">{children}</h1>,
+  h2: ({ children }) => <h2 className="text-2xl font-bold">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-xl font-bold">{children}</h3>,
+  h4: ({ children }) => <h4 className="text-lg font-bold">{children}</h4>,
+  h5: ({ children }) => <h5 className="text-base font-bold">{children}</h5>,
+  h6: ({ children }) => <h6 className="text-sm font-bold">{children}</h6>,
+  p: ({ children }) => <p>{children}</p>,
+};
+
+const JobCard = ({ job }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [uploader, setUploader] = useState({});
+
+  const fetchUploader = async () => {
+    const { data, error } = await __supabase
+      .from("user_provisioners")
+      .select("legalName, companySize, companyType, industryType")
+      .eq("id", job.uploader_id)
+      .single();
+
+    if (error) {
+      console.log(error);
+    }
+
+    setUploader(data);
+    setIsLoaded(true);
+  };
+
+  useEffect(() => {
+    fetchUploader();
+  }, []);
+
+  return !isLoaded ? (
+    <>
+      <article className="flex flex-col w-full h-[200px] rounded-btn p-5 bg-base-300 animate-pulse"></article>
+    </>
+  ) : (
+    <>
+      <Link
+        href={`/jobs/${job.id}`}
+        animate={{ opacity: [0, 1] }}
+        className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-300"
       >
-        <Image
-          src={`https://avatars.dicebear.com/api/initials/${job.uploader_legal_name}.svg`}
-          width={48}
-          height={48}
-          className="rounded-full w-12 h-12"
-          alt={job.uploader_legal_name}
-        />
-        <div className="flex flex-col">
-          <p className="text-lg font-bold link hover:link-primary">
-            {job.job_title
-              .toLowerCase()
-              .split(" ")
-              .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-              .join(" ")}
-          </p>
-          <p className="text-sm text-base-content text-opacity-50">
-            {job.uploader_legal_name
-              .toLowerCase()
-              .split(" ")
-              .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-              .join(" ")}
-          </p>
+        <h1 className="text-xl font-bold">{job.job_title}</h1>
+        <p>{uploader.legalName}</p>
 
-          <p className="my-5">
-            {
-              // truncate to 50 characters
-              job.job_description.length > 150
-                ? job.job_description.substring(0, 150) + "..."
-                : job.job_description
-            }
-          </p>
+        <p className="mt-4 text-sm">
+          {job.job_location} |{" "}
+          {
+            // make every first letter uppercase in job type array
+            job.job_type.map(
+              (type) => type.charAt(0).toUpperCase() + type.slice(1)
+            )[0]
+          }
+        </p>
 
-          <p className="font-light text-sm">
-            {job.job_location
-              .toLowerCase()
-              .split(" ")
-              .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-              .join(" ")}{" "}
-            ({job.job_mode} - {job.job_type})
-          </p>
-        </div>
-        {userType === "hunter" && (
-          <div className="flex flex-col ml-auto">
-            <button className="btn btn-square btn-ghost">
-              <FiBookmark className="text-lg" />
-            </button>
-          </div>
-        )}
-      </motion.div>
-    </Link>
+        <ReactMarkdown
+          rehypePlugins={[rehypeRaw]}
+          components={markdownRederers}
+          className="mt-4"
+        >
+          {job.short_description}
+        </ReactMarkdown>
+
+        <p className="text-sm mt-5 opacity-20">
+          {dayjs(job.created_at).format("DD MMM YYYY")}
+        </p>
+      </Link>
+    </>
   );
 };
 

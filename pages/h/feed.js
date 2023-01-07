@@ -16,6 +16,7 @@ import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
@@ -30,6 +31,7 @@ const Feed = () => {
   const [blogLoading, setBlogLoading] = useState(true);
   const [blogData, setBlogData] = useState([]);
   const [user, setUser] = useState(null);
+  const [authState] = useLocalStorage("authState");
   // const __supabase = useSupabaseClient();
   const router = useRouter();
 
@@ -80,12 +82,10 @@ const Feed = () => {
   };
 
   const fetchUser = async () => {
-    const { data, error } = await __supabase.auth.getUser();
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setUser(data);
+    if (authState) {
       fetchBlogs();
+    } else {
+      router.push("/h/login");
     }
   };
 
@@ -286,7 +286,7 @@ const Feed = () => {
                 <h5>
                   Add Post as{" "}
                   <span className="text-secondary underline underline-offset-4">
-                    {user?.user_metadata?.username}
+                    {authState?.user_metadata?.username}
                   </span>
                 </h5>
                 <div
