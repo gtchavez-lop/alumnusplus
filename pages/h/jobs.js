@@ -90,8 +90,8 @@ const JobPage = () => {
           {/* all jobs */}
           {tabSelected === "all" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10">
-              {jobs.map((job) => (
-                <JobCard job={job} />
+              {jobs.map((job, index) => (
+                <JobCard job={job} key={`jobcard_${index}`} />
               ))}
             </div>
           )}

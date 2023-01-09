@@ -1,3 +1,4 @@
+import { FiAlertCircle } from "react-icons/fi";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";

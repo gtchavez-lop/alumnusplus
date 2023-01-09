@@ -45,40 +45,47 @@ const JobCard = ({ job }) => {
 
   return !isLoaded ? (
     <>
-      <article className="flex flex-col w-full h-[200px] rounded-btn p-5 bg-base-300 animate-pulse"></article>
+      <motion.article
+        animate={{ y: [20, 0], transition: { duration: 0.2, ease: "circOut" } }}
+        className="flex flex-col w-full h-[200px] rounded-btn p-5 bg-base-300 animate-pulse duration-75"
+      ></motion.article>
     </>
   ) : (
     <>
-      <Link
-        href={`/jobs/${job.id}`}
-        animate={{ opacity: [0, 1] }}
-        className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-300"
+      <motion.div
+        animate={{ y: [20, 0], transition: { duration: 0.2, ease: "circOut" } }}
       >
-        <h1 className="text-xl font-bold">{job.job_title}</h1>
-        <p>{uploader.legalName}</p>
-
-        <p className="mt-4 text-sm">
-          {job.job_location} |{" "}
-          {
-            // make every first letter uppercase in job type array
-            job.job_type.map(
-              (type) => type.charAt(0).toUpperCase() + type.slice(1)
-            )[0]
-          }
-        </p>
-
-        <ReactMarkdown
-          rehypePlugins={[rehypeRaw]}
-          components={markdownRederers}
-          className="mt-4"
+        <Link
+          href={`/jobs/${job.id}`}
+          animate={{ opacity: [0, 1] }}
+          className="flex flex-col w-full min-h-[200px] rounded-btn p-5 border-2 border-base-200 hover:bg-base-200 transition-all"
         >
-          {job.short_description}
-        </ReactMarkdown>
+          <h1 className="text-xl font-bold">{job.job_title}</h1>
+          <p className="text-primary">{uploader.legalName}</p>
 
-        <p className="text-sm mt-5 opacity-20">
-          {dayjs(job.created_at).format("DD MMM YYYY")}
-        </p>
-      </Link>
+          <p className="mt-4 text-sm">
+            {job.job_location} |{" "}
+            {
+              // make every first letter uppercase in job type array
+              job.job_type.map(
+                (type) => type.charAt(0).toUpperCase() + type.slice(1)
+              )[0]
+            }
+          </p>
+
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw]}
+            components={markdownRederers}
+            className="mt-4"
+          >
+            {job.short_description}
+          </ReactMarkdown>
+
+          <p className="text-sm mt-5 opacity-50">
+            {dayjs(job.created_at).format("DD MMM YYYY")}
+          </p>
+        </Link>
+      </motion.div>
     </>
   );
 };

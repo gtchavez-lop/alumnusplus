@@ -32,8 +32,9 @@ const MeConnections = ({ connectionIDArray }) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {connectionData.map((connection) => (
+        {connectionData.map((connection, index) => (
           <motion.div
+            key={`connection-${index}`}
             animate={{
               opacity: [0, 1],
               y: [20, 0],
