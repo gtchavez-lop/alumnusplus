@@ -5,14 +5,13 @@ import { __PageTransition } from "../lib/animation";
 import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import useLocalStorage from "../lib/localStorageHook";
 import { useRouter } from "next/router";
-
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const LogInPage = (e) => {
   const [hasUser, setHasUser] = useState(false);
   const router = useRouter();
-  // const __supabase = useSupabaseClient();
+  const [authState, setAuthState] = useLocalStorage("authState");
 
   const checkHunterData = async () => {
     const {
@@ -133,6 +132,7 @@ const LogInPage = (e) => {
             if (e === false) {
               writeHunterData();
             } else {
+              setAuthState(user);
               toast.dismiss();
               toast.success("Signed in!");
               router.push("/h/feed");
@@ -146,6 +146,7 @@ const LogInPage = (e) => {
             if (e === false) {
               writeProvData();
             } else {
+              setAuthState(user);
               toast.dismiss();
               toast.success("Signed in!");
               router.push("/p/dashboard");
@@ -156,17 +157,10 @@ const LogInPage = (e) => {
   };
 
   const checkIfHasUser = async () => {
-    const {
-      data: { user },
-      error,
-    } = await __supabase.auth.getUser();
-
-    if (user) {
-      if (user.user_metadata?.type === "hunter") {
+    if (authState) {
+      if (authState.user_metadata.type === "hunter") {
         router.push("/h/feed");
-      }
-
-      if (user.user_metadata?.type === "provisioner") {
+      } else if (authState.user_metadata.type === "provisioner") {
         router.push("/p/dashboard");
       }
     }

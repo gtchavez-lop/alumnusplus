@@ -1,65 +1,57 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { FiBookmark, FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import CvBuilder from "../../components/Jobs/CvBuilder";
 import JobCard from "../../components/Jobs/JobCard";
 import { __PageTransition } from "../../lib/animation";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
-import { useRouter } from "next/router";
+import { motion } from "framer-motion";
+import useLocalStorage from "../../lib/localStorageHook";
 
-const JobPosting = () => {
-  const router = useRouter();
+const JobPage = () => {
   const [tabSelected, setTabSelected] = useState("all");
+  const [authState] = useLocalStorage("authState");
+
   const [jobs, setJobs] = useState([]);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  // const __supabase = useSupabaseClient();
+  const [allJobPage, setAllJobPage] = useState(1);
+  const [recommendedJobPage, setRecommendedJobPage] = useState(1);
 
-  const getAllJobs = async () => {
-    const { data, error } = await __supabase.from("job_postings").select("*");
+  const fetchAllJobs = async () => {
+    const { data, error } = await __supabase
+      .from("public_jobs")
+      .select("*")
+      .limit(10);
+    // .range(allJobPage * 10, allJobPage * 10 + 10);
+
     if (error) {
       console.log(error);
     }
 
-    setTimeout(() => {
-      setJobs(data);
-    }, 200);
+    setJobs(data);
+    console.log(data);
   };
 
-  const getRecommendedJobs = async () => {
-    const {
-      data: { user },
-      authError,
-    } = await __supabase.auth.getUser();
+  const fetchRecommendedJobs = async () => {
+    const user_primarySkill = authState.user_metadata.primarySkill;
+    const user_secondarySkills = authState.user_metadata.secondarySkills;
 
-    if (user) {
-      const userSkills = user.user_metadata.skillSecondary;
-      const { data: recomJobs, error } = await __supabase
-        .from("job_postings")
-        .select("*")
-        .containedBy("job_tags", userSkills);
+    const { data, error } = await __supabase
+      .from("public_jobs")
+      .select("*")
+      .limit(10);
+    // .range(recommendedJobPage * 10, recommendedJobPage * 10 + 10);
 
-      if (error) {
-        console.log(error);
-      }
-      setRecommendedJobs(recomJobs);
+    if (error) {
+      console.log(error);
     }
+
+    setRecommendedJobs(data);
   };
 
+  // fetch all jobs and recommended jobs on load and when page changes
   useEffect(() => {
-    getAllJobs();
-    getRecommendedJobs();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 w-full min-h-screen flex flex-col items-center justify-center">
-        <FiLoader className="animate-spin text-4xl text-primary" />
-      </div>
-    );
-  }
+    fetchAllJobs();
+    fetchRecommendedJobs();
+  }, [allJobPage, recommendedJobPage]);
 
   return (
     jobs &&
@@ -94,83 +86,19 @@ const JobPosting = () => {
             </p>
           </div>
 
-          <AnimatePresence mode="wait">
-            {/* all jobs */}
-            {tabSelected === "all" && (
-              <motion.div
-                key={"all"}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.2, ease: "circOut" },
-                }}
-                exit={{
-                  opacity: 0,
-                  x: -50,
-                  transition: { duration: 0.2, ease: "circIn" },
-                }}
-                className="mt-5"
-              >
-                <p className="text-2xl font-bold">See all jobs</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
-                  {jobs.map((item, index) => (
-                    <JobCard job={item} key={`job_${index + 1}`} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-            {/* recommended jobs */}
-            {tabSelected === "recommended" && (
-              <motion.div
-                key={"recommended"}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.2, ease: "circOut" },
-                }}
-                exit={{
-                  opacity: 0,
-                  x: -50,
-                  transition: { duration: 0.2, ease: "circIn" },
-                }}
-                className="mt-5"
-              >
-                <p className="text-2xl font-bold">Jobs for you</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
-                  {recommendedJobs.map((item, index) => (
-                    <JobCard job={item} key={`recommendedjob_${index + 1}`} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-            {/* wicket cv builder */}
-            {tabSelected === "builder" && (
-              <motion.div
-                key={"builder"}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.2, ease: "circOut" },
-                }}
-                exit={{
-                  opacity: 0,
-                  x: -50,
-                  transition: { duration: 0.2, ease: "circIn" },
-                }}
-                className="mt-5"
-              >
-                <p className="text-2xl font-bold">Wicket CV Builder</p>
-                <CvBuilder />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* content */}
+          {/* all jobs */}
+          {tabSelected === "all" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10">
+              {jobs.map((job, index) => (
+                <JobCard job={job} key={`jobcard_${index}`} />
+              ))}
+            </div>
+          )}
         </motion.main>
       </>
     )
   );
 };
 
-export default JobPosting;
+export default JobPage;

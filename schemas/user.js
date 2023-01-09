@@ -167,6 +167,17 @@ const $prov_tags = [
   "Other",
 ];
 
+const $job_details = {
+  id: "", // job id (uuid v4)
+  uploader_id: "", // provisioner id
+  job_title: "", // job title
+  full_description: "", // markdown text
+  short_description: "", // truncated from full_description (max 200 chars)
+  job_location: "", // city
+  job_type: "", // full-time, part-time, contract, internship
+  job_qualifications: [], // array of strings
+};
+
 export {
   $schema_hunter,
   $schema_provisioner,
@@ -174,4 +185,5 @@ export {
   $prov_industryType,
   $prov_companySize,
   $prov_tags,
+  $job_details,
 };

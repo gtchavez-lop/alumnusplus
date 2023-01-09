@@ -1,14 +1,13 @@
-import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useEffect, useState } from "react";
 
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { __supabase } from "../supabase";
 
 const TestPage = ({ session }) => {
-  const supabase = useSupabaseClient();
-
   const fetchUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    console.log(error);
+    const { data, error } = await __supabase.rpc("get_hunter_by_id", {
+      input_id: "cfcd8fea-ccff-43cc-87cf-9b5fd736670b",
+    });
+    console.log(data, error);
   };
 
   useEffect(() => {

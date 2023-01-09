@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import { __supabase } from "../../supabase";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 const MeConnections = ({ connectionIDArray }) => {
@@ -31,24 +32,37 @@ const MeConnections = ({ connectionIDArray }) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {connectionData.map((connection) => (
-          <Link
-            href={`/h/${connection.username}`}
-            key={connection.id}
-            className="p-5 bg-base-300 flex flex-col gap-3 items-center rounded-btn"
+        {connectionData.map((connection, index) => (
+          <motion.div
+            key={`connection-${index}`}
+            animate={{
+              opacity: [0, 1],
+              y: [20, 0],
+              transition: {
+                duration: 0.5,
+                delay: 0.1,
+                ease: "circOut",
+              },
+            }}
           >
-            <img
-              src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
-              alt="avatar"
-              className="w-20 h-20 rounded-full"
-            />
-            <div className="flex flex-col items-center">
-              <p>
-                {connection.fullName.first} {connection.fullName.last}
-              </p>
-              <p className="text-sm opacity-50">@{connection.username}</p>
-            </div>
-          </Link>
+            <Link
+              href={`/h/${connection.username}`}
+              key={connection.id}
+              className="p-5 bg-base-300 flex flex-col gap-3 items-center rounded-btn"
+            >
+              <img
+                src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                alt="avatar"
+                className="w-20 h-20 rounded-full"
+              />
+              <div className="flex flex-col items-center">
+                <p>
+                  {connection.fullName.first} {connection.fullName.last}
+                </p>
+                <p className="text-sm opacity-50">@{connection.username}</p>
+              </div>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </>

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookstate/core": "^4.0.0",
     "@supabase/auth-helpers-nextjs": "^0.5.2",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.6",
@@ -24,7 +25,8 @@
     "react-hot-toast": "^2.4.0",
     "react-markdown": "^8.0.4",
     "rehype-raw": "^6.1.1",
-    "theme-change": "^2.2.0"
+    "theme-change": "^2.2.0",
+    "zustand": "^4.2.0"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.1.3",
