@@ -255,7 +255,6 @@ const BlogPage = ({ blogPostData }) => {
 
                     // disable the form
                     e.target.disabled = true;
-                    ff;
 
                     if (commentContent.length === 0) {
                       toast.error("Comment cannot be empty!");
@@ -335,7 +334,7 @@ const BlogPage = ({ blogPostData }) => {
               {blogPostData.comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="flex flex-col bg-base-200 p-5 rounded-btn"
+                  className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"
                 >
                   <div className="flex items-center gap-3">
                     <img

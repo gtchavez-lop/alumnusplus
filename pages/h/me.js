@@ -1,302 +1,323 @@
-import {
-  FiEdit2,
-  FiGithub,
-  FiGrid,
-  FiLoader,
-  FiMail,
-  FiSettings,
-  FiUsers,
-} from "react-icons/fi";
-import { motion, useInView, useScroll } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { AnimatePresence } from "framer-motion";
-import MeConnections from "../../components/Me/MeConnections";
-import MeFeed from "../../components/Me/MeFeed";
-import MeSettings from "../../components/Me/MeSettings";
+import Link from "next/link";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __PageTransition } from "../../lib/animation";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
-import toast from "react-hot-toast";
+import dayjs from "dayjs";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 
-const ProfilePage = (e) => {
-  const [tabActive, setTabActive] = useState("feed");
-  const [tabNumberActive, setTabNumberActive] = useState(1);
-  const [localUser, setLocalUser] = useState();
-  const [localConnections, setLocalConnections] = useState([]);
-  const [localFeed, setLocalFeed] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const router = useRouter();
+const ProfilePage = () => {
   const [authState, setAuthState] = useLocalStorage("authState");
-  // const __supabase = useSupabaseClient();
+  const [hasUser, setHasUser] = useState(false);
+  const [userActivities, setUserActivities] = useState([]);
+  const [userConnections, setUserConnections] = useState([]);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const router = useRouter();
 
-  // tabs
-  const tabContainer = useRef(null);
-  const tab1 = useRef(null);
-  const tab2 = useRef(null);
-  const tab3 = useRef(null);
-  const tab1InView = useInView(tab1);
-  const tab2InView = useInView(tab2);
-  const tab3InView = useInView(tab3);
-
-  const fetchUserPosts = async (_userID) => {
+  const fetchUserActivities = async () => {
     const { data, error } = await __supabase
-      .from("hunt_blog")
-      .select("*")
-      .eq("uploaderID", _userID)
-      .order("createdAt", { ascending: false });
+      .from("public_posts")
+      .select("id,content,createdAt,uploaderID")
+      .eq("uploaderID", authState?.id)
+      .order("createdAt", { ascending: false })
+      .limit(5);
 
     if (error) {
-      toast.error("Something went wrong");
+      toast.error(error.message);
       return;
     }
 
-    setLocalFeed(data);
+    setUserActivities(data);
   };
 
-  const fetchData = async () => {
-    const user = authState;
-
-    const { data: userData, error: userError } = await __supabase
+  const fetchUserConnections = async () => {
+    const thisUserConnection = authState.user_metadata.connections;
+    const { data, error } = await __supabase
       .from("user_hunters")
-      .select("*")
-      .single()
-      .eq("id", user.id);
+      .select("id,email,fullName,username")
+      .in("id", thisUserConnection);
 
-    const connections = userData.connections;
-
-    if (userError || !user) {
-      toast.error("Something went wrong");
+    if (error) {
+      toast.error(error.message);
       return;
     }
 
-    setLocalUser(userData);
-    setLocalConnections(connections);
-
-    fetchUserPosts(user.id);
-
-    setIsLoaded(true);
+    setUserConnections(data);
   };
 
-  const checkUser = async () => {
-    if (authState) {
-      fetchData();
-    } else {
-      router.push("/");
+  const fetchRecommendedUsers = async () => {
+    const thisUserConnections = authState.user_metadata.connections;
+
+    const { data, error } = await __supabase
+      .from("recommended_hunters")
+      .select("id,email,fullname,username")
+      .order("id", { ascending: false });
+
+    if (error) {
+      toast.error(error.message);
+      return;
     }
+
+    setRecommendedUsers(
+      data.filter((user) => {
+        if (thisUserConnections.includes(user.id) || user.id === authState.id) {
+          return false;
+        }
+      })
+    );
+    console.log(data);
+  };
+
+  const checkTheme = () => {
+    const theme = window.localStorage.getItem("theme");
+
+    if (theme === "dark") {
+      setIsDark(true);
+    } else {
+      document.body.setAttribute("data-theme", "success");
+      setIsDark(false);
+    }
+  };
+
+  const toggleTheme = (e) => {
+    document.body.setAttribute(
+      "data-theme",
+      e.target.checked ? "stability" : "success"
+    );
+    window.localStorage.setItem("theme", e.target.checked ? "dark" : "light");
+    setIsDark(e.target.checked);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    toast.loading("Logging out...");
+
+    const { error } = await __supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+      toast.dismiss();
+      toast.error("Failed to log out");
+      return;
+    }
+
+    toast.dismiss();
+    setAuthState(null);
+    router.push("/login");
   };
 
   useEffect(() => {
-    checkUser();
+    if (authState) {
+      setHasUser(true);
+      fetchUserActivities();
+      fetchUserConnections();
+      fetchRecommendedUsers();
+    } else {
+      router.push("/login");
+    }
+  }, [authState]);
+
+  useEffect(() => {
+    checkTheme();
   }, []);
 
   return (
-    <>
-      {isLoaded && localUser ? (
+    hasUser && (
+      <>
         <motion.main
           variants={__PageTransition}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="pb-36 lg:pt-24 pt-20"
+          className="relative min-h-screen w-full pt-24 pb-36"
         >
-          <>
-            {/* profile */}
-            <div className="flex gap-4 items-end relative z-10 py-5 bg-base-100">
-              <img
-                src={`https://dicebear.com/api/bottts/${localUser?.username}.svg`}
-                className="w-24 h-24 lg:w-32 lg:h-32 z-10"
-                alt="profile"
-              />
+          <section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            <div className="col-span-3 flex flex-col gap-3">
+              {/* landing profile */}
+              <div className="flex flex-col bg-base-300 rounded-btn p-5">
+                <img
+                  src={`https://avatars.dicebear.com/api/bottts/${authState?.user_metadata?.username}.svg`}
+                  alt="avatar"
+                  className="w-32 h-32 rounded-full bg-primary border-white border-2"
+                />
+                <p className="text-3xl font-bold">Gerald Chavez</p>
 
-              <div className="flex flex-col gap-2 z-10 ">
-                <h1 className="text-2xl lg:text-3xl font-bold leading-3 lg:leading-3">
-                  {localUser?.fullName?.first} {localUser?.fullName?.last}
-                </h1>
-                <p className="opacity-50">@{localUser?.username}</p>
+                <p className="font-semibold opacity-75">
+                  @{authState?.user_metadata?.username}
+                </p>
+                <p>
+                  Joined at:{" "}
+                  <span className="opacity-50">
+                    {dayjs(authState?.created_at).format("MMMM DD, YYYY")}
+                  </span>
+                </p>
               </div>
-
-              {/* <div
-                className="hidden lg:inline-block tooltip tooltip-left ml-auto"
-                data-tip="Edit profile"
-              >
-                <div className="btn btn-primary btn-square ml-auto">
-                  <FiEdit2 />
+              {/* skills */}
+              <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+                <p className="text-2xl font-bold">Skillsets</p>
+                <div className="flex flex-col">
+                  <h4 className="text-lg font-semibold">Primary Skill</h4>
+                  <p className="badge badge-primary">
+                    {authState?.user_metadata?.skillPrimary}
+                  </p>
                 </div>
-              </div> */}
-            </div>
-
-            {/* tabs */}
-            <div className="bg-base-100 sticky top-28 pt-5 pb-2">
-              {/* tab desktop */}
-              <div className="tabs tabs-boxed justify-center hidden md:flex lg:gap-2">
-                <button
-                  onClick={(e) => setTabActive("feed")}
-                  className={`tab ${tabActive === "feed" && "tab-active"}`}
-                >
-                  My Feed
-                </button>
-                <button
-                  onClick={(e) => setTabActive("connections")}
-                  className={`tab ${
-                    tabActive === "connections" && "tab-active"
-                  }`}
-                >
-                  My Connections
-                </button>
-                <button
-                  onClick={(e) => setTabActive("settings")}
-                  className={`tab ${tabActive === "settings" && "tab-active"}`}
-                >
-                  Settings
-                </button>
+                <div className="flex flex-col">
+                  <h4 className="text-lg font-semibold">Secondary Skills</h4>
+                  <p className="flex flex-wrap gap-4">
+                    {authState?.user_metadata?.skillSecondary.map(
+                      (skill, index) => (
+                        <span
+                          key={`secondaryskill_${index}`}
+                          className="badge badge-accent"
+                        >
+                          {skill}
+                        </span>
+                      )
+                    )}
+                  </p>
+                </div>
               </div>
-
-              {/* tab mobile */}
-              {/* <div className="tabs tabs-boxed grid grid-cols-3 md:hidden lg:gap-2 justify-center md:justify-start">
-							<button
-								onClick={(e) => setTabActive("feed")}
-								className={`tab rounded-full ${tabActive === "feed" && "tab-active"}`}
-							>
-								<FiEdit2 />
-							</button>
-							<button
-								onClick={(e) => setTabActive("connections")}
-								className={`tab rounded-full ${tabActive === "connections" && "tab-active"}`}
-							>
-								<FiUsers />
-							</button>
-							<button
-								onClick={(e) => setTabActive("settings")}
-								className={`tab rounded-full ${tabActive === "settings" && "tab-active"}`}
-							>
-								<FiSettings />
-							</button>
-						</div> */}
+              {/* residence */}
+              <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+                <p className="text-2xl font-bold">Residence</p>
+                <div className="flex flex-col ">
+                  <h4 className="text-lg font-semibold">Address</h4>
+                  <p>{authState?.user_metadata?.address.address}</p>
+                  <h4 className="text-lg font-semibold mt-3">
+                    City of Residence
+                  </h4>
+                  <p className="badge badge-accent">
+                    {authState?.user_metadata?.address.city}
+                  </p>
+                </div>
+              </div>
+              {/* activity */}
+              <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+                <p className="text-2xl font-bold">Recent Activities</p>
+                <div className="flex flex-col gap-2">
+                  {userActivities.map((activity, index) => (
+                    <div
+                      key={`activity_${index}`}
+                      className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                    >
+                      <div>
+                        <ReactMarkdown>
+                          {activity.content.substring(0, 50)}
+                        </ReactMarkdown>
+                      </div>
+                      <Link
+                        href={`/h/blog/${activity.id}`}
+                        className="btn btn-primary btn-sm"
+                      >
+                        See more
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-
-            <div>
-              {/* desktop view */}
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  initial={{
-                    opacity: 0,
-                    x: "-50px",
-                  }}
-                  animate={{
-                    opacity: 1,
-                    x: "0px",
-                    transition: { duration: 0.5, ease: "circOut" },
-                  }}
-                  exit={{
-                    clipPath: "inset(0 0 0 100%)",
-                    x: "50px",
-                    transition: { duration: 0.5, ease: "circOut" },
-                  }}
-                  className="md:flex flex-col gap-5 hidden pt-10 relative"
-                  key={tabActive}
-                >
-                  {tabActive === "feed" && <MeFeed feed={localFeed} />}
-                  {tabActive === "connections" && (
-                    <MeConnections connectionIDArray={localConnections} />
+            <div className="col-span-2 flex flex-col gap-5">
+              <div className="flex flex-col rounded-btn p-2 gap-3">
+                <p className="text-2xl font-bold">Your Connections</p>
+                {userConnections.length > 0 ? (
+                  userConnections.map((connection, index) => (
+                    <div
+                      key={`connection_${index}`}
+                      className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                    >
+                      <div className="flex gap-2 items-center">
+                        <img
+                          src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                          alt="avatar"
+                          className="w-12 h-12 rounded-full bg-primary "
+                        />
+                        <div>
+                          <p className="font-bold leading-none">
+                            {connection.fullName.first}{" "}
+                            {connection.fullName.last}
+                          </p>
+                          <p className="opacity-50 leading-none">
+                            @{connection.username}
+                          </p>
+                        </div>
+                      </div>
+                      <button className="btn btn-ghost btn-sm">
+                        See Profile
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p>
+                    Looks like you have not connected to other people right now.
+                    Add people to your connections to see their posts and
+                    activities.
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col rounded-btn p-2 gap-3">
+                <p className="text-2xl font-bold">Suggested Connections</p>
+                <div className="flex flex-col gap-2">
+                  {recommendedUsers.length > 0 ? (
+                    <p>asdjklasdkjldas</p>
+                  ) : (
+                    <p>
+                      We do not have any recommendations for now. Try again
+                      later
+                    </p>
                   )}
-                  {tabActive === "settings" && <MeSettings data={localUser} />}
-                </motion.div>
-              </AnimatePresence>
-              {/* mobile view */}
-              <AnimatePresence mode="wait">
-                <>
-                  <div className="grid grid-cols-3 w-full gap-2 mb-10 md:hidden">
-                    <div
-                      onClick={() => {
-                        // scroll tab1 into view without y scroll
-                        document.getElementById("feed").scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                          inline: "nearest",
-                        });
-                      }}
-                      scroll={false}
-                      className={`btn ${
-                        tab1InView ? "btn-primary" : "btn-link"
-                      }`}
-                    >
-                      <FiGrid />
-                    </div>
-                    <div
-                      onClick={() => {
-                        document.querySelector("#connections").scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                          inline: "nearest",
-                        });
-                      }}
-                      scroll={false}
-                      className={`btn ${
-                        tab2InView ? "btn-primary" : "btn-link"
-                      }`}
-                    >
-                      <FiUsers />
-                    </div>
-                    <div
-                      onClick={() => {
-                        document.querySelector("#settings").scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                          inline: "nearest",
-                        });
-                      }}
-                      scroll={false}
-                      className={`btn ${
-                        tab3InView ? "btn-primary" : "btn-link"
-                      }`}
-                    >
-                      <FiSettings />
-                    </div>
-                  </div>
-                  <motion.div
-                    variants={__PageTransition}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    className="md:hidden carousel gap-10"
-                    ref={tabContainer}
-                  >
-                    <motion.div
-                      ref={tab1}
-                      id="feed"
-                      className="carousel-item w-full flex flex-col items-start"
-                    >
-                      <MeFeed feed={localFeed} />
-                    </motion.div>
-                    <motion.div
-                      ref={tab2}
-                      id="connections"
-                      className="carousel-item w-full flex flex-col items-start"
-                    >
-                      <MeConnections connectionIDArray={localConnections} />
-                    </motion.div>
-                    <motion.div
-                      ref={tab3}
-                      id="settings"
-                      className="carousel-item w-full flex flex-col items-start"
-                    >
-                      <MeSettings data={localUser} />
-                    </motion.div>
-                  </motion.div>
-                </>
-              </AnimatePresence>
+                </div>
+              </div>
+              <div className="divider" />
+              <div className="flex flex-col rounded-btn p-2 gap-5">
+                <label className="flex items-center justify-between">
+                  <span>Dark Mode</span>
+                  <input
+                    type="checkbox"
+                    className="toggle"
+                    checked={isDark}
+                    onChange={toggleTheme}
+                  />
+                </label>
+                <label htmlFor="signoutmodal" className="btn btn-error w-full">
+                  Sign out session
+                </label>
+              </div>
             </div>
-          </>
+          </section>
         </motion.main>
-      ) : (
-        <div className="flex flex-col items-center justify-center h-full">
-          <FiLoader className="animate-spin py-10" />
+
+        {/* sign out modal */}
+        <input type="checkbox" id="signoutmodal" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">
+              Are you sure you want to sign out?
+            </h3>
+            <p className="py-4">
+              You will be signed out of all your devices. You can sign back in
+              anytime.
+            </p>
+            <div className="modal-action">
+              <label htmlFor="signoutmodal" className="btn">
+                Cancel
+              </label>
+              <button
+                className="btn btn-error"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-    </>
+      </>
+    )
   );
 };
 
