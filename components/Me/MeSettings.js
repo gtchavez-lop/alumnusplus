@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
 import { toast } from "react-hot-toast";
+import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 const MeSettings = ({ data }) => {
   const router = useRouter();
   const [userData, setUserData] = useState(data);
   const [isDarkMode, setDarkMode] = useState();
+  const [authState, setAuthState] = useLocalStorage("authState");
   // const __supabase = useSupabaseClient();
 
   const { user_metadata, id, email } = userData;
@@ -19,6 +21,8 @@ const MeSettings = ({ data }) => {
       if (error) {
         toast.error(error.message);
       } else {
+        // remove auth state from local storage
+        setAuthState(null);
         toast.dismiss();
         toast.success("Signed out!");
         router.push("/login");

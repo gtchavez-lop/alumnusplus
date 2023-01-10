@@ -16,6 +16,7 @@ import Logo from "./Logo";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
+import useLocalStorage from "../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
@@ -23,15 +24,13 @@ const Navbar = () => {
   const [hasUser, setHasUser] = useState(false);
   const [userData, setUserData] = useState({});
   const [isSearching, setIsSearching] = useState(false);
+  const [authState, setAuthState] = useLocalStorage("authState");
   // const __supabase = useSupabaseClient();
 
   const checkUser = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-    if (user) {
+    if (authState) {
       setHasUser(true);
-      setUserData(user);
+      setUserData(authState);
     } else {
       setHasUser(false);
     }
@@ -39,7 +38,7 @@ const Navbar = () => {
 
   useEffect(() => {
     checkUser();
-  }, [router.pathname]);
+  }, [authState]);
 
   return (
     hasUser && (
@@ -141,12 +140,7 @@ const Navbar = () => {
             </motion.nav>
 
             {/* desktop hunter */}
-            <motion.nav
-              initial={{ y: -100 }}
-              animate={{ y: 0 }}
-              transition={{ duration: 0.5, ease: "circOut" }}
-              className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
-            >
+            <motion.nav className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center ">
               <main className="grid grid-cols-3 w-full items-center max-w-5xl">
                 <Logo />
                 <div className="flex justify-center gap-2">
