@@ -197,8 +197,9 @@ const BlogPage = ({ blogPostData }) => {
 
             <div className="mt-10 lg:p-5">
               <ReactMarkdown
-                components={markdownRenderer}
+                // components={markdownRenderer}
                 rehypePlugins={[rehypeRaw]}
+                className="prose prose-a:text-primary prose-lead:underline underline-offset-4"
               >
                 {blogPostData.content}
               </ReactMarkdown>
@@ -357,8 +358,9 @@ const BlogPage = ({ blogPostData }) => {
                   </div>
 
                   <ReactMarkdown
-                    components={markdownRenderer}
+                    // components={markdownRenderer}
                     rehypePlugins={[rehypeRaw]}
+                    className="prose"
                   >
                     {comment.content}
                   </ReactMarkdown>

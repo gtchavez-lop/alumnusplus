@@ -17,6 +17,7 @@ const FeedPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [feedList, setFeedList] = useState([]);
   const [feedListPage, setFeedListPage] = useState(0);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
   const rouer = useRouter();
 
   const handlePost = async (e) => {
@@ -66,6 +67,19 @@ const FeedPage = () => {
     }
 
     setFeedList(data);
+  };
+
+  const fetchRecommendedUsers = async () => {
+    const { data, error } = await __supabase
+      .from("recommended_hunters")
+      .select("id,fullname,username,email");
+
+    if (error) {
+      toast.error("Error at fetching recommended users");
+      return;
+    }
+
+    setRecommendedUsers(data);
     console.log(data);
   };
 
@@ -77,6 +91,7 @@ const FeedPage = () => {
 
   useEffect(() => {
     fetchFeedList();
+    // fetchRecommendedUsers();
   }, [feedListPage]);
 
   if (!isLoaded) {
@@ -109,11 +124,10 @@ const FeedPage = () => {
             <p className="text-primary text-sm hover:link">View Profile</p>
           </div>
 
-          <div className="flex flex-row justify-around lg:flex-col gap-2 ">
+          {/* <div className="flex flex-row justify-around lg:flex-col gap-2 ">
             <p className="text-primary text-sm hover:link">Connections</p>
             <p className="text-primary text-sm hover:link">Events</p>
-            {/* <p className="text-primary text-sm hover:link">App Settings</p> */}
-          </div>
+          </div> */}
         </div>
 
         {/* feed */}
