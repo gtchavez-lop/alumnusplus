@@ -56,22 +56,20 @@ const ProfilePage = () => {
 
     const { data, error } = await __supabase
       .from("recommended_hunters")
-      .select("id,email,fullname,username")
-      .order("id", { ascending: false });
+      .select("id,email,fullname,username");
 
     if (error) {
       toast.error(error.message);
       return;
     }
 
-    setRecommendedUsers(
-      data.filter((user) => {
-        if (thisUserConnections.includes(user.id) || user.id === authState.id) {
-          return false;
-        }
-      })
+    // filter out the users that are already connected and the current user
+    const filtered = data.filter(
+      (user) =>
+        !thisUserConnections.includes(user.id) && user.id !== authState.id
     );
-    console.log(data);
+
+    setRecommendedUsers(filtered);
   };
 
   const checkTheme = () => {
@@ -145,7 +143,10 @@ const ProfilePage = () => {
                   alt="avatar"
                   className="w-32 h-32 rounded-full bg-primary border-white border-2"
                 />
-                <p className="text-3xl font-bold">Gerald Chavez</p>
+                <p className="text-3xl font-bold">
+                  {authState?.user_metadata?.fullName.first}{" "}
+                  {authState?.user_metadata?.fullName.last}
+                </p>
 
                 <p className="font-semibold opacity-75">
                   @{authState?.user_metadata?.username}
@@ -263,7 +264,14 @@ const ProfilePage = () => {
                 <p className="text-2xl font-bold">Suggested Connections</p>
                 <div className="flex flex-col gap-2">
                   {recommendedUsers.length > 0 ? (
-                    <p>asdjklasdkjldas</p>
+                    recommendedUsers.map((user, index) => (
+                      <div
+                        key={`recommended_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <p>asdjklasdljkadsklj</p>
+                      </div>
+                    ))
                   ) : (
                     <p>
                       We do not have any recommendations for now. Try again

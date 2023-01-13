@@ -1,10 +1,17 @@
-import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
+import {
+  FiArrowUp,
+  FiMessageSquare,
+  FiMoreHorizontal,
+  FiX,
+} from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 import SkeletonCard from "../../pages/skeletoncard";
+import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __supabase } from "../../supabase";
+import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
 import useLocalStorage from "../../lib/localStorageHook";
@@ -25,6 +32,7 @@ const FeedCard = ({ data: blogPostData }) => {
   const [uploaderData, setUploaderData] = useState({});
   const [isLiked, setIsLiked] = useState(false);
   const [authState] = useLocalStorage("authState");
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   const fetchUploaderData = async () => {
     const { data: uploader, error } = await __supabase
@@ -129,7 +137,13 @@ const FeedCard = ({ data: blogPostData }) => {
 
   return (
     <>
-      <div className="flex flex-col p-5 rounded-btn bg-base-200">
+      <motion.div
+        animate={{
+          opacity: [0, 1],
+          transition: { duration: 0.2, ease: "circOut" },
+        }}
+        className="flex flex-col p-5 rounded-btn bg-base-200"
+      >
         <div className="flex gap-3">
           <img
             // dicebear
@@ -148,9 +162,9 @@ const FeedCard = ({ data: blogPostData }) => {
 
         <div className="mt-5">
           <ReactMarkdown
-            components={markdownRenderer}
+            // components={markdownRenderer}
             rehypePlugins={[rehypeRaw]}
-            className="flex flex-col gap-2 max-h-28 overflow-hidden"
+            className="prose-sm max-h-32 overflow-hidden"
           >
             {blogPostData.content.slice(0, 200) + "..."}
           </ReactMarkdown>
@@ -165,18 +179,134 @@ const FeedCard = ({ data: blogPostData }) => {
               <FiArrowUp className="font-bold" />
               {blogPostData.upvoters.length || ""}
             </button>
-            <button className="btn btn-ghost">
+            <motion.button
+              onClick={() => setCommentsOpen(true)}
+              className="btn btn-ghost"
+            >
               <FiMessageSquare className="font-bold" />
-            </button>
+              <span className="ml-2">{blogPostData.comments.length}</span>
+            </motion.button>
           </div>
-          <div className="flex gap-2">
+          <div className="md:hidden dropdown dropdown-top dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost">
+              <FiMoreHorizontal />
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <Link href={`/h/blog/${blogPostData.id}`}>Read More</Link>
+              </li>
+              <li>
+                <button>Share</button>
+              </li>
+            </ul>
+          </div>
+          <div className="md:flex gap-2 hidden ">
             <Link href={`/h/blog/${blogPostData.id}`} className="btn btn-ghost">
               Read More
             </Link>
             <button className="btn btn-ghost">Share</button>
           </div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* comments */}
+      <AnimatePresence mode="wait">
+        {commentsOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: 0.2, ease: "circOut" },
+            }}
+            exit={{
+              opacity: 0,
+              transition: { duration: 0.2, ease: "circIn" },
+            }}
+            onClick={() => setCommentsOpen(false)}
+            className="fixed top-0 left-0 z-50 w-full h-screen px-5 lg:px-0 pt-24 pb-16 bg-base-100 flex justify-center"
+          >
+            <motion.div
+              initial={{ y: 20 }}
+              animate={{ y: 0, transition: { duration: 0.2, ease: "circOut" } }}
+              exit={{ y: 20, transition: { duration: 0.2, ease: "circIn" } }}
+              className="w-full max-w-xl"
+            >
+              {/* top action buttons */}
+              <div className="flex justify-between items-center">
+                <motion.h1
+                  animate={{
+                    opacity: [0, 1],
+                    x: [-50, 0],
+                    transition: { delay: 0.2, duration: 0.2, ease: "circOut" },
+                  }}
+                  className="text-2xl font-bold"
+                >
+                  Comments
+                </motion.h1>
+                <motion.button
+                  layoutId={`closebutton-${blogPostData.id}`}
+                  onClick={() => setCommentsOpen(false)}
+                  className="btn btn-ghost"
+                >
+                  <FiX />
+                </motion.button>
+              </div>
+
+              {/* comments */}
+              <motion.div
+                animate={{
+                  opacity: [0, 1],
+                  y: [50, 0],
+                  transition: { delay: 0.3, duration: 0.2, ease: "circOut" },
+                }}
+                className="mt-5 flex flex-col gap-2"
+              >
+                {blogPostData.comments.map((comment, index) => (
+                  <div
+                    className="p-3 bg-base-200 rounded-btn"
+                    key={`comment_${index}`}
+                  >
+                    {/* commenter */}
+                    <div className="flex gap-3">
+                      <img
+                        // dicebear
+                        src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
+                        alt="avatar"
+                        className="w-10 h-10"
+                      />
+                      <div className="flex flex-col gap-1 justify-center">
+                        <p className="leading-none">
+                          {comment.commenter.fullName.first}{" "}
+                          {comment.commenter.fullName.last}{" "}
+                          <span className="text-primary opacity-50">
+                            commented
+                          </span>
+                        </p>
+                        <p className="opacity-50 leading-none">
+                          {comment.commenter.username}
+                        </p>
+                      </div>
+                    </div>
+                    {/* content */}
+                    <div className="mt-5">
+                      <ReactMarkdown
+                        // components={markdownRenderer}
+                        rehypePlugins={[rehypeRaw]}
+                        className="prose"
+                      >
+                        {comment.content}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
