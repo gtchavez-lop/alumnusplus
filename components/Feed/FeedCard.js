@@ -6,6 +6,7 @@ import {
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
+import SkeletonCard from "../../pages/skeletoncard";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -131,29 +132,7 @@ const FeedCard = ({ data: blogPostData }) => {
   }, []);
 
   if (!isLoaded) {
-    return (
-      <div className="rounded-btn p-5 bg-base-200">
-        <div className="flex gap-3">
-          <div className="w-10 h-10 rounded-full bg-base-100 animate-pulse" />
-          <div className="flex flex-col gap-2">
-            <div className="h-4 w-20 animate-pulse bg-base-100" />
-            <div className="h-4 w-40 animate-pulse bg-base-100" />
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-col gap-2">
-          <div className="h-4 w-full animate-pulse bg-base-100" />
-          <div className="h-4 w-full animate-pulse bg-base-100" />
-          <div className="h-4 w-full animate-pulse bg-base-100" />
-          <div className="h-4 w-full animate-pulse bg-base-100" />
-        </div>
-
-        <div className="mt-5 flex justify-between">
-          <div className="h-6 w-24 animate-pulse bg-base-100" />
-          <div className="h-6 w-24 animate-pulse bg-base-100" />
-        </div>
-      </div>
-    );
+    return <SkeletonCard />;
   }
 
   return (

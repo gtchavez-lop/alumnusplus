@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import SkeletonCard from "../../pages/skeletoncard";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __supabase } from "../../supabase";
@@ -45,10 +46,11 @@ const JobCard = ({ job }) => {
 
   return !isLoaded ? (
     <>
-      <motion.article
+      {/* <motion.article
         animate={{ y: [20, 0], transition: { duration: 0.2, ease: "circOut" } }}
         className="flex flex-col w-full h-[200px] rounded-btn p-5 bg-base-300 animate-pulse duration-75"
-      ></motion.article>
+      ></motion.article> */}
+      <SkeletonCard />
     </>
   ) : (
     <>
