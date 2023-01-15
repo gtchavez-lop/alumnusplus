@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import SkeletonCard from "../../pages/skeletoncard";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import SkeletonCard from "../../components/Feed/SkeletonCard";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -46,16 +46,21 @@ const JobCard = ({ job }) => {
 
   return !isLoaded ? (
     <>
-      {/* <motion.article
-        animate={{ y: [20, 0], transition: { duration: 0.2, ease: "circOut" } }}
-        className="flex flex-col w-full h-[200px] rounded-btn p-5 bg-base-300 animate-pulse duration-75"
-      ></motion.article> */}
-      <SkeletonCard />
+      <motion.div className="bg-base-200 h-[238px] p-5 rounded-btn flex flex-col">
+        <div className="bg-base-100 h-[24px] mb-[4px]" />
+        <div className="bg-base-100 h-[20px] mb-[4px]" />
+        <div className="bg-base-100 h-[16px] mb-[4px] mt-[16px]" />
+        <div className="bg-base-100 h-[46px] mb-[4px] mt-[16px]" />
+        <div className="bg-base-100 h-[16px] mb-[4px] mt-[20px]" />
+      </motion.div>
     </>
   ) : (
     <>
       <motion.div
-        animate={{ y: [20, 0], transition: { duration: 0.2, ease: "circOut" } }}
+        animate={{
+          opacity: [0, 1],
+          transition: { duration: 0.4, ease: "circOut" },
+        }}
       >
         <Link
           href={`/jobs/${job.id}`}
@@ -77,8 +82,8 @@ const JobCard = ({ job }) => {
 
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
-            components={markdownRederers}
-            className="mt-4"
+            // components={markdownRederers}
+            className="mt-4 h-[50px] overflow-hidden prose prose-sm"
           >
             {job.short_description}
           </ReactMarkdown>

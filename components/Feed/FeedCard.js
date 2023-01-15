@@ -1,31 +1,22 @@
 import {
   FiArrowUp,
+  FiLoader,
   FiMessageSquare,
   FiMoreHorizontal,
   FiX,
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import SkeletonCard from "../../pages/skeletoncard";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import SkeletonCard from "./SkeletonCard";
 import { __supabase } from "../../supabase";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
 import useLocalStorage from "../../lib/localStorageHook";
-
-const markdownRenderer = {
-  h1: (props) => <h1 className="text-2xl font-bold" {...props} />,
-  h2: (props) => <h2 className="text-xl font-bold mt-5" {...props} />,
-  h3: (props) => <h3 className="text-lg font-bold mt-5" {...props} />,
-  h4: (props) => <h4 className="text-base font-bold mt-5" {...props} />,
-  h5: (props) => <h5 className="text-sm font-bold mt-5" {...props} />,
-  h6: (props) => <h6 className="text-xs font-bold mt-5" {...props} />,
-  ul: (props) => <ul className="list-disc ml-5" {...props} />,
-  ol: (props) => <ol className="list-decimal ml-5" {...props} />,
-};
 
 const FeedCard = ({ data: blogPostData }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -33,6 +24,7 @@ const FeedCard = ({ data: blogPostData }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [authState] = useLocalStorage("authState");
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const fetchUploaderData = async () => {
     const { data: uploader, error } = await __supabase
@@ -137,34 +129,49 @@ const FeedCard = ({ data: blogPostData }) => {
 
   return (
     <>
-      <motion.div
-        animate={{
-          opacity: [0, 1],
-          transition: { duration: 0.2, ease: "circOut" },
-        }}
-        className="flex flex-col p-5 rounded-btn bg-base-200"
-      >
+      <motion.div className="flex flex-col p-5 rounded-btn bg-base-200">
         <div className="flex gap-3">
-          <img
-            // dicebear
-            src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
-            alt="avatar"
-            className="w-10 h-10"
-          />
+          <Link
+            href={
+              authState.id === blogPostData.uploaderID
+                ? "/me"
+                : `/h/${blogPostData.uploaderID}`
+            }
+          >
+            <img
+              // dicebear
+              src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
+              alt="avatar"
+              className="w-10 h-10"
+            />
+          </Link>
           <div className="flex flex-col gap-1 justify-center">
             <p className="leading-none">
-              {uploaderData.fullName.first} {uploaderData.fullName.last}{" "}
+              <Link
+                href={
+                  authState.id === blogPostData.uploaderID
+                    ? "/me"
+                    : `/h/${blogPostData.uploaderID}`
+                }
+              >
+                {uploaderData.fullName.first} {uploaderData.fullName.last}{" "}
+              </Link>
               <span className="text-primary opacity-50">posted</span>
             </p>
-            <p className="opacity-50 leading-none">{uploaderData.username}</p>
+            <p className="text-sm flex gap-2 leading-none">
+              <span className="opacity-50">@{uploaderData.username}</span>
+              <span>
+                {dayjs(blogPostData.createdAt).format("MMM DD YYYY h:MM A")}
+              </span>
+            </p>
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 h-[101px] overflow-hidden">
           <ReactMarkdown
             // components={markdownRenderer}
             rehypePlugins={[rehypeRaw]}
-            className="prose-sm max-h-32 overflow-hidden"
+            className="prose-sm prose-headings:text-xl "
           >
             {blogPostData.content.slice(0, 200) + "..."}
           </ReactMarkdown>
@@ -196,7 +203,9 @@ const FeedCard = ({ data: blogPostData }) => {
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <Link href={`/h/blog/${blogPostData.id}`}>Read More</Link>
+                <Link scroll={false} href={`/h/feed/${blogPostData.id}`}>
+                  Read More
+                </Link>
               </li>
               <li>
                 <button>Share</button>
@@ -204,9 +213,21 @@ const FeedCard = ({ data: blogPostData }) => {
             </ul>
           </div>
           <div className="md:flex gap-2 hidden ">
-            <Link href={`/h/blog/${blogPostData.id}`} className="btn btn-ghost">
-              Read More
-            </Link>
+            {!isMoreOpen ? (
+              <Link
+                scroll={false}
+                href={`/h/feed/${blogPostData.id}`}
+                className="btn btn-ghost"
+                onClick={() => setIsMoreOpen(true)}
+              >
+                Read More
+              </Link>
+            ) : (
+              <div className="btn btn-ghost btn-disabled items-center gap-2">
+                Loading Page
+                <FiLoader className="animate-spin" />
+              </div>
+            )}
             <button className="btn btn-ghost">Share</button>
           </div>
         </div>
@@ -225,7 +246,9 @@ const FeedCard = ({ data: blogPostData }) => {
               opacity: 0,
               transition: { duration: 0.2, ease: "circIn" },
             }}
-            onClick={() => setCommentsOpen(false)}
+            onClick={(e) =>
+              e.target === e.currentTarget && setCommentsOpen(false)
+            }
             className="fixed top-0 left-0 z-50 w-full h-screen px-5 lg:px-0 pt-24 pb-16 bg-base-100 flex justify-center"
           >
             <motion.div

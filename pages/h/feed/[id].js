@@ -1,6 +1,7 @@
 import { useEffect, useInsertionEffect, useState } from "react";
 
 import { FiArrowUp } from "react-icons/fi";
+import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __PageTransition } from "../../../lib/animation";
 import { __supabase } from "../../../supabase";
@@ -180,15 +181,31 @@ const BlogPage = ({ blogPostData }) => {
         >
           <div className="w-full max-w-2xl">
             <div className="flex items-center gap-3 lg:bg-base-200 lg:p-5 lg:rounded-btn">
-              <img
-                src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
-                alt="avatar"
-                className="w-10 h-10 rounded-full"
-              />
+              <Link
+                href={
+                  authState.id === blogPostData.uploaderID
+                    ? "/me"
+                    : `/h/${blogPostData.uploaderID}`
+                }
+              >
+                <img
+                  src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full"
+                />
+              </Link>
               <div className="flex flex-col gap-1">
-                <p className=" font-semibold leading-none">
-                  {uploaderData.fullName.first} {uploaderData.fullName.last}
-                </p>
+                <Link
+                  href={
+                    authState.id === blogPostData.uploaderID
+                      ? "/me"
+                      : `/h/${blogPostData.uploaderID}`
+                  }
+                >
+                  <p className=" font-semibold leading-none hover:underline underline-offset-4">
+                    {uploaderData.fullName.first} {uploaderData.fullName.last}
+                  </p>
+                </Link>
                 <p className="text-gray-500 text-sm leading-none">
                   {dayjs(blogPostData.createdAt).format("MMMM D, YYYY")}
                 </p>

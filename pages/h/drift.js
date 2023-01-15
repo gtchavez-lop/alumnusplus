@@ -54,15 +54,6 @@ const DriftPage = () => {
 
   if (driftLoading) {
     return (
-      <div className="flex justify-center items-center flex-col gap-2 w-full h-screen">
-        <FiLoader className="animate-spin text-4xl text-primary" />
-        <p>Finding companies near your area</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
       <motion.main
         variants={__PageTransition}
         initial="initial"
@@ -73,13 +64,40 @@ const DriftPage = () => {
         <h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
           Companies near your area
         </h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+          {Array(9)
+            .fill(0)
+            .map((_, index) => (
+              <div
+                key={`company-skeleton-${index}`}
+                className="p-3 bg-base-300 rounded-btn h-[224px]"
+              >
+                <div className="flex flex-col items-center gap-2 cursor-pointer">
+                  <div className="w-[100px] h-[100px] bg-base-100 rounded-full animate-pulse" />
+                  <div className="w-[100px] h-[24px] bg-base-100 animate-pulse delay-75" />
+                  <div className="w-full rounded-btn h-[48px] mt-4 bg-base-100 animate-pulse delay-150" />
+                </div>
+              </div>
+            ))}
+        </div>
+      </motion.main>
+    );
+  }
+
+  return (
+    <>
+      <motion.main className="relative min-h-screen w-full pt-24 pb-36">
+        <h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
+          Companies near your area
+        </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
           {driftData.map((company, index) => (
             <Link
               key={`company-${index}`}
               href={`/p/${company.id}`}
               passHref
-              className="p-3 bg-base-300 rounded-btn"
+              className="p-3 bg-base-300 rounded-btn h-[224px]"
             >
               <div className="flex flex-col items-center gap-2 cursor-pointer">
                 <Image
@@ -90,6 +108,8 @@ const DriftPage = () => {
                 />
                 <p>{company.legalName}</p>
               </div>
+
+              <div className="btn btn-primary btn-block mt-5">See more</div>
             </Link>
           ))}
         </div>

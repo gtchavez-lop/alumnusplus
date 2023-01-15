@@ -1,9 +1,9 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { __PageTransition, __TabTransition } from "../../lib/animation";
 import { useEffect, useState } from "react";
 
 import JobCard from "../../components/Jobs/JobCard";
-import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
-import { motion } from "framer-motion";
 import useLocalStorage from "../../lib/localStorageHook";
 
 const JobPage = () => {
@@ -88,13 +88,37 @@ const JobPage = () => {
 
           {/* content */}
           {/* all jobs */}
-          {tabSelected === "all" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10">
-              {jobs.map((job, index) => (
-                <JobCard job={job} key={`jobcard_${index}`} />
-              ))}
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {tabSelected === "all" && (
+              <motion.div
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+                key={"all_jobs"}
+              >
+                {jobs.map((job, index) => (
+                  <JobCard job={job} key={`jobcard_${index}`} />
+                ))}
+              </motion.div>
+            )}
+            {tabSelected === "recommended" && (
+              <motion.div
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+                key={"recommended_jobs"}
+              >
+                <p>Recommended</p>
+                {/* {jobs.map((job, index) => (
+                  <JobCard job={job} key={`jobcard_${index}`} />
+                ))} */}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.main>
       </>
     )

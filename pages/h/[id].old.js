@@ -9,15 +9,16 @@ import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 export const getServerSideProps = async (context) => {
-  const { username } = context.query;
+  const { id } = context.query;
 
   const { data, error } = await __supabase
     .from("user_hunters")
     .select("*")
-    .eq("username", username)
+    .eq("id", id)
     .single();
 
   console.log(data);
@@ -43,6 +44,7 @@ const HunterPage = ({ hunter_data }) => {
   const [tabSelected, setTabSelected] = useState("posts");
   const [loaded, setLoaded] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [authState, setAuthState] = useLocalStorage("authState");
   // const __supabase = useSupabaseClient();
 
   const fetchHunterPosts = async () => {
@@ -61,11 +63,7 @@ const HunterPage = ({ hunter_data }) => {
   };
 
   const addUserToConnection = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const oldConnections = user.user_metadata.connections;
+    const oldConnections = authState.user_metadata.connections;
     const newConnections = [...oldConnections, hunter_data.id];
 
     // update user_metadata
@@ -86,7 +84,7 @@ const HunterPage = ({ hunter_data }) => {
       .update({
         connections: newConnections,
       })
-      .eq("id", user.id);
+      .eq("id", authState.id);
 
     if (remoteUserError) {
       toast.error("Something went wrong. Please try again later.");

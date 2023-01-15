@@ -175,6 +175,7 @@ const FeedPage = () => {
               opacity: 0,
               transition: { ease: "circIn", duration: 0.2 },
             }}
+            layout
             className="fixed inset-0 w-full h-screen bg-base-100 px-5 lg:px-0 flex justify-center overflow-y-scroll "
           >
             <motion.div
@@ -190,15 +191,15 @@ const FeedPage = () => {
               className="pt-24 pb-36 w-full max-w-xl"
             >
               <div className="flex justify-between items-center">
-                <p className="text-primary text-lg font-bold">
+                <motion.p className="text-primary text-lg font-bold">
                   Create a blog post
-                </p>
-                <button
+                </motion.p>
+                <motion.button
                   onClick={(e) => setIsMakingPost(false)}
                   className="btn btn-error"
                 >
                   <FiX />
-                </button>
+                </motion.button>
               </div>
 
               <form
@@ -228,9 +229,14 @@ const FeedPage = () => {
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <motion.button
+                    layoutId="create-post"
+                    transition={{ ease: "circOut", duration: 0.2 }}
+                    type="submit"
+                    className="btn btn-primary"
+                  >
                     Create
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </motion.div>
