@@ -17,10 +17,10 @@ import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
 import useLocalStorage from "../../lib/localStorageHook";
+import { useQuery } from "@tanstack/react-query";
 
 const FeedCard = ({ data: blogPostData }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [uploaderData, setUploaderData] = useState({});
   const [isLiked, setIsLiked] = useState(false);
   const [authState] = useLocalStorage("authState");
   const [commentsOpen, setCommentsOpen] = useState(false);
@@ -38,11 +38,14 @@ const FeedCard = ({ data: blogPostData }) => {
       return;
     }
 
-    setUploaderData(uploader);
-    setIsLoaded(true);
+    return uploader;
   };
 
-  // check if user liked the post
+  const { data: uploaderData, status: uploaderDataStatus } = useQuery(
+    ["uploaderData", blogPostData.uploaderID],
+    fetchUploaderData
+  );
+
   const checkIfLiked = async () => {
     const localIsLiked = blogPostData.upvoters.includes(authState.id);
     setIsLiked(localIsLiked);
@@ -67,7 +70,6 @@ const FeedCard = ({ data: blogPostData }) => {
     }
 
     const localIsLiked = currentData.upvoters.includes(authState.id);
-    console.log("Is liked: ", localIsLiked);
 
     // if user already liked the post, remove the upvote
     if (localIsLiked) {
@@ -114,16 +116,10 @@ const FeedCard = ({ data: blogPostData }) => {
   };
 
   useEffect(() => {
-    if (blogPostData && authState) {
-      fetchUploaderData();
-    }
-  }, [blogPostData, authState]);
-
-  useEffect(() => {
     checkIfLiked();
   }, []);
 
-  if (!isLoaded) {
+  if (uploaderDataStatus === "loading") {
     return <SkeletonCard />;
   }
 
@@ -134,8 +130,8 @@ const FeedCard = ({ data: blogPostData }) => {
           <Link
             href={
               authState.id === blogPostData.uploaderID
-                ? "/me"
-                : `/h/${blogPostData.uploaderID}`
+                ? "/h/me"
+                : `/h/${uploaderData.username}`
             }
           >
             <img
@@ -150,8 +146,8 @@ const FeedCard = ({ data: blogPostData }) => {
               <Link
                 href={
                   authState.id === blogPostData.uploaderID
-                    ? "/me"
-                    : `/h/${blogPostData.uploaderID}`
+                    ? "/h/me"
+                    : `/h/${uploaderData.username}`
                 }
               >
                 {uploaderData.fullName.first} {uploaderData.fullName.last}{" "}

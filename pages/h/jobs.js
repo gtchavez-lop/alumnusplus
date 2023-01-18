@@ -27,7 +27,6 @@ const JobPage = () => {
     }
 
     setJobs(data);
-    console.log(data);
   };
 
   const fetchRecommendedJobs = async () => {
@@ -54,74 +53,72 @@ const JobPage = () => {
   }, [allJobPage, recommendedJobPage]);
 
   return (
-    jobs &&
-    recommendedJobs && (
-      <>
-        <motion.main
-          variants={__PageTransition}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="relative min-h-screen w-full pt-24 pb-36"
-        >
-          {/* tabs */}
-          <div className="tabs tabs-boxed">
-            <p
-              onClick={() => setTabSelected("all")}
-              className={`tab ${tabSelected === "all" && "tab-active"}`}
-            >
-              All Jobs
-            </p>
-            <p
-              onClick={() => setTabSelected("recommended")}
-              className={`tab ${tabSelected === "recommended" && "tab-active"}`}
-            >
-              Recommended Jobs
-            </p>
-            <p
-              onClick={() => setTabSelected("builder")}
-              className={`tab ${tabSelected === "builder" && "tab-active"}`}
-            >
-              Wicket CV Builder
-            </p>
-          </div>
+    <>
+      <motion.main
+        variants={__PageTransition}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="relative min-h-screen w-full pt-24 pb-36"
+      >
+        {/* tabs */}
+        <div className="tabs tabs-boxed">
+          <p
+            onClick={() => setTabSelected("all")}
+            className={`tab ${tabSelected === "all" && "tab-active"}`}
+          >
+            All Jobs
+          </p>
+          <p
+            onClick={() => setTabSelected("recommended")}
+            className={`tab ${tabSelected === "recommended" && "tab-active"}`}
+          >
+            Recommended Jobs
+          </p>
+          <p
+            onClick={() => setTabSelected("builder")}
+            className={`tab ${tabSelected === "builder" && "tab-active"}`}
+          >
+            Wicket CV Builder
+          </p>
+        </div>
 
-          {/* content */}
-          {/* all jobs */}
-          <AnimatePresence mode="wait">
-            {tabSelected === "all" && (
-              <motion.div
-                variants={__TabTransition}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-                key={"all_jobs"}
-              >
-                {jobs.map((job, index) => (
+        {/* content */}
+        {/* all jobs */}
+        <AnimatePresence mode="wait">
+          {tabSelected === "all" && (
+            <motion.div
+              variants={__TabTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+              key={"all_jobs"}
+            >
+              {jobs &&
+                jobs.map((job, index) => (
                   <JobCard job={job} key={`jobcard_${index}`} />
                 ))}
-              </motion.div>
-            )}
-            {tabSelected === "recommended" && (
-              <motion.div
-                variants={__TabTransition}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-                key={"recommended_jobs"}
-              >
-                <p>Recommended</p>
-                {/* {jobs.map((job, index) => (
+            </motion.div>
+          )}
+          {tabSelected === "recommended" && (
+            <motion.div
+              variants={__TabTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+              key={"recommended_jobs"}
+            >
+              <p>Recommended</p>
+              {/* {jobs.map((job, index) => (
                   <JobCard job={job} key={`jobcard_${index}`} />
                 ))} */}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.main>
-      </>
-    )
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.main>
+    </>
   );
 };
 

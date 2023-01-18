@@ -1,15 +1,16 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { __PageTransition, __TabTransition } from "../../lib/animation";
 import { useEffect, useState } from "react";
 
 import { FiX } from "react-icons/fi";
-import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import toast from "react-hot-toast";
+import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 const ProvMe = () => {
   const [activeTab, setActiveTab] = useState("account");
-  const [user, setUser] = useState(null);
+  const [authState, setAuthState] = useLocalStorage("authState");
   const router = useRouter();
 
   const signOutUser = async () => {
@@ -20,22 +21,8 @@ const ProvMe = () => {
     router.push("/");
   };
 
-  const fetchUser = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    if (user) {
-      setUser(user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
   return (
-    user && (
+    authState && (
       <>
         <motion.main
           variants={__PageTransition}
@@ -48,13 +35,17 @@ const ProvMe = () => {
           <div className="tabs tabs-boxed">
             <p
               onClick={() => setActiveTab("account")}
-              className={activeTab === "account" ? "tab tab-active" : "tab"}
+              className={`tab rounded-full ${
+                activeTab === "account" && "tab-active"
+              }`}
             >
               Account Details
             </p>
             <p
               onClick={() => setActiveTab("settings")}
-              className={activeTab === "settings" ? "tab tab-active" : "tab"}
+              className={`tab rounded-full ${
+                activeTab === "settings" && "tab-active"
+              }`}
             >
               Settings
             </p>
@@ -64,17 +55,10 @@ const ProvMe = () => {
           <AnimatePresence mode="wait">
             {activeTab === "account" && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.2, ease: "circOut" },
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 20,
-                  transition: { duration: 0.2, ease: "circIn" },
-                }}
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
                 key="account"
                 className="flex flex-col gap-10"
               >
@@ -89,22 +73,22 @@ const ProvMe = () => {
 
                     <p className="flex items-center justify-between">
                       <span>Company Name</span>
-                      <span>{user.user_metadata.legalName}</span>
+                      <span>{authState.user_metadata.legalName}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Type</span>
-                      <span>{user.user_metadata.companyType}</span>
+                      <span>{authState.user_metadata.companyType}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Size</span>
-                      <span>{user.user_metadata.companySize}</span>
+                      <span>{authState.user_metadata.companySize}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Founding Year</span>
-                      <span>{user.user_metadata.foundingYear}</span>
+                      <span>{authState.user_metadata.foundingYear}</span>
                     </p>
                   </div>
 
@@ -116,19 +100,23 @@ const ProvMe = () => {
 
                     <p className="flex items-center justify-between">
                       <span>Company Email</span>
-                      <span>{user.user_metadata.contactInformation.email}</span>
+                      <span>
+                        {authState.user_metadata.contactInformation.email}
+                      </span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Phone</span>
-                      <span>{user.user_metadata.contactInformation.phone}</span>
+                      <span>
+                        {authState.user_metadata.contactInformation.phone}
+                      </span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Address</span>
                       <span>
-                        {user.user_metadata.address.physicalAddress},{" "}
-                        {user.user_metadata.address.city}
+                        {authState.user_metadata.address.physicalAddress},{" "}
+                        {authState.user_metadata.address.city}
                       </span>
                     </p>
                   </div>
@@ -138,17 +126,10 @@ const ProvMe = () => {
 
             {activeTab === "settings" && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.2, ease: "circOut" },
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 20,
-                  transition: { duration: 0.2, ease: "circIn" },
-                }}
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
                 key="settings"
                 className="flex flex-col gap-10"
               >
@@ -198,15 +179,14 @@ const ProvMe = () => {
         <input type="checkbox" id="signOutModal" className="modal-toggle" />
         <label htmlFor="signOutModal" className="modal">
           <div className="modal-box relative">
-            <label
-              htmlFor="signOutModal"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
-              <FiX />
-            </label>
-            <h3 className="text-lg font-bold">
-              Do you want to sign out from your account?
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold">
+                Do you want to sign out from your account?
+              </h3>
+              <label htmlFor="signOutModal" className="btn fab fab-sm">
+                <FiX />
+              </label>
+            </div>
             <p className="py-4">
               Signing out will end your session and you will have to sign in
               again to access your account.

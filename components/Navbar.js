@@ -22,15 +22,12 @@ import { useRouter } from "next/router";
 const Navbar = () => {
   const router = useRouter();
   const [hasUser, setHasUser] = useState(false);
-  const [userData, setUserData] = useState({});
   const [isSearching, setIsSearching] = useState(false);
   const [authState, setAuthState] = useLocalStorage("authState");
-  // const __supabase = useSupabaseClient();
 
   const checkUser = async () => {
     if (authState) {
       setHasUser(true);
-      setUserData(authState);
     } else {
       setHasUser(false);
     }
@@ -52,7 +49,7 @@ const Navbar = () => {
         >
           <main className="flex w-full items-center gap-5">
             <Logo />
-            {userData.user_metadata.type === "hunter" && (
+            {authState.user_metadata.type === "hunter" && (
               <div className="flex justify-end gap-2 items-center w-full">
                 <div className="flex justify-end items-center w-full">
                   {isSearching && (
@@ -76,7 +73,7 @@ const Navbar = () => {
             )}
           </main>
         </motion.nav>
-        {userData.user_metadata.type === "hunter" && (
+        {authState.user_metadata.type === "hunter" && (
           <>
             {/* mobile bottom hunter */}
             <motion.nav
@@ -236,7 +233,7 @@ const Navbar = () => {
           </>
         )}
 
-        {userData.user_metadata.type === "provisioner" && (
+        {authState.user_metadata.type === "provisioner" && (
           <>
             {/* mobile bottom provisioner */}
             <motion.nav

@@ -4,7 +4,7 @@ const SkeletonCard = () => {
   return (
     <>
       <AnimatePresence mode="wait">
-        <motion.div className="rounded-btn p-5 bg-base-200">
+        <motion.div className="rounded-btn p-5 bg-base-200 h-[261px]">
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full bg-base-100 animate-pulse" />
             <div className="flex flex-col gap-2">

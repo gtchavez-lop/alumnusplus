@@ -43,6 +43,7 @@ const RegisterHunter = () => {
     schema.address.postalCode = data.postalCode;
     schema.birthdate = data.birthdate;
     schema.birthplace = data.birthplace;
+    schema.bio = data.bio;
     schema.connections = [];
     schema.createdAt = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSSZ");
     schema.education = [];
@@ -55,7 +56,7 @@ const RegisterHunter = () => {
     schema.skillSecondary = selectedSecondarySkills;
     schema.type = "hunter";
     schema.updatedAt = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-    schema.username = data.username;
+    schema.username = data.username.trim();
 
     // register to supabase
     const { error: err } = await __supabase.auth.signUp({
@@ -202,6 +203,20 @@ const RegisterHunter = () => {
               className="input"
               placeholder="City, Country"
               required
+            />
+          </div>
+
+          <p className="text-xl font-bold mt-5">Short Biography</p>
+          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
+            <label htmlFor="bio flex justify-between w-full">
+              <span>Bio</span>
+              <span>Markdown</span>
+            </label>
+            <textarea
+              name="bio"
+              id="bio"
+              className="textarea h-64 resize-none"
+              placeholder="Tell us about yourself"
             />
           </div>
 

@@ -16,6 +16,8 @@ const ProfilePage = () => {
   const [userActivities, setUserActivities] = useState([]);
   const [userConnections, setUserConnections] = useState([]);
   const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [connectionsLoading, setConnectionsLoading] = useState(true);
+  const [recommendedLoading, setRecommendedLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const router = useRouter();
@@ -49,6 +51,7 @@ const ProfilePage = () => {
     }
 
     setUserConnections(data);
+    setConnectionsLoading(false);
   };
 
   const fetchRecommendedUsers = async () => {
@@ -70,6 +73,7 @@ const ProfilePage = () => {
     );
 
     setRecommendedUsers(filtered);
+    setRecommendedLoading(false);
   };
 
   const checkTheme = () => {
@@ -78,7 +82,7 @@ const ProfilePage = () => {
     if (theme === "dark") {
       setIsDark(true);
     } else {
-      document.body.setAttribute("data-theme", "success");
+      document.body.setAttribute("data-theme", "light");
       setIsDark(false);
     }
   };
@@ -86,7 +90,7 @@ const ProfilePage = () => {
   const toggleTheme = (e) => {
     document.body.setAttribute(
       "data-theme",
-      e.target.checked ? "stability" : "success"
+      e.target.checked ? "dark" : "light"
     );
     window.localStorage.setItem("theme", e.target.checked ? "dark" : "light");
     setIsDark(e.target.checked);
@@ -158,6 +162,14 @@ const ProfilePage = () => {
                   </span>
                 </p>
               </div>
+              {/* bio */}
+              <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+                <p className="text-2xl font-bold">Bio</p>
+                <ReactMarkdown className="prose">
+                  {authState.user_metadata.bio ||
+                    "This user has not added a bio yet"}
+                </ReactMarkdown>
+              </div>
               {/* skills */}
               <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
                 <p className="text-2xl font-bold">Skillsets</p>
@@ -212,7 +224,7 @@ const ProfilePage = () => {
                         </ReactMarkdown>
                       </div>
                       <Link
-                        href={`/h/blog/${activity.id}`}
+                        href={`/h/feed/${activity.id}`}
                         className="btn btn-primary btn-sm"
                       >
                         See more
@@ -225,58 +237,107 @@ const ProfilePage = () => {
             <div className="col-span-2 flex flex-col gap-5">
               <div className="flex flex-col rounded-btn p-2 gap-3">
                 <p className="text-2xl font-bold">Your Connections</p>
-                {userConnections.length > 0 ? (
-                  userConnections.map((connection, index) => (
-                    <div
-                      key={`connection_${index}`}
-                      className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
-                    >
-                      <div className="flex gap-2 items-center">
-                        <img
-                          src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
-                          alt="avatar"
-                          className="w-12 h-12 rounded-full bg-primary "
-                        />
-                        <div>
-                          <p className="font-bold leading-none">
-                            {connection.fullName.first}{" "}
-                            {connection.fullName.last}
-                          </p>
-                          <p className="opacity-50 leading-none">
-                            @{connection.username}
-                          </p>
-                        </div>
-                      </div>
-                      <button className="btn btn-ghost btn-sm">
-                        See Profile
-                      </button>
-                    </div>
-                  ))
-                ) : (
+                {connectionsLoading &&
+                  Array(5)
+                    .fill()
+                    .map((_, index) => (
+                      <div
+                        key={`connectionloading_${index}`}
+                        className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+                      />
+                    ))}
+
+                {!connectionsLoading && userConnections.length < 1 ? (
                   <p>
                     Looks like you have not connected to other people right now.
                     Add people to your connections to see their posts and
                     activities.
                   </p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {userConnections.map((connection, index) => (
+                      <div
+                        key={`connection_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <div className="flex gap-2 items-center">
+                          <img
+                            src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                            alt="avatar"
+                            className="w-12 h-12 rounded-full bg-primary "
+                          />
+                          <div>
+                            <p className="font-bold leading-none">
+                              {connection.fullName.first}{" "}
+                              {connection.fullName.last}
+                            </p>
+                            <p className="opacity-50 leading-none">
+                              @{connection.username}
+                            </p>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/h/${connection.username}`}
+                          className="btn btn-sm btn-primary"
+                        >
+                          See Profile
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
               <div className="flex flex-col rounded-btn p-2 gap-3">
                 <p className="text-2xl font-bold">Suggested Connections</p>
                 <div className="flex flex-col gap-2">
-                  {recommendedUsers.length > 0 ? (
-                    recommendedUsers.map((user, index) => (
-                      <div
-                        key={`recommended_${index}`}
-                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
-                      >
-                        <p>asdjklasdljkadsklj</p>
-                      </div>
-                    ))
-                  ) : (
+                  {recommendedLoading &&
+                    Array(5)
+                      .fill()
+                      .map((_, index) => (
+                        <div
+                          key={`recommendedloading_${index}`}
+                          className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+                        />
+                      ))}
+
+                  {!recommendedLoading && recommendedUsers.length < 1 ? (
                     <p>
-                      We do not have any recommendations for now. Try again
-                      later
+                      Looks like you have not connected to other people right
+                      now. Add people to your connections to see their posts and
+                      activities.
                     </p>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {recommendedUsers.map((thisUser, index) => (
+                        <div
+                          key={`connection_${index}`}
+                          className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <img
+                              src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+                              alt="avatar"
+                              className="w-12 h-12 rounded-full bg-primary "
+                            />
+                            <div>
+                              <p className="font-bold leading-none">
+                                {thisUser.fullname.first}{" "}
+                                {thisUser.fullname.last}
+                              </p>
+                              <p className="opacity-50 leading-none">
+                                @{thisUser.username}
+                              </p>
+                            </div>
+                          </div>
+                          <Link
+                            href={`/h/${thisUser.username}`}
+                            className="btn btn-sm btn-primary"
+                          >
+                            See Profile
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
