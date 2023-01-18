@@ -21,7 +21,7 @@ const markdownRederers = {
   p: ({ children }) => <p>{children}</p>,
 };
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, isPreview }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [uploader, setUploader] = useState({});
 
@@ -41,17 +41,19 @@ const JobCard = ({ job }) => {
   };
 
   useEffect(() => {
-    fetchUploader();
-  }, []);
+    if (job.id) {
+      fetchUploader();
+    }
+  }, [job]);
 
-  return !isLoaded ? (
+  return !isLoaded || isPreview ? (
     <>
       <motion.div className="bg-base-200 h-[238px] p-5 rounded-btn flex flex-col">
-        <div className="bg-base-100 h-[24px] mb-[4px]" />
-        <div className="bg-base-100 h-[20px] mb-[4px]" />
-        <div className="bg-base-100 h-[16px] mb-[4px] mt-[16px]" />
-        <div className="bg-base-100 h-[46px] mb-[4px] mt-[16px]" />
-        <div className="bg-base-100 h-[16px] mb-[4px] mt-[20px]" />
+        <div className="bg-base-100 h-[24px] mb-[4px] animate-pulse delay-75" />
+        <div className="bg-base-100 h-[20px] mb-[4px] animate-pulse delay-150" />
+        <div className="bg-base-100 h-[16px] mb-[4px] mt-[16px] animate-pulse delay-75" />
+        <div className="bg-base-100 h-[46px] mb-[4px] mt-[16px] animate-pulse delay-150" />
+        <div className="bg-base-100 h-[16px] mb-[4px] mt-[20px] animate-pulse delay-75" />
       </motion.div>
     </>
   ) : (
@@ -73,7 +75,6 @@ const JobCard = ({ job }) => {
           <p className="mt-4 text-sm">
             {job.job_location} |{" "}
             {
-              // make every first letter uppercase in job type array
               job.job_type.map(
                 (type) => type.charAt(0).toUpperCase() + type.slice(1)
               )[0]
@@ -82,7 +83,6 @@ const JobCard = ({ job }) => {
 
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
-            // components={markdownRederers}
             className="mt-4 h-[50px] overflow-hidden prose prose-sm"
           >
             {job.short_description}

@@ -37,3 +37,5 @@ next-env.d.ts
 public/sw.js
 public/sw.*.js
 public/workbox-*.js
+# React Component Preview
+previewConfig.json

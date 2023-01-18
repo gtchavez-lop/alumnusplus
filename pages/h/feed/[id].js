@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
 import useLocalStorage from "../../../lib/localStorageHook";
+import { useQuery } from "@tanstack/react-query";
 import uuidv4 from "../../../lib/uuidv4";
 
 const markdownRenderer = {
@@ -67,15 +68,14 @@ export const getServerSideProps = async (context) => {
 const BlogPage = ({ blogPostData }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [authState] = useLocalStorage("authState");
-  const [uploaderData, setUploaderData] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  // const [uploaderData, setUploaderData] = useState([]);
   const [isCommenting, setIsCommenting] = useState(false);
 
-  const fetchUploaderData = async () => {
+  const fetchUploader = async () => {
     const { data: uploader, error } = await __supabase
-      .rpc("get_hunter_by_id", {
-        input_id: blogPostData.uploaderID,
-      })
+      .from("user_hunters")
+      .select("*")
+      .eq("id", blogPostData.uploaderID)
       .single();
 
     if (error) {
@@ -83,9 +83,20 @@ const BlogPage = ({ blogPostData }) => {
       return;
     }
 
-    setUploaderData(uploader);
-    setIsLoaded(true);
+    return uploader;
   };
+
+  const {
+    data: uploaderData,
+    error: uploaderDataError,
+    status: uploaderDataStatus,
+    refetch: refetchUploaderData,
+  } = useQuery(["uploaderData"], fetchUploader, {
+    enabled: !!authState,
+    onSuccess: () => {
+      checkIfLiked();
+    },
+  });
 
   const checkIfLiked = async () => {
     const localIsLiked = blogPostData.upvoters.includes(authState.id);
@@ -158,19 +169,8 @@ const BlogPage = ({ blogPostData }) => {
     blogPostData.upvoters = newUpvoters;
   };
 
-  useEffect(() => {
-    if (authState) {
-      checkIfLiked();
-    }
-  }, [authState]);
-
-  useEffect(() => {
-    fetchUploaderData();
-  }, []);
-
   return (
-    isLoaded &&
-    authState && (
+    uploaderDataStatus === "success" && (
       <>
         <motion.main
           variants={__PageTransition}

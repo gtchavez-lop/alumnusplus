@@ -6,6 +6,7 @@ const $schema_hunter = {
   },
   birthdate: "",
   birthplace: "",
+  bio: "",
   connections: [],
   createdAt: "",
   education: [],
