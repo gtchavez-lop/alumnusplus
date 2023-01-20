@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { __supabase } from "../../supabase";
 import toast from "react-hot-toast";
-import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const ProvMe = () => {
   const [activeTab, setActiveTab] = useState("account");
-  const [authState, setAuthState] = useLocalStorage("authState");
   const router = useRouter();
+  const session = useSession();
 
   const signOutUser = async () => {
     toast.loading("Signing out...");
@@ -22,7 +22,7 @@ const ProvMe = () => {
   };
 
   return (
-    authState && (
+    !!session && (
       <>
         <motion.main
           variants={__PageTransition}
@@ -73,22 +73,22 @@ const ProvMe = () => {
 
                     <p className="flex items-center justify-between">
                       <span>Company Name</span>
-                      <span>{authState.user_metadata.legalName}</span>
+                      <span>{session.user.user_metadata.legalName}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Type</span>
-                      <span>{authState.user_metadata.companyType}</span>
+                      <span>{session.user.user_metadata.companyType}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Size</span>
-                      <span>{authState.user_metadata.companySize}</span>
+                      <span>{session.user.user_metadata.companySize}</span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Founding Year</span>
-                      <span>{authState.user_metadata.foundingYear}</span>
+                      <span>{session.user.user_metadata.foundingYear}</span>
                     </p>
                   </div>
 
@@ -101,22 +101,22 @@ const ProvMe = () => {
                     <p className="flex items-center justify-between">
                       <span>Company Email</span>
                       <span>
-                        {authState.user_metadata.contactInformation.email}
+                        {session.user.user_metadata.contactInformation.email}
                       </span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Phone</span>
                       <span>
-                        {authState.user_metadata.contactInformation.phone}
+                        {session.user.user_metadata.contactInformation.phone}
                       </span>
                     </p>
 
                     <p className="flex items-center justify-between">
                       <span>Company Address</span>
                       <span>
-                        {authState.user_metadata.address.physicalAddress},{" "}
-                        {authState.user_metadata.address.city}
+                        {session.user.user_metadata.address.physicalAddress},{" "}
+                        {session.user.user_metadata.address.city}
                       </span>
                     </p>
                   </div>

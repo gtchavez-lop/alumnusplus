@@ -6,12 +6,10 @@ import { AnimatePresence } from "framer-motion";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-// import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Toaster } from "react-hot-toast";
 import { __supabase } from "../supabase";
-// import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -30,28 +28,25 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
       </Head>
 
-      <QueryClientProvider client={queryClient}>
-        <>
-          <Navbar />
-
-          <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
-            <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
-              <AnimatePresence mode="wait">
-                <Component {...pageProps} key={router.pathname} />
-              </AnimatePresence>
-            </section>
-          </main>
-        </>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-
-      {/* <SessionContextProvider
-        supabaseClient={supabase}
+      <SessionContextProvider
+        supabaseClient={__supabase}
         initialSession={pageProps.initialSession}
       >
-        <div>
-        </div>
-      </SessionContextProvider> */}
+        <QueryClientProvider client={queryClient}>
+          <>
+            <Navbar />
+
+            <main className="flex justify-center bg-base-100 select-none overflow-x-hidden">
+              <section className="w-full max-w-5xl px-5 lg:px-0 min-h-screen">
+                <AnimatePresence mode="wait">
+                  <Component {...pageProps} key={router.pathname} />
+                </AnimatePresence>
+              </section>
+            </main>
+          </>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </SessionContextProvider>
 
       <Toaster
         position="bottom"
