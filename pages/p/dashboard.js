@@ -60,7 +60,10 @@ const Prov_Dashboard = () => {
                 {Array(1)
                   .fill()
                   .map((_, i) => (
-                    <JobCard key={i} isPreview={true} />
+                    <div
+                      key={`loading_${i}`}
+                      className="bg-base-200 w-full h-[48px] animate-pulse rounded-btn"
+                    />
                   ))}
                 <Link
                   href={"/p/jobs"}

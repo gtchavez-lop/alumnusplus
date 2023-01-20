@@ -12,6 +12,7 @@ specifiers:
   autoprefixer: ^10.4.13
   daisyui: ^2.42.1
   dayjs: ^1.11.7
+  encoding: ^0.1.13
   eslint: 8.29.0
   eslint-config-next: 13.0.6
   framer-motion: ^7.6.19
@@ -37,6 +38,7 @@ dependencies:
   '@tanstack/react-query-devtools': 4.22.0_gp275tdwez2a4eujt75dnnp754
   daisyui: 2.47.0_gbtt6ss3tbiz4yjtvdr6fbrj44
   dayjs: 1.11.7
+  encoding: 0.1.13
   eslint: 8.29.0
   eslint-config-next: 13.0.6_eslint@8.29.0
   framer-motion: 7.10.3_biqbaboplfbrettd7655fr4n2y
@@ -51,7 +53,7 @@ dependencies:
   zustand: 4.3.2_react@18.2.0
 
 devDependencies:
-  '@supabase/supabase-js': 2.4.0
+  '@supabase/supabase-js': 2.4.0_encoding@0.1.13
   '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
   autoprefixer: 10.4.13_postcss@8.4.21
   postcss: 8.4.21
@@ -1604,7 +1606,7 @@ packages:
       '@supabase/supabase-js': ^2.0.4
     dependencies:
       '@supabase/auth-helpers-shared': 0.2.3_fjsejuhspb6db5pg2h5ujso754
-      '@supabase/supabase-js': 2.4.0
+      '@supabase/supabase-js': 2.4.0_encoding@0.1.13
     dev: false
 
   /@supabase/auth-helpers-react/0.3.1_fjsejuhspb6db5pg2h5ujso754:
@@ -1612,7 +1614,7 @@ packages:
     peerDependencies:
       '@supabase/supabase-js': ^2.0.4
     dependencies:
-      '@supabase/supabase-js': 2.4.0
+      '@supabase/supabase-js': 2.4.0_encoding@0.1.13
     dev: false
 
   /@supabase/auth-helpers-shared/0.2.3_fjsejuhspb6db5pg2h5ujso754:
@@ -1620,7 +1622,7 @@ packages:
     peerDependencies:
       '@supabase/supabase-js': ^2.0.4
     dependencies:
-      '@supabase/supabase-js': 2.4.0
+      '@supabase/supabase-js': 2.4.0_encoding@0.1.13
     dev: false
 
   /@supabase/auth-ui-react/0.2.6_biqbaboplfbrettd7655fr4n2y:
@@ -1638,24 +1640,24 @@ packages:
       fsevents: 2.3.2
     dev: false
 
-  /@supabase/functions-js/2.0.0:
+  /@supabase/functions-js/2.0.0_encoding@0.1.13:
     resolution: {integrity: sha512-ozb7bds2yvf5k7NM2ZzUkxvsx4S4i2eRKFSJetdTADV91T65g4gCzEs9L3LUXSrghcGIkUaon03VPzOrFredqg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
 
-  /@supabase/gotrue-js/2.7.0:
+  /@supabase/gotrue-js/2.7.0_encoding@0.1.13:
     resolution: {integrity: sha512-DDa1H254a3n3GZfao/UmHTVEUl9OORSuVJ7ZwRLSdiXLyXzspX2WvqMcdYJE23IvjBe9B51i86D7jJ15/lpMQg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
 
-  /@supabase/postgrest-js/1.2.0:
+  /@supabase/postgrest-js/1.2.0_encoding@0.1.13:
     resolution: {integrity: sha512-O32+dVG2db9a0uRaxNindqLrBSNSRwyKo5KewO0Fq8zUXD+0g9+Z1svdsBLGL9W/8rTIv+YwsWvvPCd7hSivPA==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
 
@@ -1667,22 +1669,22 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@supabase/storage-js/2.2.0:
+  /@supabase/storage-js/2.2.0_encoding@0.1.13:
     resolution: {integrity: sha512-YvU4pEj1u6oR9/iKN1Nc0KBO1DJgEkmwykx0ESSSUSmnlytLcbuXAM0DHY7W6Px9cQmEkpOcB2eZ3zRYjn+Ikw==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
 
-  /@supabase/supabase-js/2.4.0:
+  /@supabase/supabase-js/2.4.0_encoding@0.1.13:
     resolution: {integrity: sha512-fouVDoTcxM4/xEsh2iaR0wr0liwER7Pth8pvmbqqm7JVDLd2Z3+ie+k9fesg0OAd8VR1plOi80gdjxYm/ZIYMA==}
     dependencies:
-      '@supabase/functions-js': 2.0.0
-      '@supabase/gotrue-js': 2.7.0
-      '@supabase/postgrest-js': 1.2.0
+      '@supabase/functions-js': 2.0.0_encoding@0.1.13
+      '@supabase/gotrue-js': 2.7.0_encoding@0.1.13
+      '@supabase/postgrest-js': 1.2.0_encoding@0.1.13
       '@supabase/realtime-js': 2.3.1
-      '@supabase/storage-js': 2.2.0
-      cross-fetch: 3.1.5
+      '@supabase/storage-js': 2.2.0_encoding@0.1.13
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -2339,10 +2341,10 @@ packages:
       browserslist: 4.21.4
     dev: false
 
-  /cross-fetch/3.1.5:
+  /cross-fetch/3.1.5_encoding@0.1.13:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
 
@@ -2566,6 +2568,11 @@ packages:
     resolution: {integrity: sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==}
     engines: {node: '>= 4'}
     dev: false
+
+  /encoding/0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    dependencies:
+      iconv-lite: 0.6.3
 
   /enhanced-resolve/5.12.0:
     resolution: {integrity: sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==}
@@ -3387,6 +3394,12 @@ packages:
   /html-void-elements/2.0.1:
     resolution: {integrity: sha512-0quDb7s97CfemeJAnW9wC0hw78MtW7NU3hqtCD75g2vFlDLt36llsYD7uB7SUzojLMP24N5IatXf7ylGXiGG9A==}
     dev: false
+
+  /iconv-lite/0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      safer-buffer: 2.1.2
 
   /idb/7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
@@ -4223,7 +4236,7 @@ packages:
       - babel-plugin-macros
     dev: false
 
-  /node-fetch/2.6.7:
+  /node-fetch/2.6.7_encoding@0.1.13:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
@@ -4232,6 +4245,7 @@ packages:
       encoding:
         optional: true
     dependencies:
+      encoding: 0.1.13
       whatwg-url: 5.0.0
 
   /node-gyp-build/4.6.0:
@@ -4838,6 +4852,9 @@ packages:
       get-intrinsic: 1.1.3
       is-regex: 1.1.4
     dev: false
+
+  /safer-buffer/2.1.2:
+    resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
   /scheduler/0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}

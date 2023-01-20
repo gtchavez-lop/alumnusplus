@@ -1,40 +1,83 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FiLoader, FiX } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import FeedCard from "../../components/Feed/FeedCard";
+import { FiX } from "react-icons/fi";
+import Link from "next/link";
 import SkeletonCard from "../../components/Feed/SkeletonCard";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
-import useLocalStorage from "../../lib/localStorageHook";
-import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useState } from "react";
 import uuidv4 from "../../lib/uuidv4";
 
 const FeedPage = () => {
   const [isMakingPost, setIsMakingPost] = useState(false);
-  const [authState] = useLocalStorage("authState");
+  const session = useSession();
 
   const fetchFeed = async () => {
+    const localConnection = session.user.user_metadata.connections;
+
     const { data, error } = await __supabase
       .from("public_posts")
-      .select("*")
-      .order("createdAt", { ascending: false });
+      .select("*,uploader(id,username,fullName)")
+      .order("createdAt", { ascending: false })
+      .in("uploader", [...localConnection, session.user.id]);
 
     if (error) {
-      console.log(error);
+      return [];
     }
 
     return data;
   };
 
-  const {
-    data: feedListData,
-    status: feedListStatus,
-    refetch: feedListRefetch,
-  } = useQuery(["feedList"], fetchFeed);
+  const fetchRecommendedUsers = async () => {
+    const localConnection = session.user.user_metadata.connections;
+    const reqString = `(${localConnection.concat(session.user.id)})`;
+
+    const { data, error } = await __supabase
+      .from("recommended_hunters")
+      .select("id,fullname,username,email")
+      .filter("id", "not.in", reqString);
+
+    if (error) {
+      return [];
+    }
+
+    return data;
+  };
+
+  const [feedList, recommendedUsers] = useQueries({
+    queries: [
+      {
+        queryKey: ["feedList"],
+        queryFn: fetchFeed,
+        enabled: !!session,
+        onSuccess: () => {
+          console.log("feedList success");
+        },
+        onError: () => {
+          console.log("feedList error");
+        },
+        refetchOnWindowFocus: false,
+        refetchInterval: 900000 * 2,
+      },
+      {
+        queryKey: ["recommendedUsers"],
+        queryFn: fetchRecommendedUsers,
+        enabled: !!session,
+        onSuccess: () => {
+          console.log("recommendedUsers success");
+        },
+        onerror: () => {
+          console.log("recommendedUsers error");
+        },
+        refetchOnWindowFocus: false,
+      },
+    ],
+  });
 
   const handlePost = async (e) => {
     const formData = new FormData(e.target);
@@ -50,12 +93,12 @@ const FeedPage = () => {
     const { error } = await __supabase.from("public_posts").insert({
       id: uuidv4(),
       content,
-      comments: [],
+      comments: JSON.stringify([]),
       createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       type: "blogpost",
       updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      uploaderID: authState.id,
-      upvoters: [],
+      uploader: session.user.id,
+      upvoters: JSON.stringify([]),
     });
 
     toast.dismiss();
@@ -66,27 +109,12 @@ const FeedPage = () => {
 
     toast.success("Posted!");
 
-    feedListRefetch();
+    feedList.refetch()();
     setIsMakingPost(false);
   };
 
-  const fetchRecommendedUsers = async () => {
-    const { data, error } = await __supabase
-      .from("recommended_hunters")
-      .select("id,fullname,username,email");
-
-    if (error) {
-      toast.error("Error at fetching recommended users");
-      return;
-    }
-
-    setRecommendedUsers(data);
-    console.log(data);
-  };
-
   return (
-    authState &&
-    feedListStatus === "success" && (
+    session && (
       <>
         <motion.main
           variants={__PageTransition}
@@ -105,7 +133,7 @@ const FeedPage = () => {
             {/* create post */}
             <div className="flex gap-2 w-full">
               <img
-                src={`https://avatars.dicebear.com/api/bottts/${authState?.user_metadata?.username}.svg`}
+                src={`https://avatars.dicebear.com/api/bottts/${session.user?.user_metadata?.username}.svg`}
                 alt="avatar"
                 className="w-10 h-10 hidden md:block bg-primary rounded-full"
               />
@@ -120,22 +148,81 @@ const FeedPage = () => {
             {/* feed list */}
             <div className="mt-10">
               <div className="flex flex-col gap-5">
-                {feedListStatus === "success" &&
-                  feedListData.map((item) => (
-                    <FeedCard data={item} key={item.id} />
-                  ))}
-
-                {feedListStatus === "loading" &&
+                {feedList.isLoading &&
                   Array(10)
                     .fill(0)
                     .map((_, i) => <SkeletonCard key={`skeleton_${i}`} />)}
+
+                {feedList.isSuccess &&
+                  feedList.data.map((item) => (
+                    <FeedCard data={item} key={item.id} />
+                  ))}
               </div>
             </div>
           </div>
 
           {/* friend suggest and footer */}
           <div className="col-span-full lg:col-span-2">
-            <p>Footer</p>
+            <div className="flex flex-col rounded-btn p-2 gap-3">
+              <p className="text-2xl font-bold">Suggested Connections</p>
+
+              {recommendedUsers.isLoading && (
+                <div className="flex flex-col gap-2">
+                  {Array(5)
+                    .fill()
+                    .map((_, index) => (
+                      <div
+                        key={`recommendedloading_${index}`}
+                        className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+                      />
+                    ))}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2">
+                {recommendedUsers.isSuccess &&
+                recommendedUsers.data.length < 1 ? (
+                  <p>
+                    Looks like you have not connected to other people right now.
+                    Add people to your connections to see their posts and
+                    activities.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {recommendedUsers.isSuccess &&
+                      recommendedUsers.data.map((thisUser, index) => (
+                        <div
+                          key={`connection_${index}`}
+                          className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <img
+                              src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+                              alt="avatar"
+                              className="w-12 h-12 rounded-full bg-primary "
+                            />
+                            <div>
+                              <p className="font-bold leading-none">
+                                {thisUser.fullname.first}{" "}
+                                {thisUser.fullname.last}
+                              </p>
+                              <p className="opacity-50 leading-none">
+                                @{thisUser.username}
+                              </p>
+                            </div>
+                          </div>
+                          <Link
+                            href={`/h/${thisUser.username}`}
+                            className="btn btn-sm btn-primary"
+                          >
+                            See Profile
+                          </Link>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </motion.main>
 

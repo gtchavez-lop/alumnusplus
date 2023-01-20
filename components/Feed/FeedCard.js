@@ -10,44 +10,21 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import SkeletonCard from "./SkeletonCard";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
-import useLocalStorage from "../../lib/localStorageHook";
-import { useQuery } from "@tanstack/react-query";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const FeedCard = ({ data: blogPostData }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [authState] = useLocalStorage("authState");
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-
-  const fetchUploaderData = async () => {
-    const { data: uploader, error } = await __supabase
-      .rpc("get_hunter_by_id", {
-        input_id: blogPostData.uploaderID,
-      })
-      .single();
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    return uploader;
-  };
-
-  const { data: uploaderData, status: uploaderDataStatus } = useQuery(
-    ["uploaderData", blogPostData.uploaderID],
-    fetchUploaderData
-  );
+  const session = useSession();
 
   const checkIfLiked = async () => {
-    const localIsLiked = blogPostData.upvoters.includes(authState.id);
+    const localIsLiked = blogPostData.upvoters.includes(session.user.id);
     setIsLiked(localIsLiked);
   };
 
@@ -69,12 +46,12 @@ const FeedCard = ({ data: blogPostData }) => {
       return;
     }
 
-    const localIsLiked = currentData.upvoters.includes(authState.id);
+    const localIsLiked = currentData.upvoters.includes(session.user.id);
 
     // if user already liked the post, remove the upvote
     if (localIsLiked) {
       const newUpvoters = currentData.upvoters.filter(
-        (id) => id !== authState.id
+        (id) => id !== session.user.id
       );
 
       const { error: removeUpvoteError } = await __supabase
@@ -99,7 +76,7 @@ const FeedCard = ({ data: blogPostData }) => {
       const { error: addUpvoteError } = await __supabase
         .from("public_posts")
         .update({
-          upvoters: [...currentData.upvoters, authState.id],
+          upvoters: [...currentData.upvoters, session.user.id],
         })
         .eq("id", blogPostData.id);
 
@@ -108,7 +85,7 @@ const FeedCard = ({ data: blogPostData }) => {
         return;
       }
 
-      blogPostData.upvoters = [...currentData.upvoters, authState.id];
+      blogPostData.upvoters = [...currentData.upvoters, session.user.id];
       setIsLiked(true);
       e.target.disabled = false;
       toast.dismiss();
@@ -119,9 +96,9 @@ const FeedCard = ({ data: blogPostData }) => {
     checkIfLiked();
   }, []);
 
-  if (uploaderDataStatus === "loading") {
-    return <SkeletonCard />;
-  }
+  // if (uploaderDataStatus === "loading") {
+  //   return <SkeletonCard />;
+  // }
 
   return (
     <>
@@ -129,14 +106,14 @@ const FeedCard = ({ data: blogPostData }) => {
         <div className="flex gap-3">
           <Link
             href={
-              authState.id === blogPostData.uploaderID
+              session.user.id === blogPostData.uploaderID
                 ? "/h/me"
-                : `/h/${uploaderData.username}`
+                : `/h/${blogPostData.uploader.username}`
             }
           >
             <img
               // dicebear
-              src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
+              src={`https://avatars.dicebear.com/api/bottts/${blogPostData.uploader.username}.svg`}
               alt="avatar"
               className="w-10 h-10"
             />
@@ -145,17 +122,20 @@ const FeedCard = ({ data: blogPostData }) => {
             <p className="leading-none">
               <Link
                 href={
-                  authState.id === blogPostData.uploaderID
+                  session.user.id === blogPostData.uploaderID
                     ? "/h/me"
-                    : `/h/${uploaderData.username}`
+                    : `/h/${blogPostData.uploader.username}`
                 }
               >
-                {uploaderData.fullName.first} {uploaderData.fullName.last}{" "}
+                {blogPostData.uploader.fullName.first}{" "}
+                {blogPostData.uploader.fullName.last}{" "}
               </Link>
               <span className="text-primary opacity-50">posted</span>
             </p>
             <p className="text-sm flex gap-2 leading-none">
-              <span className="opacity-50">@{uploaderData.username}</span>
+              <span className="opacity-50">
+                @{blogPostData.uploader.username}
+              </span>
               <span>
                 {dayjs(blogPostData.createdAt).format("MMM DD YYYY h:MM A")}
               </span>

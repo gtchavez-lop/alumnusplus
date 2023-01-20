@@ -7,8 +7,8 @@ import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import useLocalStorage from "../../lib/localStorageHook";
 import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export const getServerSideProps = async (context) => {
   const { username } = context.params;
@@ -33,31 +33,6 @@ export const getServerSideProps = async (context) => {
     },
   };
 };
-
-// {
-//   address: {
-//     address: 'Bagong Silang ',
-//     city: 'Caloocan City',
-//     postalCode: '1428'
-//   },
-//   birthdate: '1999-06-27',
-//   birthplace: 'Quezon City ',
-//   connections: [],
-//   createdAt: '2023-01-11T02:44:43.030613',
-//   education: [],
-//   email: 'napoto.gabrielle.bscs2019@gmail.com',
-//   gender: 'female',
-//   id: 'dc078f30-24ed-4874-8ada-8a68f4252b7a',
-//   fullName: { first: 'Gabrielle ', last: 'Napoto', middle: 'Domingo ' },
-//   phone: null,
-//   skillPrimary: 'Art',
-//   skillSecondary: [ 'Programming', 'Communication', 'Project Management', 'Research' ],
-//   socialMediaLinks: null,
-//   type: 'hunter',
-//   updatedAt: '2023-01-11T02:44:43.030613',
-//   username: 'AbieG',
-//   savedJobs: []
-// }
 
 const ACTIONS = {
   SET_USER_POSTS: "set-user-posts",
@@ -86,7 +61,7 @@ const reducer = (state, action) => {
 
 const UserPage = ({ user, notfound }) => {
   const router = useRouter();
-  const [authState, setAuthState] = useLocalStorage("authState");
+  const session = useSession();
   const [states, stateDispatcher] = useReducer(reducer, {
     userPosts: [],
     userConnections: [],
@@ -153,7 +128,7 @@ const UserPage = ({ user, notfound }) => {
   };
 
   const checkIfConnected = async () => {
-    const localConnections = authState.user_metadata.connections || [];
+    const localConnections = session.user.user_metadata.connections || [];
 
     if (localConnections.length === 0) {
       console.warn(
@@ -187,7 +162,7 @@ const UserPage = ({ user, notfound }) => {
     toast.loading("Adding connection...");
 
     // new connections array
-    const newConnections = [...authState.user_metadata.connections, user.id];
+    const newConnections = [...session.user.user_metadata.connections, user.id];
 
     // update the user table
     const { error } = await __supabase
@@ -195,7 +170,7 @@ const UserPage = ({ user, notfound }) => {
       .update({
         connections: newConnections,
       })
-      .eq("id", authState.id);
+      .eq("id", session.user.id);
 
     if (error) {
       toast.dismiss();
@@ -203,19 +178,10 @@ const UserPage = ({ user, notfound }) => {
       console.log(error);
     }
 
-    // update the local storage
-    setAuthState({
-      ...authState,
-      user_metadata: {
-        ...authState.user_metadata,
-        connections: newConnections,
-      },
-    });
-
     // update the supabase user
     await __supabase.auth.updateUser({
       data: {
-        ...authState.user_metadata,
+        ...session.user.user_metadata,
         connections: newConnections,
       },
     });
@@ -233,7 +199,7 @@ const UserPage = ({ user, notfound }) => {
   const removeFromConnections = async () => {
     toast.loading("Removing connection...");
 
-    const newConnections = authState.user_metadata.connections.filter(
+    const newConnections = session.user.user_metadata.connections.filter(
       (connection) => connection !== user.id
     );
 
@@ -242,7 +208,7 @@ const UserPage = ({ user, notfound }) => {
       .update({
         connections: newConnections,
       })
-      .eq("id", authState.id);
+      .eq("id", session.user.id);
 
     if (error) {
       toast.dismiss();
@@ -250,19 +216,10 @@ const UserPage = ({ user, notfound }) => {
       console.log(error);
     }
 
-    // update the local storage
-    setAuthState({
-      ...authState,
-      user_metadata: {
-        ...authState.user_metadata,
-        connections: newConnections,
-      },
-    });
-
     // update the supabase user
     await __supabase.auth.updateUser({
       data: {
-        ...authState.user_metadata,
+        ...session.user.user_metadata,
         connections: newConnections,
       },
     });

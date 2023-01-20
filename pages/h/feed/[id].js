@@ -9,73 +9,31 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
-import useLocalStorage from "../../../lib/localStorageHook";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../../lib/uuidv4";
 
-const markdownRenderer = {
-  h1: (props) => <h1 className="text-2xl font-bold" {...props} />,
-  h2: (props) => <h2 className="text-xl font-bold mt-5" {...props} />,
-  h3: (props) => <h3 className="text-lg font-bold mt-5" {...props} />,
-  h4: (props) => <h4 className="text-base font-bold mt-5" {...props} />,
-  h5: (props) => <h5 className="text-sm font-bold mt-5" {...props} />,
-  h6: (props) => <h6 className="text-xs font-bold mt-5" {...props} />,
-  ul: (props) => <ul className="list-disc ml-5" {...props} />,
-  ol: (props) => <ol className="list-decimal ml-5" {...props} />,
-};
-// export const getStaticPaths = async () => {
-//   const { data, error } = await __supabase
-//   .from("public_posts")
-//   .select("id")
-
-//   if (error) {
-//     console.log(error)
-//     return
-//   }
-
-//   const paths = data.map(post => {
-//     return {
-//       params: { id: post.id }
-//     }
-//   })
-
-//   return {
-//     paths,
-//     fallback: false
-//   }
-// }
-
-export const getServerSideProps = async (context) => {
-  // get blog post data
-  const { data: blogPostData, error: blogPostDataError } = await __supabase
-    .from("public_posts")
-    .select("*")
-    .eq("id", context.params.id)
-    .single();
-
-  if (blogPostDataError) {
-    console.log(blogPostDataError);
-    return;
-  }
-
-  return {
-    props: {
-      blogPostData,
-    },
-  };
-};
-
-const BlogPage = ({ blogPostData }) => {
+const BlogPage = ({}) => {
+  const session = useSession();
   const [isLiked, setIsLiked] = useState(false);
-  const [authState] = useLocalStorage("authState");
-  // const [uploaderData, setUploaderData] = useState([]);
   const [isCommenting, setIsCommenting] = useState(false);
+  const router = useRouter();
 
-  const fetchUploader = async () => {
-    const { data: uploader, error } = await __supabase
-      .from("user_hunters")
-      .select("*")
-      .eq("id", blogPostData.uploaderID)
+  const checkIfLiked = async (blogPostData) => {
+    const localIsLiked = blogPostData.upvoters.includes(session.user.id);
+    setIsLiked(localIsLiked);
+  };
+
+  const fetchBlogPostData = async () => {
+    const { id } = router.query;
+
+    const { data, error } = await __supabase
+      .from("public_posts")
+      .select(
+        "id,content,comments,createdAt,updatedAt,uploader(id,fullName,username),upvoters"
+      )
+      .eq("id", id)
       .single();
 
     if (error) {
@@ -83,25 +41,21 @@ const BlogPage = ({ blogPostData }) => {
       return;
     }
 
-    return uploader;
+    return data;
   };
 
-  const {
-    data: uploaderData,
-    error: uploaderDataError,
-    status: uploaderDataStatus,
-    refetch: refetchUploaderData,
-  } = useQuery(["uploaderData"], fetchUploader, {
-    enabled: !!authState,
-    onSuccess: () => {
-      checkIfLiked();
+  const blogPost = useQuery({
+    queryKey: ["blogPost"],
+    queryFn: fetchBlogPostData,
+    enabled: !!session && !!router.query.id,
+    onSuccess: (data) => {
+      checkIfLiked(data);
+      console.log("Success");
+    },
+    onError: (error) => {
+      console.log(error);
     },
   });
-
-  const checkIfLiked = async () => {
-    const localIsLiked = blogPostData.upvoters.includes(authState.id);
-    setIsLiked(localIsLiked);
-  };
 
   const upvoteHandler = async (e) => {
     // disable the button while processing
@@ -112,7 +66,7 @@ const BlogPage = ({ blogPostData }) => {
     const { data: currentData, error: currentDataError } = await __supabase
       .from("public_posts")
       .select("upvoters")
-      .eq("id", blogPostData.id)
+      .eq("id", blogPost.data.id)
       .single();
 
     if (currentDataError) {
@@ -120,13 +74,13 @@ const BlogPage = ({ blogPostData }) => {
       return;
     }
 
-    const localIsLiked = currentData.upvoters.includes(authState.id);
+    const localIsLiked = currentData.upvoters.includes(session.user.id);
     console.log("Is liked: ", localIsLiked);
 
     // if user already liked the post, remove the upvote
     if (localIsLiked) {
       const newUpvoters = currentData.upvoters.filter(
-        (id) => id !== authState.id
+        (id) => id !== session.user.id
       );
 
       const { error: removeUpvoteError } = await __supabase
@@ -134,7 +88,7 @@ const BlogPage = ({ blogPostData }) => {
         .update({
           upvoters: newUpvoters,
         })
-        .eq("id", blogPostData.id);
+        .eq("id", blogPost.data.id);
 
       if (removeUpvoteError) {
         console.log(removeUpvoteError);
@@ -144,19 +98,19 @@ const BlogPage = ({ blogPostData }) => {
       setIsLiked(false);
       toast.dismiss();
       e.target.disabled = false;
-      blogPostData.upvoters = newUpvoters;
+      blogPost.refetch();
       return;
     }
 
     // if user hasn't liked the post, add the upvote
-    const newUpvoters = [...currentData.upvoters, authState.id];
+    const newUpvoters = [...currentData.upvoters, session.user.id];
 
     const { error: addUpvoteError } = await __supabase
       .from("public_posts")
       .update({
         upvoters: newUpvoters,
       })
-      .eq("id", blogPostData.id);
+      .eq("id", blogPost.data.id);
 
     if (addUpvoteError) {
       console.log(addUpvoteError);
@@ -166,11 +120,11 @@ const BlogPage = ({ blogPostData }) => {
     setIsLiked(true);
     toast.dismiss();
     e.target.disabled = false;
-    blogPostData.upvoters = newUpvoters;
+    blogPost.refetch();
   };
 
   return (
-    uploaderDataStatus === "success" && (
+    blogPost.isSuccess && (
       <>
         <motion.main
           variants={__PageTransition}
@@ -183,13 +137,13 @@ const BlogPage = ({ blogPostData }) => {
             <div className="flex items-center gap-3 lg:bg-base-200 lg:p-5 lg:rounded-btn">
               <Link
                 href={
-                  authState.id === blogPostData.uploaderID
+                  session.user.id === blogPost.data.uploader
                     ? "/me"
-                    : `/h/${blogPostData.uploaderID}`
+                    : `/h/${blogPost.data.uploader.username}`
                 }
               >
                 <img
-                  src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
+                  src={`https://avatars.dicebear.com/api/bottts/${blogPost.data.uploader.username}.svg`}
                   alt="avatar"
                   className="w-10 h-10 rounded-full"
                 />
@@ -197,17 +151,18 @@ const BlogPage = ({ blogPostData }) => {
               <div className="flex flex-col gap-1">
                 <Link
                   href={
-                    authState.id === blogPostData.uploaderID
+                    session.user.id === blogPost.data.uploader
                       ? "/me"
-                      : `/h/${blogPostData.uploaderID}`
+                      : `/h/${blogPost.data.uploader}`
                   }
                 >
                   <p className=" font-semibold leading-none hover:underline underline-offset-4">
-                    {uploaderData.fullName.first} {uploaderData.fullName.last}
+                    {blogPost.data.uploader.fullName.first}{" "}
+                    {blogPost.data.uploader.fullName.last}
                   </p>
                 </Link>
                 <p className="text-gray-500 text-sm leading-none">
-                  {dayjs(blogPostData.createdAt).format("MMMM D, YYYY")}
+                  {dayjs(blogPost.data.createdAt).format("MMMM D, YYYY")}
                 </p>
               </div>
             </div>
@@ -218,7 +173,7 @@ const BlogPage = ({ blogPostData }) => {
                 rehypePlugins={[rehypeRaw]}
                 className="prose prose-a:text-primary prose-lead:underline underline-offset-4"
               >
-                {blogPostData.content}
+                {blogPost.data.content}
               </ReactMarkdown>
             </div>
 
@@ -231,7 +186,7 @@ const BlogPage = ({ blogPostData }) => {
                   }`}
                 >
                   <FiArrowUp />
-                  <span>{blogPostData.upvoters.length}</span>
+                  <span>{blogPost.data.upvoters.length}</span>
                 </button>
                 <button
                   onClick={() => setIsCommenting(!isCommenting)}
@@ -250,15 +205,15 @@ const BlogPage = ({ blogPostData }) => {
               <div className="mt-10 lg:p-5">
                 <div className="flex items-center gap-3">
                   <img
-                    src={`https://avatars.dicebear.com/api/bottts/${authState.user_metadata.username}.svg`}
+                    src={`https://avatars.dicebear.com/api/bottts/${session.user.user_metadata.username}.svg`}
                     alt="avatar"
                     className="w-10 h-10 rounded-full"
                   />
 
                   <div className="flex flex-col gap-1">
                     <p className=" font-semibold leading-none">
-                      {authState.user_metadata.fullName.first}{" "}
-                      {authState.user_metadata.fullName.last}
+                      {session.user.user_metadata.fullName.first}{" "}
+                      {session.user.user_metadata.fullName.last}
                     </p>
                     <p className="text-gray-500 text-sm leading-none">
                       {dayjs().format("MMMM D, YYYY")}
@@ -285,7 +240,7 @@ const BlogPage = ({ blogPostData }) => {
                         .from("public_posts")
                         .select("comments")
                         .single()
-                        .eq("id", blogPostData.id);
+                        .eq("id", blogPost.data.id);
 
                     if (latestDataError) {
                       console.log(latestDataError);
@@ -298,9 +253,9 @@ const BlogPage = ({ blogPostData }) => {
                       content: commentContent,
                       createdAt: dayjs().format(),
                       commenter: {
-                        id: authState.id,
-                        username: authState.user_metadata.username,
-                        fullName: authState.user_metadata.fullName,
+                        id: session.user.id,
+                        username: session.user.user_metadata.username,
+                        fullName: session.user.user_metadata.fullName,
                       },
                     };
 
@@ -311,7 +266,7 @@ const BlogPage = ({ blogPostData }) => {
                       .update({
                         comments: newComments,
                       })
-                      .eq("id", blogPostData.id);
+                      .eq("id", blogPost.data.id);
 
                     if (error) {
                       console.log(error);
@@ -321,7 +276,8 @@ const BlogPage = ({ blogPostData }) => {
 
                     e.target.reset();
                     toast.success("Comment posted!");
-                    blogPostData.comments = newComments;
+                    setIsCommenting(false);
+                    blogPost.refetch();
                   }}
                   className="mt-5"
                 >
@@ -349,7 +305,7 @@ const BlogPage = ({ blogPostData }) => {
 
             {/* comments */}
             <div className="mt-10 lg:p-5 flex flex-col gap-5">
-              {blogPostData.comments.map((comment) => (
+              {blogPost.data.comments.map((comment) => (
                 <div
                   key={comment.id}
                   className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"
