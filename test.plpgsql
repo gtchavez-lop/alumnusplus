@@ -1,0 +1,36 @@
+INSERT INTO public.user_provisioners (
+  address,
+  "alternativeNames",
+  "companySize",
+  "companyType",
+  "contactInformation",
+  "foundingYear",
+  "fullDescription",
+  id,
+  "industryType",
+  "jobPostings",
+  "legalName",
+  "shortDescription",
+  "socialProfiles",
+  tags,
+  type,
+  website
+)
+VALUES (
+  cast(new.raw_user_meta_data ->> 'address' as json),
+  cast(new.raw_user_meta_data ->> 'alternativeNames' as json),
+  cast(new.raw_user_meta_data ->> 'companySize' as text),
+  cast(new.raw_user_meta_data ->> 'companyType' as text),
+  cast(new.raw_user_meta_data ->> 'contactInformation' as json),
+  cast(new.raw_user_meta_data ->> 'foundingYear' as numeric),
+  cast(new.raw_user_meta_data ->> 'fullDescription' as text),
+  new.id,
+  cast(new.raw_user_meta_data ->> 'industryType' as text),
+  cast(new.raw_user_meta_data ->> 'jobPostings' as json),
+  cast(new.raw_user_meta_data ->> 'legalName' as text),
+  cast(new.raw_user_meta_data ->> 'shortDescription' as text),
+  cast(new.raw_user_meta_data ->> 'socialProfiles' as json),
+  cast(new.raw_user_meta_data ->> 'tags' as json),
+  cast(new.raw_user_meta_data ->> 'type' as text),
+  cast(new.raw_user_meta_data ->> 'website' as text)
+);

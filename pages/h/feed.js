@@ -22,7 +22,7 @@ const FeedPage = () => {
 
     const { data, error } = await __supabase
       .from("public_posts")
-      .select("*,uploader(id,username,fullName)")
+      .select("*,uploader(id,username,full_name)")
       .order("createdAt", { ascending: false })
       .in("uploader", [...localConnection, session.user.id]);
 
@@ -39,7 +39,7 @@ const FeedPage = () => {
 
     const { data, error } = await __supabase
       .from("recommended_hunters")
-      .select("id,fullname,username,email")
+      .select("id,full_name,username,email")
       .filter("id", "not.in", reqString);
 
     if (error) {
@@ -98,6 +98,7 @@ const FeedPage = () => {
       type: "blogpost",
       updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       uploader: session.user.id,
+      uploaderID: session.user.id,
       upvoters: JSON.stringify([]),
     });
 
@@ -109,7 +110,7 @@ const FeedPage = () => {
 
     toast.success("Posted!");
 
-    feedList.refetch()();
+    feedList.refetch();
     setIsMakingPost(false);
   };
 
@@ -203,8 +204,8 @@ const FeedPage = () => {
                             />
                             <div>
                               <p className="font-bold leading-none">
-                                {thisUser.fullname.first}{" "}
-                                {thisUser.fullname.last}
+                                {thisUser.full_name.first}{" "}
+                                {thisUser.full_name.last}
                               </p>
                               <p className="opacity-50 leading-none">
                                 @{thisUser.username}

@@ -6,64 +6,69 @@ import {
   $schema_provisioner,
 } from "../../schemas/user";
 
+import { AnimatePresence } from "framer-motion";
 import Cities from "../../schemas/ph_location.json";
+import { FiLoader } from "react-icons/fi";
 import Link from "next/link";
 import { __PageTransition } from "../../lib/animation";
 import { __supabase } from "../../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const RegisterProvisioner = () => {
-  const schema = $schema_provisioner;
   const router = useRouter();
+  const schema = $schema_provisioner;
+  const [page, setPage] = useState(1);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    toast.loading("Creating account...");
+  const [inputData, setInputData] = useState({
+    ...$schema_provisioner,
+    password: "",
+    comfirmPassword: "",
+    type: "provisioner",
+  });
 
-    const form = e.target;
-
-    // validate form
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-
-    // update schema
-    schema.address.physicalAddress = data.address;
-    schema.address.city = data.city;
-    schema.address.postalCode = data.postalCode;
-    schema.alternativeNames = data.alternativeNames.split(",");
-    schema.companySize = data.companySize;
-    schema.companyType = data.companyType;
-    schema.contactInformation.email = data.email;
-    schema.contactInformation.phone = data.phone;
-    schema.foundingYear = data.foundingYear;
-    schema.fullDescription = data.fullDescription;
-    schema.industryType = data.industryType;
-    schema.legalName = data.legalName;
-    schema.shortDescription = data.shortDescription;
-    schema.socialProfiles.facebook = data.facebook;
-    schema.socialProfiles.instagram = data.instagram;
-    schema.socialProfiles.linkedin = data.linkedin;
-    schema.socialProfiles.twitter = data.twitter;
-    schema.type = "provisioner";
-    schema.website = data.website;
+  const handleSubmit = async () => {
+    setPage(4);
+    window.scrollBy({
+      top: -window.innerHeight,
+      left: 0,
+      behavior: "smooth",
+    });
 
     const { error } = await __supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
+      email: inputData.contactInformation.email,
+      password: inputData.password,
       options: {
-        data: schema,
+        data: {
+          address: inputData.address,
+          alternativeNames: [],
+          companySize: inputData.companySize,
+          companyType: inputData.companyType,
+          contactInformation: inputData.contactInformation,
+          foundingYear: inputData.foundingYear,
+          fullDescription: inputData.fullDescription,
+          id: inputData.id,
+          industryType: inputData.industryType,
+          jobPostings: [],
+          legalName: inputData.legalName,
+          shortDescription: inputData.shortDescription,
+          socialProfiles: inputData.socialProfiles,
+          tags: inputData.tags,
+          type: inputData.type,
+          website: inputData.website,
+        },
       },
     });
 
     if (error) {
-      console.log(error);
+      toast.error(error.message);
+      setPage(1);
+      return;
     }
 
-    toast.dismiss();
     toast.success("Account created successfully!");
-
     router.push("/login");
   };
 
@@ -80,273 +85,396 @@ const RegisterProvisioner = () => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative min-h-screen w-full pt-24 pb-36"
+        className="relative min-h-screen w-full max-w-lg mx-auto pt-24 pb-36"
       >
         <h1 className="text-3xl font-bold">Register as a Provisioner</h1>
+        <progress
+          className="progress progress-primary bg-transparent w-full"
+          value={page}
+          max={4}
+        />
 
-        <form onSubmit={handleSubmit} className="flex flex-col max-w-md mt-10">
-          <p className="text-xl font-bold">Account Details</p>
-          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              className="input"
-              placeholder="Email"
-              required
-            />
+        <div className="flex flex-col mt-10">
+          <AnimatePresence mode="wait">
+            {page === 1 && (
+              <motion.div
+                key="1"
+                variants={__PageTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                <p className="text-xl font-bold">Account Details</p>
 
-            <label htmlFor="password" className="mt-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              className="input"
-              placeholder="************"
-              required
-            />
-          </div>
+                <div className="max-w-lg mt-5">
+                  <div className="flex flex-col bg-base-200 p-3 rounded-btn">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      className="input input-primary"
+                      value={inputData.contactInformation.email}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          contactInformation: {
+                            ...inputData.contactInformation,
+                            email: e.target.value,
+                          },
+                        })
+                      }
+                    />
 
-          <p className="text-xl font-bold mt-5">Company Details</p>
-          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
-            <label htmlFor="legalName">Company Name</label>
-            <input
-              type="text"
-              name="legalName"
-              id="legalName"
-              className="input"
-              placeholder="Company Name"
-              required
-            />
+                    <label htmlFor="password" className="mt-3">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      className="input input-primary"
+                      value={inputData.password}
+                      onChange={(e) =>
+                        setInputData({ ...inputData, password: e.target.value })
+                      }
+                    />
 
-            <label htmlFor="alternativeNames">
-              Alternative Name (optional)
-            </label>
-            <input
-              type="text"
-              name="alternativeNames"
-              id="alternativeNames"
-              className="input"
-              placeholder="Alternative name"
-            />
+                    <label htmlFor="comfirmPassword" className="mt-3">
+                      Comfirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="comfirmPassword"
+                      id="comfirmPassword"
+                      className="input input-primary"
+                      value={inputData.comfirmPassword}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          comfirmPassword: e.target.value,
+                        })
+                      }
+                    />
 
-            <label htmlFor="companyType" className="mt-2">
-              Company Type
-            </label>
-            <select name="companyType" id="companyType" className="input">
-              <option value="" disabled selected>
-                Select a company type
-              </option>
-              {$prov_companyType.map((type, index) => (
-                <option key={index} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+                    <div className="flex justify-end mt-10">
+                      <button
+                        disabled={
+                          inputData.password !== inputData.comfirmPassword ||
+                          inputData.password === "" ||
+                          inputData.comfirmPassword === "" ||
+                          inputData.contactInformation.email === ""
+                        }
+                        className="btn btn-primary"
+                        onClick={() => setPage(page + 1)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            <label htmlFor="companySize" className="mt-2">
-              Company Size
-            </label>
-            <select name="companySize" id="companySize" className="input">
-              <option value="" disabled selected>
-                Select a company size
-              </option>
-              {$prov_companySize.map((size, index) => (
-                <option key={index} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+            {page === 2 && (
+              <motion.div
+                key="2"
+                variants={__PageTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                <p className="text-xl font-bold">Company Details</p>
 
-            <label htmlFor="industryType" className="mt-2">
-              Industry Type
-            </label>
-            <select name="industryType" id="industryType" className="input">
-              <option value="" disabled selected>
-                Select an industry type
-              </option>
-              {$prov_industryType.map((type, index) => (
-                <option key={index} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+                <div className="max-w-lg mt-5">
+                  <div className="flex flex-col bg-base-200 p-3 rounded-btn">
+                    <label htmlFor="companyName">Company Name</label>
+                    <input
+                      type="text"
+                      name="companyName"
+                      id="companyName"
+                      className="input input-primary"
+                      value={inputData.legalName}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          legalName: e.target.value,
+                        })
+                      }
+                    />
 
-            <label htmlFor="foundingYear" className="mt-2">
-              Year Founded
-            </label>
-            <input
-              type="number"
-              name="foundingYear"
-              id="foundingYear"
-              className="input"
-              placeholder="Year founded"
-              required
-            />
-          </div>
+                    <label htmlFor="companyType" className="mt-3">
+                      Company Type
+                    </label>
+                    <select
+                      name="companyType"
+                      id="companyType"
+                      className="select select-primary w-full"
+                      value={inputData.companyType}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          companyType: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="" disabled>
+                        Select Company Type
+                      </option>
+                      {$prov_companyType.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
 
-          <p className="text-xl font-bold mt-5">Company Address</p>
-          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
-            <label htmlFor="address">Physical Address</label>
-            <input
-              type="text"
-              name="address"
-              id="address"
-              className="input"
-              placeholder="Physical Address"
-              required
-            />
+                    <label htmlFor="industryType" className="mt-3">
+                      Industry Type
+                    </label>
+                    <select
+                      name="industryType"
+                      id="industryType"
+                      className="select select-primary w-full"
+                      value={inputData.industryType}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          industryType: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="" disabled>
+                        Select Industry Type
+                      </option>
+                      {$prov_industryType.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
 
-            <label htmlFor="city" className="mt-2">
-              City
-            </label>
-            <select name="city" id="city" className="select">
-              <option value="" disabled selected>
-                Select a city
-              </option>
-              {Cities.map((city, index) => (
-                <option
-                  key={`city-${index}`}
-                  selected={city.city === "Caloocan City"}
-                  value={city.city}
-                >
-                  {city.city}
-                </option>
-              ))}
-            </select>
+                    <label htmlFor="companySize" className="mt-3">
+                      Company Size
+                    </label>
+                    <select
+                      name="companySize"
+                      id="companySize"
+                      className="select select-primary w-full"
+                      value={inputData.companySize}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          companySize: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="" disabled>
+                        Select Company Size
+                      </option>
+                      {$prov_companySize.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
 
-            <label htmlFor="postalCode" className="mt-2">
-              Postal Code
-            </label>
-            <input
-              type="number"
-              name="postalCode"
-              id="postalCode"
-              className="input"
-              placeholder="Postal Code"
-              required
-            />
-          </div>
+                    <label htmlFor="physicalAddress" className="mt-3">
+                      Physical Company Address
+                    </label>
+                    <input
+                      type="text"
+                      name="physicalAddress"
+                      id="physicalAddress"
+                      className="input input-primary"
+                      value={inputData.address.physicalAddress}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          address: {
+                            ...inputData.address,
+                            physicalAddress: e.target.value,
+                          },
+                        })
+                      }
+                    />
 
-          <p className="text-xl font-bold mt-5">Company Description</p>
-          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
-            <label htmlFor="shortDescription">Short Description</label>
-            <textarea
-              name="shortDescription"
-              id="shortDescription"
-              className="textarea"
-              placeholder="Short Description"
-              required
-            />
+                    <label htmlFor="postalCode" className="mt-3">
+                      Postal Code
+                    </label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      id="postalCode"
+                      className="input input-primary"
+                      value={inputData.address.postalCode}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          address: {
+                            ...inputData.address,
+                            postalCode: e.target.value,
+                          },
+                        })
+                      }
+                    />
 
-            <label htmlFor="fullDescription" className="mt-2">
-              Full Description
-            </label>
-            <textarea
-              name="fullDescription"
-              id="fullDescription"
-              className="textarea"
-              placeholder="Full Description"
-              required
-            />
-          </div>
+                    <label htmlFor="city" className="mt-3">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      id="city"
+                      className="input input-primary"
+                      value={inputData.address.city}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          address: {
+                            ...inputData.address,
+                            city: e.target.value,
+                          },
+                        })
+                      }
+                    />
 
-          <p className="text-xl font-bold mt-5">Contact Information</p>
-          <div className="flex flex-col bg-base-200 p-3 rounded-btn">
-            <label htmlFor="phone">Phone Number</label>
-            <input
-              type="text"
-              name="phone"
-              id="phone"
-              className="input"
-              placeholder="Phone Number"
-              required
-            />
+                    <label htmlFor="foundingYear" className="mt-3">
+                      Founding Year
+                    </label>
+                    <input
+                      type="number"
+                      name="foundingYear"
+                      id="foundingYear"
+                      className="input input-primary"
+                      value={inputData.foundingYear}
+                      min="1900"
+                      max="2021"
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          foundingYear: e.target.value,
+                        })
+                      }
+                    />
 
-            <label htmlFor="facebook" className="mt-2">
-              Facebook Link (Optional)
-            </label>
-            <input
-              type="text"
-              name="facebook"
-              id="facebook"
-              className="input"
-              placeholder="Facebook Link"
-            />
+                    <div className="flex justify-between mt-10">
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => setPage(page - 1)}
+                      >
+                        Back
+                      </button>
+                      <button
+                        disabled={
+                          inputData.legalName === "" ||
+                          inputData.companyType === "" ||
+                          inputData.industryType === "" ||
+                          inputData.address.physicalAddress === "" ||
+                          inputData.address.postalCode === "" ||
+                          inputData.address.city === "" ||
+                          inputData.foundingYear === ""
+                        }
+                        className="btn btn-primary"
+                        onClick={() => setPage(page + 1)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            <label htmlFor="instagram">Instagram Link (Optional)</label>
-            <input
-              type="text"
-              name="instagram"
-              id="instagram"
-              className="input"
-              placeholder="Instagram Link"
-            />
+            {page === 3 && (
+              <motion.div
+                key="3"
+                variants={__PageTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                <p className="text-xl font-bold">Company Descriptions</p>
 
-            <label htmlFor="linkedin">LinkedIn Link (Optional)</label>
-            <input
-              type="text"
-              name="linkedin"
-              id="linkedin"
-              className="input"
-              placeholder="LinkedIn Link"
-            />
+                <div className="max-w-lg mt-5">
+                  <div className="flex flex-col bg-base-200 p-3 rounded-btn">
+                    <label htmlFor="shortDescription" className="mt-3">
+                      Short Description
+                    </label>
+                    <textarea
+                      name="shortDescription"
+                      id="shortDescription"
+                      className="textarea texarea-primary"
+                      value={inputData.shortDescription}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          shortDescription: e.target.value,
+                        })
+                      }
+                    />
 
-            <label htmlFor="twitter">Twitter Link (Optional)</label>
-            <input
-              type="text"
-              name="twitter"
-              id="twitter"
-              className="input"
-              placeholder="Twitter Link"
-            />
+                    <label htmlFor="fullDescription" className="mt-3">
+                      Full Description
+                    </label>
+                    <textarea
+                      name="fullDescription"
+                      id="fullDescription"
+                      className="textarea texarea-primary"
+                      value={inputData.fullDescription}
+                      onChange={(e) =>
+                        setInputData({
+                          ...inputData,
+                          fullDescription: e.target.value,
+                        })
+                      }
+                    />
 
-            <label htmlFor="youtube">YouTube Link (Optional)</label>
-            <input
-              type="text"
-              name="youtube"
-              id="youtube"
-              className="input"
-              placeholder="YouTube Link"
-            />
+                    <div className="flex justify-between mt-10">
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => setPage(page - 1)}
+                      >
+                        Back
+                      </button>
+                      <button
+                        disabled={
+                          inputData.shortDescription === "" ||
+                          inputData.fullDescription === ""
+                        }
+                        className="btn btn-primary"
+                        onClick={handleSubmit}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            <label htmlFor="website">Website Link (Optional)</label>
-            <input
-              type="text"
-              name="website"
-              id="website"
-              className="input"
-              placeholder="Website Link"
-            />
-          </div>
-
-          {/* submit */}
-          <div className="flex flex-col mt-5 w-full">
-            <button type="submit" className="btn btn-primary w-full">
-              Submit
-            </button>
-
-            <p>
-              By clicking the button, you agree to our{" "}
-              <Link href="/terms" className="link link-primary">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="link link-primary">
-                Privacy Policy
-              </Link>
-            </p>
-            <p className="mt-10 text-center">
-              Already have an account?{" "}
-              <Link href="/login" className="link link-primary">
-                Login
-              </Link>
-            </p>
-          </div>
-        </form>
+            {page === 4 && (
+              <motion.div
+                key="4"
+                variants={__PageTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                <p className="text-xl font-bold">Processing Registration</p>
+                <div className="max-w-lg mt-5">
+                  <div className="flex flex-col bg-base-200 p-3 rounded-btn">
+                    <p className="text-center">
+                      Please wait while we process your registration
+                    </p>
+                    <div className="flex justify-center mt-10">
+                      <FiLoader className="animate-spin" />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.main>
     </>
   );
