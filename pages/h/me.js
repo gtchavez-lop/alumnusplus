@@ -56,7 +56,7 @@ const ProfilePage = () => {
       const thisUserConnection = session.user.user_metadata.connections;
       const { data, error } = await __supabase
         .from("user_hunters")
-        .select("id,email,fullName,username")
+        .select("id,email,full_name,username")
         .in("id", thisUserConnection);
 
       if (error) {
@@ -204,8 +204,8 @@ const ProfilePage = () => {
                   className="w-32 h-32 rounded-full bg-primary border-white border-2"
                 />
                 <p className="text-3xl font-bold">
-                  {userDetails.data.fullName.first}{" "}
-                  {userDetails.data.fullName.last}
+                  {userDetails.data.full_name.first}{" "}
+                  {userDetails.data.full_name.last}
                 </p>
 
                 <p className="font-semibold opacity-75">
@@ -278,13 +278,13 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <h4 className="text-lg font-semibold">Primary Skill</h4>
                   <p className="badge badge-primary">
-                    {userDetails.data.skillPrimary}
+                    {userDetails.data.skill_primary}
                   </p>
                 </div>
                 <div className="flex flex-col">
                   <h4 className="text-lg font-semibold">Secondary Skills</h4>
                   <p className="flex flex-wrap gap-4">
-                    {userDetails.data.skillSecondary.map((skill, index) => (
+                    {userDetails.data.skill_secondary.map((skill, index) => (
                       <span
                         key={`secondaryskill_${index}`}
                         className="badge badge-accent"
@@ -380,8 +380,8 @@ const ProfilePage = () => {
                               />
                               <div>
                                 <p className="font-bold leading-none">
-                                  {connection.fullName.first}{" "}
-                                  {connection.fullName.last}
+                                  {connection.full_name.first}{" "}
+                                  {connection.full_name.last}
                                 </p>
                                 <p className="opacity-50 leading-none">
                                   @{connection.username}
@@ -439,8 +439,8 @@ const ProfilePage = () => {
                               />
                               <div>
                                 <p className="font-bold leading-none">
-                                  {thisUser.fullname.first}{" "}
-                                  {thisUser.fullname.last}
+                                  {thisUser.full_name.first}{" "}
+                                  {thisUser.full_name.last}
                                 </p>
                                 <p className="opacity-50 leading-none">
                                   @{thisUser.username}

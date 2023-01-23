@@ -96,10 +96,6 @@ const FeedCard = ({ data: blogPostData }) => {
     checkIfLiked();
   }, []);
 
-  // if (uploaderDataStatus === "loading") {
-  //   return <SkeletonCard />;
-  // }
-
   return (
     <>
       <motion.div className="flex flex-col p-5 rounded-btn bg-base-200">
@@ -127,8 +123,8 @@ const FeedCard = ({ data: blogPostData }) => {
                     : `/h/${blogPostData.uploader.username}`
                 }
               >
-                {blogPostData.uploader.fullName.first}{" "}
-                {blogPostData.uploader.fullName.last}{" "}
+                {blogPostData.uploader.full_name.first}{" "}
+                {blogPostData.uploader.full_name.last}{" "}
               </Link>
               <span className="text-primary opacity-50">posted</span>
             </p>
@@ -160,14 +156,18 @@ const FeedCard = ({ data: blogPostData }) => {
               className={`btn ${isLiked ? "btn-primary" : "btn-ghost"} gap-2`}
             >
               <FiArrowUp className="font-bold" />
-              {blogPostData.upvoters.length || ""}
+              {blogPostData.upvoters?.length ?? 0}
             </button>
             <motion.button
-              onClick={() => setCommentsOpen(true)}
+              onClick={() =>
+                setCommentsOpen(
+                  blogPostData.comments?.length > 0 ? true : false
+                )
+              }
               className="btn btn-ghost"
             >
               <FiMessageSquare className="font-bold" />
-              <span className="ml-2">{blogPostData.comments.length}</span>
+              <span className="ml-2">{blogPostData.comments?.length ?? 0}</span>
             </motion.button>
           </div>
           <div className="md:hidden dropdown dropdown-top dropdown-end">
@@ -278,8 +278,8 @@ const FeedCard = ({ data: blogPostData }) => {
                       />
                       <div className="flex flex-col gap-1 justify-center">
                         <p className="leading-none">
-                          {comment.commenter.fullName.first}{" "}
-                          {comment.commenter.fullName.last}{" "}
+                          {comment.commenter.full_name.first}{" "}
+                          {comment.commenter.full_name.last}{" "}
                           <span className="text-primary opacity-50">
                             commented
                           </span>

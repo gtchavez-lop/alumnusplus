@@ -1,4 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -8,31 +10,6 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
-
-export const getServerSideProps = async (context) => {
-  const { username } = context.params;
-
-  const { data, error } = await __supabase
-    .from("user_hunters")
-    .select("*")
-    .eq("username", username)
-    .single();
-
-  if (error) {
-    return {
-      props: {
-        notfound: true,
-      },
-    };
-  }
-
-  return {
-    props: {
-      user: data,
-    },
-  };
-};
 
 const ACTIONS = {
   SET_USER_POSTS: "set-user-posts",
@@ -59,9 +36,11 @@ const reducer = (state, action) => {
   }
 };
 
-const UserPage = ({ user, notfound }) => {
+const UserPage = ({ notfound }) => {
   const router = useRouter();
+  const { username } = router.query;
   const session = useSession();
+  const sessionUser = useUser();
   const [states, stateDispatcher] = useReducer(reducer, {
     userPosts: [],
     userConnections: [],
@@ -70,93 +49,95 @@ const UserPage = ({ user, notfound }) => {
     isConnected: false,
   });
 
-  const fetchUserActivities = async () => {
+  const fetchUser = async () => {
     const { data, error } = await __supabase
-      .from("public_posts")
+      .from("user_hunters")
       .select("*")
-      .eq("uploaderID", user.id)
-      .order("createdAt", { ascending: false });
+      .eq("username", username)
+      .single();
 
     if (error) {
       console.log(error);
-    }
-
-    stateDispatcher({
-      type: ACTIONS.SET_USER_POSTS,
-      payload: data,
-    });
-    stateDispatcher({
-      type: ACTIONS.SET_POSTS_LOADING,
-      payload: false,
-    });
-
-    console.log("User Activities:", true);
-  };
-
-  const fetchUserConnections = async () => {
-    const localConnections = user.connections || [];
-
-    if (localConnections.length === 0) {
-      console.warn(
-        "User Connections cannot be fetch because the user does not have one"
-      );
-      stateDispatcher({
-        type: ACTIONS.SET_CONNECTIONS_LOADING,
-        payload: false,
-      });
       return;
     }
 
+    return data;
+  };
+
+  const user = useQuery({
+    queryKey: ["user", username],
+    queryFn: fetchUser,
+    enabled: !!username,
+    onSuccess: (data) => {
+      if (!!sessionUser.user) {
+        const isConnected = sessionUser.user_metadata.connections.includes(
+          data.id
+        );
+
+        stateDispatcher({
+          type: ACTIONS.SET_IS_CONNECTED,
+          payload: isConnected,
+        });
+      }
+    },
+  });
+
+  const fetchUserPosts = async () => {
+    const { data, error } = await __supabase
+      .from("public_posts")
+      .select("id,content")
+      .eq("uploader", user.data.id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    return data;
+  };
+
+  const fetchUserConnections = async () => {
+    const localConnections = user.connections ? user.connections : [];
+
     const { data, error } = await __supabase
       .from("user_hunters")
-      .select("id, username, fullName")
+      .select("id,fullName,username")
       .in("id", localConnections);
 
     if (error) {
       console.log(error);
-    }
-
-    stateDispatcher({
-      type: ACTIONS.SET_USER_CONNECTIONS,
-      payload: data,
-    });
-    stateDispatcher({
-      type: ACTIONS.SET_CONNECTIONS_LOADING,
-      payload: false,
-    });
-    console.log("User Connections:", true);
-  };
-
-  const checkIfConnected = async () => {
-    const localConnections = session.user.user_metadata.connections || [];
-
-    if (localConnections.length === 0) {
-      console.warn(
-        "User Connections cannot be fetch because the user does not have one"
-      );
       return;
     }
 
-    // check if the current user is connected to this user
-    let isConnected = localConnections.includes(user.id);
-
-    stateDispatcher({
-      type: ACTIONS.SET_IS_CONNECTED,
-      payload: isConnected,
-    });
+    return data;
   };
 
-  if (notfound) {
-    router.push("/");
-  }
-
-  useEffect(() => {
-    if (user) {
-      fetchUserActivities();
-      fetchUserConnections();
-      checkIfConnected();
-    }
-  }, [user]);
+  const [userPosts, userConnections] = useQueries({
+    queries: [
+      {
+        queryKey: ["user-posts"],
+        queryFn: fetchUserPosts,
+        enabled: !!user.isSuccess && !!username,
+        onSuccess: () => {
+          console.log("User Posts Fetched");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+      {
+        queryKey: ["user-connections"],
+        queryFn: fetchUserConnections,
+        enabled: !!user.isSuccess && !!username,
+        onSuccess: () => {
+          console.log("User Connections Fetched");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+    ],
+  });
 
   const addToConnections = async () => {
     toast.loading("Adding connection...");
@@ -176,6 +157,7 @@ const UserPage = ({ user, notfound }) => {
       toast.dismiss();
       toast.error("Something went wrong");
       console.log(error);
+      return;
     }
 
     // update the supabase user
@@ -214,6 +196,7 @@ const UserPage = ({ user, notfound }) => {
       toast.dismiss();
       toast.error("Something went wrong");
       console.log(error);
+      return;
     }
 
     // update the supabase user
@@ -223,6 +206,9 @@ const UserPage = ({ user, notfound }) => {
         connections: newConnections,
       },
     });
+
+    // update the session
+    await __supabase.auth.setSession({});
 
     // update the state
     stateDispatcher({
@@ -235,7 +221,7 @@ const UserPage = ({ user, notfound }) => {
   };
 
   return (
-    user && (
+    !!user.isSuccess && (
       <>
         <motion.main
           variants={__PageTransition}
@@ -249,23 +235,23 @@ const UserPage = ({ user, notfound }) => {
             <div className="p-5 bg-base-300 rounded-btn">
               <img
                 src={`https://avatars.dicebear.com/api/bottts/${
-                  user.username || "default"
+                  user.data.username || "default"
                 }.svg`}
                 alt="avatar"
                 className="w-32 h-32 rounded-full bg-primary border-white border-2"
               />
               <p className="text-3xl font-bold">
-                {user.fullName.first} {user.fullName.middle}{" "}
-                {user.fullName.last}
+                {user.data.fullName.first} {user.data.fullName.middle}{" "}
+                {user.data.fullName.last}
               </p>
 
-              <p className="font-semibold opacity-75">@{user.username}</p>
+              <p className="font-semibold opacity-75">@{user.data.username}</p>
               <p>
                 Joined at:{" "}
                 <span className="opacity-50">
-                  {dayjs(user.createdAt || new Date().toISOString()).format(
-                    "MMMM DD, YYYY"
-                  )}
+                  {dayjs(
+                    user.data.createdAt || new Date().toISOString()
+                  ).format("MMMM DD, YYYY")}
                 </span>
               </p>
 
@@ -288,7 +274,7 @@ const UserPage = ({ user, notfound }) => {
             <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
               <p className="text-2xl font-bold mb-4">Bio</p>
               <ReactMarkdown className="prose">
-                {user.bio || "This user has not added a bio yet"}
+                {user.data.bio || "This user has not added a bio yet"}
               </ReactMarkdown>
             </div>
             <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
@@ -297,14 +283,14 @@ const UserPage = ({ user, notfound }) => {
                 <p className="font-semibold">Primary Skill</p>
                 <p className="flex gap-2 gap-y-1 flex-wrap">
                   <span className="badge badge-primary">
-                    {user.skillPrimary}
+                    {user.data.skillPrimary}
                   </span>
                 </p>
               </div>
               <div>
                 <p className="font-semibold">Secondary Skillsets</p>
                 <p className="flex gap-2 gap-y-1 flex-wrap">
-                  {user.skillSecondary.map((skill, index) => (
+                  {user.data.skillSecondary.map((skill, index) => (
                     <span
                       className="badge badge-secondary"
                       key={`skill_${index}`}
@@ -320,21 +306,21 @@ const UserPage = ({ user, notfound }) => {
               <div>
                 <p className="font-semibold">Birthday</p>
                 <p className="opacity-50">
-                  {dayjs(user.birthdate || new Date().toISOString()).format(
-                    "MMMM DD, YYYY"
-                  )}
+                  {dayjs(
+                    user.data.birthdate || new Date().toISOString()
+                  ).format("MMMM DD, YYYY")}
                 </p>
               </div>
               <div>
                 <p className="font-semibold">Location</p>
                 <p className="opacity-50">
-                  {user.address.address}, {user.address.city}
+                  {user.data.address.address}, {user.data.address.city}
                 </p>
               </div>
             </div>
             <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
               <p className="text-2xl font-bold">Activities</p>
-              {states.postsLoading &&
+              {!!userPosts.isLoading &&
                 Array(3)
                   .fill(0)
                   .map((_, i) => (
@@ -344,12 +330,13 @@ const UserPage = ({ user, notfound }) => {
                     />
                   ))}
 
-              {!states.postsLoading && states.userPosts.length === 0 && (
+              {!!userPosts.isSuccess && userPosts.data.length < 1 && (
                 <p className="text-center opacity-50">No activities yet</p>
               )}
 
-              {!states.postsLoading &&
-                states.userPosts.map((activity, index) => (
+              {!!userPosts.isSuccess &&
+                userPosts.data.length > 0 &&
+                userPosts.data.map((activity, index) => (
                   <div
                     key={`activity_${index}`}
                     className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
@@ -373,7 +360,7 @@ const UserPage = ({ user, notfound }) => {
             <div className="p-5">
               <p className="text-2xl font-bold mb-2">Connections</p>
 
-              {states.connectionsLoading &&
+              {!!userConnections.isLoading &&
                 Array(3)
                   .fill()
                   .map((_, i) => (
@@ -382,13 +369,14 @@ const UserPage = ({ user, notfound }) => {
                       className="w-full h-[72px] bg-base-200 animate-pulse"
                     />
                   ))}
-              {!states.connectionsLoading &&
-                states.userConnections.length === 0 && (
+              {!!userConnections.isSuccess &&
+                userConnections.data.length < 1 && (
                   <p className="text-center opacity-50">No connections yet</p>
                 )}
 
-              {!states.connectionsLoading &&
-                states.userConnections.map((connection, index) => (
+              {!!userConnections.isSuccess &&
+                userConnections.data.length > 0 &&
+                userConnections.data.map((connection, index) => (
                   <div
                     key={`connection_${index}`}
                     className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"

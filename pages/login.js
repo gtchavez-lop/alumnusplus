@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import Link from "next/link";
 import { __PageTransition } from "../lib/animation";
@@ -6,12 +7,11 @@ import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
 
 const LogInPage = (e) => {
   const [hasUser, setHasUser] = useState(false);
   const router = useRouter();
-  const session = useSession();
+  const thisSession = useSession();
 
   const checkHunterData = async ({ targetID }) => {
     const { data, error } = await __supabase
@@ -40,20 +40,20 @@ const LogInPage = (e) => {
 
   const writeHunterData = async () => {
     const { error } = await __supabase.from("user_hunters").insert({
-      id: session.user.id,
-      username: session.user.user_metadata.username,
-      gender: session.user.user_metadata.gender,
-      email: session.user.email,
-      phone: session.user.user_metadata.phone || null,
-      birthdate: session.user.user_metadata.birthdate,
-      connections: session.user.user_metadata.connections || [],
-      address: session.user.user_metadata.address,
-      birthplace: session.user.user_metadata.birthplace,
-      bio: session.user.user_metadata.bio,
-      education: session.user.user_metadata.education || null,
-      fullName: session.user.user_metadata.fullName,
-      skillPrimary: session.user.user_metadata.skillPrimary,
-      skillSecondary: session.user.user_metadata.skillSecondary,
+      id: thisSession.user.id,
+      username: thisSession.user.user_metadata.username,
+      gender: thisSession.user.user_metadata.gender,
+      email: thisSession.user.email,
+      phone: thisSession.user.user_metadata.phone || null,
+      birthdate: thisSession.user.user_metadata.birthdate,
+      connections: thisSession.user.user_metadata.connections || [],
+      address: thisSession.user.user_metadata.address,
+      birthplace: thisSession.user.user_metadata.birthplace,
+      bio: thisSession.user.user_metadata.bio,
+      education: thisSession.user.user_metadata.education || null,
+      fullName: thisSession.user.user_metadata.fullName,
+      skillPrimary: thisSession.user.user_metadata.skillPrimary,
+      skillSecondary: thisSession.user.user_metadata.skillSecondary,
     });
 
     if (error) {
@@ -62,29 +62,28 @@ const LogInPage = (e) => {
     }
 
     toast.dismiss();
-
     toast.success("Signed in!");
   };
 
   const writeProvData = async () => {
-    const { data, error } = await __supabase.from("user_provisioners").insert({
-      address: session.user.user_metadata.address,
-      alternativeNames: session.user.user_metadata.alternativeNames,
-      companySize: session.user.user_metadata.companySize,
-      companyType: session.user.user_metadata.companyType,
-      contactInformation: session.user.user_metadata.contactInformation,
-      foundingYear: session.user.user_metadata.foundingYear,
-      fullDescription: session.user.user_metadata.fullDescription,
-      id: session.user.id,
-      industryType: session.user.user_metadata.industryType,
+    const { error } = await __supabase.from("user_provisioners").insert({
+      address: thisSession.user.user_metadata.address,
+      alternativeNames: thisSession.user.user_metadata.alternativeNames,
+      companySize: thisSession.user.user_metadata.companySize,
+      companyType: thisSession.user.user_metadata.companyType,
+      contactInformation: thisSession.user.user_metadata.contactInformation,
+      foundingYear: thisSession.user.user_metadata.foundingYear,
+      fullDescription: thisSession.user.user_metadata.fullDescription,
+      id: thisSession.user.id,
+      industryType: thisSession.user.user_metadata.industryType,
       jobPostings: [],
-      legalName: session.user.user_metadata.legalName,
-      shortDescription: session.user.user_metadata.shortDescription,
-      socialProfiles: session.user.user_metadata.socialProfiles,
+      legalName: thisSession.user.user_metadata.legalName,
+      shortDescription: thisSession.user.user_metadata.shortDescription,
+      socialProfiles: thisSession.user.user_metadata.socialProfiles,
       tags: [],
-      type: session.user.user_metadata.type,
-      website: session.user.user_metadata.website,
-      companyEmail: session.user.email,
+      type: thisSession.user.user_metadata.type,
+      website: thisSession.user.user_metadata.website,
+      companyEmail: thisSession.user.email,
     });
 
     if (error) {
@@ -101,47 +100,6 @@ const LogInPage = (e) => {
     const email = e.target.user_email.value;
     const password = e.target.user_password.value;
     toast.loading("Signing in...");
-
-    // __supabase.auth
-    //   .signInWithPassword({
-    //     email: email,
-    //     password: password,
-    //   })
-    //   .then(({ data: { user }, error }) => {
-    //     if (error) {
-    //       toast.dismiss();
-    //       toast.error(error.message);
-    //       return;
-    //     }
-
-    //     // check if user is hunter
-    //     if (user && user.user_metadata?.type === "hunter") {
-    //       checkHunterData().then((e) => {
-    //         if (e === false) {
-    //           writeHunterData();
-    //         } else {
-    //           setAuthState(user);
-    //           toast.dismiss();
-    //           toast.success("Signed in!");
-    //           router.push("/h/feed");
-    //         }
-    //       });
-    //     }
-
-    //     // check if user is provisioner
-    //     if (user && user.user_metadata?.type === "provisioner") {
-    //       checkProvData().then((e) => {
-    //         if (e === false) {
-    //           writeProvData();
-    //         } else {
-    //           setAuthState(user);
-    //           toast.dismiss();
-    //           toast.success("Signed in!");
-    //           router.push("/p/dashboard");
-    //         }
-    //       });
-    //     }
-    //   });
 
     const {
       data: { user },
@@ -175,8 +133,8 @@ const LogInPage = (e) => {
       checkProvData({ targetID: user.id }).then((e) => {
         if (e === false) {
           writeProvData();
+          writeToMetadata();
         } else {
-          setAuthState(user);
           toast.dismiss();
           toast.success("Signed in!");
           router.push("/p/dashboard");
@@ -186,10 +144,10 @@ const LogInPage = (e) => {
   };
 
   const checkIfHasUser = async () => {
-    if (!!session) {
-      if (session.user.user_metadata.type === "hunter") {
+    if (!!thisSession) {
+      if (thisSession.user.user_metadata.type === "hunter") {
         router.push("/h/feed");
-      } else if (session.user.user_metadata.type === "provisioner") {
+      } else if (thisSession.user.user_metadata.type === "provisioner") {
         router.push("/p/dashboard");
       }
     }
