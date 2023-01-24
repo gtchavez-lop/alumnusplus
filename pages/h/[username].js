@@ -3,13 +3,20 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import Link from "next/link";
+// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
+import { __PageTransition } from "@/lib/animation";
+import { __supabase } from "@/supabase";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+
+const ProtectedPageContainer = dynamic(
+  () => import("@/components/ProtectedPageContainer"),
+  { ssr: false }
+);
 
 const ACTIONS = {
   SET_USER_POSTS: "set-user-posts",
@@ -49,6 +56,7 @@ const UserPage = ({ notfound }) => {
     isConnected: false,
   });
 
+  // methods
   const fetchUser = async () => {
     const { data, error } = await __supabase
       .from("user_hunters")
@@ -221,197 +229,206 @@ const UserPage = ({ notfound }) => {
   };
 
   return (
-    !!user.isSuccess && (
-      <>
-        <motion.main
-          variants={__PageTransition}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="pt-24 pb-32 grid grid-cols-1 lg:grid-cols-5 gap-5"
-        >
-          <div className="col-span-full lg:col-span-3 flex flex-col gap-5">
-            {/* profile landing */}
-            <div className="p-5 bg-base-300 rounded-btn">
-              <img
-                src={`https://avatars.dicebear.com/api/bottts/${
-                  user.data.username || "default"
-                }.svg`}
-                alt="avatar"
-                className="w-32 h-32 rounded-full bg-primary border-white border-2"
-              />
-              <p className="text-3xl font-bold">
-                {user.data.fullName.first} {user.data.fullName.middle}{" "}
-                {user.data.fullName.last}
-              </p>
+    <>
+      <ProtectedPageContainer>
+        {!!user.isSuccess && (
+          <>
+            <motion.main
+              variants={__PageTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="pt-24 pb-32 grid grid-cols-1 lg:grid-cols-5 gap-5"
+            >
+              <div className="col-span-full lg:col-span-3 flex flex-col gap-5">
+                {/* profile landing */}
+                <div className="p-5 bg-base-300 rounded-btn">
+                  <img
+                    src={`https://avatars.dicebear.com/api/bottts/${
+                      user.data.username || "default"
+                    }.svg`}
+                    alt="avatar"
+                    className="w-32 h-32 rounded-full bg-primary border-white border-2"
+                  />
+                  <p className="text-3xl font-bold">
+                    {user.data.fullName.first} {user.data.fullName.middle}{" "}
+                    {user.data.fullName.last}
+                  </p>
 
-              <p className="font-semibold opacity-75">@{user.data.username}</p>
-              <p>
-                Joined at:{" "}
-                <span className="opacity-50">
-                  {dayjs(
-                    user.data.createdAt || new Date().toISOString()
-                  ).format("MMMM DD, YYYY")}
-                </span>
-              </p>
-
-              {states.isConnected ? (
-                <div
-                  onClick={removeFromConnections}
-                  className="btn btn-warning mt-5"
-                >
-                  Remove from connections
-                </div>
-              ) : (
-                <div
-                  onClick={addToConnections}
-                  className="btn btn-primary mt-5"
-                >
-                  Add to connections
-                </div>
-              )}
-            </div>
-            <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-              <p className="text-2xl font-bold mb-4">Bio</p>
-              <ReactMarkdown className="prose">
-                {user.data.bio || "This user has not added a bio yet"}
-              </ReactMarkdown>
-            </div>
-            <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-              <p className="text-2xl font-bold mb-4">Skillsets</p>
-              <div>
-                <p className="font-semibold">Primary Skill</p>
-                <p className="flex gap-2 gap-y-1 flex-wrap">
-                  <span className="badge badge-primary">
-                    {user.data.skillPrimary}
-                  </span>
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold">Secondary Skillsets</p>
-                <p className="flex gap-2 gap-y-1 flex-wrap">
-                  {user.data.skillSecondary.map((skill, index) => (
-                    <span
-                      className="badge badge-secondary"
-                      key={`skill_${index}`}
-                    >
-                      {skill}
+                  <p className="font-semibold opacity-75">
+                    @{user.data.username}
+                  </p>
+                  <p>
+                    Joined at:{" "}
+                    <span className="opacity-50">
+                      {dayjs(
+                        user.data.createdAt || new Date().toISOString()
+                      ).format("MMMM DD, YYYY")}
                     </span>
-                  ))}
-                </p>
-              </div>
-            </div>
-            <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-              <p className="text-2xl font-bold mb-5">About</p>
-              <div>
-                <p className="font-semibold">Birthday</p>
-                <p className="opacity-50">
-                  {dayjs(
-                    user.data.birthdate || new Date().toISOString()
-                  ).format("MMMM DD, YYYY")}
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold">Location</p>
-                <p className="opacity-50">
-                  {user.data.address.address}, {user.data.address.city}
-                </p>
-              </div>
-            </div>
-            <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-              <p className="text-2xl font-bold">Activities</p>
-              {!!userPosts.isLoading &&
-                Array(3)
-                  .fill(0)
-                  .map((_, i) => (
+                  </p>
+
+                  {states.isConnected ? (
                     <div
-                      key={`postloading-${i}`}
-                      className="w-full h-[72px] bg-base-200 animate-pulse"
-                    />
-                  ))}
-
-              {!!userPosts.isSuccess && userPosts.data.length < 1 && (
-                <p className="text-center opacity-50">No activities yet</p>
-              )}
-
-              {!!userPosts.isSuccess &&
-                userPosts.data.length > 0 &&
-                userPosts.data.map((activity, index) => (
-                  <div
-                    key={`activity_${index}`}
-                    className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
-                  >
-                    <div>
-                      <ReactMarkdown className="prose prose-sm prose-headings:text-lg">
-                        {activity.content.substring(0, 30)}
-                      </ReactMarkdown>
-                    </div>
-                    <Link
-                      href={`/h/feed/${activity.id}`}
-                      className="btn btn-primary btn-sm"
+                      onClick={removeFromConnections}
+                      className="btn btn-warning mt-5"
                     >
-                      See more
-                    </Link>
-                  </div>
-                ))}
-            </div>
-          </div>
-          <div className="col-span-full lg:col-span-2 flex flex-col gap-5">
-            <div className="p-5">
-              <p className="text-2xl font-bold mb-2">Connections</p>
-
-              {!!userConnections.isLoading &&
-                Array(3)
-                  .fill()
-                  .map((_, i) => (
+                      Remove from connections
+                    </div>
+                  ) : (
                     <div
-                      key={`connectionloading-${i}`}
-                      className="w-full h-[72px] bg-base-200 animate-pulse"
-                    />
-                  ))}
-              {!!userConnections.isSuccess &&
-                userConnections.data.length < 1 && (
-                  <p className="text-center opacity-50">No connections yet</p>
-                )}
+                      onClick={addToConnections}
+                      className="btn btn-primary mt-5"
+                    >
+                      Add to connections
+                    </div>
+                  )}
+                </div>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-4">Bio</p>
+                  <ReactMarkdown className="prose">
+                    {user.data.bio || "This user has not added a bio yet"}
+                  </ReactMarkdown>
+                </div>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-4">Skillsets</p>
+                  <div>
+                    <p className="font-semibold">Primary Skill</p>
+                    <p className="flex gap-2 gap-y-1 flex-wrap">
+                      <span className="badge badge-primary">
+                        {user.data.skillPrimary}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Secondary Skillsets</p>
+                    <p className="flex gap-2 gap-y-1 flex-wrap">
+                      {user.data.skillSecondary.map((skill, index) => (
+                        <span
+                          className="badge badge-secondary"
+                          key={`skill_${index}`}
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-5">About</p>
+                  <div>
+                    <p className="font-semibold">Birthday</p>
+                    <p className="opacity-50">
+                      {dayjs(
+                        user.data.birthdate || new Date().toISOString()
+                      ).format("MMMM DD, YYYY")}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Location</p>
+                    <p className="opacity-50">
+                      {user.data.address.address}, {user.data.address.city}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold">Activities</p>
+                  {!!userPosts.isLoading &&
+                    Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <div
+                          key={`postloading-${i}`}
+                          className="w-full h-[72px] bg-base-200 animate-pulse"
+                        />
+                      ))}
 
-              {!!userConnections.isSuccess &&
-                userConnections.data.length > 0 &&
-                userConnections.data.map((connection, index) => (
-                  <div
-                    key={`connection_${index}`}
-                    className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
-                  >
-                    <div className="flex gap-2 items-center">
-                      <img
-                        src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
-                        alt="avatar"
-                        className="w-12 h-12 rounded-full bg-primary "
-                      />
-                      <div>
-                        <p className="font-bold leading-none">
-                          {connection.fullName.first} {connection.fullName.last}
-                        </p>
-                        <p className="opacity-50 leading-none">
-                          @{connection.username}
-                        </p>
+                  {!!userPosts.isSuccess && userPosts.data.length < 1 && (
+                    <p className="text-center opacity-50">No activities yet</p>
+                  )}
+
+                  {!!userPosts.isSuccess &&
+                    userPosts.data.length > 0 &&
+                    userPosts.data.map((activity, index) => (
+                      <div
+                        key={`activity_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <div>
+                          <ReactMarkdown className="prose prose-sm prose-headings:text-lg">
+                            {activity.content.substring(0, 30)}
+                          </ReactMarkdown>
+                        </div>
+                        <Link
+                          href={`/h/feed/${activity.id}`}
+                          className="btn btn-primary btn-sm"
+                        >
+                          See more
+                        </Link>
                       </div>
-                    </div>
-                    <Link
-                      href={`/h/${connection.username}`}
-                      className="btn btn-sm btn-primary"
-                    >
-                      See Profile
-                    </Link>
-                  </div>
-                ))}
-            </div>
-            <div className="p-5">
-              <p className="text-2xl font-bold">Actions</p>
-            </div>
-          </div>
-        </motion.main>
-      </>
-    )
+                    ))}
+                </div>
+              </div>
+              <div className="col-span-full lg:col-span-2 flex flex-col gap-5">
+                <div className="p-5">
+                  <p className="text-2xl font-bold mb-2">Connections</p>
+
+                  {!!userConnections.isLoading &&
+                    Array(3)
+                      .fill()
+                      .map((_, i) => (
+                        <div
+                          key={`connectionloading-${i}`}
+                          className="w-full h-[72px] bg-base-200 animate-pulse"
+                        />
+                      ))}
+                  {!!userConnections.isSuccess &&
+                    userConnections.data.length < 1 && (
+                      <p className="text-center opacity-50">
+                        No connections yet
+                      </p>
+                    )}
+
+                  {!!userConnections.isSuccess &&
+                    userConnections.data.length > 0 &&
+                    userConnections.data.map((connection, index) => (
+                      <div
+                        key={`connection_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <div className="flex gap-2 items-center">
+                          <img
+                            src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                            alt="avatar"
+                            className="w-12 h-12 rounded-full bg-primary "
+                          />
+                          <div>
+                            <p className="font-bold leading-none">
+                              {connection.fullName.first}{" "}
+                              {connection.fullName.last}
+                            </p>
+                            <p className="opacity-50 leading-none">
+                              @{connection.username}
+                            </p>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/h/${connection.username}`}
+                          className="btn btn-sm btn-primary"
+                        >
+                          See Profile
+                        </Link>
+                      </div>
+                    ))}
+                </div>
+                <div className="p-5">
+                  <p className="text-2xl font-bold">Actions</p>
+                </div>
+              </div>
+            </motion.main>
+          </>
+        )}
+      </ProtectedPageContainer>
+    </>
   );
 };
 export default UserPage;

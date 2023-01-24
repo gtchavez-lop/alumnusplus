@@ -43,45 +43,8 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-const JobPage = ({ jobData, uploaderData }) => {
-  // const router = useRouter();
-  // const [jobData, setJobData] = useState({});
-  // const [uploaderData, setUploaderData] = useState({});
-  // const [isLoaded, setIsLoaded] = useState(false);
+const JobPage = ({ jobData }) => {
   const [scrollYValue, setScrollYValue] = useState(0);
-  // const { scrollY } = useScroll();
-  // const { id: job_id } = router.query;
-  // const fetchUploaderData = async () => {
-  //   const { data, error } = await __supabase
-  //     .from("user_provisioners")
-  //     .select("*")
-  //     .eq("id", jobData.uploader_id)
-  //     .single();
-  //   if (error) {
-  //     console.log(error);
-  //   } else if (data) {
-  //     setUploaderData(data);
-  //     setIsLoaded(true);
-  //   }
-  // };
-  // const fetchJobData = async () => {
-  //   const { data, error } = await __supabase
-  //     .from("public_jobs")
-  //     .select("*")
-  //     .eq("id", job_id)
-  //     .single();
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //     setJobData(data);
-  //     fetchUploaderData();
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (job_id !== undefined || job_id !== null) {
-  //     fetchJobData();
-  //   }
-  // }, [router]);
 
   useEffect(() => {
     const handleScroll = () => {

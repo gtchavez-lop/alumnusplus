@@ -4,92 +4,102 @@ import { useEffect, useState } from "react";
 
 import IndustryTypes from "../../schemas/industryTypes.json";
 import JobCard from "../../components/Jobs/JobCard";
+import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { __PageTransition } from "../../lib/animation";
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
 
 const JobPostings = () => {
-  const [provJobs, setProvJobs] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [addPostModalShown, setAddPostModalShown] = useState(false);
-  // const __supabase = useSupabaseClient();
+  const thisSession = useSession();
 
   const fetchProvJobs = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
+    if (!!thisSession) {
+      const { data, error } = await __supabase
+        .from("job_postings")
+        .select("*")
+        .eq("uploader_email", thisSession?.user.email);
 
-    const { data: provJobs, error: provJobsError } = await __supabase
-      .from("job_postings")
-      .select("*")
-      .eq("uploader_email", user.email);
+      if (error) {
+        console.log(error);
+        return [];
+      }
 
-    if (provJobs) {
-      setProvJobs(provJobs);
-      setIsLoaded(true);
+      return data;
     }
+
+    return [];
   };
 
-  useEffect(() => {
-    fetchProvJobs();
-  }, []);
-
-  if (!isLoaded) {
-    return (
-      <motion.main
-        variants={__PageTransition}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="relative min-h-screen w-full flex flex-col justify-center items-center"
-      >
-        <FiLoader className="animate-spin text-4xl text-primary" />
-      </motion.main>
-    );
-  }
+  const provJobs = useQuery({
+    queryKey: ["provJobList"],
+    queryFn: fetchProvJobs,
+    onSuccess: () => {
+      console.log("provJobs loaded");
+    },
+    onError: () => {
+      console.log("provJobs failed to load");
+    },
+    suspense: true,
+    enabled: !!thisSession,
+  });
 
   return (
-    isLoaded && (
-      <>
+    <ProtectedPageContainer>
+      {!!!provJobs.isLoading ? (
+        <>
+          <motion.main
+            variants={__PageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36"
+          >
+            <button
+              onClick={() => setAddPostModalShown(true)}
+              className="btn btn-primary items-center gap-2"
+            >
+              <span>Add new job</span>
+              <FiPlus />
+            </button>
+
+            <div>
+              <p className="text-3xl mb-2">Active Job Posts</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {/* {provJobs.data.map((job, index) => (
+                  <JobCard job={job} key={`jobcard_${index}`} />
+                ))} */}
+              </div>
+            </div>
+          </motion.main>
+
+          <AnimatePresence mode="wait">
+            {addPostModalShown && (
+              <AddJobPostModal
+                setModalShown={setAddPostModalShown}
+                key={`modalShown_${addPostModalShown}`}
+              />
+            )}
+          </AnimatePresence>
+        </>
+      ) : (
         <motion.main
           variants={__PageTransition}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36"
+          className="relative min-h-screen w-full flex flex-col justify-center items-center"
         >
-          <button
-            onClick={() => setAddPostModalShown(true)}
-            className="btn btn-primary items-center gap-2"
-          >
-            <span>Add new job</span>
-            <FiPlus />
-          </button>
-
-          <div>
-            <p className="text-3xl mb-2">Active Job Posts</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {provJobs.map((job, index) => (
-                <JobCard job={job} key={`jobcard_${index}`} />
-              ))}
-            </div>
-          </div>
+          <FiLoader className="animate-spin text-4xl text-primary" />
         </motion.main>
-
-        <AnimatePresence mode="wait">
-          {addPostModalShown && (
-            <AddJobPostModal
-              setModalShown={setAddPostModalShown}
-              key={`modalShown_${addPostModalShown}`}
-            />
-          )}
-        </AnimatePresence>
-      </>
-    )
+      )}
+    </ProtectedPageContainer>
   );
 };
 

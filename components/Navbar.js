@@ -143,7 +143,7 @@ export default function Navbar() {
 
           {/* desktop hunter */}
           <motion.nav className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center ">
-            <main className="grid grid-cols-3 w-full items-center max-w-7xl">
+            <main className="grid grid-cols-3 w-full items-center max-w-6xl">
               <Logo />
               <div className="flex justify-center gap-2">
                 <Link href={"/h/feed"} scroll={false} legacyBehavior={true}>
@@ -294,7 +294,7 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: "circOut" }}
             className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
           >
-            <main className="grid grid-cols-3 w-full items-center max-w-7xl">
+            <main className="grid grid-cols-3 w-full items-center max-w-6xl">
               <Logo />
               <div className="flex justify-center gap-2">
                 <Link
@@ -378,7 +378,7 @@ export default function Navbar() {
       transition={{ duration: 0.5, ease: "circOut" }}
       className="fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
     >
-      <main className="flex justify-between w-full items-center max-w-7xl">
+      <main className="flex justify-between w-full items-center max-w-6xl">
         <Logo />
 
         <div className="flex justify-end gap-2">

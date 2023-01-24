@@ -1,12 +1,24 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { __PageTransition, __TabTransition } from "../../lib/animation";
+import { __PageTransition, __TabTransition } from "@/lib/animation";
 import { useEffect, useState } from "react";
 
-import CvBuilder from "@/components/Jobs/CvBuilder";
-import JobCard from "../../components/Jobs/JobCard";
-import { __supabase } from "../../supabase";
+import { __supabase } from "@/supabase";
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@supabase/auth-helpers-react";
+
+const ProtectedPageContainer = dynamic(
+  () => import("@/components/ProtectedPageContainer"),
+  { ssr: false }
+);
+
+const JobCard = dynamic(() => import("@/components/Jobs/JobCard"), {
+  ssr: false,
+});
+
+const CvBuilder = dynamic(() => import("@/components/Jobs/CvBuilder"), {
+  ssr: false,
+});
 
 const _fetchAllJobs = async () => {
   const { data, error } = await __supabase
@@ -64,95 +76,97 @@ const JobPage = () => {
 
   return (
     <>
-      <motion.main
-        variants={__PageTransition}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="relative min-h-screen w-full pt-24 pb-36"
-      >
-        {/* tabs */}
-        <div className="tabs tabs-boxed">
-          <p
-            onClick={() => setTabSelected("all")}
-            className={`tab ${tabSelected === "all" && "tab-active"}`}
-          >
-            All Jobs
-          </p>
-          <p
-            onClick={() => setTabSelected("recommended")}
-            className={`tab ${tabSelected === "recommended" && "tab-active"}`}
-          >
-            Recommended Jobs
-          </p>
-          <p
-            onClick={() => setTabSelected("builder")}
-            className={`tab ${tabSelected === "builder" && "tab-active"}`}
-          >
-            Wicket CV Builder
-          </p>
-        </div>
-
-        {/* content */}
-        {/* all jobs */}
-        <AnimatePresence mode="wait">
-          {tabSelected === "all" && (
-            <motion.div
-              variants={__TabTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-              key={"all_jobs"}
+      <ProtectedPageContainer>
+        <motion.main
+          variants={__PageTransition}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="relative min-h-screen w-full pt-24 pb-36"
+        >
+          {/* tabs */}
+          <div className="tabs tabs-boxed">
+            <p
+              onClick={() => setTabSelected("all")}
+              className={`tab ${tabSelected === "all" && "tab-active"}`}
             >
-              {allJobsSuccess &&
-                allJobs.map((job, index) => (
-                  <JobCard job={job} key={`jobcard_${index}`} />
-                ))}
+              All Jobs
+            </p>
+            <p
+              onClick={() => setTabSelected("recommended")}
+              className={`tab ${tabSelected === "recommended" && "tab-active"}`}
+            >
+              Recommended Jobs
+            </p>
+            <p
+              onClick={() => setTabSelected("builder")}
+              className={`tab ${tabSelected === "builder" && "tab-active"}`}
+            >
+              Wicket CV Builder
+            </p>
+          </div>
 
-              {allJobsLoading &&
-                Array(10)
-                  .fill(0)
-                  .map((_, index) => (
-                    <div
-                      key={`jobloader_${index}`}
-                      style={{
-                        animationDelay: index * 50 + "ms",
-                        animationDuration: "500ms",
-                      }}
-                      className="h-[238px] w-full bg-base-200 animate-pulse "
-                    />
+          {/* content */}
+          {/* all jobs */}
+          <AnimatePresence mode="wait">
+            {tabSelected === "all" && (
+              <motion.div
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+                key={"all_jobs"}
+              >
+                {allJobsSuccess &&
+                  allJobs.map((job, index) => (
+                    <JobCard job={job} key={`jobcard_${index}`} />
                   ))}
-            </motion.div>
-          )}
-          {tabSelected === "recommended" && (
-            <motion.div
-              variants={__TabTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-              key={"recommended_jobs"}
-            >
-              <p>Recommended</p>
-              {/* {jobs.map((job, index) => (
+
+                {allJobsLoading &&
+                  Array(10)
+                    .fill(0)
+                    .map((_, index) => (
+                      <div
+                        key={`jobloader_${index}`}
+                        style={{
+                          animationDelay: index * 50 + "ms",
+                          animationDuration: "500ms",
+                        }}
+                        className="h-[238px] w-full bg-base-200 animate-pulse "
+                      />
+                    ))}
+              </motion.div>
+            )}
+            {tabSelected === "recommended" && (
+              <motion.div
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+                key={"recommended_jobs"}
+              >
+                <p>Recommended</p>
+                {/* {jobs.map((job, index) => (
                   <JobCard job={job} key={`jobcard_${index}`} />
                 ))} */}
-            </motion.div>
-          )}
-          {tabSelected === "builder" && (
-            <motion.div
-              variants={__TabTransition}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className=" mt-10"
-            >
-              <CvBuilder />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.main>
+              </motion.div>
+            )}
+            {tabSelected === "builder" && (
+              <motion.div
+                variants={__TabTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className=" mt-10"
+              >
+                <CvBuilder />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.main>
+      </ProtectedPageContainer>
     </>
   );
 };
