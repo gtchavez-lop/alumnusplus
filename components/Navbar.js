@@ -208,7 +208,7 @@ export default function Navbar() {
                 </Link>
               </div>
               <div className="flex justify-end gap-2">
-                <Link href={"/h/messages"} scroll={false} legacyBehavior={true}>
+                {/* <Link href={"/h/messages"} scroll={false} legacyBehavior={true}>
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
                       router.pathname === "/h/messages" &&
@@ -217,7 +217,7 @@ export default function Navbar() {
                   >
                     <FiInbox />
                   </button>
-                </Link>
+                </Link> */}
                 <Link href={"/h/me"} scroll={false} legacyBehavior={true}>
                   <button
                     className={`px-5 py-2 rounded-full hover:bg-primary hover:bg-opacity-50 transition-all ${
