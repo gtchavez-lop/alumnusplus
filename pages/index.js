@@ -8,6 +8,7 @@ import Pricing from "../components/Landing/Pricing";
 import { __PageTransition } from "../lib/animation";
 import { __supabase } from "../supabase";
 import { useRouter } from "next/router";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const jobList = [
   "Web Developer",
@@ -26,6 +27,7 @@ const Home = (e) => {
 
   const [activeJob, setActiveJob] = useState(jobList[0]);
   const [scrollYValue, setScrollYValue] = useState(0);
+  const session = useSession();
 
   const desktopImg_1 = useRef(null);
   const desktopImg_2 = useRef(null);
@@ -39,20 +41,27 @@ const Home = (e) => {
   });
 
   const checkUser = async () => {
-    try {
-      const {
-        data: { user: thisUser },
-      } = await __supabase.auth.getUser();
-      if (thisUser) {
-        if (thisUser.user_metadata.type === "hunter") {
-          router.push("/h/feed");
-        } else if (thisUser.user_metadata.type === "provisioner") {
-          router.push("/p/dashboard");
-        }
+    if (!!session) {
+      if (session.user_metadata.type === "hunter") {
+        router.push("/h/feed");
+      } else if (session.user_metadata.type === "provisioner") {
+        router.push("/p/dashboard");
       }
-    } catch (error) {
-      console.log(error);
     }
+    // try {
+    //   const {
+    //     data: { user: thisUser },
+    //   } = await __supabase.auth.getUser();
+    //   if (thisUser) {
+    //     if (thisUser.user_metadata.type === "hunter") {
+    //       router.push("/h/feed");
+    //     } else if (thisUser.user_metadata.type === "provisioner") {
+    //       router.push("/p/dashboard");
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   useEffect(() => {

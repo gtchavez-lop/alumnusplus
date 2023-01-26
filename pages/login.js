@@ -1,112 +1,17 @@
 import { useEffect, useState } from "react";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import Link from "next/link";
+import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { __PageTransition } from "../lib/animation";
 import { __supabase } from "../supabase";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import useLocalStorage from "../lib/localStorageHook";
 import { useRouter } from "next/router";
 
 const LogInPage = (e) => {
-  const [hasUser, setHasUser] = useState(false);
   const router = useRouter();
-  const [authState, setAuthState] = useLocalStorage("authState");
-
-  const checkHunterData = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-    const { data, error } = await __supabase
-      .from("user_hunters")
-      .select("id")
-      .single()
-      .eq("id", user.id);
-    if (data) {
-      return true;
-    }
-    return false;
-  };
-
-  const checkProvData = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-    const { data, error } = await __supabase
-      .from("user_provisioners")
-      .select("id")
-      .single()
-      .eq("id", user.id);
-    if (data) {
-      return true;
-    }
-    return false;
-  };
-
-  const writeHunterData = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const { error } = await __supabase.from("user_hunters").insert({
-      id: user.id,
-      username: user.user_metadata.username,
-      gender: user.user_metadata.gender,
-      email: user.email,
-      phone: user.user_metadata.phone || null,
-      birthdate: user.user_metadata.birthdate,
-      connections: user.user_metadata.connections || [],
-      address: user.user_metadata.address,
-      birthplace: user.user_metadata.birthplace,
-      education: user.user_metadata.education || null,
-      fullName: user.user_metadata.fullName,
-      skillPrimary: user.user_metadata.skillPrimary,
-      skillSecondary: user.user_metadata.skillSecondary,
-    });
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    toast.dismiss();
-
-    toast.success("Signed in!");
-  };
-
-  const writeProvData = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const { data, error } = await __supabase.from("user_provisioners").insert({
-      address: user.user_metadata.address,
-      alternativeNames: user.user_metadata.alternativeNames,
-      companySize: user.user_metadata.companySize,
-      companyType: user.user_metadata.companyType,
-      contactInformation: user.user_metadata.contactInformation,
-      foundingYear: user.user_metadata.foundingYear,
-      fullDescription: user.user_metadata.fullDescription,
-      id: user.id,
-      industryType: user.user_metadata.industryType,
-      jobPostings: [],
-      legalName: user.user_metadata.legalName,
-      shortDescription: user.user_metadata.shortDescription,
-      socialProfiles: user.user_metadata.socialProfiles,
-      tags: [],
-      type: user.user_metadata.type,
-      website: user.user_metadata.website,
-      companyEmail: user.email,
-    });
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    toast.dismiss();
-    router.push("/p/feed");
-  };
+  const thisUser = useUser();
 
   const signInAccount = async (e) => {
     e.preventDefault();
@@ -114,60 +19,50 @@ const LogInPage = (e) => {
     const password = e.target.user_password.value;
     toast.loading("Signing in...");
 
-    __supabase.auth
-      .signInWithPassword({
-        email: email,
-        password: password,
-      })
-      .then(({ data: { user }, error }) => {
-        if (error) {
-          toast.dismiss();
-          toast.error(error.message);
-          return;
-        }
+    const {
+      data: { user },
+      error,
+    } = await __supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
 
-        // check if user is hunter
-        if (user && user.user_metadata?.type === "hunter") {
-          checkHunterData().then((e) => {
-            if (e === false) {
-              writeHunterData();
-            } else {
-              setAuthState(user);
-              toast.dismiss();
-              toast.success("Signed in!");
-              router.push("/h/feed");
-            }
-          });
-        }
+    if (error) {
+      toast.dismiss();
+      toast.error(error.message);
+      return;
+    }
 
-        // check if user is provisioner
-        if (user && user.user_metadata?.type === "provisioner") {
-          checkProvData().then((e) => {
-            if (e === false) {
-              writeProvData();
-            } else {
-              setAuthState(user);
-              toast.dismiss();
-              toast.success("Signed in!");
-              router.push("/p/dashboard");
-            }
-          });
-        }
-      });
+    // check if user is hunter
+    if (user && user.user_metadata?.type === "hunter") {
+      toast.dismiss();
+      toast.success("Signed in!");
+      router.push("/h/feed");
+    }
+
+    // check if user is provisioner
+    if (user && user.user_metadata?.type === "provisioner") {
+      toast.dismiss();
+      toast.success("Signed in!");
+      router.push("/p/dashboard");
+    }
   };
 
-  const checkIfHasUser = async () => {
-    if (authState) {
-      if (authState.user_metadata.type === "hunter") {
+  const checkUser = async () => {
+    if (!!thisUser) {
+      if (thisUser.user_metadata?.type === "hunter") {
         router.push("/h/feed");
-      } else if (authState.user_metadata.type === "provisioner") {
+      }
+      if (thisUser.user_metadata?.type === "provisioner") {
         router.push("/p/dashboard");
       }
+    } else {
+      return;
     }
   };
 
   useEffect(() => {
-    checkIfHasUser();
+    checkUser();
   }, []);
 
   return (
@@ -187,57 +82,52 @@ const LogInPage = (e) => {
           <img src="./login.svg" className="w-96" />
         </div>
 
-        {!hasUser && (
-          <>
-            <p className="text-2xl lg:text-3xl z-10">Sign in to your account</p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                signInAccount(e);
-              }}
-              className="form-control gap-2 mt-8 max-w-md z-10"
-            >
-              <span>Email</span>
-              <input
-                placeholder="Your email address"
-                type="email"
-                name="user_email"
-                className="input input-primary input-bordered"
-                required
-              />
-              <span>Password</span>
-              <input
-                placeholder="Your password"
-                type="password"
-                name="user_password"
-                className="input input-primary input-bordered"
-                required
-              />
+        <>
+          <p className="text-2xl lg:text-3xl z-10">Sign in to your account</p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              signInAccount(e);
+            }}
+            className="form-control gap-2 mt-8 max-w-md z-10"
+          >
+            <span>Email</span>
+            <input
+              placeholder="Your email address"
+              type="email"
+              name="user_email"
+              className="input input-primary input-bordered"
+              required
+            />
+            <span>Password</span>
+            <input
+              placeholder="Your password"
+              type="password"
+              name="user_password"
+              className="input input-primary input-bordered"
+              required
+            />
 
-              <button type="submit" className="btn btn-primary mt-5">
-                Log in
-              </button>
-              <p className="">
-                Don&apos;t have an account?{" "}
-                <Link
-                  href={"/register"}
-                  className="text-primary cursor-pointer"
-                >
-                  Sign up
-                </Link>
-              </p>
-              <p>
-                Forgot your password?{" "}
-                <Link
-                  href={"/util/recovery"}
-                  className="text-primary cursor-pointer"
-                >
-                  Reset password
-                </Link>
-              </p>
-            </form>
-          </>
-        )}
+            <button type="submit" className="btn btn-primary mt-5">
+              Log in
+            </button>
+            <p className="">
+              Don&apos;t have an account?{" "}
+              <Link href={"/register"} className="text-primary cursor-pointer">
+                Sign up
+              </Link>
+            </p>
+            <p>
+              Forgot your password?{" "}
+              <Link
+                href={"/util/recovery"}
+                className="text-primary cursor-pointer"
+              >
+                Reset password
+              </Link>
+            </p>
+          </form>
+        </>
       </motion.main>
     </>
   );

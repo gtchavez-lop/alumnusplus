@@ -1,58 +1,30 @@
 import {
   FiArrowUp,
+  FiLoader,
   FiMessageSquare,
   FiMoreHorizontal,
   FiX,
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import SkeletonCard from "../../pages/skeletoncard";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __supabase } from "../../supabase";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
-import useLocalStorage from "../../lib/localStorageHook";
-
-const markdownRenderer = {
-  h1: (props) => <h1 className="text-2xl font-bold" {...props} />,
-  h2: (props) => <h2 className="text-xl font-bold mt-5" {...props} />,
-  h3: (props) => <h3 className="text-lg font-bold mt-5" {...props} />,
-  h4: (props) => <h4 className="text-base font-bold mt-5" {...props} />,
-  h5: (props) => <h5 className="text-sm font-bold mt-5" {...props} />,
-  h6: (props) => <h6 className="text-xs font-bold mt-5" {...props} />,
-  ul: (props) => <ul className="list-disc ml-5" {...props} />,
-  ol: (props) => <ol className="list-decimal ml-5" {...props} />,
-};
+import { useSession } from "@supabase/auth-helpers-react";
 
 const FeedCard = ({ data: blogPostData }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [uploaderData, setUploaderData] = useState({});
   const [isLiked, setIsLiked] = useState(false);
-  const [authState] = useLocalStorage("authState");
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const session = useSession();
 
-  const fetchUploaderData = async () => {
-    const { data: uploader, error } = await __supabase
-      .rpc("get_hunter_by_id", {
-        input_id: blogPostData.uploaderID,
-      })
-      .single();
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    setUploaderData(uploader);
-    setIsLoaded(true);
-  };
-
-  // check if user liked the post
   const checkIfLiked = async () => {
-    const localIsLiked = blogPostData.upvoters.includes(authState.id);
+    const localIsLiked = blogPostData.upvoters.includes(session.user.id);
     setIsLiked(localIsLiked);
   };
 
@@ -74,13 +46,12 @@ const FeedCard = ({ data: blogPostData }) => {
       return;
     }
 
-    const localIsLiked = currentData.upvoters.includes(authState.id);
-    console.log("Is liked: ", localIsLiked);
+    const localIsLiked = currentData.upvoters.includes(session.user.id);
 
     // if user already liked the post, remove the upvote
     if (localIsLiked) {
       const newUpvoters = currentData.upvoters.filter(
-        (id) => id !== authState.id
+        (id) => id !== session.user.id
       );
 
       const { error: removeUpvoteError } = await __supabase
@@ -105,7 +76,7 @@ const FeedCard = ({ data: blogPostData }) => {
       const { error: addUpvoteError } = await __supabase
         .from("public_posts")
         .update({
-          upvoters: [...currentData.upvoters, authState.id],
+          upvoters: [...currentData.upvoters, session.user.id],
         })
         .eq("id", blogPostData.id);
 
@@ -114,7 +85,7 @@ const FeedCard = ({ data: blogPostData }) => {
         return;
       }
 
-      blogPostData.upvoters = [...currentData.upvoters, authState.id];
+      blogPostData.upvoters = [...currentData.upvoters, session.user.id];
       setIsLiked(true);
       e.target.disabled = false;
       toast.dismiss();
@@ -122,49 +93,57 @@ const FeedCard = ({ data: blogPostData }) => {
   };
 
   useEffect(() => {
-    if (blogPostData && authState) {
-      fetchUploaderData();
-    }
-  }, [blogPostData, authState]);
-
-  useEffect(() => {
     checkIfLiked();
   }, []);
 
-  if (!isLoaded) {
-    return <SkeletonCard />;
-  }
-
   return (
     <>
-      <motion.div
-        animate={{
-          opacity: [0, 1],
-          transition: { duration: 0.2, ease: "circOut" },
-        }}
-        className="flex flex-col p-5 rounded-btn bg-base-200"
-      >
+      <motion.div className="flex flex-col p-5 rounded-btn bg-base-200">
         <div className="flex gap-3">
-          <img
-            // dicebear
-            src={`https://avatars.dicebear.com/api/bottts/${uploaderData.username}.svg`}
-            alt="avatar"
-            className="w-10 h-10"
-          />
+          <Link
+            href={
+              session.user.id === blogPostData.uploaderID
+                ? "/h/me"
+                : `/h/${blogPostData.uploader.username}`
+            }
+          >
+            <img
+              // dicebear
+              src={`https://avatars.dicebear.com/api/bottts/${blogPostData.uploader.username}.svg`}
+              alt="avatar"
+              className="w-10 h-10"
+            />
+          </Link>
           <div className="flex flex-col gap-1 justify-center">
             <p className="leading-none">
-              {uploaderData.fullName.first} {uploaderData.fullName.last}{" "}
+              <Link
+                href={
+                  session.user.id === blogPostData.uploaderID
+                    ? "/h/me"
+                    : `/h/${blogPostData.uploader.username}`
+                }
+              >
+                {blogPostData.uploader.full_name.first}{" "}
+                {blogPostData.uploader.full_name.last}{" "}
+              </Link>
               <span className="text-primary opacity-50">posted</span>
             </p>
-            <p className="opacity-50 leading-none">{uploaderData.username}</p>
+            <p className="text-sm flex gap-2 leading-none">
+              <span className="opacity-50">
+                @{blogPostData.uploader.username}
+              </span>
+              <span>
+                {dayjs(blogPostData.createdAt).format("MMM DD YYYY h:MM A")}
+              </span>
+            </p>
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 h-[101px] overflow-hidden">
           <ReactMarkdown
             // components={markdownRenderer}
             rehypePlugins={[rehypeRaw]}
-            className="prose-sm max-h-32 overflow-hidden"
+            className="prose-sm prose-headings:text-xl "
           >
             {blogPostData.content.slice(0, 200) + "..."}
           </ReactMarkdown>
@@ -177,14 +156,18 @@ const FeedCard = ({ data: blogPostData }) => {
               className={`btn ${isLiked ? "btn-primary" : "btn-ghost"} gap-2`}
             >
               <FiArrowUp className="font-bold" />
-              {blogPostData.upvoters.length || ""}
+              {blogPostData.upvoters?.length ?? 0}
             </button>
             <motion.button
-              onClick={() => setCommentsOpen(true)}
+              onClick={() =>
+                setCommentsOpen(
+                  blogPostData.comments?.length > 0 ? true : false
+                )
+              }
               className="btn btn-ghost"
             >
               <FiMessageSquare className="font-bold" />
-              <span className="ml-2">{blogPostData.comments.length}</span>
+              <span className="ml-2">{blogPostData.comments?.length ?? 0}</span>
             </motion.button>
           </div>
           <div className="md:hidden dropdown dropdown-top dropdown-end">
@@ -196,7 +179,9 @@ const FeedCard = ({ data: blogPostData }) => {
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <Link href={`/h/blog/${blogPostData.id}`}>Read More</Link>
+                <Link scroll={false} href={`/h/feed/${blogPostData.id}`}>
+                  Read More
+                </Link>
               </li>
               <li>
                 <button>Share</button>
@@ -204,9 +189,21 @@ const FeedCard = ({ data: blogPostData }) => {
             </ul>
           </div>
           <div className="md:flex gap-2 hidden ">
-            <Link href={`/h/blog/${blogPostData.id}`} className="btn btn-ghost">
-              Read More
-            </Link>
+            {!isMoreOpen ? (
+              <Link
+                scroll={false}
+                href={`/h/feed/${blogPostData.id}`}
+                className="btn btn-ghost"
+                onClick={() => setIsMoreOpen(true)}
+              >
+                Read More
+              </Link>
+            ) : (
+              <div className="btn btn-ghost btn-disabled items-center gap-2">
+                Loading Page
+                <FiLoader className="animate-spin" />
+              </div>
+            )}
             <button className="btn btn-ghost">Share</button>
           </div>
         </div>
@@ -225,7 +222,9 @@ const FeedCard = ({ data: blogPostData }) => {
               opacity: 0,
               transition: { duration: 0.2, ease: "circIn" },
             }}
-            onClick={() => setCommentsOpen(false)}
+            onClick={(e) =>
+              e.target === e.currentTarget && setCommentsOpen(false)
+            }
             className="fixed top-0 left-0 z-50 w-full h-screen px-5 lg:px-0 pt-24 pb-16 bg-base-100 flex justify-center"
           >
             <motion.div
@@ -279,8 +278,8 @@ const FeedCard = ({ data: blogPostData }) => {
                       />
                       <div className="flex flex-col gap-1 justify-center">
                         <p className="leading-none">
-                          {comment.commenter.fullName.first}{" "}
-                          {comment.commenter.fullName.last}{" "}
+                          {comment.commenter.full_name.first}{" "}
+                          {comment.commenter.full_name.last}{" "}
                           <span className="text-primary opacity-50">
                             commented
                           </span>

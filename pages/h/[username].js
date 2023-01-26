@@ -1,348 +1,434 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 
-import FeedCard from "../../components/Feed/FeedCard";
-import { FiLoader } from "react-icons/fi";
-import Image from "next/image";
-import { __PageTransition } from "../../lib/animation";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { __supabase } from "../../supabase";
+import Link from "next/link";
+// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { __PageTransition } from "@/lib/animation";
+import { __supabase } from "@/supabase";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 
-export const getServerSideProps = async (context) => {
-  const { username } = context.query;
+const ProtectedPageContainer = dynamic(
+  () => import("@/components/ProtectedPageContainer"),
+  { ssr: false }
+);
 
-  const { data, error } = await __supabase
-    .from("user_hunters")
-    .select("*")
-    .eq("username", username)
-    .single();
-
-  console.log(data);
-
-  if (error) {
-    console.log(error);
-    return {
-      props: {},
-    };
-  }
-
-  return {
-    props: {
-      hunter_data: data,
-    },
-  };
+const ACTIONS = {
+  SET_USER_POSTS: "set-user-posts",
+  SET_USER_CONNECTIONS: "set-user-connections",
+  SET_POSTS_LOADING: "set-posts-loading",
+  SET_CONNECTIONS_LOADING: "set-connections-loading",
+  SET_IS_CONNECTED: "set-is-connected",
 };
 
-const HunterPage = ({ hunter_data }) => {
+const reducer = (state, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_USER_POSTS:
+      return { ...state, userPosts: action.payload };
+    case ACTIONS.SET_USER_CONNECTIONS:
+      return { ...state, userConnections: action.payload };
+    case ACTIONS.SET_POSTS_LOADING:
+      return { ...state, postsLoading: action.payload };
+    case ACTIONS.SET_CONNECTIONS_LOADING:
+      return { ...state, connectionsLoading: action.payload };
+    case ACTIONS.SET_IS_CONNECTED:
+      return { ...state, isConnected: action.payload };
+    default:
+      return state;
+  }
+};
+
+const UserPage = ({ notfound }) => {
   const router = useRouter();
+  const { username } = router.query;
+  const session = useSession();
+  const sessionUser = useUser();
+  const [states, stateDispatcher] = useReducer(reducer, {
+    userPosts: [],
+    userConnections: [],
+    postsLoading: true,
+    connectionsLoading: true,
+    isConnected: false,
+  });
 
-  const [hunterPosts, setHunterPosts] = useState([]);
-  const [tabSelected, setTabSelected] = useState("posts");
-  const [loaded, setLoaded] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  // const __supabase = useSupabaseClient();
-
-  const fetchHunterPosts = async () => {
+  // methods
+  const fetchUser = async () => {
     const { data, error } = await __supabase
-      .from("hunt_blog")
+      .from("user_hunters")
       .select("*")
-      .eq("uploaderID", hunter_data.id);
+      .eq("username", username)
+      .single();
 
     if (error) {
-      toast.error(error.message);
-    } else {
-      console.log(data);
-      setHunterPosts(data);
-      setLoaded(true);
-    }
-  };
-
-  const addUserToConnection = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const oldConnections = user.user_metadata.connections;
-    const newConnections = [...oldConnections, hunter_data.id];
-
-    // update user_metadata
-    const { error: localUserError } = await __supabase.auth.updateUser({
-      data: {
-        connections: newConnections,
-      },
-    });
-
-    if (localUserError) {
-      toast.error("Something went wrong. Please try again later.");
+      console.log(error);
       return;
     }
 
-    // update hunter_metadata
-    const { error: remoteUserError } = await __supabase
+    return data;
+  };
+
+  const user = useQuery({
+    queryKey: ["user", username],
+    queryFn: fetchUser,
+    enabled: !!username,
+    onSuccess: (data) => {
+      if (!!sessionUser.user) {
+        const isConnected = sessionUser.user_metadata.connections.includes(
+          data.id
+        );
+
+        stateDispatcher({
+          type: ACTIONS.SET_IS_CONNECTED,
+          payload: isConnected,
+        });
+      }
+    },
+  });
+
+  const fetchUserPosts = async () => {
+    const { data, error } = await __supabase
+      .from("public_posts")
+      .select("id,content")
+      .eq("uploader", user.data.id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    return data;
+  };
+
+  const fetchUserConnections = async () => {
+    const localConnections = user.connections ? user.connections : [];
+
+    const { data, error } = await __supabase
+      .from("user_hunters")
+      .select("id,fullName,username")
+      .in("id", localConnections);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    return data;
+  };
+
+  const [userPosts, userConnections] = useQueries({
+    queries: [
+      {
+        queryKey: ["user-posts"],
+        queryFn: fetchUserPosts,
+        enabled: !!user.isSuccess && !!username,
+        onSuccess: () => {
+          console.log("User Posts Fetched");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+      {
+        queryKey: ["user-connections"],
+        queryFn: fetchUserConnections,
+        enabled: !!user.isSuccess && !!username,
+        onSuccess: () => {
+          console.log("User Connections Fetched");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+    ],
+  });
+
+  const addToConnections = async () => {
+    toast.loading("Adding connection...");
+
+    // new connections array
+    const newConnections = [...session.user.user_metadata.connections, user.id];
+
+    // update the user table
+    const { error } = await __supabase
       .from("user_hunters")
       .update({
         connections: newConnections,
       })
-      .eq("id", user.id);
+      .eq("id", session.user.id);
 
-    if (remoteUserError) {
-      toast.error("Something went wrong. Please try again later.");
+    if (error) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+      console.log(error);
       return;
     }
 
-    setIsFollowing(true);
-    toast.dismiss();
-    toast.success("Added to connections");
-  };
-
-  const removeUserFromConnection = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const oldConnections = user.user_metadata.connections;
-    const newConnections = oldConnections.filter(
-      (connection) => connection !== hunter_data.id
-    );
-
-    // update user_metadata
-    const { error: localUserError } = await __supabase.auth.updateUser({
+    // update the supabase user
+    await __supabase.auth.updateUser({
       data: {
+        ...session.user.user_metadata,
         connections: newConnections,
       },
     });
 
-    if (localUserError) {
-      toast.error("Something went wrong. Please try again later.");
-      return;
-    }
+    // update the state
+    stateDispatcher({
+      type: ACTIONS.SET_IS_CONNECTED,
+      payload: true,
+    });
 
-    // update hunter_metadata
-    const { error: remoteUserError } = await __supabase
+    toast.dismiss();
+    toast.success("Connection added");
+  };
+
+  const removeFromConnections = async () => {
+    toast.loading("Removing connection...");
+
+    const newConnections = session.user.user_metadata.connections.filter(
+      (connection) => connection !== user.id
+    );
+
+    const { error } = await __supabase
       .from("user_hunters")
       .update({
         connections: newConnections,
       })
-      .eq("id", user.id);
+      .eq("id", session.user.id);
 
-    if (remoteUserError) {
-      toast.error("Something went wrong. Please try again later.");
+    if (error) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+      console.log(error);
       return;
     }
 
-    setIsFollowing(false);
+    // update the supabase user
+    await __supabase.auth.updateUser({
+      data: {
+        ...session.user.user_metadata,
+        connections: newConnections,
+      },
+    });
+
+    // update the session
+    await __supabase.auth.setSession({});
+
+    // update the state
+    stateDispatcher({
+      type: ACTIONS.SET_IS_CONNECTED,
+      payload: false,
+    });
+
     toast.dismiss();
-    toast.success("Removed from connections");
+    toast.success("Connection removed");
   };
-
-  const checkForConnection = async () => {
-    const {
-      data: { user },
-    } = await __supabase.auth.getUser();
-
-    const isFollowing = user.user_metadata.connections.includes(hunter_data.id);
-
-    setIsFollowing(isFollowing);
-    fetchHunterPosts();
-  };
-
-  useEffect(() => {
-    checkForConnection();
-  }, []);
-
-  if (!hunter_data) {
-    return (
-      <main className="min-h-screen flex flex-col justify-center items-center">
-        <FiLoader className="animate-spin text-xl" />
-      </main>
-    );
-  }
 
   return (
-    hunter_data && (
-      <>
-        <motion.main
-          variants={__PageTransition}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="pt-36 lg:pt-28 max-w-2xl mx-auto pb-32"
-        >
-          <div className="flex flex-col lg:flex-row ">
-            <div className="flex gap-5">
-              <Image
-                src={`https://avatars.dicebear.com/api/bottts/${hunter_data.username}.svg`}
-                width={100}
-                height={100}
-                className="rounded-full border-4 border-primary p-2 border-opacity-10"
-                alt="avatar"
-              />
-              <div className="flex flex-col justify-between">
-                <div className="flex gap-2">
-                  <h1 className="text-2xl font-semibold">
-                    @{hunter_data.username}
-                  </h1>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={
-                      isFollowing
-                        ? () => {
-                            toast.loading("Removing to Connections");
-                            removeUserFromConnection();
-                          }
-                        : () => {
-                            toast.loading("Adding to connections");
-                            addUserToConnection();
-                          }
-                    }
-                    className="btn btn-primary btn-sm "
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col mt-5 lg:mt-0 lg:ml-10">
-              <p className="text-lg lg:text-2xl">
-                {hunter_data.fullName.first} {hunter_data.fullName.last}
-              </p>
-              <p className="text-sm opacity-30">{hunter_data.email}</p>
-
-              <div className="flex gap-5 mt-5">
-                <p>
-                  <span className="font-bold text-primary">
-                    {hunterPosts.length}
-                  </span>{" "}
-                  posts
-                </p>
-                <p>
-                  <span className="font-bold text-primary">
-                    {hunter_data.connections?.length}
-                  </span>{" "}
-                  connections
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* tabs */}
-          <div className="tabs tabs-boxed justify-center flex lg:gap-2 mt-10">
-            <button
-              onClick={(e) => setTabSelected("posts")}
-              className={`tab ${tabSelected === "posts" && "tab-active"}`}
+    <>
+      <ProtectedPageContainer>
+        {!!user.isSuccess && (
+          <>
+            <motion.main
+              variants={__PageTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="pt-24 pb-32 grid grid-cols-1 lg:grid-cols-5 gap-5"
             >
-              Posts
-            </button>
-            <button
-              onClick={(e) => setTabSelected("connections")}
-              className={`tab ${tabSelected === "connections" && "tab-active"}`}
-            >
-              Connections
-            </button>
-            <button
-              onClick={(e) => setTabSelected("details")}
-              className={`tab ${tabSelected === "details" && "tab-active"}`}
-            >
-              Profile Details
-            </button>
-          </div>
-
-          {/* tab content */}
-          <div className="mt-10">
-            {tabSelected === "posts" && (
-              <div className="flex flex-col gap-5">
-                {hunterPosts.map((post, index) => (
-                  <FeedCard key={post.id} index={index} feedData={post} />
-                ))}
-              </div>
-            )}
-
-            {tabSelected === "connections" && (
-              <div className="flex flex-col gap-5">
-                <p>
-                  Under construction. Please check back later. Thank you for
-                  your patience.
-                </p>
-              </div>
-            )}
-
-            {tabSelected === "details" && (
-              <div className="flex flex-col border-2 border-primary-content rounded-btn">
-                <div className="flex flex-col gap-2 p-5">
-                  <p className="text-xl font-bold text-primary">
-                    General Information
+              <div className="col-span-full lg:col-span-3 flex flex-col gap-5">
+                {/* profile landing */}
+                <div className="p-5 bg-base-300 rounded-btn">
+                  <img
+                    src={`https://avatars.dicebear.com/api/bottts/${
+                      user.data.username || "default"
+                    }.svg`}
+                    alt="avatar"
+                    className="w-32 h-32 rounded-full bg-primary border-white border-2"
+                  />
+                  <p className="text-3xl font-bold">
+                    {user.data.fullName.first} {user.data.fullName.middle}{" "}
+                    {user.data.fullName.last}
                   </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Full Name: </span>
-                    <span>
-                      {hunter_data.fullName.first} {hunter_data.fullName.last}
+
+                  <p className="font-semibold opacity-75">
+                    @{user.data.username}
+                  </p>
+                  <p>
+                    Joined at:{" "}
+                    <span className="opacity-50">
+                      {dayjs(
+                        user.data.createdAt || new Date().toISOString()
+                      ).format("MMMM DD, YYYY")}
                     </span>
                   </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Gender:</span>
-                    <span>{hunter_data.gender.toUpperCase()}</span>
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Date of Birth: </span>
-                    <span>
-                      {dayjs(hunter_data.birthdate).format("MMMM D, YYYY")}
-                    </span>
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Address: </span>
-                    <span className="text-right max-w-md">
-                      {hunter_data.address.address}, {hunter_data.address.city}
-                    </span>
-                  </p>
+
+                  {states.isConnected ? (
+                    <div
+                      onClick={removeFromConnections}
+                      className="btn btn-warning mt-5"
+                    >
+                      Remove from connections
+                    </div>
+                  ) : (
+                    <div
+                      onClick={addToConnections}
+                      className="btn btn-primary mt-5"
+                    >
+                      Add to connections
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-col gap-2 p-5 border-t-2 border-primary-content">
-                  <p className="text-xl font-bold text-primary">
-                    Account Information
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Email: </span>
-                    <span>{hunter_data.email}</span>
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Username: </span>
-                    <span>{hunter_data.username}</span>
-                  </p>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-4">Bio</p>
+                  <ReactMarkdown className="prose">
+                    {user.data.bio || "This user has not added a bio yet"}
+                  </ReactMarkdown>
                 </div>
-                <div className="flex flex-col gap-2 p-5 border-t-2 border-primary-content">
-                  <p className="text-xl font-bold text-primary">
-                    Skillset Information
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Primary Skill: </span>
-                    <span>{hunter_data.skillPrimary}</span>
-                  </p>
-                  <p className="flex justify-between ml-5">
-                    <span className="font-bold">Secondary Skill: </span>
-                    <span className="flex flex-col text-right">
-                      {hunter_data.skillSecondary?.map((skill, index) => (
-                        <span key={index}>{skill}</span>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-4">Skillsets</p>
+                  <div>
+                    <p className="font-semibold">Primary Skill</p>
+                    <p className="flex gap-2 gap-y-1 flex-wrap">
+                      <span className="badge badge-primary">
+                        {user.data.skillPrimary}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Secondary Skillsets</p>
+                    <p className="flex gap-2 gap-y-1 flex-wrap">
+                      {user.data.skillSecondary.map((skill, index) => (
+                        <span
+                          className="badge badge-secondary"
+                          key={`skill_${index}`}
+                        >
+                          {skill}
+                        </span>
                       ))}
-                    </span>
-                  </p>
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2 p-5 border-t-2 border-primary-content">
-                  <p className="text-xl font-bold text-primary">Social Links</p>
-                  {/* <p className="flex justify-between ml-5">
-                    <span className="font-bold">Facebook: </span>
-                    <span>{hunter_data.socialLinks.facebook}</span>
-                  </p> */}
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold mb-5">About</p>
+                  <div>
+                    <p className="font-semibold">Birthday</p>
+                    <p className="opacity-50">
+                      {dayjs(
+                        user.data.birthdate || new Date().toISOString()
+                      ).format("MMMM DD, YYYY")}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Location</p>
+                    <p className="opacity-50">
+                      {user.data.address.address}, {user.data.address.city}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
+                  <p className="text-2xl font-bold">Activities</p>
+                  {!!userPosts.isLoading &&
+                    Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <div
+                          key={`postloading-${i}`}
+                          className="w-full h-[72px] bg-base-200 animate-pulse"
+                        />
+                      ))}
+
+                  {!!userPosts.isSuccess && userPosts.data.length < 1 && (
+                    <p className="text-center opacity-50">No activities yet</p>
+                  )}
+
+                  {!!userPosts.isSuccess &&
+                    userPosts.data.length > 0 &&
+                    userPosts.data.map((activity, index) => (
+                      <div
+                        key={`activity_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <div>
+                          <ReactMarkdown className="prose prose-sm prose-headings:text-lg">
+                            {activity.content.substring(0, 30)}
+                          </ReactMarkdown>
+                        </div>
+                        <Link
+                          href={`/h/feed/${activity.id}`}
+                          className="btn btn-primary btn-sm"
+                        >
+                          See more
+                        </Link>
+                      </div>
+                    ))}
                 </div>
               </div>
-            )}
-          </div>
-        </motion.main>
-      </>
-    )
+              <div className="col-span-full lg:col-span-2 flex flex-col gap-5">
+                <div className="p-5">
+                  <p className="text-2xl font-bold mb-2">Connections</p>
+
+                  {!!userConnections.isLoading &&
+                    Array(3)
+                      .fill()
+                      .map((_, i) => (
+                        <div
+                          key={`connectionloading-${i}`}
+                          className="w-full h-[72px] bg-base-200 animate-pulse"
+                        />
+                      ))}
+                  {!!userConnections.isSuccess &&
+                    userConnections.data.length < 1 && (
+                      <p className="text-center opacity-50">
+                        No connections yet
+                      </p>
+                    )}
+
+                  {!!userConnections.isSuccess &&
+                    userConnections.data.length > 0 &&
+                    userConnections.data.map((connection, index) => (
+                      <div
+                        key={`connection_${index}`}
+                        className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+                      >
+                        <div className="flex gap-2 items-center">
+                          <img
+                            src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                            alt="avatar"
+                            className="w-12 h-12 rounded-full bg-primary "
+                          />
+                          <div>
+                            <p className="font-bold leading-none">
+                              {connection.fullName.first}{" "}
+                              {connection.fullName.last}
+                            </p>
+                            <p className="opacity-50 leading-none">
+                              @{connection.username}
+                            </p>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/h/${connection.username}`}
+                          className="btn btn-sm btn-primary"
+                        >
+                          See Profile
+                        </Link>
+                      </div>
+                    ))}
+                </div>
+                <div className="p-5">
+                  <p className="text-2xl font-bold">Actions</p>
+                </div>
+              </div>
+            </motion.main>
+          </>
+        )}
+      </ProtectedPageContainer>
+    </>
   );
 };
-
-export default HunterPage;
+export default UserPage;

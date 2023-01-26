@@ -38,6 +38,33 @@
   font-family: "Inria Sans", sans-serif;
 }
 
-.btn {
-  @apply rounded-lg;
+@layer components {
+  .btn {
+    @apply max-w-max
+      min-h-[40px] 
+      max-h-[40px] 
+      rounded-[20px]
+      px-[24px] 
+      items-center
+      py-0 
+      no-animation 
+      normal-case
+      active:duration-[0ms] 
+      hover:-translate-y-[2px];
+  }
+  .btn-block {
+    @apply w-full max-w-none;
+  }
+  .btn-icon {
+    @apply pl-[16px] gap-[8px];
+  }
+  .fab {
+    @apply min-w-[56px] w-[56px] min-h-[56px] h-[56px] rounded-[16px] items-center justify-center text-[24px] p-0;
+  }
+  .fab-sm {
+    @apply min-w-[40px] w-[40px] min-h-[40px] h-[40px] rounded-[12px];
+  }
+  .fab-lg {
+    @apply min-w-[96px] w-[96px] min-h-[96px] h-[96px] rounded-[28px] text-[36px];
+  }
 }

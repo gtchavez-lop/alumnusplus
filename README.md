@@ -29,3 +29,26 @@
 1. [❌] Provide diagram of user sign up and sign in
 1. [❌] Get the highest storage capacity for system’s database
 1. [❌] Instead of uploading, make the system that enables the users to create their own Resume and Portfolio using the templates from the site.
+
+- dashboard
+  - recent
+  - reminders
+    - notifications
+  - stats
+    - job applicants
+    - job posted
+    - archived applicants
+  - posted job
+    - add job
+    - recent job cards
+    - see all jobs
+    - job cards
+      - job title
+      - job description
+      - listed applicant card (grid or list)
+        - applicant details
+        - message action btn
+          - messaging
+        - view
+          - resume / profile
+          - can download resume
