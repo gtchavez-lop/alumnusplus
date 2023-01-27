@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
 
 const FeedCard = ({ data: blogPostData }) => {
@@ -22,6 +23,7 @@ const FeedCard = ({ data: blogPostData }) => {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const session = useSession();
+  const { route } = useRouter();
 
   const checkIfLiked = async () => {
     const localIsLiked = blogPostData.upvoters.includes(session.user.id);
@@ -111,7 +113,7 @@ const FeedCard = ({ data: blogPostData }) => {
               // dicebear
               src={`https://avatars.dicebear.com/api/bottts/${blogPostData.uploader.username}.svg`}
               alt="avatar"
-              className="w-10 h-10"
+              className="w-12 h-12 p-1 mask mask-squircle bg-primary"
             />
           </Link>
           <div className="flex flex-col gap-1 justify-center">
@@ -184,7 +186,15 @@ const FeedCard = ({ data: blogPostData }) => {
                 </Link>
               </li>
               <li>
-                <button>Share</button>
+                <button
+                  onClick={() => {
+                    const thisLink = `${route}/h/feed/${blogPostData.id}`;
+                    navigator.clipboard.writeText(thisLink);
+                    toast("Link Shared");
+                  }}
+                >
+                  Share
+                </button>
               </li>
             </ul>
           </div>
@@ -204,7 +214,16 @@ const FeedCard = ({ data: blogPostData }) => {
                 <FiLoader className="animate-spin" />
               </div>
             )}
-            <button className="btn btn-ghost">Share</button>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                const thisLink = `${route}/h/feed/${blogPostData.id}`;
+                navigator.clipboard.writeText(thisLink);
+                toast("Link Shared");
+              }}
+            >
+              Share
+            </button>
           </div>
         </div>
       </motion.div>
@@ -253,6 +272,9 @@ const FeedCard = ({ data: blogPostData }) => {
                   <FiX />
                 </motion.button>
               </div>
+              <p>
+                You can comment by clicking the &quot;Read More&quot; button
+              </p>
 
               {/* comments */}
               <motion.div

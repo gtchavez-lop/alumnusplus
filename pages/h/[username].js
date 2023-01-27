@@ -109,7 +109,7 @@ const UserPage = ({ notfound }) => {
 
     const { data, error } = await __supabase
       .from("user_hunters")
-      .select("id,fullName,username")
+      .select("id,full_name,username")
       .in("id", localConnections);
 
     if (error) {
@@ -242,67 +242,55 @@ const UserPage = ({ notfound }) => {
             >
               <div className="col-span-full lg:col-span-3 flex flex-col gap-5">
                 {/* profile landing */}
-                <div className="p-5 bg-base-300 rounded-btn">
+                <div className="p-5 bg-base-300 rounded-btn flex items-center gap-5">
                   <img
                     src={`https://avatars.dicebear.com/api/bottts/${
                       user.data.username || "default"
                     }.svg`}
                     alt="avatar"
-                    className="w-32 h-32 rounded-full bg-primary border-white border-2"
+                    className="w-32 h-32 bg-primary mask mask-squircle p-2"
                   />
-                  <p className="text-3xl font-bold">
-                    {user.data.fullName.first} {user.data.fullName.middle}{" "}
-                    {user.data.fullName.last}
-                  </p>
+                  <div>
+                    <p className="text-3xl font-bold">
+                      {user.data.full_name.first} {user.data.full_name.middle}{" "}
+                      {user.data.full_name.last}
+                    </p>
 
-                  <p className="font-semibold opacity-75">
-                    @{user.data.username}
-                  </p>
-                  <p>
-                    Joined at:{" "}
-                    <span className="opacity-50">
-                      {dayjs(
-                        user.data.createdAt || new Date().toISOString()
-                      ).format("MMMM DD, YYYY")}
-                    </span>
-                  </p>
-
-                  {states.isConnected ? (
-                    <div
-                      onClick={removeFromConnections}
-                      className="btn btn-warning mt-5"
-                    >
-                      Remove from connections
-                    </div>
-                  ) : (
-                    <div
-                      onClick={addToConnections}
-                      className="btn btn-primary mt-5"
-                    >
-                      Add to connections
-                    </div>
-                  )}
+                    <p className="font-semibold opacity-75">
+                      @{user.data.username}
+                    </p>
+                    <p>
+                      Joined at:{" "}
+                      <span className="opacity-50">
+                        {dayjs(
+                          user.data.createdAt || new Date().toISOString()
+                        ).format("MMMM DD, YYYY")}
+                      </span>
+                    </p>
+                  </div>
                 </div>
                 <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-                  <p className="text-2xl font-bold mb-4">Bio</p>
+                  <p className="text-2xl font-bold mb-4 text-primary">Bio</p>
                   <ReactMarkdown className="prose">
                     {user.data.bio || "This user has not added a bio yet"}
                   </ReactMarkdown>
                 </div>
                 <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-                  <p className="text-2xl font-bold mb-4">Skillsets</p>
+                  <p className="text-2xl font-bold mb-4 text-primary">
+                    Skillsets
+                  </p>
                   <div>
                     <p className="font-semibold">Primary Skill</p>
                     <p className="flex gap-2 gap-y-1 flex-wrap">
                       <span className="badge badge-primary">
-                        {user.data.skillPrimary}
+                        {user.data.skill_primary}
                       </span>
                     </p>
                   </div>
                   <div>
                     <p className="font-semibold">Secondary Skillsets</p>
                     <p className="flex gap-2 gap-y-1 flex-wrap">
-                      {user.data.skillSecondary.map((skill, index) => (
+                      {user.data.skill_secondary.map((skill, index) => (
                         <span
                           className="badge badge-secondary"
                           key={`skill_${index}`}
@@ -314,7 +302,7 @@ const UserPage = ({ notfound }) => {
                   </div>
                 </div>
                 <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-                  <p className="text-2xl font-bold mb-5">About</p>
+                  <p className="text-2xl font-bold mb-4 text-primary">About</p>
                   <div>
                     <p className="font-semibold">Birthday</p>
                     <p className="opacity-50">
@@ -331,7 +319,9 @@ const UserPage = ({ notfound }) => {
                   </div>
                 </div>
                 <div className="p-5 border-2 border-base-content rounded-btn border-opacity-50 flex flex-col gap-2">
-                  <p className="text-2xl font-bold">Activities</p>
+                  <p className="text-2xl font-bold mb-4 text-primary">
+                    Activities
+                  </p>
                   {!!userPosts.isLoading &&
                     Array(3)
                       .fill(0)
@@ -403,8 +393,8 @@ const UserPage = ({ notfound }) => {
                           />
                           <div>
                             <p className="font-bold leading-none">
-                              {connection.fullName.first}{" "}
-                              {connection.fullName.last}
+                              {connection.full_name.first}{" "}
+                              {connection.full_name.last}
                             </p>
                             <p className="opacity-50 leading-none">
                               @{connection.username}
@@ -422,6 +412,24 @@ const UserPage = ({ notfound }) => {
                 </div>
                 <div className="p-5">
                   <p className="text-2xl font-bold">Actions</p>
+
+                  <div className="flex gap-2 mt-4">
+                    {states.isConnected ? (
+                      <div
+                        onClick={removeFromConnections}
+                        className="btn btn-warning"
+                      >
+                        Remove from connections
+                      </div>
+                    ) : (
+                      <div
+                        onClick={addToConnections}
+                        className="btn btn-primary"
+                      >
+                        Add @{user.data.username} to your connections
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.main>

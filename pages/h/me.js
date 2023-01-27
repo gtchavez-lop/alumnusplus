@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import { FiEdit } from "react-icons/fi";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
 
 const ProfilePage = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const [isBioEditing, setIsBioEditing] = useState(false);
   const router = useRouter();
   const session = useSession();
+  const localUser = useUser();
 
   // methods
   const fetchUserDetails = async () => {
@@ -34,64 +35,6 @@ const ProfilePage = () => {
     }
 
     return data;
-  };
-
-  const fetchUserActivities = async () => {
-    const { data, error } = await __supabase
-      .from("public_posts")
-      .select("id,content,createdAt,uploaderID")
-      .eq("uploaderID", session.user?.id)
-      .order("createdAt", { ascending: false })
-      .limit(5);
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    return data;
-  };
-
-  const fetchUserConnections = async () => {
-    if (!!session) {
-      const thisUserConnection = session.user.user_metadata.connections;
-      const { data, error } = await __supabase
-        .from("user_hunters")
-        .select("id,email,full_name,username")
-        .in("id", thisUserConnection);
-
-      if (error) {
-        console.log(error);
-        return;
-      }
-
-      return data;
-    }
-
-    return [];
-  };
-
-  const fetchRecommendedUsers = async () => {
-    if (!!session) {
-      const thisUserConnections = session.user.user_metadata.connections;
-
-      const reqString = `(${thisUserConnections.concat(session.user.id)})`;
-
-      const { data, error } = await __supabase
-        .from("recommended_hunters")
-        .select("*")
-        .filter("id", "not.in", reqString)
-        .limit(5);
-
-      if (error) {
-        console.log(error);
-        return;
-      }
-
-      return data;
-    }
-
-    return [];
   };
 
   const checkTheme = () => {
@@ -142,16 +85,67 @@ const ProfilePage = () => {
     },
   });
 
+  const fetchUserActivities = async () => {
+    const { data, error } = await __supabase
+      .from("public_posts")
+      .select("id,content,createdAt,uploaderID")
+      .eq("uploaderID", localUser.id)
+      .order("createdAt", { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    return data;
+  };
+
+  const fetchUserConnections = async () => {
+    const thisUserConnection = userDetails.data.connections;
+
+    const { data, error } = await __supabase
+      .from("user_hunters")
+      .select("id,email,full_name,username")
+      .in("id", thisUserConnection);
+
+    if (error) {
+      console.log(error);
+      return null;
+    }
+
+    return data;
+  };
+
+  const fetchRecommendedUsers = async () => {
+    const thisUserConnections = userDetails.data.connections;
+
+    const reqString = `(${thisUserConnections.concat(localUser.id)})`;
+
+    const { data, error } = await __supabase
+      .from("recommended_hunters")
+      .select("*")
+      .filter("id", "not.in", reqString)
+      .limit(5);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    return data;
+  };
+
   const [userConnections, recommendedUsers, userActivities] = useQueries({
     queries: [
       {
         queryKey: ["userConnections"],
         queryFn: fetchUserConnections,
-        enabled: userDetails.isSuccess,
+        enabled: !!userDetails.isFetched,
         onerror: (error) => {
           toast.error(error.message);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
           console.info("✅ User Connections Fetched");
         },
       },
@@ -186,7 +180,7 @@ const ProfilePage = () => {
 
   return (
     <ProtectedPageContainer>
-      {userDetails.isSuccess && (
+      {userDetails.isSuccess && userConnections.isSuccess && (
         <>
           <motion.main
             variants={__PageTransition}
@@ -198,26 +192,30 @@ const ProfilePage = () => {
             <section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
               <div className="col-span-3 flex flex-col gap-3">
                 {/* landing profile */}
-                <div className="flex flex-col bg-base-300 rounded-btn p-5">
+                <div className="flex items-center gap-2 flex-col sm:flex-row bg-base-300 rounded-btn p-5">
                   <img
                     src={`https://avatars.dicebear.com/api/bottts/${userDetails.data.username}.svg`}
                     alt="avatar"
-                    className="w-32 h-32 rounded-full bg-primary border-white border-2"
+                    className="w-32 h-32 bg-primary p-2 mask mask-squircle"
                   />
-                  <p className="text-3xl font-bold">
-                    {userDetails.data.full_name.first}{" "}
-                    {userDetails.data.full_name.last}
-                  </p>
+                  <div>
+                    <p className="text-3xl font-bold">
+                      {userDetails.data.full_name.first}{" "}
+                      {userDetails.data.full_name.last}
+                    </p>
 
-                  <p className="font-semibold opacity-75">
-                    @{userDetails.data.username}
-                  </p>
-                  <p>
-                    Joined at:{" "}
-                    <span className="opacity-50">
-                      {dayjs(session.user?.created_at).format("MMMM DD, YYYY")}
-                    </span>
-                  </p>
+                    <p className="font-semibold opacity-75">
+                      @{userDetails.data.username}
+                    </p>
+                    <p>
+                      Joined at:{" "}
+                      <span className="opacity-50">
+                        {dayjs(session.user?.created_at).format(
+                          "MMMM DD, YYYY"
+                        )}
+                      </span>
+                    </p>
+                  </div>
                 </div>
                 {/* bio */}
                 <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
@@ -314,8 +312,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
                   <p className="text-2xl font-bold">Recent Activities</p>
                   <div className="flex flex-col gap-2">
-                    {!!userActivities &&
-                      !userActivities.isLoading &&
+                    {userActivities.isSuccess &&
                       userActivities.data.map((activity, index) => (
                         <div
                           key={`activity_${index}`}
@@ -334,9 +331,21 @@ const ProfilePage = () => {
                           </Link>
                         </div>
                       ))}
+
+                    {userActivities.isLoading &&
+                      Array(5)
+                        .fill()
+                        .map((_, index) => (
+                          <div
+                            key={`activityloading_${index}`}
+                            className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+                          />
+                        ))}
                   </div>
                 </div>
               </div>
+
+              {/* second column */}
               <div className="col-span-2 flex flex-col gap-5">
                 <div className="flex flex-col rounded-btn p-2 gap-3">
                   <p className="text-2xl font-bold">Your Connections</p>
@@ -354,9 +363,49 @@ const ProfilePage = () => {
                     </div>
                   )}
 
-                  {!userConnections.isLoading &&
-                  userConnections.isSuccess &&
-                  userConnections.data.length ? (
+                  {userConnections.isSuccess && (
+                    <div className="flex flex-col gap-2">
+                      {userConnections.data.length < 1 && (
+                        <p>
+                          Looks like you have not connected to other people
+                          right now. Add people to your connections to see their
+                          posts and activities.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {userConnections.isSuccess &&
+                    userConnections.data.length > 0 &&
+                    userConnections.data
+                      .slice(0, 3)
+                      .map((connection, index) => (
+                        <Link
+                          href={`/h/${connection.username}`}
+                          key={`connection_${index}`}
+                          className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <img
+                              src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+                              alt="avatar"
+                              className="w-12 h-12 mask mask-squircle p-1 bg-primary "
+                            />
+                            <div>
+                              <p className="font-bold leading-none">
+                                {connection.full_name.first}{" "}
+                                {connection.full_name.last}
+                              </p>
+                              <p className="opacity-50 leading-none">
+                                @{connection.username}
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+
+                  {/* {!userConnections.isLoading &&
+                  userConnections.data.length > 0 ? (
                     <p>
                       Looks like you have not connected to other people right
                       now. Add people to your connections to see their posts and
@@ -398,7 +447,7 @@ const ProfilePage = () => {
                         See all your connections
                       </Link>
                     </div>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex flex-col rounded-btn p-2 gap-3">
                   <p className="text-2xl font-bold">Suggested Connections</p>
@@ -418,46 +467,40 @@ const ProfilePage = () => {
 
                   <div className="flex flex-col gap-2">
                     {recommendedUsers.isSuccess &&
-                    recommendedUsers.data.length < 1 ? (
-                      <p>
-                        Looks like you have not connected to other people right
-                        now. Add people to your connections to see their posts
-                        and activities.
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        {recommendedUsers.isSuccess &&
-                          recommendedUsers.data.map((thisUser, index) => (
-                            <div
-                              key={`connection_${index}`}
-                              className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
-                            >
-                              <div className="flex gap-2 items-center">
-                                <img
-                                  src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
-                                  alt="avatar"
-                                  className="w-12 h-12 rounded-full bg-primary "
-                                />
-                                <div>
-                                  <p className="font-bold leading-none">
-                                    {thisUser.full_name.first}{" "}
-                                    {thisUser.full_name.last}
-                                  </p>
-                                  <p className="opacity-50 leading-none">
-                                    @{thisUser.username}
-                                  </p>
-                                </div>
+                      recommendedUsers.data.length < 1 && (
+                        <p>
+                          We do not have any suggestions for you right now. Try
+                          connecting to more people to get more suggestions.
+                        </p>
+                      )}
+
+                    {recommendedUsers.isSuccess &&
+                      recommendedUsers.data.length > 0 &&
+                      recommendedUsers.data.map((thisUser, index) => (
+                        <Link
+                          href={`/h/${thisUser.username}`}
+                          key={`connection_${index}`}
+                        >
+                          <div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
+                            <div className="flex gap-5 items-center">
+                              <img
+                                src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+                                alt="avatar"
+                                className="w-12 h-12 p-1 mask mask-squircle bg-primary "
+                              />
+                              <div>
+                                <p className="font-bold leading-none">
+                                  {thisUser.fullname.first}{" "}
+                                  {thisUser.fullname.last}
+                                </p>
+                                <p className="opacity-50 leading-none">
+                                  @{thisUser.username}
+                                </p>
                               </div>
-                              <Link
-                                href={`/h/${thisUser.username}`}
-                                className="btn btn-sm btn-primary"
-                              >
-                                See Profile
-                              </Link>
                             </div>
-                          ))}
-                      </div>
-                    )}
+                          </div>
+                        </Link>
+                      ))}
                   </div>
                 </div>
                 <div className="divider" />
