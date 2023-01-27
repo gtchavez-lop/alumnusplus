@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 // import FeedCard from "@/components/Feed/FeedCard";
@@ -11,7 +12,6 @@ import { __supabase } from "@/supabase";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { toast } from "react-hot-toast";
-import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import uuidv4 from "@/lib/uuidv4";
 
@@ -30,19 +30,43 @@ const FeedCard = dynamic(() => import("@/components/Feed/FeedCard"), {
 
 const FeedPage = () => {
   const [isMakingPost, setIsMakingPost] = useState(false);
-  const session = useSession();
+  const thisSession = useSession();
   const thisUser = useUser();
 
+  const currentUser = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      const { data, error } = await __supabase
+        .from("user_hunters")
+        .select("*")
+        .eq("id", thisSession.user.id)
+        .single();
+      if (error) {
+        return null;
+      }
+      return data;
+    },
+    enabled: !!thisSession,
+    onSuccess: (data) => {
+      console.log("currentUser success");
+    },
+    onError: (error) => {
+      console.log("currentUser error");
+    },
+  });
+
   const fetchFeed = async () => {
-    const localConnection = session.user.user_metadata.connections;
+    const userConnections = currentUser.data.connections;
 
     const { data, error } = await __supabase
       .from("public_posts")
-      .select("*,uploader(id,username,full_name)")
-      .order("createdAt", { ascending: false })
-      .in("uploader", [...localConnection, session.user.id]);
+      .select(
+        "id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username),upvoters"
+      )
+      .in("uploader", [...userConnections, thisUser.id]);
 
     if (error) {
+      console.log("error", error);
       return [];
     }
 
@@ -50,12 +74,12 @@ const FeedPage = () => {
   };
 
   const fetchRecommendedUsers = async () => {
-    const localConnection = session.user.user_metadata.connections;
-    const reqString = `(${localConnection.concat(session.user.id)})`;
+    const localConnection = currentUser.data.connections;
+    const reqString = `(${localConnection.concat(currentUser.data.id)})`;
 
     const { data, error } = await __supabase
       .from("recommended_hunters")
-      .select("id,full_name,username,email")
+      .select("id,fullname,username,email")
       .filter("id", "not.in", reqString);
 
     if (error) {
@@ -68,27 +92,27 @@ const FeedPage = () => {
   const [feedList, recommendedUsers] = useQueries({
     queries: [
       {
-        queryKey: ["feedList"],
+        queryKey: ["mainFeedList"],
         queryFn: fetchFeed,
-        enabled: !!session,
-        onSuccess: () => {
+        enabled: !!currentUser.isSuccess,
+        onSuccess: (data) => {
           console.log("feedList success");
         },
-        onError: () => {
-          console.log("feedList error");
+        onError: (error) => {
+          console.log("feedList error", error);
+          toast.error("Something went wrong fetching your feed");
         },
-        refetchOnWindowFocus: false,
-        refetchInterval: 900000 * 2,
       },
       {
         queryKey: ["recommendedUsers"],
         queryFn: fetchRecommendedUsers,
-        enabled: !!session,
-        onSuccess: () => {
+        enabled: !!currentUser.isSuccess,
+        onSuccess: (data) => {
           console.log("recommendedUsers success");
         },
         onerror: () => {
           console.log("recommendedUsers error");
+          toast.error("Something went wrong fetching recommended users");
         },
         refetchOnWindowFocus: false,
       },
@@ -109,13 +133,13 @@ const FeedPage = () => {
     const { error } = await __supabase.from("public_posts").insert({
       id: uuidv4(),
       content,
-      comments: JSON.stringify([]),
+      comments: [],
       createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       type: "blogpost",
       updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      uploader: session.user.id,
-      uploaderID: session.user.id,
-      upvoters: JSON.stringify([]),
+      uploader: currentUser.data.id,
+      uploaderID: currentUser.data.id,
+      upvoters: [],
     });
 
     toast.dismiss();
@@ -126,14 +150,14 @@ const FeedPage = () => {
 
     toast.success("Posted!");
 
-    feedList.refetch();
+    // feedList.refetch();
     setIsMakingPost(false);
   };
 
   return (
     <ProtectedPageContainer>
       <>
-        {thisUser && (
+        {currentUser.isSuccess && (
           <motion.main
             variants={__PageTransition}
             initial="initial"
@@ -141,19 +165,14 @@ const FeedPage = () => {
             exit="exit"
             className="relative w-full grid grid-cols-1 lg:grid-cols-5 gap-4 pt-24 pb-36"
           >
-            {/* friend suggest and footer */}
-            <div className="col-span-full lg:hidden">
-              <p>Footer</p>
-            </div>
-
             {/* feed */}
             <div className="col-span-full lg:col-span-3 ">
               {/* create post */}
-              <div className="flex gap-2 w-full">
+              <div className="flex gap-2 w-full items-center">
                 <img
-                  src={`https://avatars.dicebear.com/api/bottts/${thisUser.user_metadata?.username}.svg`}
+                  src={`https://avatars.dicebear.com/api/bottts/${currentUser.data?.username}.svg`}
                   alt="avatar"
-                  className="w-10 h-10 hidden md:block bg-primary rounded-full"
+                  className="w-12 h-12 hidden md:block bg-primary mask mask-squircle p-1"
                 />
                 <div
                   onClick={() => setIsMakingPost(true)}
@@ -199,7 +218,7 @@ const FeedPage = () => {
 
                 <div className="flex flex-col gap-2">
                   {recommendedUsers.isSuccess &&
-                  recommendedUsers.data.length ? (
+                  recommendedUsers.data.length < 1 ? (
                     <p>
                       Looks like you have not connected to other people right
                       now. Add people to your connections to see their posts and
@@ -217,12 +236,12 @@ const FeedPage = () => {
                               <img
                                 src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
                                 alt="avatar"
-                                className="w-12 h-12 rounded-full bg-primary "
+                                className="w-12 h-12 p-1 mask mask-squircle bg-primary "
                               />
                               <div>
                                 <p className="font-bold leading-none">
-                                  {thisUser.full_name.first}{" "}
-                                  {thisUser.full_name.last}
+                                  {thisUser.fullname.first}{" "}
+                                  {thisUser.fullname.last}
                                 </p>
                                 <p className="opacity-50 leading-none">
                                   @{thisUser.username}

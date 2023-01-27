@@ -4,7 +4,6 @@ import { useReducer, useState } from "react";
 import { $schema_hunter } from "@schemas/user";
 import { AnimatePresence } from "framer-motion";
 import Cities from "@schemas/ph_location.json";
-import Link from "next/link";
 import SkillList from "@schemas/skills.json";
 import { __PageTransition } from "@/lib/animation";
 import { __supabase } from "@/supabase";
@@ -28,7 +27,7 @@ const RegisterHunter = () => {
     confirmPassword: "",
   });
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(4);
   const [citySearchResults, setCitySearchResults] = useState([]);
   const [primarySkillSearchResults, setPrimarySkillSearchResults] = useState(
     []
