@@ -90,6 +90,34 @@ const UserPage = ({ notfound }) => {
     },
   });
 
+  const currentUser = useQuery({
+    queryKey: ["current-user"],
+    queryFn: async () => {
+      const { data, error } = await __supabase
+        .from("user_hunters")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      return data;
+    },
+    enabled: !!session && !!user.isSuccess,
+    onSuccess: (data) => {
+      // check if the current user is connected to the user
+      const isConnected = data.connections.includes(user.data.id);
+
+      stateDispatcher({
+        type: ACTIONS.SET_IS_CONNECTED,
+        payload: isConnected,
+      });
+    },
+  });
+
   const fetchUserPosts = async () => {
     const { data, error } = await __supabase
       .from("public_posts")
@@ -150,16 +178,16 @@ const UserPage = ({ notfound }) => {
   const addToConnections = async () => {
     toast.loading("Adding connection...");
 
-    // new connections array
-    const newConnections = [...session.user.user_metadata.connections, user.id];
+    const newConnections = [...currentUser.data.connections, user.data.id];
 
     // update the user table
-    const { error } = await __supabase
+    const { newResults, error } = await __supabase
       .from("user_hunters")
       .update({
         connections: newConnections,
       })
-      .eq("id", session.user.id);
+      .select("*")
+      .eq("id", currentUser.data.id);
 
     if (error) {
       toast.dismiss();
@@ -170,10 +198,7 @@ const UserPage = ({ notfound }) => {
 
     // update the supabase user
     await __supabase.auth.updateUser({
-      data: {
-        ...session.user.user_metadata,
-        connections: newConnections,
-      },
+      data: newResults,
     });
 
     // update the state
@@ -182,6 +207,7 @@ const UserPage = ({ notfound }) => {
       payload: true,
     });
 
+    currentUser.refetch();
     toast.dismiss();
     toast.success("Connection added");
   };
@@ -189,15 +215,16 @@ const UserPage = ({ notfound }) => {
   const removeFromConnections = async () => {
     toast.loading("Removing connection...");
 
-    const newConnections = session.user.user_metadata.connections.filter(
-      (connection) => connection !== user.id
+    const newConnections = currentUser.data.connections.filter(
+      (connection) => connection !== user.data.id
     );
 
-    const { error } = await __supabase
+    const { newResults, error } = await __supabase
       .from("user_hunters")
       .update({
         connections: newConnections,
       })
+      .select("*")
       .eq("id", session.user.id);
 
     if (error) {
@@ -209,14 +236,8 @@ const UserPage = ({ notfound }) => {
 
     // update the supabase user
     await __supabase.auth.updateUser({
-      data: {
-        ...session.user.user_metadata,
-        connections: newConnections,
-      },
+      data: newResults,
     });
-
-    // update the session
-    await __supabase.auth.setSession({});
 
     // update the state
     stateDispatcher({
@@ -224,6 +245,7 @@ const UserPage = ({ notfound }) => {
       payload: false,
     });
 
+    currentUser.refetch();
     toast.dismiss();
     toast.success("Connection removed");
   };
@@ -231,7 +253,7 @@ const UserPage = ({ notfound }) => {
   return (
     <>
       <ProtectedPageContainer>
-        {!!user.isSuccess && (
+        {!!user.isSuccess && !!currentUser.isSuccess && (
           <>
             <motion.main
               variants={__PageTransition}
@@ -242,7 +264,7 @@ const UserPage = ({ notfound }) => {
             >
               <div className="col-span-full lg:col-span-3 flex flex-col gap-5">
                 {/* profile landing */}
-                <div className="p-5 bg-base-300 rounded-btn flex items-center gap-5">
+                <div className="p-5 bg-base-200 rounded-btn flex items-center gap-5">
                   <img
                     src={`https://avatars.dicebear.com/api/bottts/${
                       user.data.username || "default"
@@ -415,19 +437,21 @@ const UserPage = ({ notfound }) => {
 
                   <div className="flex gap-2 mt-4">
                     {states.isConnected ? (
-                      <div
+                      <button
+                        disabled={currentUser.isLoading}
                         onClick={removeFromConnections}
                         className="btn btn-warning"
                       >
                         Remove from connections
-                      </div>
+                      </button>
                     ) : (
-                      <div
+                      <button
+                        disabled={currentUser.isLoading}
                         onClick={addToConnections}
                         className="btn btn-primary"
                       >
                         Add @{user.data.username} to your connections
-                      </div>
+                      </button>
                     )}
                   </div>
                 </div>

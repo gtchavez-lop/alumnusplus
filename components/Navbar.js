@@ -50,7 +50,7 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "circOut" }}
-        className="fixed top-0 left-0 w-full z-[999] backdrop-blur-sm pt-5 pb-5 px-5 flex flex-col gap-5 justify-center "
+        className="fixed top-0 left-0 w-full z-[999] p-5 flex flex-col gap-5 justify-center bg-base-100 lg:hidden"
       >
         <main className="flex w-full items-center gap-5">
           <Logo />
@@ -78,6 +78,7 @@ export default function Navbar() {
           )}
         </main>
       </motion.nav>
+
       {session.user.user_metadata.type === "hunter" && (
         <>
           {/* mobile bottom hunter */}
@@ -85,7 +86,7 @@ export default function Navbar() {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "circOut" }}
-            className="lg:hidden fixed bottom-0 left-0 w-full z-[999] p-5 backdrop-blur-sm bg-base-100 bg-opacity-20 flex flex-col gap-5 justify-center"
+            className="lg:hidden fixed bottom-0 left-0 w-full z-[999] p-5 bg-base-100 flex flex-col gap-5 justify-center"
           >
             <main className="grid grid-cols-5 w-full items-center place-items-center pb-1">
               <Link href={"/h/feed"} scroll={false} legacyBehavior={true}>
@@ -142,7 +143,7 @@ export default function Navbar() {
           </motion.nav>
 
           {/* desktop hunter */}
-          <motion.nav className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center ">
+          <motion.nav className="hidden fixed top-0 left-0 w-full z-[999] bg-base-100 py-5 px-5 lg:flex gap-5 justify-center ">
             <main className="grid grid-cols-3 w-full items-center max-w-6xl">
               <Logo />
               <div className="flex justify-center gap-2">
@@ -241,7 +242,7 @@ export default function Navbar() {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "circOut" }}
-            className="lg:hidden fixed bottom-0 left-0 w-full z-[999] p-5 backdrop-blur-sm bg-base-100 bg-opacity-20 flex flex-col gap-5 justify-center"
+            className="lg:hidden fixed bottom-0 left-0 w-full z-[999] p-5 bg-base-100 flex flex-col gap-5 justify-center"
           >
             <main className="grid grid-cols-4 w-full items-center place-items-center pb-1">
               <Link href={"/p/dashboard"} scroll={false} legacyBehavior={true}>
@@ -292,7 +293,7 @@ export default function Navbar() {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "circOut" }}
-            className="hidden fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
+            className="hidden fixed top-0 left-0 w-full z-[999] bg-base-100 py-4 px-5 lg:flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
           >
             <main className="grid grid-cols-3 w-full items-center max-w-6xl">
               <Logo />
@@ -376,7 +377,7 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "circOut" }}
-      className="fixed top-0 left-0 w-full z-[999] bg-base-200 py-4 px-5 flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
+      className="fixed top-0 left-0 w-full z-[999] bg-base-100 py-4 px-5 flex gap-5 justify-center border-b-primary border-opacity-30 border-b-2"
     >
       <main className="flex justify-between w-full items-center max-w-6xl">
         <Logo />
