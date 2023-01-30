@@ -63,6 +63,7 @@ const FeedPage = () => {
       .select(
         "id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username),upvoters"
       )
+      .order("createdAt", { ascending: false })
       .in("uploader", [...userConnections, thisUser.id]);
 
     if (error) {

@@ -10,6 +10,7 @@ import { __supabase } from "@/supabase";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useQueries } from "@tanstack/react-query";
 
 const ProtectedPageContainer = dynamic(
   () => import("@/components/ProtectedPageContainer"),
@@ -18,51 +19,32 @@ const ProtectedPageContainer = dynamic(
 
 const DriftPage = () => {
   const [driftLoading, setDriftLoading] = useState(true);
-  const [driftData, setDriftData] = useState([]);
   // const __supabase = useSupabaseClient();
 
-  // const fetchDriftData = async () => {
-  //   const {
-  //     data: { user },
-  //   } = await __supabase.auth.getUser();
+  const [driftData] = useQueries({
+    queries: [
+      {
+        queryKey: ["drift-data"],
+        queryFn: async () => {
+          const { data, error } = await __supabase
+            .from("user_provisioners")
+            .select("*")
+            .limit(9);
 
-  //   // const { data, error } = await __supabase.rpc("getpeoplebylocation", {
-  //   //   in_location: user.user_metadata?.address?.city,
-  //   // });
+          if (error) {
+            toast.error(error.message);
+          }
 
-  //   const { data, error } = await __supabase
-  //     .from("user_provisioners")
-  //     .select("*")
-  //     .limit(100);
-
-  //   // check for address
-  //   if (!!user.user_metadata?.address?.city) {
-  //     toast.error("Please add your address to find people near you");
-  //     return;
-  //   }
-
-  //   // compare city
-  //   const filteredData = data.filter((company) => {
-  //     return company.address?.city === user.user_metadata?.address?.city;
-  //   });
-
-  //   if (error) {
-  //     toast.error(error.message);
-  //     return;
-  //   }
-
-  //   setDriftData(filteredData);
-  //   setDriftLoading(false);
-  // };
-
-  // useEffect(() => {
-  //   fetchDriftData();
-  // }, []);
+          return data;
+        },
+      },
+    ],
+  });
 
   return (
     <>
       <ProtectedPageContainer>
-        {driftLoading ? (
+        {!!driftData.isLoading ? (
           <motion.main
             variants={__PageTransition}
             initial="initial"
@@ -97,7 +79,7 @@ const DriftPage = () => {
               Companies near your area
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-              {driftData.map((company, index) => (
+              {driftData.data.map((company, index) => (
                 <Link
                   key={`company-${index}`}
                   href={`/p/${company.id}`}

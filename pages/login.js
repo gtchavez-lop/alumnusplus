@@ -5,13 +5,16 @@ import Link from "next/link";
 import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { __PageTransition } from "../lib/animation";
 import { __supabase } from "../supabase";
+import { globalUserState } from "@/lib/stores";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 
 const LogInPage = (e) => {
   const router = useRouter();
   const thisUser = useUser();
+  const [globalUser, setGlobalUser] = useAtom(globalUserState);
 
   const signInAccount = async (e) => {
     e.preventDefault();
@@ -32,6 +35,9 @@ const LogInPage = (e) => {
       toast.error(error.message);
       return;
     }
+
+    // set global user
+    setGlobalUser(user);
 
     // check if user is hunter
     if (user && user.user_metadata?.type === "hunter") {
