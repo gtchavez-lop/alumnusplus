@@ -190,7 +190,7 @@ const ProfilePage = () => {
             className="relative min-h-screen w-full pt-24 pb-36"
           >
             <section className="grid grid-cols-1 lg:grid-cols-6 gap-5">
-              <div className="col-span-3 flex flex-col gap-3">
+              <div className="col-span-3 flex lg:col-span-4 flex-col gap-3">
                 {/* landing profile */}
                 <div className="flex items-center gap-2 flex-col sm:flex-row bg-base-300 rounded-btn p-5">
                   <img
@@ -346,7 +346,7 @@ const ProfilePage = () => {
               </div>
 
               {/* second column */}
-              <div className="col-span-2 flex flex-col gap-5">
+              <div className="col-span-3 flex lg:col-span-2 flex-col gap-5">
                 <div className="flex flex-col rounded-btn p-2 gap-3">
                   <p className="text-2xl font-bold">Your Connections</p>
 
@@ -498,6 +498,13 @@ const ProfilePage = () => {
                                 </p>
                               </div>
                             </div>
+                            <Link
+                              href={`/h/${thisUser.username}`}
+                              key={`connection_${index}`}
+                              className="hidden lg:inline-flex btn btn-xs btn-primary"
+                            >
+                              Connect
+                            </Link>
                           </div>
                         </Link>
                       ))}
