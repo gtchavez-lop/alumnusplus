@@ -251,8 +251,8 @@ const UserPage = ({ notfound }) => {
                     className="w-32 h-32 rounded-full bg-primary border-white border-2"
                   />
                   <p className="text-3xl font-bold">
-                    {user.data.fullName.first} {user.data.fullName.middle}{" "}
-                    {user.data.fullName.last}
+                    {user.data.fullName?.first} {user.data.fullName?.middle}{" "}
+                    {user.data.fullName?.last}
                   </p>
 
                   <p className="font-semibold opacity-75">
@@ -302,7 +302,7 @@ const UserPage = ({ notfound }) => {
                   <div>
                     <p className="font-semibold">Secondary Skillsets</p>
                     <p className="flex gap-2 gap-y-1 flex-wrap">
-                      {user.data.skillSecondary.map((skill, index) => (
+                      {user.data.skillSecondary?.map((skill, index) => (
                         <span
                           className="badge badge-secondary"
                           key={`skill_${index}`}

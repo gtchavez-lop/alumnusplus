@@ -195,7 +195,7 @@ const ProfilePage = () => {
             exit="exit"
             className="relative min-h-screen w-full pt-24 pb-36"
           >
-            <section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            <section className="grid grid-cols-1 lg:grid-cols-6 gap-5">
               <div className="col-span-3 flex flex-col gap-3">
                 {/* landing profile */}
                 <div className="flex flex-col bg-base-300 rounded-btn p-5">
@@ -337,7 +337,7 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-2 flex flex-col gap-5">
+              <div className="col-span-3 flex flex-col gap-5">
                 <div className="flex flex-col rounded-btn p-2 gap-3">
                   <p className="text-2xl font-bold">Your Connections</p>
 
@@ -440,8 +440,8 @@ const ProfilePage = () => {
                                 />
                                 <div>
                                   <p className="font-bold leading-none">
-                                    {thisUser.full_name.first}{" "}
-                                    {thisUser.full_name.last}
+                                    {thisUser.full_name?.first}{" "}
+                                    {thisUser.full_name?.last}
                                   </p>
                                   <p className="opacity-50 leading-none">
                                     @{thisUser.username}
@@ -450,7 +450,7 @@ const ProfilePage = () => {
                               </div>
                               <Link
                                 href={`/h/${thisUser.username}`}
-                                className="btn btn-sm btn-primary"
+                                className="hidden md:inline-flex btn btn-sm btn-primary"
                               >
                                 See Profile
                               </Link>
