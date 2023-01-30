@@ -1,4 +1,6 @@
-import { FiArrowUp } from "react-icons/fi";
+import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
+
+import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 // import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -27,8 +29,8 @@ const BlogPage = ({}) => {
   const router = useRouter();
 
   // methods
-  const checkIfLiked = async (blogPostData) => {
-    const localIsLiked = blogPostData.upvoters.includes(session.user.id);
+  const checkIfLiked = async (upvoterArrays) => {
+    const localIsLiked = upvoterArrays.includes(session.user.id);
     setIsLiked(localIsLiked);
   };
 
@@ -38,7 +40,7 @@ const BlogPage = ({}) => {
     const { data, error } = await __supabase
       .from("public_posts")
       .select(
-        "id,content,comments,createdAt,updatedAt,uploader(id,fullName,username),upvoters"
+        "id,content,comments,createdAt,updatedAt,uploader(id,full_name,username),upvoters"
       )
       .eq("id", id)
       .single();
@@ -56,8 +58,7 @@ const BlogPage = ({}) => {
     queryFn: fetchBlogPostData,
     enabled: !!session && !!router.query.id,
     onSuccess: (data) => {
-      checkIfLiked(data);
-      console.log("Success");
+      checkIfLiked(data.upvoters);
     },
     onError: (error) => {
       console.log(error);
@@ -82,7 +83,6 @@ const BlogPage = ({}) => {
     }
 
     const localIsLiked = currentData.upvoters.includes(session.user.id);
-    console.log("Is liked: ", localIsLiked);
 
     // if user already liked the post, remove the upvote
     if (localIsLiked) {
@@ -133,7 +133,7 @@ const BlogPage = ({}) => {
   return (
     <>
       <ProtectedPageContainer>
-        {blogPost.isSuccess && (
+        {!!blogPost.isSuccess && (
           <>
             <motion.main
               variants={__PageTransition}
@@ -146,7 +146,7 @@ const BlogPage = ({}) => {
                 <div className="flex items-center gap-3 lg:bg-base-200 lg:p-5 lg:rounded-btn">
                   <Link
                     href={
-                      session.user.id === blogPost.data.uploader
+                      session.user.id === blogPost.data.uploader.id
                         ? "/me"
                         : `/h/${blogPost.data.uploader.username}`
                     }
@@ -160,14 +160,14 @@ const BlogPage = ({}) => {
                   <div className="flex flex-col gap-1">
                     <Link
                       href={
-                        session.user.id === blogPost.data.uploader
+                        session.user.id === blogPost.data.uploader.id
                           ? "/me"
-                          : `/h/${blogPost.data.uploader}`
+                          : `/h/${blogPost.data.uploader.username}`
                       }
                     >
                       <p className=" font-semibold leading-none hover:underline underline-offset-4">
-                        {blogPost.data.uploader.fullName.first}{" "}
-                        {blogPost.data.uploader.fullName.last}
+                        {blogPost.data.uploader.full_name.first}{" "}
+                        {blogPost.data.uploader.full_name.last}
                       </p>
                     </Link>
                     <p className="text-gray-500 text-sm leading-none">
@@ -190,18 +190,19 @@ const BlogPage = ({}) => {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={upvoteHandler}
-                      className={`btn gap-2 ${
+                      className={`btn gap-2 items-center ${
                         isLiked ? "btn-primary" : "btn-ghost"
                       }`}
                     >
                       <FiArrowUp />
-                      <span>{blogPost.data.upvoters.length}</span>
+                      <span>{blogPost.data.upvoters.length ?? 0}</span>
                     </button>
                     <button
                       onClick={() => setIsCommenting(!isCommenting)}
-                      className="btn btn-ghost"
+                      className="btn btn-ghost gap-2 items-center"
                     >
-                      Comment
+                      <FiMessageSquare />
+                      <span>{blogPost.data.comments.length ?? 0}</span>
                     </button>
                   </div>
                   <div className="flex items-center gap-3">
@@ -210,148 +211,165 @@ const BlogPage = ({}) => {
                 </div>
 
                 {/* add comment section */}
-                {isCommenting && (
-                  <div className="mt-10 lg:p-5">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={`https://avatars.dicebear.com/api/bottts/${session.user.user_metadata.username}.svg`}
-                        alt="avatar"
-                        className="w-10 h-10 rounded-full"
-                      />
-
-                      <div className="flex flex-col gap-1">
-                        <p className=" font-semibold leading-none">
-                          {session.user.user_metadata.fullName.first}{" "}
-                          {session.user.user_metadata.fullName.last}
-                        </p>
-                        <p className="text-gray-500 text-sm leading-none">
-                          {dayjs().format("MMMM D, YYYY")}
-                        </p>
-                      </div>
-                    </div>
-
-                    <form
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        const commentContent = e.target.commentContent.value;
-
-                        // disable the form
-                        e.target.disabled = true;
-
-                        if (commentContent.length === 0) {
-                          toast.error("Comment cannot be empty!");
-                          return;
-                        }
-
-                        // fetch latest data
-                        const { data: latestData, error: latestDataError } =
-                          await __supabase
-                            .from("public_posts")
-                            .select("comments")
-                            .single()
-                            .eq("id", blogPost.data.id);
-
-                        if (latestDataError) {
-                          console.log(latestDataError);
-                          toast.error("Something went wrong!");
-                          return;
-                        }
-
-                        const newComment = {
-                          id: uuidv4(),
-                          content: commentContent,
-                          createdAt: dayjs().format(),
-                          commenter: {
-                            id: session.user.id,
-                            username: session.user.user_metadata.username,
-                            fullName: session.user.user_metadata.fullName,
-                          },
-                        };
-
-                        const newComments = [
-                          ...latestData.comments,
-                          newComment,
-                        ];
-
-                        const { error } = await __supabase
-                          .from("public_posts")
-                          .update({
-                            comments: newComments,
-                          })
-                          .eq("id", blogPost.data.id);
-
-                        if (error) {
-                          console.log(error);
-                          toast.error("Something went wrong!");
-                          return;
-                        }
-
-                        e.target.reset();
-                        toast.success("Comment posted!");
-                        setIsCommenting(false);
-                        blogPost.refetch();
+                <AnimatePresence mode="wait">
+                  {isCommenting && (
+                    <motion.div
+                      key={`comment-section-${isCommenting}`}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                        transition: { duration: 0.2, ease: "circOut" },
                       }}
-                      className="mt-5"
-                    >
-                      <textarea
-                        name="commentContent"
-                        className="w-full h-32 p-3 bg-base-200 rounded-btn"
-                        placeholder="Write a comment..."
-                      />
-
-                      <div className="flex justify-between mt-3 gap-2">
-                        <p>Markdown</p>
-                        <div>
-                          <button type="reset" className="btn btn-ghost ml-3">
-                            Clear and Cancel
-                          </button>
-                          <button type="submit" className="btn btn-primary">
-                            Post
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                )}
-                <div className="divider" />
-
-                {/* comments */}
-                <div className="mt-10 lg:p-5 flex flex-col gap-5">
-                  {blogPost.data.comments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"
+                      className="mt-10 lg:p-5"
                     >
                       <div className="flex items-center gap-3">
                         <img
-                          src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
+                          src={`https://avatars.dicebear.com/api/bottts/${session.user.user_metadata.username}.svg`}
                           alt="avatar"
                           className="w-10 h-10 rounded-full"
                         />
 
                         <div className="flex flex-col gap-1">
                           <p className=" font-semibold leading-none">
-                            {comment.commenter.fullName.first}{" "}
-                            {comment.commenter.fullName.last}
+                            {session.user.user_metadata.full_name.first}{" "}
+                            {session.user.user_metadata.full_name.last}
                           </p>
-                          <p className="text-gray-500 text-sm leading-none">
-                            {dayjs(comment.createdAt).format(
-                              "MMMM D, YYYY - HH:mm"
-                            )}
+                          <p className="opacity-50 text-sm leading-none">
+                            {dayjs().format("MMMM D, YYYY")}
                           </p>
                         </div>
                       </div>
 
-                      <ReactMarkdown
-                        // components={markdownRenderer}
-                        rehypePlugins={[rehypeRaw]}
-                        className="prose"
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const commentContent = e.target.commentContent.value;
+
+                          // disable the form
+                          e.target.disabled = true;
+
+                          if (commentContent.length === 0) {
+                            toast.error("Comment cannot be empty!");
+                            return;
+                          }
+
+                          // fetch latest data
+                          const { data: latestData, error: latestDataError } =
+                            await __supabase
+                              .from("public_posts")
+                              .select("comments")
+                              .single()
+                              .eq("id", blogPost.data.id);
+
+                          if (latestDataError || !latestData) {
+                            console.log(latestDataError);
+                            toast.error("Something went wrong!");
+                            return;
+                          }
+
+                          const newComment = {
+                            id: uuidv4(),
+                            content: commentContent,
+                            createdAt: dayjs().format(),
+                            commenter: {
+                              id: session.user.id,
+                              username: session.user.user_metadata.username,
+                              full_name: session.user.user_metadata.full_name,
+                            },
+                          };
+
+                          const newComments = [
+                            ...latestData.comments,
+                            newComment,
+                          ];
+
+                          const { error } = await __supabase
+                            .from("public_posts")
+                            .update({
+                              comments: newComments,
+                            })
+                            .eq("id", blogPost.data.id);
+
+                          if (error) {
+                            console.log(error);
+                            toast.error("Something went wrong!");
+                            return;
+                          }
+
+                          e.target.reset();
+                          toast.success("Comment posted!");
+                          setIsCommenting(false);
+                          blogPost.refetch();
+                        }}
+                        className="mt-5"
                       >
-                        {comment.content}
-                      </ReactMarkdown>
-                    </div>
-                  ))}
-                </div>
+                        <textarea
+                          name="commentContent"
+                          className="w-full h-32 p-3 bg-base-200 rounded-btn"
+                          placeholder="Write a comment..."
+                        />
+
+                        <div className="flex justify-between mt-3 gap-2">
+                          <p>Markdown</p>
+                          <div>
+                            <button type="reset" className="btn btn-ghost ml-3">
+                              Clear and Cancel
+                            </button>
+                            <button type="submit" className="btn btn-primary">
+                              Post
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="divider" />
+
+                {/* comments */}
+                {!!blogPost.data.comments ? (
+                  <div className="mt-10 lg:p-5 flex flex-col gap-5">
+                    {blogPost.data.comments.map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
+                            alt="avatar"
+                            className="w-10 h-10 rounded-full"
+                          />
+
+                          <div className="flex flex-col gap-1">
+                            <p className=" font-semibold leading-none">
+                              {comment.commenter.full_name.first}{" "}
+                              {comment.commenter.full_name.last}
+                            </p>
+                            <p className="text-gray-500 text-sm leading-none">
+                              {dayjs(comment.createdAt).format(
+                                "MMMM D, YYYY - HH:mm"
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
+                        <ReactMarkdown
+                          rehypePlugins={[rehypeRaw]}
+                          className="prose"
+                        >
+                          {comment.content}
+                        </ReactMarkdown>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-10 lg:p-5 flex flex-col gap-5">
+                    <p className="opacity-50 text-center">No comments yet!</p>
+                  </div>
+                )}
               </div>
             </motion.main>
           </>
