@@ -3,8 +3,11 @@ import {
   FiBriefcase,
   FiGlobe,
   FiHome,
+  FiLogIn,
   FiMap,
+  FiPenTool,
   FiUser,
+  FiUserPlus,
 } from "react-icons/fi";
 
 import Link from "next/link";
@@ -140,6 +143,25 @@ const Navbar = () => {
               </>
             )}
           </div>
+
+          {!localUser && (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/register"
+                className={`btn btn-primary gap-2 items-center`}
+              >
+                <FiUserPlus className="text-lg" />
+                <span>Register</span>
+              </Link>
+              <Link
+                href="/login"
+                className={`btn btn-ghost gap-2 items-center`}
+              >
+                <FiLogIn className="text-lg" />
+                <span>Sign In</span>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
