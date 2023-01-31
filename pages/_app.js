@@ -12,7 +12,7 @@ import { __supabase } from "@/supabase";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
-const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const Navbar = dynamic(() => import("@/components/Navbar.new"), { ssr: false });
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
