@@ -201,7 +201,7 @@ const FeedPage = () => {
 
             {/* friend suggest and footer */}
             <div className="col-span-full lg:col-span-2">
-              <div className="flex flex-col rounded-btn p-2 gap-3">
+              <div className="flex flex-col rounded-btn py-2 gap-3">
                 <p className="text-2xl font-bold">Suggested Connections</p>
 
                 {recommendedUsers.isLoading && (

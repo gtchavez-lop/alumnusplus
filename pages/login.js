@@ -114,7 +114,7 @@ const LogInPage = (e) => {
               required
             />
 
-            <button type="submit" className="btn btn-primary mt-5">
+            <button type="submit" className="btn btn-primary mt-5 btn-block">
               Log in
             </button>
             <p className="">
