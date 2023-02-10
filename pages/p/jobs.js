@@ -1,40 +1,40 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FiLoader, FiPlus } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { FiLoader, FiPlus, FiX } from "react-icons/fi";
 
 import IndustryTypes from "../../schemas/industryTypes.json";
-import JobCard from "../../components/Jobs/JobCard";
+import JobCardProv from "@/components/Jobs/JobCardProv";
 import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+import { ReactMarkdown } from "react-markdown";
 import { __PageTransition } from "../../lib/animation";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "../../supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
+import { useState } from "react";
+import { useUser } from "@supabase/auth-helpers-react";
 import uuidv4 from "../../lib/uuidv4";
+
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPostings = () => {
   const [addPostModalShown, setAddPostModalShown] = useState(false);
   const thisSession = useSession();
+  const thisUser = useUser();
 
   const fetchProvJobs = async () => {
-    if (!!thisSession) {
-      const { data, error } = await __supabase
-        .from("job_postings")
-        .select("*")
-        .eq("uploader_email", thisSession?.user.email);
+    const { data, error } = await __supabase
+      .from("public_jobs")
+      .select("*")
+      .eq("uploader_id", thisUser.id);
 
-      if (error) {
-        console.log(error);
-        return [];
-      }
-
-      return data;
+    if (error) {
+      console.log(error);
+      return [];
     }
 
-    return [];
+    return data;
   };
 
   const provJobs = useQuery({
@@ -47,7 +47,7 @@ const JobPostings = () => {
       console.log("provJobs failed to load");
     },
     suspense: true,
-    enabled: !!thisSession,
+    enabled: !!thisUser,
   });
 
   return (
@@ -72,9 +72,9 @@ const JobPostings = () => {
             <div>
               <p className="text-3xl mb-2">Active Job Posts</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {/* {provJobs.data.map((job, index) => (
-                  <JobCard job={job} key={`jobcard_${index}`} />
-                ))} */}
+                {provJobs.data.map((job, index) => (
+                  <JobCardProv job={job} key={`jobcard_${index}`} />
+                ))}
               </div>
             </div>
           </motion.main>
@@ -105,6 +105,17 @@ const JobPostings = () => {
 
 const AddJobPostModal = ({ setModalShown }) => {
   const { reload } = useRouter();
+  const [jobqualifications, setJobQualifications] = useState([
+    "Wicket Profile",
+  ]);
+  const [addJobSchema, setAddJobSchema] = useState({
+    job_title: "",
+    full_description: "",
+    short_description: "",
+    job_qualifications: ["Wicket Profile"],
+    job_location: "",
+    job_type: "",
+  });
 
   const addJob = async (e) => {
     e.preventDefault();
@@ -113,31 +124,41 @@ const AddJobPostModal = ({ setModalShown }) => {
       data: { user },
     } = await __supabase.auth.getUser();
 
-    const schema = {
-      id: uuidv4(),
-      created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      career_level: e.target.career_level.value,
-      job_benefits: e.target.job_benefits.value,
-      job_category: e.target.job_category.value,
-      job_location: e.target.job_location.value,
-      job_title: e.target.job_title.value,
-      job_description: e.target.job_description.value,
-      job_type: e.target.job_type.value,
-      job_mode: e.target.job_mode.value,
-      job_requirements: ["Wicket Profile"],
-      uploader_legal_name: user.user_metadata.legalName,
-      uploader_company_size: user.user_metadata.companySize,
-      uploader_email: user.email,
-      job_tags: [],
-      job_workingHours: e.target.job_workingHours.value,
-      job_expectedSalary: e.target.job_expectedSalary.value,
-    };
-
     toast.loading("Adding job post...");
 
+    const formData = new FormData(e.target);
+
+    setAddJobSchema({
+      ...addJobSchema,
+      job_title: formData.get("job_title"),
+      full_description: formData.get("full_description"),
+      short_description: formData.get("short_description"),
+      job_qualifications: jobqualifications,
+      job_location: formData.get("job_location"),
+    });
+
+    console.clear();
+    console.log(addJobSchema);
+
+    // check if all fields are filled
+    for (const [key, value] of Object.entries(addJobSchema)) {
+      if (value === "") {
+        toast.dismiss();
+        toast.error(`Please fill in the ${key}`);
+        return;
+      }
+    }
+
     const { error: jobPostError } = await __supabase
-      .from("job_postings")
-      .insert([schema]);
+      .from("public_jobs")
+      .insert([
+        {
+          ...addJobSchema,
+          id: uuidv4(),
+          uploader_id: user.id,
+          created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        },
+      ]);
 
     if (jobPostError) {
       toast.dismiss();
@@ -162,15 +183,15 @@ const AddJobPostModal = ({ setModalShown }) => {
       className="fixed top-0 left-0 w-full h-screen bg-base-300 bg-opacity-50"
     >
       <motion.section
-        initial={{ opacity: 0, x: 100 }}
+        initial={{ opacity: 0, x: 200 }}
         animate={{
           opacity: 1,
           x: 0,
-          transition: { ease: "circOut", duration: 0.2 },
+          transition: { ease: "circOut", duration: 0.2, delay: 0.2 },
         }}
         exit={{
           opacity: 0,
-          x: 100,
+          x: 200,
           transition: { ease: "circIn", duration: 0.2 },
         }}
         className="absolute w-full max-w-lg right-0 max-h-screen px-5 py-24 top-0 bg-base-100 overflow-y-auto"
@@ -178,6 +199,7 @@ const AddJobPostModal = ({ setModalShown }) => {
         <p className="text-2xl font-bold">Add new Post</p>
 
         <form className="mt-5" onSubmit={addJob}>
+          {/* job title */}
           <div className="flex flex-col">
             <label htmlFor="job_title">Job Title</label>
             <input
@@ -189,17 +211,35 @@ const AddJobPostModal = ({ setModalShown }) => {
             />
           </div>
 
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_description">Job Description</label>
+          {/* descriptions */}
+          <div className="flex flex-col mt-5 w-full">
+            <label htmlFor="full_description w-full">
+              <span>Job Full Description</span>
+            </label>
             <textarea
-              name="job_description"
-              id="job_description"
+              name="full_description"
+              id="full_description"
               placeholder="The description of the job that you are posting"
-              className="textarea textarea-bordered"
+              className="textarea textarea-bordered prose"
               rows={5}
             />
+            <span className="opacity-50 ml-auto">Markdown</span>
+          </div>
+          <div className="flex flex-col mt-5 w-full">
+            <label htmlFor="short_description w-full">
+              <span>Job Short Description</span>
+            </label>
+            <textarea
+              name="short_description"
+              id="short_description"
+              placeholder="The description of the job that you are posting"
+              className="textarea textarea-bordered prose"
+              rows={5}
+            />
+            <span className="opacity-50 ml-auto">Markdown</span>
           </div>
 
+          {/* job location */}
           <div className="flex flex-col mt-5">
             <label htmlFor="job_location">Job Location</label>
             <input
@@ -211,114 +251,110 @@ const AddJobPostModal = ({ setModalShown }) => {
             />
           </div>
 
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_expectedSalary">Expected Salary</label>
+          {/* job qualifications */}
+          <div className="flex flex-col gap-1 mt-5">
+            <label>Job Qualifications</label>
+            {/* input field, press enter to add to jobqualifications array */}
             <input
               type="text"
-              name="job_expectedSalary"
-              id="job_expectedSalary"
-              placeholder="How much are you willing to pay?"
+              name="job_qualifications"
+              id="job_qualifications"
+              placeholder="What are the qualifications for this job?"
               className="input input-bordered"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setJobQualifications([...jobqualifications, e.target.value]);
+                  e.target.value = "";
+                }
+              }}
             />
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_requirements">Job Requirements</label>
-            <textarea
-              name="job_requirements"
-              id="job_requirements"
-              placeholder="What are the requirements for the job?"
-              className="textarea textarea-bordered"
-              rows={5}
-            />
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_benefits">Job Benefits</label>
-            <textarea
-              name="job_benefits"
-              id="job_benefits"
-              placeholder="What are the benefits of the job?"
-              className="textarea textarea-bordered"
-              rows={5}
-            />
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <label htmlFor="career_level">Job Level</label>
-            <select
-              name="career_level"
-              id="career_level"
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled selected>
-                Select Job Level
-              </option>
-              <option value="Entry">Entry</option>
-              <option value="Mid">Mid</option>
-              <option value="Senior">Senior</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_type">Job Type</label>
-            <select
-              name="job_type"
-              id="job_type"
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled selected>
-                Select Job Type
-              </option>
-              <option value="Full Time">Full Time</option>
-              <option value="Part Time">Part Time</option>
-              <option value="Contract">Contract</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_category">Job Category</label>
-            <select
-              name="job_category"
-              id="job_category"
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled selected>
-                Select Job Category
-              </option>
-              {IndustryTypes.map((industry, index) => (
-                <option value={industry} key={`industrytype_${index}`}>
-                  {industry}
-                </option>
+            {/* list of qualifications */}
+            <div className="flex flex-row flex-wrap gap-2 mt-2">
+              {jobqualifications.map((item, index) => (
+                <div
+                  key={`jobqualification-${index}`}
+                  onClick={() => {
+                    setJobQualifications(
+                      jobqualifications.filter((i) => i !== item)
+                    );
+                  }}
+                  className="badge badge-primary cursor-pointer gap-2 hover:scale-95 hover:badge-error"
+                >
+                  <span>{item}</span>
+                  <FiX />
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_mode">Job Mode</label>
-            <select
-              name="job_mode"
-              id="job_mode"
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled selected>
-                Select Job Mode
-              </option>
-              <option value="Remote">Remote</option>
-              <option value="Onsite">Onsite</option>
-              <option value="Hybrid">Hybrid</option>
-            </select>
-          </div>
+          {/* job type */}
+          <div className="flex flex-col gap-1 mt-5">
+            <label>Job Type</label>
+            {/* checkboxes */}
+            <div className="flex flex-row mt-2">
+              <input
+                type="checkbox"
+                name="job_type_1"
+                id="job_type_1"
+                checked={addJobSchema.job_type.includes("Full Time")}
+                className="checkbox checkbox-primary"
+                onChange={(e) => {
+                  const oldList = addJobSchema.job_type;
+                  const newList = e.target.checked
+                    ? [...oldList, "Full Time"]
+                    : oldList.filter((item) => item !== "Full Time");
 
-          <div className="flex flex-col mt-5">
-            <label htmlFor="job_workingHours">Working Hours</label>
-            <input
-              type="text"
-              name="job_workingHours"
-              id="job_workingHours"
-              placeholder="What are the working hours?"
-              className="input input-bordered"
-            />
+                  setAddJobSchema({
+                    ...addJobSchema,
+                    job_type: newList,
+                  });
+                }}
+              />
+              <label htmlFor="job_type_1">Full Time</label>
+            </div>
+            <div className="flex flex-row">
+              <input
+                type="checkbox"
+                name="job_type_2"
+                id="job_type_2"
+                className="checkbox checkbox-primary"
+                checked={addJobSchema.job_type.includes("Part Time")}
+                onChange={(e) => {
+                  const oldList = addJobSchema.job_type;
+                  const newList = e.target.checked
+                    ? [...oldList, "Part Time"]
+                    : oldList.filter((item) => item !== "Part Time");
+
+                  setAddJobSchema({
+                    ...addJobSchema,
+                    job_type: newList,
+                  });
+                }}
+              />
+              <label htmlFor="job_type_2">Part Time</label>
+            </div>
+            <div className="flex flex-row">
+              <input
+                type="checkbox"
+                name="job_type_3"
+                id="job_type_3"
+                checked={addJobSchema.job_type.includes("Contract")}
+                className="checkbox checkbox-primary"
+                onChange={(e) => {
+                  const oldList = addJobSchema.job_type;
+                  const newList = e.target.checked
+                    ? [...oldList, "Contract"]
+                    : oldList.filter((item) => item !== "Contract");
+
+                  setAddJobSchema({
+                    ...addJobSchema,
+                    job_type: newList,
+                  });
+                }}
+              />
+              <label htmlFor="job_type_3">Contract</label>
+            </div>
           </div>
 
           <button type="submit" className="btn btn-primary mt-16 btn-block">
