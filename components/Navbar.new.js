@@ -79,8 +79,11 @@ const Navbar = () => {
                       </label>
                       <ul
                         tabIndex={0}
-                        className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-btn w-[400px] gap-1"
+                        className="dropdown-content menu p-4 shadow-lg bg-base-200 rounded-btn w-[400px] gap-1"
                       >
+                        <li className="mb-2 text-lg font-bold">
+                          Notifications
+                        </li>
                         {Array(5)
                           .fill()
                           .map((_, i) => (
@@ -95,7 +98,7 @@ const Navbar = () => {
                           ))}
 
                         <Link href="/h/notifications">
-                          <li className="my-5 link text-center">
+                          <li className="py-5 link text-center">
                             See all notifications
                           </li>
                         </Link>
