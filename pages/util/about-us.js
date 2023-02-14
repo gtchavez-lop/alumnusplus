@@ -1,4 +1,4 @@
-import Footer from "../components/Landing/Footer";
+import Footer from "@/components/Landing/Footer";
 
 const AboutUsPage = () => {
   return (
