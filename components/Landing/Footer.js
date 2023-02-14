@@ -1,5 +1,6 @@
 import { FiFacebook, FiGithub, FiTwitter } from "react-icons/fi";
 
+import Link from "next/link";
 import { SiDiscord } from "react-icons/si";
 
 const Footer = () => {
@@ -27,12 +28,21 @@ const Footer = () => {
         </div>
         <div>
           <span className="footer-title">Features</span>
-          <p className="link link-hover">Mini Blogging</p>
-          <p className="link link-hover">
-            <a href="geo-company">Geo-company Hunting</a>
-          </p>
-          <p className="link link-hover">Job Posting</p>
-          <p className="link link-hover">Metaverse</p>
+          <Link href="/util/features#blogging" className="link link-hover">
+            Mini Blogging
+          </Link>
+          <Link
+            href="/util/features#companyhunting"
+            className="link link-hover"
+          >
+            Geo-Company Hunting
+          </Link>
+          <Link href="/util/features#jobposting" className="link link-hover">
+            Job Posting
+          </Link>
+          <Link href="/util/features#metaverse" className="link link-hover">
+            Metaverse
+          </Link>
         </div>
         <div>
           <span className="footer-title">Company</span>

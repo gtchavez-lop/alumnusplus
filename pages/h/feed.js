@@ -2,11 +2,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 
-// import FeedCard from "@/components/Feed/FeedCard";
 import { FiX } from "react-icons/fi";
 import Link from "next/link";
-// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
-// import SkeletonCard from "@/components/Feed/SkeletonCard";
 import { __PageTransition } from "@/lib/animation";
 import { __supabase } from "@/supabase";
 import dayjs from "dayjs";
@@ -14,6 +11,11 @@ import dynamic from "next/dynamic";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import uuidv4 from "@/lib/uuidv4";
+
+// import FeedCard from "@/components/Feed/FeedCard";
+
+// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+// import SkeletonCard from "@/components/Feed/SkeletonCard";
 
 const ProtectedPageContainer = dynamic(
   () => import("@/components/ProtectedPageContainer"),
@@ -259,6 +261,44 @@ const FeedPage = () => {
                         ))}
                     </div>
                   )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 mt-5 font-light text-sm opacity-50">
+                <div className="flex flex-col">
+                  <p className="font-bold text-lg">Features</p>
+                  <Link
+                    href="/util/features#blogging"
+                    className="link link-hover"
+                  >
+                    Mini Blogging
+                  </Link>
+                  <Link
+                    href="/util/features#companyhunting"
+                    className="link link-hover"
+                  >
+                    Geo-Company Hunting
+                  </Link>
+                  <Link
+                    href="/util/features#jobposting"
+                    className="link link-hover"
+                  >
+                    Job Posting
+                  </Link>
+                  <Link
+                    href="/util/features#metaverse"
+                    className="link link-hover"
+                  >
+                    Metaverse
+                  </Link>
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Wicket Journeys</p>
+                  <p className="link link-hover">About Us</p>
+                  <p className="link link-hover">Contact Us</p>
+                  <p className="link link-hover">Terms of use</p>
+                  <p className="link link-hover">Privacy policy</p>
+                  <p className="link link-hover">Cookie policy</p>
                 </div>
               </div>
             </div>
