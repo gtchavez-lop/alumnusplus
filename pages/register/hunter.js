@@ -4,6 +4,7 @@ import { useReducer, useState } from "react";
 import { $schema_hunter } from "@schemas/user";
 import { AnimatePresence } from "framer-motion";
 import Cities from "@schemas/ph_location.json";
+import Fuse from "fuse.js";
 import SkillList from "@schemas/skills.json";
 import { __PageTransition } from "@/lib/animation";
 import { __supabase } from "@/supabase";
@@ -15,6 +16,10 @@ import { useRouter } from "next/router";
 const RegisterHunter = () => {
 	const router = useRouter();
 	const schema = $schema_hunter;
+
+	const allSkills = new Fuse(SkillList, {
+		threshold: 0.3,
+	})
 
 	const [inputData, setInputData] = useState({
 		...schema,
@@ -543,29 +548,27 @@ const RegisterHunter = () => {
 												className="input input-primary w-full"
 												placeholder="Primary Skill"
 												onInput={(e) => {
-													const value = e.target.value;
+													const input = e.target.value;
+													const res = allSkills.search(input);
 
-													if (value.length > 0) {
-														const filtered = SkillList.filter((c) => c.toLowerCase().includes(value.toLowerCase()));
-														setPrimarySkillSearchResults(filtered);
+													if (res.length > 0) {
+														const filtered = res.map((r) => r.item);
+														const limited = filtered.slice(0, 10);
+														setPrimarySkillSearchResults(limited);
 													} else {
 														setPrimarySkillSearchResults([]);
-														setInputData({
-															...inputData,
-															skillPrimary: "",
-														});
 													}
 												}}
 											/>
 
 											{/* search results */}
 											{primarySkillSearchResults.length > 0 && (
-												<div className="absolute z-10 w-full bg-base-300 rounded-b-lg h-max max-h-[200px] overflow-y-auto">
+												<div className="w-full bg-base-300 rounded-b-lg mt-2">
 													<div className="p-2">
 														{primarySkillSearchResults.map((c, i) => (
 															<div
 																key={`primary-${i}`}
-																className="flex items-center justify-between p-1 text-sm cursor-pointer hover:bg-primary-100"
+																className="flex items-center justify-between p-1 text-sm cursor-pointer hover:bg-primary hover:text-primary-content rounded-full px-2"
 																onClick={() => {
 																	setInputData({
 																		...inputData,
@@ -597,8 +600,10 @@ const RegisterHunter = () => {
 													const value = e.target.value;
 
 													if (value.length > 0) {
-														const filtered = SkillList.filter((c) => c.toLowerCase().includes(value.toLowerCase()));
-														setSecondarySkillSearchResults(filtered);
+														const res = allSkills.search(value);
+														const filtered = res.map((r) => r.item);
+														const limited = filtered.slice(0, 10);
+														setSecondarySkillSearchResults(limited);
 													} else {
 														setSecondarySkillSearchResults([]);
 													}
@@ -607,12 +612,12 @@ const RegisterHunter = () => {
 
 											{/* search results */}
 											{secondarySkillSearchResults.length > 0 && (
-												<div className="absolute z-10 w-full bg-base-300 rounded-b-lg h-max max-h-[200px] overflow-y-auto">
+												<div className="w-full bg-base-300 rounded-b-lg mt-2">
 													<div className="p-2">
 														{secondarySkillSearchResults.map((c, i) => (
 															<div
 																key={`secondary-${i}`}
-																className="flex items-center justify-between p-1 text-sm cursor-pointer hover:bg-primary-100"
+																className="flex items-center justify-between p-1 text-sm cursor-pointer hover:bg-primary hover:text-primary-content rounded-full px-2"
 																onClick={() => {
 																	setInputData({
 																		...inputData,
@@ -635,7 +640,7 @@ const RegisterHunter = () => {
 													{inputData.skillSecondary.map((c, i) => (
 														<div
 															key={`selected-${i}`}
-															className="badge badge-primary gap-2 items-center"
+															className="badge badge-primary gap-2 items-center hover:badge-error badge-lg cursor-pointer"
 															onClick={() => {
 																setInputData({
 																	...inputData,
@@ -646,7 +651,6 @@ const RegisterHunter = () => {
 															}}
 														>
 															<span>{c}</span>
-															<FiX className="cursor-pointer hover:text-red-500" />
 														</div>
 													))}
 												</div>
