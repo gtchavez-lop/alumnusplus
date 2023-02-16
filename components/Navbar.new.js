@@ -13,12 +13,24 @@ import {
 import Link from "next/link";
 import Logo from "./Logo";
 import { __supabase } from "@/supabase";
+import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 
 const Navbar = () => {
   const localUser = useUser();
   const router = useRouter();
+
+  // const [hunterNotification] = useQueries({
+  //   queries: [
+  //     {
+  //       queryKey: ["hunterNotification"],
+  //       queryFn: async () => {
+          
+  //       }
+  //     }
+  //   ]
+  // })
 
   return (
     <>
@@ -88,12 +100,12 @@ const Navbar = () => {
                           .fill()
                           .map((_, i) => (
                             <li key={`notifskeleton_${i}`}>
-                              <a
+                              <p
                                 style={{ animationDelay: `${i * 100}ms` }}
                                 className="bg-zinc-500 bg-opacity-40 animate-pulse text-transparent"
                               >
                                 Placeholder notification
-                              </a>
+                              </p>
                             </li>
                           ))}
 
@@ -178,19 +190,19 @@ const Navbar = () => {
                         className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-btn w-screen max-w-xl -mr-5 md:-mr-0"
                       >
                         <li>
-                          <a>1</a>
+                          <a href="">1</a>
                         </li>
                         <li>
-                          <a>2</a>
+                          <a href="">2</a>
                         </li>
                         <li>
-                          <a>3</a>
+                          <a href="">3</a>
                         </li>
                         <li>
-                          <a>4</a>
+                          <a href="">4</a>
                         </li>
                         <li>
-                          <a>Only display 5 latest notifications</a>
+                          <a href="">Only display 5 latest notifications</a>
                         </li>
 
                         <Link href="/h/notifications">
@@ -265,14 +277,14 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               <Link
                 href="/register"
-                className={`btn btn-primary gap-2 items-center`}
+                className="btn btn-primary gap-2 items-center"
               >
                 <FiUserPlus className="text-lg" />
                 <span>Register</span>
               </Link>
               <Link
                 href="/login"
-                className={`btn btn-ghost gap-2 items-center`}
+                className="btn btn-ghost gap-2 items-center"
               >
                 <FiLogIn className="text-lg" />
                 <span>Sign In</span>
