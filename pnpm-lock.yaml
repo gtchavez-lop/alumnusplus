@@ -17,6 +17,7 @@ specifiers:
   eslint: 8.29.0
   eslint-config-next: 13.0.6
   framer-motion: ^7.6.19
+  fuse.js: ^6.6.2
   jotai: ^1.13.1
   markdown-it: ^13.0.1
   next: 13.0.6
@@ -48,6 +49,7 @@ dependencies:
   eslint: 8.29.0
   eslint-config-next: 13.0.6_eslint@8.29.0
   framer-motion: 7.10.3_biqbaboplfbrettd7655fr4n2y
+  fuse.js: 6.6.2
   jotai: 1.13.1_react@18.2.0
   markdown-it: 13.0.1
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
@@ -3297,6 +3299,11 @@ packages:
 
   /functions-have-names/1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+    dev: false
+
+  /fuse.js/6.6.2:
+    resolution: {integrity: sha512-cJaJkxCCxC8qIIcPBF9yGxY0W/tVZS3uEISDxhYIdtk8OL93pe+6Zj7LjCqVV4dzbqcriOZ+kQ/NE4RXZHsIGA==}
+    engines: {node: '>=10'}
     dev: false
 
   /gensync/1.0.0-beta.2:
