@@ -1,12 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FiLoader, FiPlus, FiX } from "react-icons/fi";
 
-import IndustryTypes from "../../schemas/industryTypes.json";
 import JobCardProv from "@/components/Jobs/JobCardProv";
+import Link from "next/link";
 import ProtectedPageContainer from "@/components/ProtectedPageContainer";
-import { ReactMarkdown } from "react-markdown";
-import { __PageTransition } from "../../lib/animation";
-import { __supabase } from "../../supabase";
+import { __PageTransition } from "@/lib/animation";
+import { __supabase } from "@/supabase";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +13,7 @@ import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { useUser } from "@supabase/auth-helpers-react";
-import uuidv4 from "../../lib/uuidv4";
+import uuidv4 from "@/lib/uuidv4";
 
 // import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
@@ -58,10 +57,10 @@ const JobPostings = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36"
 					>
-						<button onClick={() => setAddPostModalShown(true)} className="btn btn-primary items-center gap-2">
+						<Link href="/p/jobs/new" className="btn btn-primary items-center gap-2">
 							<span>Add new job</span>
 							<FiPlus />
-						</button>
+						</Link>
 
 						<div>
 							<p className="text-3xl mb-2">Active Job Posts</p>
