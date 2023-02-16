@@ -3,14 +3,21 @@ import { useEffect, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
-// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { __PageTransition } from "@/lib/animation";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { __supabase } from "@/supabase";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useQueries } from "@tanstack/react-query";
+
+// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+
+// import { useSupabaseClient } from "@supabase/auth-helpers-react";
+
+
+
+
+
 
 const ProtectedPageContainer = dynamic(
   () => import("@/components/ProtectedPageContainer"),
@@ -44,7 +51,7 @@ const DriftPage = () => {
   return (
     <>
       <ProtectedPageContainer>
-        {!!driftData.isLoading ? (
+        {driftData.isLoading ? (
           <motion.main
             variants={__PageTransition}
             initial="initial"

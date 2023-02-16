@@ -30,6 +30,24 @@ const FeedCard = ({ data: blogPostData }) => {
     setIsLiked(localIsLiked);
   };
 
+  const sendNotification = async () => {
+    const notificationData = {
+      description: `${session.user.user_metadata.username} liked your post`,
+      link: `/h/blog/${blogPostData.id}`,
+      trigger_from: session.user.id,
+      trigger_to: blogPostData.uploaderID,
+    };
+
+    const { error: notificationError } = await __supabase
+      .from("notif_hunters")
+      .insert([notificationData]);
+
+    if (notificationError) {
+      console.log(notificationError);
+      return;
+    }
+  };
+
   // post upvote handler
   const upvoteHandler = async (e) => {
     // disable the button while processing
@@ -89,6 +107,7 @@ const FeedCard = ({ data: blogPostData }) => {
 
       blogPostData.upvoters = [...currentData.upvoters, session.user.id];
       setIsLiked(true);
+      sendNotification();
       e.target.disabled = false;
       toast.dismiss();
     }
@@ -147,7 +166,7 @@ const FeedCard = ({ data: blogPostData }) => {
             rehypePlugins={[rehypeRaw]}
             className="prose-sm prose-headings:text-xl "
           >
-            {blogPostData.content.slice(0, 200) + "..."}
+            {`${blogPostData.content.slice(0, 200)}...`}
           </ReactMarkdown>
         </div>
 

@@ -3,7 +3,6 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import Link from "next/link";
-// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { __PageTransition } from "@/lib/animation";
 import { __supabase } from "@/supabase";
@@ -12,6 +11,16 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+
+// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+
+
+
+
+
+
+
+
 
 const ProtectedPageContainer = dynamic(
   () => import("@/components/ProtectedPageContainer"),
@@ -77,7 +86,7 @@ const UserPage = ({ notfound }) => {
     queryFn: fetchUser,
     enabled: !!username,
     onSuccess: (data) => {
-      if (!!sessionUser.user) {
+      if (sessionUser.user) {
         const isConnected = sessionUser.user_metadata.connections.includes(
           data.id
         );
