@@ -1,6 +1,9 @@
-import Footer from "@/components/Landing/Footer";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiCheck, FiChevronDown, FiX } from "react-icons/fi";
+import { useState } from "react";
+import Footer from "../components/Landing/Footer";
 
-const AboutUsPage = () => {
+const about = () => {
   return (
     <>
       <img
@@ -41,4 +44,4 @@ const AboutUsPage = () => {
   );
 };
 
-export default AboutUsPage;
+export default about;
