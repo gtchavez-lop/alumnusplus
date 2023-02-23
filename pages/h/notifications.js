@@ -31,7 +31,7 @@ const NotificationsPage = () => {
             .fill(0)
             .map((_, i) => (
               <div
-                key={i}
+                key={`notification-loading-${i}`}
                 className="flex items-center gap-4 p-4 bg-base-200 rounded-lg shadow-sm"
               >
                 <div
@@ -39,7 +39,7 @@ const NotificationsPage = () => {
                     animationDelay: `${i * 200}ms`,
                   }}
                   className="w-12 h-12 bg-zinc-500 bg-opacity-40 animate-pulse rounded-full"
-                ></div>
+                />
                 <div className="flex flex-col justify-center gap-0">
                   <h2
                     style={{

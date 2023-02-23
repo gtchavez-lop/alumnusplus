@@ -130,7 +130,7 @@ const JobPage = () => {
                       <div
                         key={`jobloader_${index}`}
                         style={{
-                          animationDelay: index * 50 + "ms",
+                          animationDelay: `${index * 50}ms`,
                           animationDuration: "500ms",
                         }}
                         className="h-[238px] w-full bg-base-200 animate-pulse "

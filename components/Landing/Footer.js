@@ -1,7 +1,4 @@
-import { FiFacebook, FiGithub, FiTwitter } from "react-icons/fi";
-
 import Link from "next/link";
-import { SiDiscord } from "react-icons/si";
 
 const Footer = () => {
   return (
