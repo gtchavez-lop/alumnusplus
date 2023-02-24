@@ -41,7 +41,7 @@ const Home = (e) => {
   });
 
   const checkUser = async () => {
-    if (!!session) {
+    if (session) {
       if (session.user_metadata.type === "hunter") {
         router.push("/h/feed");
       } else if (session.user_metadata.type === "provisioner") {
