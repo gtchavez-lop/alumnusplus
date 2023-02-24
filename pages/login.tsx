@@ -1,8 +1,4 @@
-import {
-	$accountData,
-	$accountDetails,
-	$accountType,
-} from "@/lib/globalStates";
+import { $accountDetails, $accountType } from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 
 import { FormEvent } from "react";

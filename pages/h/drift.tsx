@@ -3,6 +3,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
+import { GetServerSideProps } from "next";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";

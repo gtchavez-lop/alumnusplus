@@ -602,3 +602,16 @@ export type THunterBlogPost = {
   uploader: IUserHunter
   upvoters: string[]
 }
+
+export interface TProvJobPost {
+  id:                 string;
+  uploader_id:        string;
+  job_title:          string;
+  full_description:   string;
+  short_description:  string;
+  job_qualifications: string[];
+  job_location:       string;
+  job_type:           string[];
+  created_at:         string;
+  job_skills:         string[];
+}

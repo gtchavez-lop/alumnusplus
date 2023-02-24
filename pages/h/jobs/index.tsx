@@ -1,14 +1,12 @@
 import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { QueryFunction, useQueries, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { IUserHunter } from "@/lib/types";
 import JobCard from "@/components/jobs/JobCard";
-import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useQueries } from "@tanstack/react-query";
+import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
 interface Job {
@@ -18,11 +16,9 @@ interface Job {
 	short_description: string;
 	created_at: string;
 	job_type: string[];
-	uploader: Uploader;
-}
-
-interface Uploader {
-	legalName: string;
+	uploader: {
+		legalName: string;
+	};
 }
 
 const JobPage = () => {
@@ -32,10 +28,7 @@ const JobPage = () => {
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
-			.limit(10);
+			.select("*,uploader:uploader_id(legalName)");
 
 		if (error) {
 			console.log(error);

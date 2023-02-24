@@ -8,6 +8,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
 import { FiX } from "react-icons/fi";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -16,26 +17,14 @@ import { toast } from "react-hot-toast";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
-// import uuidv4 from "@/lib/uuidv4";
-
-// const ProtectedPageContainer = dynamic(() => import("@/components/ProtectedPageContainer"), { ssr: false });
-
-// const SkeletonCard = dynamic(() => import("@/components/Feed/SkeletonCard"), {
-// 	ssr: false,
-// });
-
-// const FeedCard = dynamic(() => import("@/components/Feed/FeedCard"), {
-// 	ssr: false,
-// });
-
 const FeedPage = () => {
 	const [isMakingPost, setIsMakingPost] = useState(false);
-	const thisSession = useSession();
-	const thisUser = useUser();
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	const fetchFeed = async () => {
-		const connections = _currentUser.connections;
+		const connections: string[] = _currentUser.connections.concat(
+			_currentUser.id,
+		);
 
 		const { data, error } = await supabase
 			.from("public_posts")
@@ -43,7 +32,7 @@ const FeedPage = () => {
 				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username),upvoters",
 			)
 			.order("createdAt", { ascending: false })
-			.in("uploader", [...connections, _currentUser.id]);
+			.in("uploader", connections);
 
 		if (error) {
 			console.log("error", error);
@@ -62,7 +51,7 @@ const FeedPage = () => {
 			.select("id,fullname,username,email")
 			.filter("id", "not.in", reqString);
 
-		if (error) {
+		if (error || localConnection.length === 0) {
 			return [];
 		}
 

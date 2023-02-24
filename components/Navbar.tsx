@@ -1,5 +1,6 @@
 import { $accountType, $themeMode } from "@/lib/globalStates";
 import {
+	MdApps,
 	MdEvent,
 	MdHome,
 	MdMap,
@@ -183,6 +184,48 @@ const Navbar = () => {
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<p className="text-lg font-bold">Wicket</p>
+						<div className="flex gap-1">
+							<Link
+								href="/p/dashboard"
+								className={`btn w-full ${
+									router.pathname.includes("/p/dashboard")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdApps className="text-lg" />
+							</Link>
+							<Link
+								href="/p/jobs"
+								className={`btn w-full ${
+									router.pathname.includes("/p/jobs")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdWork className="text-lg" />
+							</Link>
+							<Link
+								href="/p/events"
+								className={`btn w-full ${
+									router.pathname.includes("/p/events")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdEvent className="text-lg" />
+							</Link>
+							<Link
+								href="/p/me"
+								className={`btn w-full ${
+									router.pathname.includes("/p/me")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdPerson className="text-lg" />
+							</Link>
+						</div>
 					</div>
 				</div>
 			)}

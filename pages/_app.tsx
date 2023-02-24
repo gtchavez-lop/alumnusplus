@@ -28,6 +28,18 @@ export default function App({ Component, pageProps, router }: AppProps) {
 		}
 	};
 
+	const redirectHandler = () => {
+		// if user is not logged in, redirect to login page
+		// if route.pathname has /p/ or /h/ in it, redirect to login page
+		if (!$accountType && router.pathname.includes("/p/")) {
+			router.push("/login");
+		}
+
+		if (!$accountType && router.pathname.includes("/h/")) {
+			router.push("/login");
+		}
+	};
+
 	const checkUser = async () => {
 		const { data } = await supabase.auth.getUser();
 
@@ -93,7 +105,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 			$themeMode.set(theme as "light" | "dark");
 			document.documentElement.setAttribute("data-theme", theme);
 		}
-	}, []);
+	});
 
 	return (
 		<>

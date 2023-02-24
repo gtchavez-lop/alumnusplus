@@ -1,5 +1,6 @@
 import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
-import { FormEvent, MouseEventHandler, useState } from "react";
+import { FormEvent, MouseEventHandler, useEffect, useState } from "react";
+import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, TBlogPostComment, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -8,7 +9,6 @@ import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { supabase } from "@/lib/supabase";
@@ -19,13 +19,39 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
-// import ProtectedPageContainer from "@/components/ProtectedPageContainer";
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+	const { id } = query;
 
-const BlogPage = () => {
-	const session = useSession();
+	const { data: blogData, error } = await supabase
+		.from("public_posts")
+		.select(
+			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username),upvoters",
+		)
+		.eq("id", id)
+		.single();
+
+	if (error) {
+		console.log(error);
+	}
+
+	if (error) {
+		return {
+			props: {
+				blogData: null,
+			},
+		};
+	}
+
+	return {
+		props: {
+			blogData,
+		},
+	};
+};
+
+const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [isCommenting, setIsCommenting] = useState(false);
-	const router = useRouter();
 	const currentUser = useStore($accountDetails) as IUserHunter;
 
 	// methods
@@ -34,37 +60,6 @@ const BlogPage = () => {
 		setIsLiked(localIsLiked);
 	};
 
-	const fetchBlogPostData = async () => {
-		const { id } = router.query;
-
-		const { data, error } = await supabase
-			.from("public_posts")
-			.select(
-				"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username),upvoters",
-			)
-			.eq("id", id)
-			.single();
-
-		if (error) {
-			console.log(error);
-			return;
-		}
-
-		return data;
-	};
-
-	const blogPost = useQuery({
-		queryKey: ["blogPost"],
-		queryFn: fetchBlogPostData,
-		enabled: !!session && !!router.query.id,
-		onSuccess: (data: THunterBlogPost) => {
-			checkIfLiked(data?.upvoters);
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-	});
-
 	const upvoteHandler = async () => {
 		toast.loading("Processing...");
 
@@ -72,7 +67,7 @@ const BlogPage = () => {
 		const { data: currentData, error: currentDataError } = await supabase
 			.from("public_posts")
 			.select("upvoters")
-			.eq("id", blogPost.data?.id)
+			.eq("id", blogData?.id)
 			.single();
 
 		if (currentDataError) {
@@ -93,7 +88,7 @@ const BlogPage = () => {
 				.update({
 					upvoters: newUpvoters,
 				})
-				.eq("id", blogPost.data?.id);
+				.eq("id", blogData?.id);
 
 			if (removeUpvoteError) {
 				console.log(removeUpvoteError);
@@ -102,7 +97,6 @@ const BlogPage = () => {
 
 			setIsLiked(false);
 			toast.dismiss();
-			blogPost.refetch();
 			return;
 		}
 
@@ -114,7 +108,7 @@ const BlogPage = () => {
 			.update({
 				upvoters: newUpvoters,
 			})
-			.eq("id", blogPost.data?.id);
+			.eq("id", blogData?.id);
 
 		if (addUpvoteError) {
 			console.log(addUpvoteError);
@@ -123,12 +117,18 @@ const BlogPage = () => {
 
 		setIsLiked(true);
 		toast.dismiss();
-		blogPost.refetch();
+		blogData.upvoters = newUpvoters;
 	};
+
+	useEffect(() => {
+		if (blogData) {
+			checkIfLiked(blogData.upvoters);
+		}
+	});
 
 	return (
 		<>
-			{!!blogPost.isSuccess && (
+			{!!blogData && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -141,13 +141,13 @@ const BlogPage = () => {
 							<div className="flex items-center gap-3 lg:bg-base-200 lg:p-5 lg:rounded-btn">
 								<Link
 									href={
-										currentUser.id === blogPost.data.uploader.id
+										currentUser.id === blogData.uploader.id
 											? "/me"
-											: `/h/${blogPost.data.uploader.username}`
+											: `/h/${blogData.uploader.username}`
 									}
 								>
 									<img
-										src={`https://avatars.dicebear.com/api/bottts/${blogPost.data.uploader.username}.svg`}
+										src={`https://avatars.dicebear.com/api/bottts/${blogData.uploader.username}.svg`}
 										alt="avatar"
 										className="w-10 h-10 rounded-full"
 									/>
@@ -155,18 +155,18 @@ const BlogPage = () => {
 								<div className="flex flex-col gap-1">
 									<Link
 										href={
-											currentUser.id === blogPost.data.uploader.id
+											currentUser.id === blogData.uploader.id
 												? "/me"
-												: `/h/${blogPost.data.uploader.username}`
+												: `/h/${blogData.uploader.username}`
 										}
 									>
 										<p className=" font-semibold leading-none hover:underline underline-offset-4">
-											{blogPost.data.uploader.full_name.first}{" "}
-											{blogPost.data.uploader.full_name.last}
+											{blogData.uploader.full_name.first}{" "}
+											{blogData.uploader.full_name.last}
 										</p>
 									</Link>
 									<p className="text-gray-500 text-sm leading-none">
-										{dayjs(blogPost.data.createdAt).format("MMMM D, YYYY")}
+										{dayjs(blogData.createdAt).format("MMMM D, YYYY")}
 									</p>
 								</div>
 							</div>
@@ -177,7 +177,7 @@ const BlogPage = () => {
 									rehypePlugins={[rehypeRaw]}
 									className="prose prose-a:text-primary prose-lead:underline underline-offset-4"
 								>
-									{blogPost.data.content}
+									{blogData.content}
 								</ReactMarkdown>
 							</div>
 
@@ -190,14 +190,14 @@ const BlogPage = () => {
 										}`}
 									>
 										<FiArrowUp />
-										<span>{blogPost.data.upvoters.length ?? 0}</span>
+										<span>{blogData.upvoters.length ?? 0}</span>
 									</button>
 									<button
 										onClick={() => setIsCommenting(!isCommenting)}
 										className="btn btn-ghost gap-2 items-center"
 									>
 										<FiMessageSquare />
-										<span>{blogPost.data.comments.length ?? 0}</span>
+										<span>{blogData.comments.length ?? 0}</span>
 									</button>
 								</div>
 								<div className="flex items-center gap-3">
@@ -254,7 +254,7 @@ const BlogPage = () => {
 													await supabase
 														.from("public_posts")
 														.select("comments")
-														.eq("id", blogPost.data.id)
+														.eq("id", blogData.id)
 														.single();
 
 												if (latestDataError || !latestData) {
@@ -284,7 +284,7 @@ const BlogPage = () => {
 													.update({
 														comments: newComments,
 													})
-													.eq("id", blogPost.data.id);
+													.eq("id", blogData.id);
 
 												if (error) {
 													console.log(error);
@@ -294,8 +294,8 @@ const BlogPage = () => {
 
 												e.currentTarget.reset();
 												toast.success("Comment posted!");
+												blogData.comments = newComments;
 												setIsCommenting(false);
-												blogPost.refetch();
 											}}
 											className="mt-5"
 										>
@@ -324,9 +324,9 @@ const BlogPage = () => {
 							<div className="divider" />
 
 							{/* comments */}
-							{blogPost.data.comments ? (
+							{blogData.comments ? (
 								<div className="mt-10 lg:p-5 flex flex-col gap-5">
-									{blogPost.data.comments.map((comment) => (
+									{blogData.comments.map((comment) => (
 										<div
 											key={comment.id}
 											className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"

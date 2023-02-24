@@ -1,12 +1,14 @@
-import { $accountDetails, $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import { Renderable, Toast, ValueFunction, toast } from "react-hot-toast";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { FiEdit } from "react-icons/fi";
+import { GetServerSideProps } from "next";
 import { IUserHunter } from "@/lib/types";
 import Link from "next/link";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -22,11 +24,6 @@ const ProfilePage = () => {
 	const router = useRouter();
 
 	const _globalTheme = useStore($themeMode);
-
-	// methods
-	const fetchUserDetails = async () => {
-		console.log("fetch user details");
-	};
 
 	const checkTheme = () => {
 		console.log("check theme");
@@ -58,21 +55,12 @@ const ProfilePage = () => {
 			return;
 		}
 
+		$accountType.set(null);
+		$accountDetails.set(null);
+
 		toast.dismiss();
 		router.push("/login");
 	};
-
-	// const userDetails = useQuery({
-	// 	queryKey: ["userDetails"],
-	// 	queryFn: fetchUserDetails,
-	// 	enabled: !!session,
-	// 	onError: (error) => {
-	// 		console.error(error);
-	// 	},
-	// 	onSuccess: () => {
-	// 		console.info("✅ User Details Fetched");
-	// 	},
-	// });
 
 	const fetchUserActivities = async () => {
 		const { data, error } = await supabase
@@ -383,54 +371,54 @@ const ProfilePage = () => {
 									<p className="text-2xl font-bold">Suggested Connections</p>
 
 									{/* {recommendedUsers.isLoading && (
-						<div className="flex flex-col gap-2">
-							{Array(5)
-								.fill()
-								.map((_, index) => (
-									<div
-										key={`recommendedloading_${index}`}
-										className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
-									/>
-								))}
-						</div>
-					)} */}
+			<div className="flex flex-col gap-2">
+				{Array(5)
+					.fill()
+					.map((_, index) => (
+						<div
+							key={`recommendedloading_${index}`}
+							className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+						/>
+					))}
+			</div>
+		)} */}
 
 									{/* <div className="flex flex-col gap-2">
-						{recommendedUsers.isSuccess &&
-							recommendedUsers.data.length < 1 && (
-								<p>
-									We do not have any suggestions for you right now. Try
-									connecting to more people to get more suggestions.
-								</p>
-							)}
+			{recommendedUsers.isSuccess &&
+				recommendedUsers.data.length < 1 && (
+					<p>
+						We do not have any suggestions for you right now. Try
+						connecting to more people to get more suggestions.
+					</p>
+				)}
 
-						{recommendedUsers.isSuccess &&
-							recommendedUsers.data.length > 0 &&
-							recommendedUsers.data.map((thisUser, index) => (
-								<Link
-									href={`/h/${thisUser.username}`}
-									key={`connection_${index}`}
-								>
-									<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
-										<div className="flex gap-5 items-center">
-											<img
-												src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
-												alt="avatar"
-												className="w-12 h-12 p-1 mask mask-squircle bg-primary "
-											/>
-											<div>
-												<p className="font-bold leading-none">
-													{thisUser.fullname.first} {thisUser.fullname.last}
-												</p>
-												<p className="opacity-50 leading-none">
-													@{thisUser.username}
-												</p>
-											</div>
-										</div>
-									</div>
-								</Link>
-							))}
-					</div> */}
+			{recommendedUsers.isSuccess &&
+				recommendedUsers.data.length > 0 &&
+				recommendedUsers.data.map((thisUser, index) => (
+					<Link
+						href={`/h/${thisUser.username}`}
+						key={`connection_${index}`}
+					>
+						<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
+							<div className="flex gap-5 items-center">
+								<img
+									src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+									alt="avatar"
+									className="w-12 h-12 p-1 mask mask-squircle bg-primary "
+								/>
+								<div>
+									<p className="font-bold leading-none">
+										{thisUser.fullname.first} {thisUser.fullname.last}
+									</p>
+									<p className="opacity-50 leading-none">
+										@{thisUser.username}
+									</p>
+								</div>
+							</div>
+						</div>
+					</Link>
+				))}
+		</div> */}
 								</div>
 								<div className="divider" />
 								<div className="flex flex-col rounded-btn p-2 gap-5">

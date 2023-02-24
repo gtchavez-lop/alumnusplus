@@ -1,10 +1,13 @@
 export const AnimPageTransition = {
   initial: {
     opacity: 0,
+    scale: 0.9,
   },
   animate: {
     opacity: 1,
-    transition: { duration: 0.2, ease: "circOut" },
+    scale: 1,
+    transformOrigin: "top",
+    transition: { duration: 0.5, ease: [.1,1,0,1] },
   },
   exit: {
     opacity: 0,

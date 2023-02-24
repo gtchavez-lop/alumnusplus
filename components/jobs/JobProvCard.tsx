@@ -1,25 +1,12 @@
 import { FC } from "react";
 import Link from "next/link";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import ReactMarkdown from "react-markdown";
+import { TProvJobPost } from "@/lib/types";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 
-interface Job {
-	id: string;
-	job_title: string;
-	job_location: string;
-	short_description: string;
-	created_at: string;
-	job_type: string[];
-	uploader: Uploader;
-}
-
-interface Uploader {
-	legalName: string;
-}
-
-const JobCard: FC<{ job: Job }> = ({ job }) => {
+const JobCardProv: FC<{ job: TProvJobPost }> = ({ job }) => {
 	return (
 		<motion.div
 			animate={{
@@ -28,13 +15,12 @@ const JobCard: FC<{ job: Job }> = ({ job }) => {
 			}}
 		>
 			<Link
-				href={`/h/jobs/${job.id}`}
-				className="flex flex-col w-full min-h-[200px] rounded-btn p-5 border-2 border-base-200 hover:bg-base-200 transition-all"
+				href={`/p/jobs/${job.id}`}
+				className="flex flex-col w-full rounded-btn p-5 bg-base-200 hover:bg-base-300 transition-all"
 			>
 				<h1 className="text-xl font-bold">{job.job_title}</h1>
-				<p className="text-primary">{job.uploader.legalName}</p>
 
-				<p className="mt-4 text-sm">
+				<p className="text-sm">
 					{job.job_location} |{" "}
 					{
 						job.job_type.map(
@@ -58,4 +44,4 @@ const JobCard: FC<{ job: Job }> = ({ job }) => {
 	);
 };
 
-export default JobCard;
+export default JobCardProv;
