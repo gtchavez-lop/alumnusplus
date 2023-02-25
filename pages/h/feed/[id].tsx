@@ -1,11 +1,12 @@
 import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
-import { FormEvent, MouseEventHandler, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
-import { IUserHunter, TBlogPostComment, THunterBlogPost } from "@/lib/types";
+import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
@@ -13,9 +14,6 @@ import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
@@ -146,10 +144,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 											: `/h/${blogData.uploader.username}`
 									}
 								>
-									<img
+									<Image
 										src={`https://avatars.dicebear.com/api/bottts/${blogData.uploader.username}.svg`}
 										alt="avatar"
 										className="w-10 h-10 rounded-full"
+										width={40}
+										height={40}
 									/>
 								</Link>
 								<div className="flex flex-col gap-1">
@@ -219,10 +219,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										className="mt-10 lg:p-5"
 									>
 										<div className="flex items-center gap-3">
-											<img
+											<Image
 												src={`https://avatars.dicebear.com/api/bottts/${currentUser.username}.svg`}
 												alt="avatar"
 												className="w-10 h-10 rounded-full"
+												width={40}
+												height={40}
 											/>
 
 											<div className="flex flex-col gap-1">
@@ -332,10 +334,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 											className="flex flex-col bg-base-200 p-5 rounded-btn gap-3"
 										>
 											<div className="flex items-center gap-3">
-												<img
+												<Image
 													src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
 													alt="avatar"
 													className="w-10 h-10 rounded-full"
+													width={40}
+													height={40}
 												/>
 
 												<div className="flex flex-col gap-1">

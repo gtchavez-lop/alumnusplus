@@ -1,21 +1,23 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, FormEventHandler, useState } from "react";
+import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
-import FeedCard from "@/components/feed/FeedCard";
 import { FiX } from "react-icons/fi";
-import { GetServerSideProps } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
+
+const FeedCard = dynamic(() => import("@/components/feed/FeedCard"), {
+	ssr: false,
+});
 
 const FeedPage = () => {
 	const [isMakingPost, setIsMakingPost] = useState(false);
@@ -140,10 +142,12 @@ const FeedPage = () => {
 						<div className="col-span-full lg:col-span-3 ">
 							{/* create post */}
 							<div className="flex gap-2 w-full items-center">
-								<img
+								<Image
 									src={`https://avatars.dicebear.com/api/bottts/${_currentUser.username}.svg`}
 									alt="avatar"
-									className="w-12 h-12 hidden md:block bg-primary mask mask-squircle p-1"
+									className="hidden md:block bg-primary mask mask-squircle p-1"
+									width={48}
+									height={48}
 								/>
 								<div
 									onClick={() => setIsMakingPost(true)}
@@ -204,10 +208,12 @@ const FeedPage = () => {
 														className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
 													>
 														<div className="flex gap-2 items-center">
-															<img
+															<Image
 																src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
 																alt="avatar"
 																className="w-12 h-12 p-1 mask mask-squircle bg-primary "
+																width={48}
+																height={48}
 															/>
 															<div>
 																<p className="font-bold leading-none">

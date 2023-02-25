@@ -1,23 +1,22 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
-import { Renderable, Toast, ValueFunction, toast } from "react-hot-toast";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { useSession, useUser } from "@supabase/auth-helpers-react";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { FiEdit } from "react-icons/fi";
-import { GetServerSideProps } from "next";
 import { IUserHunter } from "@/lib/types";
+import Image from "next/image";
 import Link from "next/link";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
+import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
-const ProfilePage = () => {
+const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [isBioEditing, setIsBioEditing] = useState(false);
 	const _userDetails = useStore($accountDetails) as IUserHunter;
@@ -151,10 +150,12 @@ const ProfilePage = () => {
 							<div className="col-span-3 flex flex-col gap-3">
 								{/* landing profile */}
 								<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
-									<img
+									<Image
 										src={`https://avatars.dicebear.com/api/bottts/${_userDetails.username}.svg`}
 										alt="avatar"
 										className="w-32 h-32 bg-primary p-2 mask mask-squircle"
+										width={128}
+										height={128}
 									/>
 									<div>
 										<p className="text-3xl font-bold">
@@ -349,10 +350,12 @@ const ProfilePage = () => {
 													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
 												>
 													<div className="flex gap-2 items-center">
-														<img
+														<Image
 															src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
 															alt="avatar"
 															className="w-12 h-12 mask mask-squircle p-1 bg-primary "
+															width={50}
+															height={50}
 														/>
 														<div>
 															<p className="font-bold leading-none">

@@ -548,7 +548,7 @@ export interface IUserProvisioner {
     address: string | null
     city: string | null
     postalCode: string | null
-  } | Json
+  }
   alternativeNames: Json | []
   companyEmail: string
   companySize: string
@@ -556,12 +556,12 @@ export interface IUserProvisioner {
   contactInformation: {
     email: string
     phone: string | null
-  } | Json
+  }
   foundingYear: number
   fullDescription: string
   id: string
   industryType: string
-  jobPostings: Json | []
+  jobPostings: []
   legalName: string
   shortDescription: string
   socialProfiles: {
@@ -571,7 +571,7 @@ export interface IUserProvisioner {
     twitter: string | ""
     youtube: string | ""
     github: string | ""
-  } | Json
+  }
   tags: Json | []
   type: "provisioner"
   website: string | ""

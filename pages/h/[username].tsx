@@ -1,19 +1,18 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps, NextPage } from "next";
 import { useEffect, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
+import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
-
-export const config = { runtime: "nodejs" };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { query } = context;
@@ -178,7 +177,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 		if (!!_currentUser && _currentUser.connections.includes(targetUser.id)) {
 			setIsConnected(true);
 		}
-	}, [_currentUser]);
+	}, [_currentUser, targetUser]);
 
 	return (
 		<>
@@ -193,10 +192,12 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 					<div className="col-span-3 flex flex-col gap-3">
 						{/* landing profile */}
 						<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
-							<img
+							<Image
 								src={`https://avatars.dicebear.com/api/bottts/${targetUser.username}.svg`}
 								alt="avatar"
 								className="w-32 h-32 bg-primary p-2 mask mask-squircle"
+								width={128}
+								height={128}
 							/>
 							<div>
 								<p className="text-3xl font-bold">
@@ -339,10 +340,12 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 										className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
 									>
 										<div className="flex gap-2 items-center">
-											<img
+											<Image
 												src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
 												alt="avatar"
 												className="w-12 h-12 mask mask-squircle p-1 bg-primary "
+												width={48}
+												height={48}
 											/>
 											<div>
 												<p className="font-bold leading-none">

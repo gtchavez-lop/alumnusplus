@@ -97,10 +97,12 @@ const DriftPage = () => {
 								className="p-3 bg-base-300 rounded-btn h-[224px]"
 							>
 								<div className="flex flex-col items-center gap-2 cursor-pointer">
-									<img
+									<Image
 										alt=""
 										src={`https://avatars.dicebear.com/api/bottts/${company.legalName}.svg`}
 										className="rounded-full w-[100px] h-[100px]"
+										width={100}
+										height={100}
 									/>
 									<p>{company.legalName}</p>
 								</div>

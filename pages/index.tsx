@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiArrowDown } from "react-icons/fi";
 import Footer from "@/components/Footer";
+import Image from "next/image";
 import Link from "next/link";
 import { MdArrowDownward } from "react-icons/md";
 import Pricing from "@/components/landing/Pricing";
@@ -71,9 +72,10 @@ const Home = () => {
 				exit={{ opacity: 0, transition: { duration: 0.2, ease: "circIn" } }}
 				className="absolute top-0 left-0 w-full h-full"
 			>
-				<img
+				<Image
 					src="./mainbg.svg"
 					className="absolute w-full min-h-[50vh] top-0 object-contain object-top  opacity-40"
+					fill
 					alt=""
 				/>
 			</motion.div>
@@ -85,7 +87,13 @@ const Home = () => {
 				exit="exit"
 				className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0 "
 			>
-				<img src="/wicket.svg" className="w-64 fill-primary" alt="" />
+				<Image
+					src="/wicket.svg"
+					className="w-64 fill-primary"
+					width={200}
+					height={200}
+					alt=""
+				/>
 				<p className="text-3xl flex flex-col lg:flex-row lg:justify-center mt-5">
 					Job hunting for{" "}
 					<span className="text-primary relative">
@@ -152,10 +160,12 @@ const Home = () => {
 					transition={{ duration: 0.5, ease: "circOut" }}
 					className="flex flex-col items-center lg:items-end justify-center text-center"
 				>
-					<img
+					<Image
 						src="/landing/Experts-cuate.svg"
 						className="w-[500px] h-[300px] lg:hidden"
 						alt=""
+						width={500}
+						height={300}
 					/>
 					<h4 className="text-2xl font-bold">
 						Providing jobs for ordinary people.
@@ -191,10 +201,12 @@ const Home = () => {
 						transition={{ duration: 0.5, ease: "circOut" }}
 						className="flex flex-col items-center p-5"
 					>
-						<img
+						<Image
 							src="/landing/Connecting-teams-cuate.svg"
 							className="w-[250px]"
 							alt=""
+							width={250}
+							height={250}
 						/>
 						<p className="text-xl">Find a suitable work for you</p>
 					</motion.div>
@@ -206,10 +218,12 @@ const Home = () => {
 						transition={{ duration: 0.5, ease: "circOut", delay: 0.2 }}
 						className="flex flex-col items-center p-5"
 					>
-						<img
+						<Image
 							src="/landing/Marketing-cuate.svg"
 							className="w-[250px]"
 							alt=""
+							width={250}
+							height={250}
 						/>
 						<p className="text-xl">Share your activities</p>
 					</motion.div>
@@ -221,10 +235,12 @@ const Home = () => {
 						transition={{ duration: 0.5, ease: "circOut", delay: 0.4 }}
 						className="flex flex-col items-center p-5 justify-center col-span-full lg:col-span-1"
 					>
-						<img
+						<Image
 							src="/landing/Connected-world-cuate.svg"
 							className="w-[250px]"
 							alt=""
+							width={250}
+							height={250}
 						/>
 						<p className="text-xl">Connect to everyone</p>
 					</motion.div>

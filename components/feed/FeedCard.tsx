@@ -20,6 +20,7 @@ import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
@@ -123,7 +124,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 	useEffect(() => {
 		checkIfLiked();
-	}, []);
+	});
 
 	return (
 		<>
@@ -136,11 +137,12 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 								: `/h/${blogData.uploader.username}`
 						}
 					>
-						<img
-							// dicebear
+						<Image
 							src={`https://avatars.dicebear.com/api/bottts/${blogData.uploader.username}.svg`}
 							alt="avatar"
 							className="w-12 h-12 p-1 mask mask-squircle bg-primary"
+							width={48}
+							height={48}
 						/>
 					</Link>
 					<div className="flex flex-col gap-1 justify-center">
@@ -315,11 +317,12 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									>
 										{/* commenter */}
 										<div className="flex gap-3">
-											<img
-												// dicebear
+											<Image
 												src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
 												alt="avatar"
 												className="w-10 h-10"
+												width={40}
+												height={40}
 											/>
 											<div className="flex flex-col gap-1 justify-center">
 												<p className="leading-none">

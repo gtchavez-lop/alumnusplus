@@ -5,16 +5,18 @@ import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
-import AppBar from "@/components/AppBar";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import Navbar from "@/components/Navbar";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Toaster } from "react-hot-toast";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
+
+const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: false });
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const { initialSession } = pageProps;

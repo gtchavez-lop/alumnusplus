@@ -1,8 +1,11 @@
 import { $accountDetails, $accountType } from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 
+import { AnimPageTransition } from "@/lib/animations";
 import { FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
@@ -87,13 +90,19 @@ const LogInPage = () => {
 
 	return (
 		<>
-			<div>
+			<motion.div
+				variants={AnimPageTransition}
+				initial="initial"
+				animate="animate"
+				exit="exit"
+			>
 				<div className="lg:grid lg:min-h-screen lg:grid-cols-12">
 					<div className="relative flex h-52 items-end  lg:col-span-5 lg:h-full xl:col-span-6">
-						<img
+						<Image
 							alt="Night"
 							src="https://images.unsplash.com/photo-1444210971048-6130cf0c46cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80"
 							className="absolute inset-0 h-full w-full object-cover opacity-80"
+							fill
 						/>
 
 						<div className="hidden lg:relative lg:block lg:p-12">
@@ -102,7 +111,13 @@ const LogInPage = () => {
 								href="/"
 							>
 								<span className="sr-only">Home</span>
-								<img className="h-8 sm:h-10" src="/favicon.ico" alt="" />
+								<Image
+									className="h-8 sm:h-10"
+									src="/favicon.ico"
+									width={32}
+									height={32}
+									alt=""
+								/>
 							</Link>
 
 							<h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
@@ -124,7 +139,13 @@ const LogInPage = () => {
 									href="/"
 								>
 									<span className="sr-only">Home</span>
-									<img className="h-8 sm:h-10" src="/favicon.ico" alt="" />
+									<Image
+										className="h-8 sm:h-10"
+										src="/favicon.ico"
+										width={32}
+										height={32}
+										alt=""
+									/>
 								</Link>
 
 								<h1 className="mt-2 text-2xl font-bold  sm:text-3xl md:text-4xl">
@@ -186,15 +207,18 @@ const LogInPage = () => {
 									</button>
 
 									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
-										Already have an account?
-										<span className="link link-secondary">Log in</span>.
+										Don&apos; have an account?
+										<Link href="/register" className="link link-secondary">
+											Sign up
+										</Link>
+										.
 									</p>
 								</div>
 							</form>
 						</div>
 					</div>
 				</div>
-			</div>
+			</motion.div>
 		</>
 	);
 };

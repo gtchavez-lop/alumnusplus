@@ -8,7 +8,7 @@
     "start": "next start --port 4000",
     "lint": "next lint",
     "git:commit": "git add . && git commit -m ",
-    "git:push": "git push -all "
+    "git:push": "git push --all "
   },
   "dependencies": {
     "@headlessui/react": "^1.7.11",

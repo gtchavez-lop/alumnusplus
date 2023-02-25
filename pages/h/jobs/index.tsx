@@ -3,11 +3,15 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { IUserHunter } from "@/lib/types";
-import JobCard from "@/components/jobs/JobCard";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
+
+const JobCard = dynamic(() => import("@/components/jobs/JobCard"), {
+	ssr: false,
+});
 
 interface Job {
 	id: string;

@@ -3,13 +3,18 @@ import { FiArchive, FiBriefcase, FiUser } from "react-icons/fi";
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { IUserProvisioner } from "@/lib/types";
-import JobCardProv from "@/components/jobs/JobProvCard";
+import Image from "next/image";
 import Link from "next/link";
 import { MdWarning } from "react-icons/md";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
+
+const JobCardProv = dynamic(() => import("@/components/jobs/JobProvCard"), {
+	ssr: false,
+});
 
 const Prov_Dashboard = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
@@ -64,10 +69,12 @@ const Prov_Dashboard = () => {
 							)}
 							{!!_currentUser && (
 								<>
-									<img
+									<Image
 										alt="avatar"
 										src={`https://avatars.dicebear.com/api/bottts/${_currentUser.legalName}.svg`}
 										className="w-24 h-24 mask mask-squircle"
+										width={96}
+										height={96}
 									/>
 									<p>{_currentUser.legalName}</p>
 								</>
@@ -207,10 +214,12 @@ const Prov_Dashboard = () => {
 							)}
 							{!!_currentUser && (
 								<>
-									<img
+									<Image
 										alt="avatar"
 										src={`https://avatars.dicebear.com/api/bottts/${_currentUser.legalName}.svg`}
 										className="w-24 h-24 mask mask-squircle"
+										width={96}
+										height={96}
 									/>
 									<p>{_currentUser.legalName}</p>
 								</>
