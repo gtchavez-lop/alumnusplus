@@ -1,4 +1,5 @@
-import { $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+
 import { AnimPageTransition } from "@/lib/animations";
 import { FiX } from "react-icons/fi";
 import Image from "next/image";
@@ -34,6 +35,10 @@ const ProvProfilePage: NextPage = () => {
 		try {
 			const { error } = await supabase.auth.signOut();
 			if (error) throw error;
+
+			$accountDetails.set(null);
+			$accountType.set(null);
+
 			router.push("/");
 		} catch (error) {
 			console.log(error);

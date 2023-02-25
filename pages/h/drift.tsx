@@ -84,7 +84,13 @@ const DriftPage = () => {
 					</div>
 				</motion.main>
 			) : (
-				<motion.main className="relative min-h-screen w-full pt-24 pb-36">
+				<motion.main
+					variants={AnimPageTransition}
+					initial="initial"
+					animate="animate"
+					exit="exit"
+					className="relative min-h-screen w-full pt-24 pb-36"
+				>
 					<h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
 						Companies near your area
 					</h1>

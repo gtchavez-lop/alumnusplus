@@ -112,13 +112,15 @@ const RegisterHunterSubPage = () => {
 				initial="initial"
 				animate="animate"
 				exit="exit"
-				className="relative min-h-screen w-full pt-24 pb-36"
+				className="relative min-h-screen w-full pt-16 lg:pt-24 pb-36"
 			>
 				<div className="flex flex-col items-center py-5">
-					<h1 className="text-3xl font-bold text-secondary">
+					<h1 className="text-3xl font-bold text-secondary text-center w-full">
 						Register as a Hunter (Job Seeker)
 					</h1>
-					<p>Fill out the forms below to create your account.</p>
+					<p className="text-center w-fulll">
+						Fill out the forms below to create your account.
+					</p>
 				</div>
 
 				<div className="w-full bg-base-200 p-5 rounded-btn max-w-xl mx-auto mt-10">

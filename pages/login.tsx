@@ -96,7 +96,7 @@ const LogInPage = () => {
 				animate="animate"
 				exit="exit"
 			>
-				<div className="lg:grid lg:min-h-screen lg:grid-cols-12">
+				<div className="lg:grid lg:min-h-screen lg:grid-cols-12 pb-10 lg:pb-0">
 					<div className="relative flex h-52 items-end  lg:col-span-5 lg:h-full xl:col-span-6">
 						<Image
 							alt="Night"
