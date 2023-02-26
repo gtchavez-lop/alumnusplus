@@ -2,12 +2,12 @@ import "@/styles/globals.css";
 
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Toaster } from "react-hot-toast";
@@ -20,27 +20,6 @@ const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const { initialSession } = pageProps;
-	const [isMobile, setIsMobile] = useState(false);
-
-	const checkIfMobile = () => {
-		if (window.innerWidth <= 768) {
-			setIsMobile(true);
-		} else {
-			setIsMobile(false);
-		}
-	};
-
-	const redirectHandler = () => {
-		// if user is not logged in, redirect to login page
-		// if route.pathname has /p/ or /h/ in it, redirect to login page
-		if (!$accountType && router.pathname.includes("/p/")) {
-			router.push("/login");
-		}
-
-		if (!$accountType && router.pathname.includes("/h/")) {
-			router.push("/login");
-		}
-	};
 
 	const checkUser = async () => {
 		const { data } = await supabase.auth.getUser();
@@ -96,7 +75,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
 	};
 
 	useEffect(() => {
-		checkIfMobile();
 		checkUser();
 
 		// get theme from localStorage
@@ -117,7 +95,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 				<meta charSet="utf-8" />
 
-				<link rel="icon" href="/newlogo.svg" />
+				<link rel="icon" href="/wicket-short.png" />
 
 				<link rel="manifest" href="/manifest.json" />
 			</Head>

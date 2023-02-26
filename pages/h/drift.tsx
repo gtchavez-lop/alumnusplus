@@ -27,30 +27,10 @@ const DriftPage = () => {
 	};
 
 	const driftData = useQuery({
-		queryKey: ["drift-data"],
+		queryKey: ["companiesNearby"],
 		queryFn: fetchDriftData,
 		refetchOnMount: false,
 	});
-
-	// const [driftData] = useQueries({
-	//   queries: [
-	//     {
-	//       queryKey: ["drift-data"],
-	//       queryFn: async () => {
-	//         const { data, error } = await supabase
-	//           .from("user_provisioners")
-	//           .select("*")
-	//           .limit(9);
-
-	//         if (error) {
-	//           toast.error(error.message);
-	//         }
-
-	//         return data;
-	//       },
-	//     },
-	//   ],
-	// });
 
 	return (
 		<>
