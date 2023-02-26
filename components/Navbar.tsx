@@ -11,6 +11,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -51,7 +52,7 @@ const Navbar = () => {
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Link href="/" className="text-lg font-bold">
-							Wicket
+							<Image alt="logo" src="/wicket-full.png" width={75} height={75} />
 						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>

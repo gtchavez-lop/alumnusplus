@@ -107,17 +107,10 @@ const LogInPage = () => {
 
 						<div className="hidden lg:relative lg:block lg:p-12">
 							<Link
-								className="avatar w-16 h-16 rounded-full overflow-hidden"
+								className="avatar w-16 h-16 relative bg-primary-content rounded-full"
 								href="/"
 							>
-								<span className="sr-only">Home</span>
-								<Image
-									className="h-8 sm:h-10"
-									src="/favicon.ico"
-									width={32}
-									height={32}
-									alt=""
-								/>
+								<Image src="/wicket-circle.png" fill className="p-3" alt="" />
 							</Link>
 
 							<h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
@@ -135,17 +128,10 @@ const LogInPage = () => {
 						<div className="max-w-xl lg:max-w-3xl">
 							<div className="relative -mt-16 block lg:hidden">
 								<Link
-									className="avatar w-16 h-16 rounded-full overflow-hidden"
+									className="avatar w-16 h-16 relative bg-primary-content rounded-full"
 									href="/"
 								>
-									<span className="sr-only">Home</span>
-									<Image
-										className="h-8 sm:h-10"
-										src="/favicon.ico"
-										width={32}
-										height={32}
-										alt=""
-									/>
+									<Image src="/wicket-circle.png" fill className="p-3" alt="" />
 								</Link>
 
 								<h1 className="mt-2 text-2xl font-bold  sm:text-3xl md:text-4xl">

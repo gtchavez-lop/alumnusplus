@@ -51,7 +51,8 @@ const FeedPage = () => {
 		const { data, error } = await supabase
 			.from("recommended_hunters")
 			.select("id,fullname,username,email")
-			.filter("id", "not.in", reqString);
+			.filter("id", "not.in", reqString)
+			.limit(2);
 
 		if (error || localConnection.length === 0) {
 			return [];
@@ -129,7 +130,7 @@ const FeedPage = () => {
 
 	return (
 		<>
-			{_currentUser && (
+			{_currentUser && feedList.isSuccess && recommendedUsers.isSuccess && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -203,9 +204,10 @@ const FeedPage = () => {
 										<div className="flex flex-col gap-2">
 											{recommendedUsers.isSuccess &&
 												recommendedUsers.data.map((thisUser, index) => (
-													<div
+													<Link
+														href={`/h/${thisUser.username}`}
 														key={`connection_${index}`}
-														className="flex gap-2 items-center justify-between p-3 bg-base-200 rounded-btn"
+														className="flex gap-2 items-center justify-between p-2 hover:bg-base-200 rounded-btn"
 													>
 														<div className="flex gap-2 items-center">
 															<Image
@@ -225,13 +227,7 @@ const FeedPage = () => {
 																</p>
 															</div>
 														</div>
-														<Link
-															href={`/h/${thisUser.username}`}
-															className="btn btn-sm btn-primary"
-														>
-															See Profile
-														</Link>
-													</div>
+													</Link>
 												))}
 										</div>
 									)}

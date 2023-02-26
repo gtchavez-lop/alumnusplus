@@ -14,6 +14,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -38,15 +39,21 @@ const AppBar = () => {
 			{_accountType === null && (
 				<div className="fixed py-5 flex justify-between items-center w-full z-50 bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
-						<p className="text-lg text-primary font-bold">Wicket</p>
+						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
+						<Link href="/" className="relative w-7 h-7 md:hidden">
+							<Image alt="logo" fill src="/wicket-short.png" />
+						</Link>
+						<Link href="/" className="hidden md:block">
+							<Image alt="logo" width={75} height={75} src="/wicket-full.png" />
+						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
 								<MdPersonAdd className="text-lg" />
-								<span>Sign Up</span>
+								{/* <span>Sign Up</span> */}
 							</Link>
 							<Link href="/login" className='btn btn-ghost w-full gap-2'>
 								<MdPerson className="text-lg" />
-								<span>Log In</span>
+								{/* <span>Log In</span> */}
 							</Link>
 							<div
 								onClick={() => {

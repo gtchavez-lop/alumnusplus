@@ -1,7 +1,7 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { FiEdit, FiEdit2, FiEdit3 } from "react-icons/fi";
 
 import { AnimPageTransition } from "@/lib/animations";
-import { FiEdit } from "react-icons/fi";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,15 +18,10 @@ import { useStore } from "@nanostores/react";
 
 const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
-	const [isBioEditing, setIsBioEditing] = useState(false);
 	const _userDetails = useStore($accountDetails) as IUserHunter;
 	const router = useRouter();
 
 	const _globalTheme = useStore($themeMode);
-
-	const checkTheme = () => {
-		console.log("check theme");
-	};
 
 	const toggleTheme = () => {
 		if (_globalTheme === "dark") {
@@ -174,65 +169,26 @@ const ProfilePage: NextPage = () => {
 										</p>
 									</div>
 								</div>
+
+								<div className="flex justify-end">
+									<Link
+										href={"/h/me/edit"}
+										className="btn btn-primary items-center gap-3"
+									>
+										Edit Profile
+										<FiEdit3 />
+									</Link>
+								</div>
+
 								{/* bio */}
 								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
 									<div className="flex justify-between items-start">
 										<p className="text-2xl font-bold">Bio</p>
-										<button
-											onClick={() => setIsBioEditing(!isBioEditing)}
-											className="btn btn-ghost btn-sm"
-										>
-											<FiEdit />
-										</button>
 									</div>
-									{!isBioEditing ? (
-										<ReactMarkdown className="prose">
-											{_userDetails.bio || "This user has not added a bio yet"}
-										</ReactMarkdown>
-									) : (
-										<form
-											onSubmit={async (e) => {
-												e.preventDefault();
-												const bioInput = e.currentTarget[
-													"bio"
-												] as HTMLTextAreaElement;
 
-												const { error } = await supabase
-													.from("user_hunters")
-													.update({
-														bio: bioInput.value,
-													})
-													.eq("id", _userDetails.id);
-
-												if (error) {
-													console.error(error);
-													toast.error(error.message);
-													return;
-												}
-
-												const newData = {
-													..._userDetails,
-													bio: bioInput.value,
-												};
-
-												$accountDetails.set(newData);
-
-												bioInput.value = "";
-												toast.success("Bio updated successfully");
-												setIsBioEditing(false);
-											}}
-										>
-											<textarea
-												className="textarea textarea-bordered w-full font-mono"
-												placeholder="Add a bio"
-												defaultValue={_userDetails.bio}
-												name="bio"
-											/>
-											<button type="submit" className="btn btn-primary mt-3">
-												Save
-											</button>
-										</form>
-									)}
+									<ReactMarkdown className="prose">
+										{_userDetails.bio || "This user has not added a bio yet"}
+									</ReactMarkdown>
 								</div>
 								{/* skills */}
 								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
@@ -369,6 +325,16 @@ const ProfilePage: NextPage = () => {
 													</div>
 												</Link>
 											))}
+
+									{userConnections.isSuccess &&
+										userConnections.data.length > 0 && (
+											<Link
+												href="/h/connections"
+												className="btn btn-ghost btn-block btn-sm"
+											>
+												See all Connections
+											</Link>
+										)}
 								</div>
 								<div className="flex flex-col rounded-btn p-2 gap-3">
 									<p className="text-2xl font-bold">Suggested Connections</p>

@@ -1,14 +1,4 @@
-import {
-	Component,
-	ElementType,
-	EventHandler,
-	FC,
-	MouseEvent,
-	MouseEventHandler,
-	SyntheticEvent,
-	useEffect,
-	useState,
-} from "react";
+import { FC, useEffect, useState } from "react";
 import {
 	FiArrowUp,
 	FiLoader,
@@ -29,7 +19,6 @@ import rehypeRaw from "rehype-raw";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
 import { useStore } from "@nanostores/react";
 
 const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
