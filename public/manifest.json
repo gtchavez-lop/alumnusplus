@@ -1,12 +1,12 @@
 {
-  "theme_color": "171717",
-  "background_color": "#ffffff",
+  "theme_color": "#334EC7",
+  "background_color": "#EBEBEB",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
   "name": "Wicket",
   "short_name": "Wicket",
-  "description": "Web3 Social Platform",
+  "description": "Your Web3 Career Platform",
   "icons": [
     {
       "src": "./icons/icon-192x192.png",
