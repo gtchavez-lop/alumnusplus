@@ -96,7 +96,12 @@ const LogInPage = () => {
 								className="avatar w-16 h-16 relative bg-primary-content rounded-full"
 								href="/"
 							>
-								<Image src="/wicket-circle.png" fill className="p-3" alt="" />
+								<Image
+									src="/wicket-new-adaptive.png"
+									fill
+									className="p-1"
+									alt=""
+								/>
 							</Link>
 
 							<h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
