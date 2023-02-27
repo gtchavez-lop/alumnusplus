@@ -549,7 +549,7 @@ export interface IUserProvisioner {
     city: string | null
     postalCode: string | null
   }
-  alternativeNames: Json | []
+  alternativeNames: string[]
   companyEmail: string
   companySize: string
   companyType: string
@@ -572,7 +572,7 @@ export interface IUserProvisioner {
     youtube: string | ""
     github: string | ""
   }
-  tags: Json | []
+  tags: string[]
   type: "provisioner"
   website: string | ""
 }

@@ -52,7 +52,12 @@ const Navbar = () => {
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Link href="/" className="text-lg font-bold">
-							<Image alt="logo" src="/wicket-full.png" width={75} height={75} />
+							<Image
+								alt="logo"
+								src="/wicket-new-adaptive.png"
+								width={40}
+								height={40}
+							/>
 						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
@@ -89,7 +94,12 @@ const Navbar = () => {
 			{_accountType === "hunter" && (
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
-					<Image alt="logo" src="/wicket-full.png" width={75} height={75} />
+						<Image
+							alt="logo"
+							src="/wicket-new-adaptive.png"
+							width={40}
+							height={40}
+						/>
 						<div className="flex gap-1">
 							<Link
 								href="/h/feed"
@@ -186,7 +196,12 @@ const Navbar = () => {
 			{_accountType === "provisioner" && (
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
-					<Image alt="logo" src="/wicket-full.png" width={75} height={75} />
+						<Image
+							alt="logo"
+							src="/wicket-new-adaptive.png"
+							width={40}
+							height={40}
+						/>
 						<div className="flex gap-1">
 							<Link
 								href="/p/dashboard"

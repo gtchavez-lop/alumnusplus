@@ -41,7 +41,7 @@ const AppBar = () => {
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
 						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
 						<Link href="/" className="relative w-7 h-7 md:hidden">
-							<Image alt="logo" fill src="/wicket-short.png" />
+							<Image alt="logo" fill src="/wicket-new-adaptive.png" />
 						</Link>
 						<Link href="/" className="hidden md:block">
 							<Image alt="logo" width={75} height={75} src="/wicket-full.png" />
@@ -88,7 +88,9 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<p className="text-lg font-bold">Wicket</p>
+							<Link href="/" className="relative w-7 h-7 md:hidden">
+								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href="/h/notifications"
@@ -167,7 +169,9 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<p className="text-lg font-bold">Wicket</p>
+							<Link href="/" className="relative w-7 h-7 md:hidden">
+								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href={"/p/notifications"}
