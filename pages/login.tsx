@@ -35,6 +35,7 @@ const LogInPage = () => {
 			return;
 		}
 
+			// make the missing input field have a class of "input-error"
 		if (
 			!(
 				loginData.email &&
@@ -42,7 +43,6 @@ const LogInPage = () => {
 				loginData.password_confirmation
 			)
 		) {
-			// make the missing input field have a class of "input-error"
 			toast.error("Please fill in all fields");
 
 			inputForms.forEach((input) => {
@@ -56,6 +56,7 @@ const LogInPage = () => {
 			return;
 		}
 
+		// remove the "input-error" class from all input fields if they are filled
 		inputForms.forEach((input) => {
 			if (!input.value) {
 				input.classList.add("input-error");

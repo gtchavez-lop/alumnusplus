@@ -396,7 +396,7 @@ const ProfilePage: NextPage = () => {
 										<input
 											type="checkbox"
 											className="toggle"
-											// checked={isDark}
+											checked={_globalTheme === "dark"}
 											onChange={toggleTheme}
 										/>
 									</label>
