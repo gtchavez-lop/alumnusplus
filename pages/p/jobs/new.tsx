@@ -187,7 +187,7 @@ const CreateNewJobPage = () => {
 						{addJobSchema.job_qualifications.map((qualification, index) => (
 							<div
 								key={`qualification-${index}`}
-								className="flex items-center gap-3 bg-secondary text-secondary-content rounded-btn px-3 py-1"
+								className="flex items-center gap-3 bg-primary text-primary-content rounded-btn px-3 py-1"
 							>
 								<p>{qualification}</p>
 								<button
@@ -271,7 +271,7 @@ const CreateNewJobPage = () => {
 						{addJobSchema.job_skills.map((skill, index) => (
 							<div
 								key={`skill-${index}`}
-								className="flex items-center gap-3 bg-secondary text-secondary-content rounded-btn px-3 py-1"
+								className="flex items-center gap-3 bg-primary text-primary-content rounded-btn px-3 py-1"
 							>
 								<p>{skill}</p>
 								<button

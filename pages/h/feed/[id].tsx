@@ -8,12 +8,14 @@ import { AnimPageTransition } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { MdDelete } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
@@ -51,6 +53,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [isCommenting, setIsCommenting] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
+	const router = useRouter()
 
 	// methods
 	const checkIfLiked = async (upvoterArrays: string[]) => {
@@ -118,6 +121,29 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 		blogData.upvoters = newUpvoters;
 	};
 
+	const handleDeleteComment = async (commentId: string) => {
+		toast.loading("Processing...");
+
+		const newComments = blogData.comments.filter(
+			(comment) => comment.id !== commentId,
+		);
+
+		const { error } = await supabase
+			.from("public_posts")
+			.update({
+				comments: newComments,
+			})
+			.eq("id", blogData.id);
+
+		if (error) {
+			toast.error("Something went wrong");
+			return;
+		}
+
+		toast.dismiss();
+		router.reload()
+	}
+
 	useEffect(() => {
 		if (blogData) {
 			checkIfLiked(blogData.upvoters);
@@ -126,7 +152,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 	return (
 		<>
-			{!!blogData && (
+			{!!blogData && !!currentUser && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -241,12 +267,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										<form
 											onSubmit={async (e: FormEvent<HTMLFormElement>) => {
 												e.preventDefault();
-												const commentContent = e.currentTarget["comment"].value;
+												let commentContent = document.getElementById("commentContent") as HTMLTextAreaElement;
 
 												// disable the form
 												e.currentTarget.disabled = true;
 
-												if (commentContent.length === 0) {
+												if (commentContent.value.length === 0) {
 													toast.error("Comment cannot be empty!");
 													return;
 												}
@@ -267,7 +293,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 												const newComment = {
 													id: uuid(),
-													content: commentContent,
+													content: commentContent.value,
 													createdAt: dayjs().format(),
 													commenter: {
 														id: currentUser.id,
@@ -294,7 +320,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 													return;
 												}
 
-												e.currentTarget.reset();
+												commentContent.value = "";
 												toast.success("Comment posted!");
 												blogData.comments = newComments;
 												setIsCommenting(false);
@@ -303,6 +329,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										>
 											<textarea
 												name="commentContent"
+												id="commentContent"
 												className="w-full h-32 p-3 bg-base-200 rounded-btn"
 												placeholder="Write a comment..."
 											/>
@@ -310,7 +337,11 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 											<div className="flex justify-between mt-3 gap-2">
 												<p>Markdown</p>
 												<div>
-													<button type="reset" className="btn btn-ghost ml-3">
+													<button
+														onClick={() => {
+															setIsCommenting(false);
+														}}
+													type="reset" className="btn btn-ghost ml-3">
 														Clear and Cancel
 													</button>
 													<button type="submit" className="btn btn-primary">
@@ -353,6 +384,19 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 														)}
 													</p>
 												</div>
+
+												{
+													// if the user is the commenter
+													comment.commenter.id === currentUser.id && (
+														<button
+														onClick={() => {
+															handleDeleteComment(comment.id)
+														}}
+														className="ml-auto btn btn-error">
+															<MdDelete />
+														</button>
+													)
+												}
 											</div>
 
 											<ReactMarkdown
