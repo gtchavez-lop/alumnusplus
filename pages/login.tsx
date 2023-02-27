@@ -17,32 +17,15 @@ const LogInPage = () => {
 		e.preventDefault();
 		toast.dismiss();
 
-		let inputForms = [
-			e.currentTarget.email,
-			e.currentTarget.password,
-			e.currentTarget.password_confirmation,
-		];
+		let inputForms = [e.currentTarget.email, e.currentTarget.password];
 
 		const loginData = {
 			email: e.currentTarget.email.value as string,
 			password: e.currentTarget.password.value as string,
-			password_confirmation: e.currentTarget.password_confirmation
-				.value as string,
 		};
 
-		if (loginData.password !== loginData.password_confirmation) {
-			toast.error("Passwords do not match");
-			return;
-		}
-
-			// make the missing input field have a class of "input-error"
-		if (
-			!(
-				loginData.email &&
-				loginData.password &&
-				loginData.password_confirmation
-			)
-		) {
+		// make the missing input field have a class of "input-error"
+		if (!(loginData.email && loginData.password)) {
 			toast.error("Please fill in all fields");
 
 			inputForms.forEach((input) => {
@@ -81,6 +64,8 @@ const LogInPage = () => {
 
 		$accountType.set(metadata.type);
 		$accountDetails.set(metadata);
+
+		toast.success("Welcome back!");
 
 		if (metadata.type === "hunter") {
 			router.push("/h/feed");
@@ -162,7 +147,7 @@ const LogInPage = () => {
 									/>
 								</label>
 
-								<div className="col-span-6 sm:col-span-3">
+								<div className="col-span-full">
 									<p className="block text-sm font-medium text-opacity-70">
 										Password
 									</p>
@@ -175,7 +160,7 @@ const LogInPage = () => {
 									/>
 								</div>
 
-								<div className="col-span-6 sm:col-span-3">
+								{/* <div className="col-span-6 sm:col-span-3">
 									<p className="block text-sm font-medium text-opacity-70">
 										Password Confirmation
 									</p>
@@ -186,7 +171,7 @@ const LogInPage = () => {
 										name="password_confirmation"
 										className="input input-primary input-bordered w-full"
 									/>
-								</div>
+								</div> */}
 
 								<div className="col-span-6 sm:flex sm:items-center sm:gap-4">
 									<button type="submit" className="btn btn-primary">

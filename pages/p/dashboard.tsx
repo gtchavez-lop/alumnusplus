@@ -1,8 +1,8 @@
 import { FiArchive, FiBriefcase, FiUser } from "react-icons/fi";
+import { IUserProvisioner, TProvJobPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
-import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { MdWarning } from "react-icons/md";
@@ -22,23 +22,21 @@ const Prov_Dashboard = () => {
 	const fetchJobs = async () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select("*")
-			.order("created_at", { ascending: false })
-			.limit(5)
+			.select("*,uploader:uploader_id(legalName)")
+			// .order("createdAt", { ascending: false })
 			.eq("uploader_id", _currentUser.id);
 
 		if (error) {
 			console.log(error);
-			return [];
 		}
 
-		return data;
+		return data as TProvJobPost[];
 	};
 
 	const [jobs] = useQueries({
 		queries: [
 			{
-				queryKey: ["jobs"],
+				queryKey: ["allJobPosts"],
 				queryFn: fetchJobs,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,

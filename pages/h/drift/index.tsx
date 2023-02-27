@@ -78,7 +78,7 @@ const DriftPage = () => {
 						{driftData.data!.map((company, index) => (
 							<Link
 								key={`company-${index}`}
-								href={`/p/${company.id}`}
+								href={`/h/drift/${company.id}`}
 								passHref
 								className="p-3 bg-base-300 rounded-btn h-[224px]"
 							>
