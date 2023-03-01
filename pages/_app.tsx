@@ -95,7 +95,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 				<meta charSet="utf-8" />
 
-				<link rel="icon" href="/wicket-new-adaptive.png" />
+				<link rel="icon" href="/logo/wicket-new-adaptive.png" />
 
 				<link rel="manifest" href="/manifest.json" />
 			</Head>

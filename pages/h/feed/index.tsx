@@ -4,6 +4,7 @@ import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
+import FeedCard from "@/components/feed/FeedCard";
 import { FiX } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,9 +16,9 @@ import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
-const FeedCard = dynamic(() => import("@/components/feed/FeedCard"), {
-	ssr: false,
-});
+// const FeedCard = dynamic(() => import("@/components/feed/FeedCard"), {
+// 	ssr: false,
+// });
 
 const FeedPage = () => {
 	const [isMakingPost, setIsMakingPost] = useState(false);
@@ -45,13 +46,16 @@ const FeedPage = () => {
 	};
 
 	const fetchRecommendedUsers = async () => {
-		const localConnection = _currentUser.connections;
-		const reqString = `(${localConnection.concat(_currentUser.id)})`;
+		const localConnection = [_currentUser.connections, _currentUser.id];
+		const convertedMapToString = localConnection.map((item) => {
+			return item.toString();
+		});
+		const joined = convertedMapToString.join(",");
 
 		const { data, error } = await supabase
 			.from("recommended_hunters")
 			.select("id,fullname,username,email")
-			.filter("id", "not.in", reqString)
+			.not("id", "in", `(${joined})`)
 			.limit(2);
 
 		if (error || localConnection.length === 0) {
@@ -161,10 +165,18 @@ const FeedPage = () => {
 							{/* feed list */}
 							<div className="mt-10">
 								<div className="flex flex-col gap-5">
-									{/* {feedList.isLoading &&
+									{feedList.isLoading &&
 										Array(10)
 											.fill(0)
-											.map((_, i) => <SkeletonCard key={`skeleton_${i}`} />)} */}
+											.map((_, i) => (
+												<div
+													key={`feedloading-${i}`}
+													style={{
+														animationDelay: `${i * 100}ms`,
+													}}
+													className="h-[200px] bg-zinc-500/50 animate-pulse duration-200"
+												/>
+											))}
 
 									{feedList.isSuccess &&
 										feedList.data.map((item: THunterBlogPost) => (
