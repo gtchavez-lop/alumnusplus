@@ -2,13 +2,13 @@ import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
 import { FormEvent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { MdDelete } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -53,7 +53,8 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [isCommenting, setIsCommenting] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
-	const router = useRouter()
+	const [isEditing, setIsEditing] = useState(false);
+	const router = useRouter();
 
 	// methods
 	const checkIfLiked = async (upvoterArrays: string[]) => {
@@ -141,8 +142,25 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 		}
 
 		toast.dismiss();
-		router.reload()
-	}
+		router.reload();
+	};
+
+	const handleDeleteBlog = async (targetBlogId: string) => {
+		toast.loading("Processing...");
+
+		const { error } = await supabase
+			.from("public_posts")
+			.delete()
+			.eq("id", targetBlogId);
+
+		if (error) {
+			toast.error("Something went wrong");
+			return;
+		}
+
+		toast.dismiss();
+		router.push("/h/feed");
+	};
 
 	useEffect(() => {
 		if (blogData) {
@@ -195,6 +213,22 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										{dayjs(blogData.createdAt).format("MMMM D, YYYY")}
 									</p>
 								</div>
+								{currentUser.id === blogData.uploader.id && (
+									<div className="flex items-center gap-2 ml-auto">
+										<button
+											onClick={() => setIsEditing(!isEditing)}
+											className="btn btn-ghost"
+										>
+											<MdEdit />
+										</button>
+										<label
+											htmlFor="modal-delete-post"
+											className="btn btn-ghost"
+										>
+											<MdDelete />
+										</label>
+									</div>
+								)}
 							</div>
 
 							<div className="mt-10 lg:p-5">
@@ -267,7 +301,9 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										<form
 											onSubmit={async (e: FormEvent<HTMLFormElement>) => {
 												e.preventDefault();
-												let commentContent = document.getElementById("commentContent") as HTMLTextAreaElement;
+												let commentContent = document.getElementById(
+													"commentContent",
+												) as HTMLTextAreaElement;
 
 												// disable the form
 												e.currentTarget.disabled = true;
@@ -341,7 +377,9 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 														onClick={() => {
 															setIsCommenting(false);
 														}}
-													type="reset" className="btn btn-ghost ml-3">
+														type="reset"
+														className="btn btn-ghost ml-3"
+													>
 														Clear and Cancel
 													</button>
 													<button type="submit" className="btn btn-primary">
@@ -389,10 +427,11 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 													// if the user is the commenter
 													comment.commenter.id === currentUser.id && (
 														<button
-														onClick={() => {
-															handleDeleteComment(comment.id)
-														}}
-														className="ml-auto btn btn-error">
+															onClick={() => {
+																handleDeleteComment(comment.id);
+															}}
+															className="ml-auto btn btn-error"
+														>
 															<MdDelete />
 														</button>
 													)
@@ -417,6 +456,29 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 					</motion.main>
 				</>
 			)}
+
+			{/* confirm delete post modal */}
+			<input type="checkbox" id="modal-delete-post" className="modal-toggle" />
+			<div className="modal">
+				<div className="modal-box">
+					<h3 className="font-bold text-lg">Confirm Delete</h3>
+					<p className="py-4">
+						Are you sure you want to delete this post? This action cannot be
+						undone. All comments will also be deleted.
+					</p>
+					<div className="modal-action">
+						<label htmlFor="modal-delete-post" className="btn">
+							Cancel
+						</label>
+						<button
+							onClick={() => handleDeleteBlog(blogData.id)}
+							className="btn btn-error"
+						>
+							Delete
+						</button>
+					</div>
+				</div>
+			</div>
 		</>
 	);
 };

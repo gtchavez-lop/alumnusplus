@@ -587,6 +587,7 @@ export interface IAccountData {
 }
 
 export type TBlogPostComment = {
+	visible: boolean
   id: string
   content: string
   createdAt: string
