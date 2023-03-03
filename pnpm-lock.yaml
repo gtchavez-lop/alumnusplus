@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@formkit/auto-animate': 1.0.0-beta.6
   '@headlessui/react': ^1.7.11
   '@nanostores/react': ^0.4.1
   '@next/font': 13.1.6
@@ -37,6 +38,7 @@ specifiers:
   uuidv4: ^6.2.13
 
 dependencies:
+  '@formkit/auto-animate': 1.0.0-beta.6
   '@headlessui/react': 1.7.11_biqbaboplfbrettd7655fr4n2y
   '@nanostores/react': 0.4.1_nkfnbc2tpc77iht7asm3uqwau4
   '@next/font': 13.1.6
@@ -111,6 +113,10 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@formkit/auto-animate/1.0.0-beta.6:
+    resolution: {integrity: sha512-PVDhLAlr+B4Xb7e+1wozBUWmXa6BFU8xUPR/W/E+TsQhPS1qkAdAsJ25keEnFrcePSnXHrOsh3tiFbEToOzV9w==}
     dev: false
 
   /@headlessui/react/1.7.11_biqbaboplfbrettd7655fr4n2y:

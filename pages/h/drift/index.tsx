@@ -1,36 +1,92 @@
 import { useEffect, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
+import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
 import { GetServerSideProps } from "next";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
+import _PhLocation from "@/lib/ph_location.json";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
+import { useStore } from "@nanostores/react";
 
 const DriftPage = () => {
+	const _currentUser = useStore($accountDetails);
+
 	const fetchDriftData = async () => {
 		const { data, error } = await supabase
 			.from("user_provisioners")
 			.select("*")
-			.limit(9);
+			.limit(16);
 
 		if (error) {
 			toast.error(error.message);
+			return [];
 		}
 
-		return data;
+		return data as IUserProvisioner[];
 	};
 
-	const driftData = useQuery({
-		queryKey: ["companiesNearby"],
-		queryFn: fetchDriftData,
-		refetchOnMount: false,
+	// const fetchLocation = async () => {
+	// 	let data = {
+	// 		latitude: 0,
+	// 		longitude: 0,
+	// 		currentCity: "",
+	// 	};
+	// 	if (navigator.geolocation) {
+	// 		navigator.geolocation.getCurrentPosition((position) => {
+	// 			data.latitude = position.coords.latitude;
+	// 			data.longitude = position.coords.longitude;
+
+	// 			// get the current city from _PhLocation.json
+	// 			const currentCity = _PhLocation.find(
+	// 				(city) =>
+	// 					// nearest city
+	// 					Number.parseFloat(city.lat) - 0.06 <= data.latitude &&
+	// 					Number.parseFloat(city.lat) + 0.06 >= data.latitude &&
+	// 					Number.parseFloat(city.lng) - 0.06 <= data.longitude &&
+	// 					Number.parseFloat(city.lng) + 0.06 >= data.longitude,
+	// 			);
+
+	// 			data.currentCity = currentCity?.city || "Manila";
+	// 		});
+	// 		return data;
+	// 	} else {
+	// 		return data;
+	// 	}
+	// };
+
+	// const locationData = useQuery({
+	// 	queryKey: ["currentGeoLocation"],
+	// 	queryFn: fetchLocation,
+	// 	refetchOnMount: false,
+	// 	onSuccess: (data) => {
+	// 		console.log(data);
+	// 	},
+	// });
+
+	const [driftData] = useQueries({
+		queries: [
+			{
+				queryKey: ["driftData"],
+				enabled: !!_currentUser as boolean,
+				queryFn: fetchDriftData,
+				refetchOnMount: false,
+			},
+		],
 	});
+
+	// const driftData = useQuery({
+	// 	queryKey: ["driftData"],
+	// 	enabled: !!_currentUser as boolean,
+	// 	queryFn: fetchDriftData as any | undefined | unknown | Function,
+	// 	refetchOnMount: false,
+	// });
 
 	return (
 		<>

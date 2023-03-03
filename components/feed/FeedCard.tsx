@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import {
 	FiArrowUp,
 	FiLoader,
@@ -7,6 +7,14 @@ import {
 	FiX,
 } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import {
+	MdArchive,
+	MdDelete,
+	MdDisabledVisible,
+	MdMoreHoriz,
+	MdVisibility,
+	MdVisibilityOff,
+} from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimatePresence } from "framer-motion";
@@ -18,15 +26,37 @@ import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import { uuid } from "uuidv4";
 
-const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
+type IComment = {
+	id: string;
+	content: string;
+	createdAt: string;
+	commenter: {
+		id: string;
+		username: string;
+		full_name: {
+			first: string;
+			last: string;
+			middle: string;
+		};
+	};
+	visible: boolean;
+};
+
+const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
+	blogData,
+	refetchData,
+}) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [commentsOpen, setCommentsOpen] = useState(false);
 	const [isMoreOpen, setIsMoreOpen] = useState(false);
 	const { route } = useRouter();
 	const currentUser = useStore($accountDetails) as IUserHunter;
+	const [cardRef] = useAutoAnimate<HTMLDivElement>();
 
 	const checkIfLiked = async () => {
 		const upvotersList = blogData.upvoters as string[];
@@ -111,13 +141,157 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 		}
 	};
 
+	const handleComment = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		let commentContent = e.currentTarget[0] as HTMLTextAreaElement;
+
+		// disable the form
+		e.currentTarget.disabled = true;
+
+		if (commentContent.value.length === 0) {
+			toast.error("Comment cannot be empty!");
+			return;
+		}
+
+		// fetch latest data
+		const { data: latestData, error: latestDataError } = await supabase
+			.from("public_posts")
+			.select("comments")
+			.eq("id", blogData.id)
+			.single();
+
+		if (latestDataError || !latestData) {
+			console.log(latestDataError);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		const newComment = {
+			id: uuid(),
+			content: commentContent.value,
+			createdAt: dayjs().format(),
+			commenter: {
+				id: currentUser.id,
+				username: currentUser.username,
+				full_name: currentUser.full_name,
+			},
+			visible: true,
+		};
+
+		const newComments = [...latestData.comments, newComment];
+
+		const { error } = await supabase
+			.from("public_posts")
+			.update({
+				comments: newComments,
+			})
+			.eq("id", blogData.id);
+
+		if (error) {
+			console.log(error);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		commentContent.value = "";
+		toast.success("Comment posted!");
+		blogData.comments = newComments;
+		refetchData();
+	};
+
+	const removeComment = async (commentId: string) => {
+		const { data: latestData, error: latestDataError } = await supabase
+			.from("public_posts")
+			.select("comments")
+			.eq("id", blogData.id)
+			.single();
+
+		if (latestDataError || !latestData) {
+			console.log(latestDataError);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		const newComments = latestData.comments.filter(
+			(comment: IComment) => comment.id !== commentId,
+		);
+
+		const { error } = await supabase
+			.from("public_posts")
+			.update({
+				comments: newComments,
+			})
+			.eq("id", blogData.id);
+
+		if (error) {
+			console.log(error);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		toast.success("Comment deleted!");
+		blogData.comments = newComments;
+		refetchData();
+	};
+
+	const changeCommentVisibility = async (commentId: string) => {
+		const { data: latestData, error: latestDataError } = await supabase
+			.from("public_posts")
+			.select("comments")
+			.eq("id", blogData.id)
+			.single();
+
+		if (latestDataError || !latestData) {
+			console.log(latestDataError);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		type IComment = {
+			id: string;
+			content: string;
+			createdAt: string;
+			commenter: {
+				id: string;
+				username: string;
+				full_name: string;
+			};
+			visible: boolean;
+		};
+
+		const newComments = latestData.comments.map((comment: IComment) => {
+			if (comment.id === commentId) {
+				comment.visible = !comment.visible;
+			}
+
+			return comment;
+		});
+
+		const { error } = await supabase
+			.from("public_posts")
+			.update({
+				comments: newComments,
+			})
+			.eq("id", blogData.id);
+
+		if (error) {
+			console.log(error);
+			toast.error("Something went wrong!");
+			return;
+		}
+
+		toast.success("Comment visibility changed!");
+		blogData.comments = newComments;
+		refetchData();
+	};
+
 	useEffect(() => {
 		checkIfLiked();
 	});
 
 	return (
 		<>
-			<motion.div className="flex flex-col p-5 rounded-btn bg-base-200">
+			<div className="flex flex-col p-5 rounded-btn bg-base-200">
 				<div className="flex gap-3">
 					<Link
 						href={
@@ -178,7 +352,9 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 						</button>
 						<motion.button
 							onClick={() =>
-								setCommentsOpen(blogData.comments?.length > 0 ? true : false)
+								setCommentsOpen(
+									blogData.comments?.length ? !commentsOpen : true,
+								)
 							}
 							className="btn btn-ghost"
 						>
@@ -240,109 +416,169 @@ const FeedCard: FC<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 						</button>
 					</div>
 				</div>
-			</motion.div>
 
-			{/* comments */}
-			<AnimatePresence mode="wait">
-				{commentsOpen && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{
-							opacity: 1,
-							transition: { duration: 0.2, ease: "circOut" },
-						}}
-						exit={{
-							opacity: 0,
-							transition: { duration: 0.2, ease: "circIn" },
-						}}
-						onClick={(e) =>
-							e.target === e.currentTarget && setCommentsOpen(false)
-						}
-						className="fixed top-0 left-0 z-50 w-full h-screen px-5 lg:px-0 pt-24 pb-16 bg-base-100 flex justify-center"
-					>
-						<motion.div
-							initial={{ y: 20 }}
-							animate={{ y: 0, transition: { duration: 0.2, ease: "circOut" } }}
-							exit={{ y: 20, transition: { duration: 0.2, ease: "circIn" } }}
-							className="w-full max-w-xl"
-						>
-							{/* top action buttons */}
-							<div className="flex justify-between items-center">
-								<motion.h1
-									animate={{
-										opacity: [0, 1],
-										x: [-50, 0],
-										transition: { delay: 0.2, duration: 0.2, ease: "circOut" },
-									}}
-									className="text-2xl font-bold"
-								>
-									Comments
-								</motion.h1>
-								<motion.button
-									layoutId={`closebutton-${blogData.id}`}
-									onClick={() => setCommentsOpen(false)}
-									className="btn btn-ghost"
-								>
-									<FiX />
-								</motion.button>
-							</div>
-							<p>
-								You can comment by clicking the &quot;Read More&quot; button
-							</p>
-
-							{/* comments */}
-							<motion.div
-								animate={{
-									opacity: [0, 1],
-									y: [50, 0],
-									transition: { delay: 0.3, duration: 0.2, ease: "circOut" },
-								}}
-								className="mt-5 flex flex-col gap-2"
-							>
-								{blogData.comments.map((comment, index) => (
+				<div ref={cardRef}>
+					{commentsOpen && (
+						<div className="mt-5 flex flex-col gap-2">
+							{blogData.comments?.map((comment, index) =>
+								// check if comment is visible or if the commenter is the current user
+								comment.visible || comment.commenter.id === currentUser.id ? (
 									<div
-										className="p-3 bg-base-200 rounded-btn"
+										className="bg-base-200 rounded-btn flex gap-2"
 										key={`comment_${index}`}
 									>
-										{/* commenter */}
-										<div className="flex gap-3">
+										<Link
+											href={
+												currentUser.id === comment.commenter.id
+													? "/h/me"
+													: `/h/${comment.commenter.username}`
+											}
+											className="flex gap-3"
+										>
 											<Image
 												src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
 												alt="avatar"
-												className="w-10 h-10"
+												className="w-10 h-10 mask mask-squircle bg-primary p-1"
 												width={40}
 												height={40}
 											/>
-											<div className="flex flex-col gap-1 justify-center">
-												<p className="leading-none">
-													{comment.commenter.full_name.first}{" "}
-													{comment.commenter.full_name.last}{" "}
-													<span className="text-primary opacity-50">
-														commented
-													</span>
-												</p>
-												<p className="opacity-50 leading-none">
-													{comment.commenter.username}
-												</p>
-											</div>
-										</div>
+										</Link>
 										{/* content */}
-										<div className="mt-5">
+										<div className="flex flex-col bg-base-100 w-full rounded-btn p-3">
+											<Link
+												href={
+													currentUser.id === comment.commenter.id
+														? "/h/me"
+														: `/h/${comment.commenter.username}`
+												}
+												className="font-bold text-sm leading-none hover:underline"
+											>
+												{comment.commenter.full_name.first}{" "}
+												{comment.commenter.full_name.last}
+												{!comment.visible && (
+													<span className="text-error opacity-50">
+														{" "}
+														- Comment Hidden
+													</span>
+												)}
+											</Link>
 											<ReactMarkdown
 												// components={markdownRenderer}
 												rehypePlugins={[rehypeRaw]}
-												className="prose"
+												className="prose pb-0"
 											>
 												{comment.content}
 											</ReactMarkdown>
 										</div>
+										{/* actions */}
+										{currentUser.id === blogData.uploader.id && (
+											<>
+												<div className="dropdown dropdown-bottom dropdown-end">
+													<label tabIndex={0} className="btn btn-ghost">
+														<MdMoreHoriz />
+													</label>
+													<ul
+														tabIndex={0}
+														className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-max"
+													>
+														<li>
+															<label
+																htmlFor="deleteCommentModal"
+																className="hover:bg-error hover:text-error-content"
+															>
+																<MdDelete />
+																Delete Comment
+															</label>
+														</li>
+														<li>
+															<p
+																onClick={() => {
+																	changeCommentVisibility(comment.id);
+																}}
+															>
+																{comment.visible ? (
+																	<>
+																		<MdVisibilityOff />
+																		Hide Comment
+																	</>
+																) : (
+																	<>
+																		<MdVisibility />
+																		Show Comment
+																	</>
+																)}
+															</p>
+														</li>
+													</ul>
+												</div>
+
+												{/* delete comment modal */}
+												<input
+													type="checkbox"
+													id="deleteCommentModal"
+													className="modal-toggle"
+												/>
+												<div className="modal">
+													<div className="modal-box">
+														<h2 className="text-lg font-bold">
+															Confirm Delete Comment
+														</h2>
+														<p>
+															Are you sure you want to delete this comment? This
+															action can&apos;t be undone.
+														</p>
+
+														<div className="flex gap-2 mt-5 justify-end">
+															<label
+																htmlFor="deleteCommentModal"
+																className="btn btn-ghost"
+															>
+																Cancel
+															</label>
+															<label
+																htmlFor="deleteCommentModal"
+																onClick={() => removeComment(comment.id)}
+																className="btn btn-error"
+															>
+																Delete
+															</label>
+														</div>
+													</div>
+												</div>
+											</>
+										)}
 									</div>
-								))}
-							</motion.div>
-						</motion.div>
-					</motion.div>
-				)}
-			</AnimatePresence>
+								) : null,
+							)}
+							<form onSubmit={(e) => handleComment(e)}>
+								<div className="flex gap-2 mt-5">
+									<Image
+										src={`https://avatars.dicebear.com/api/bottts/${currentUser.username}.svg`}
+										alt="avatar"
+										className="w-10 h-10 mask mask-squircle bg-primary p-1"
+										width={40}
+										height={40}
+									/>
+									<div className="flex flex-col bg-base-100 w-full rounded-btn">
+										<textarea
+											className="w-full bg-base-100 rounded-btn p-3"
+											placeholder="Write a comment..."
+											rows={1}
+											name="commentContent"
+										/>
+										<button
+											className="btn btn-primary ml-auto mt-3"
+											type="submit"
+										>
+											Comment
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					)}
+				</div>
+			</div>
 		</>
 	);
 };

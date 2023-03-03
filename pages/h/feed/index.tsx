@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
@@ -23,6 +24,8 @@ import { uuid } from "uuidv4";
 const FeedPage = () => {
 	const [isMakingPost, setIsMakingPost] = useState(false);
 	const _currentUser = useStore($accountDetails) as IUserHunter;
+	const [feedList_ui] = useAutoAnimate<HTMLDivElement>();
+	const [mainFeed_ui] = useAutoAnimate<HTMLDivElement>();
 
 	const fetchFeed = async () => {
 		const connections: string[] = _currentUser.connections.concat(
@@ -71,7 +74,7 @@ const FeedPage = () => {
 				queryKey: ["mainFeedList"],
 				queryFn: fetchFeed,
 				enabled: !!_currentUser,
-				refetchOnMount: false,
+				refetchOnWindowFocus: false,
 				onSuccess: () => {
 					console.log("feedList success");
 				},
@@ -128,7 +131,7 @@ const FeedPage = () => {
 
 		toast.success("Posted!");
 
-		// feedList.refetch();
+		feedList.refetch();
 		setIsMakingPost(false);
 	};
 
@@ -144,7 +147,10 @@ const FeedPage = () => {
 						className="relative w-full grid grid-cols-1 lg:grid-cols-5 gap-4 pt-24 pb-36"
 					>
 						{/* feed */}
-						<div className="col-span-full lg:col-span-3 ">
+						<div
+							className="col-span-full lg:col-span-3 w-full"
+							ref={mainFeed_ui}
+						>
 							{/* create post */}
 							<div className="flex gap-2 w-full items-center">
 								<Image
@@ -162,9 +168,50 @@ const FeedPage = () => {
 								</div>
 							</div>
 
+							{/* create post dropdown */}
+							{isMakingPost && (
+								<div className="w-full">
+									<form
+										onSubmit={(e) => {
+											e.preventDefault();
+											handlePost(e);
+										}}
+										className="flex flex-col mt-5 gap-5"
+									>
+										<div className="form-control w-full ">
+											<p className="label">
+												<span className="label-text">Blog Content</span>
+												<span className="label-text">Markdown</span>
+											</p>
+											<textarea
+												name="content"
+												placeholder="Type here"
+												className="textarea textarea-bordered w-full h-screen max-h-[200px] font-mono"
+											/>
+										</div>
+
+										<div className="lg:flex lg:justify-end max-lg:grid max-lg:grid-cols-2 gap-2">
+											<button
+												type="button"
+												onClick={(e) => setIsMakingPost(false)}
+												className="btn btn-error max-lg:btn-block"
+											>
+												Cancel
+											</button>
+											<button
+												type="submit"
+												className="btn btn-primary max-lg:btn-block"
+											>
+												Create
+											</button>
+										</div>
+									</form>
+								</div>
+							)}
+
 							{/* feed list */}
 							<div className="mt-10">
-								<div className="flex flex-col gap-5">
+								<div className="flex flex-col gap-5" ref={feedList_ui}>
 									{feedList.isLoading &&
 										Array(10)
 											.fill(0)
@@ -180,7 +227,11 @@ const FeedPage = () => {
 
 									{feedList.isSuccess &&
 										feedList.data.map((item: THunterBlogPost) => (
-											<FeedCard blogData={item} key={item.id} />
+											<FeedCard
+												blogData={item}
+												key={item.id}
+												refetchData={feedList.refetch}
+											/>
 										))}
 								</div>
 							</div>
@@ -285,88 +336,6 @@ const FeedPage = () => {
 							</div>
 						</div>
 					</motion.main>
-
-					{/* create blog custom modal */}
-					<AnimatePresence mode="wait">
-						{isMakingPost && (
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{
-									opacity: 1,
-									transition: { ease: "circOut", duration: 0.2 },
-								}}
-								exit={{
-									opacity: 0,
-									transition: { ease: "circIn", duration: 0.2 },
-								}}
-								layout
-								className="fixed inset-0 w-full h-screen bg-base-100 px-5 lg:px-0 pt-16 lg:pt-0 flex justify-center overflow-y-scroll "
-							>
-								<motion.div
-									initial={{ y: 20 }}
-									animate={{
-										y: 0,
-										transition: { ease: "circOut", duration: 0.2 },
-									}}
-									exit={{
-										y: 20,
-										transition: { ease: "circIn", duration: 0.2 },
-									}}
-									className="pt-24 pb-36 w-full max-w-xl"
-								>
-									<div className="flex justify-between items-center">
-										<motion.p className="text-primary text-lg font-bold">
-											Create a blog post
-										</motion.p>
-										<motion.button
-											onClick={(e) => setIsMakingPost(false)}
-											className="btn btn-error"
-										>
-											<FiX />
-										</motion.button>
-									</div>
-
-									<form
-										onSubmit={(e) => {
-											e.preventDefault();
-											handlePost(e);
-										}}
-										className="flex flex-col mt-5 gap-5"
-									>
-										<div className="form-control w-full ">
-											<p className="label">
-												<span className="label-text">Blog Content</span>
-												<span className="label-text">Markdown</span>
-											</p>
-											<textarea
-												name="content"
-												placeholder="Type here"
-												className="textarea textarea-bordered w-full h-screen max-h-[200px] font-mono"
-											/>
-										</div>
-
-										<div className="flex justify-end gap-2">
-											<button
-												type="button"
-												onClick={(e) => setIsMakingPost(false)}
-												className="btn btn-error"
-											>
-												Cancel
-											</button>
-											<motion.button
-												layoutId="create-post"
-												transition={{ ease: "circOut", duration: 0.2 }}
-												type="submit"
-												className="btn btn-primary"
-											>
-												Create
-											</motion.button>
-										</div>
-									</form>
-								</motion.div>
-							</motion.div>
-						)}
-					</AnimatePresence>
 				</>
 			)}
 		</>

@@ -40,11 +40,16 @@ const AppBar = () => {
 				<div className="fixed py-5 flex justify-between items-center w-full z-50 bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
 						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
-						<Link href="/" className="relative w-7 h-7 md:hidden">
-							<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+						<Link href="/" className="relative w-8 h-8 md:hidden">
+							<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 						</Link>
 						<Link href="/" className="hidden md:block">
-							<Image alt="logo" width={75} height={75} src="/wicket-full.png" />
+							<Image
+								alt="logo"
+								width={75}
+								height={75}
+								src="/logo/wicket-new-full-vector.svg"
+							/>
 						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
