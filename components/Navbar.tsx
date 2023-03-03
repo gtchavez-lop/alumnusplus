@@ -54,7 +54,7 @@ const Navbar = () => {
 						<Link href="/" className="text-lg font-bold">
 							<Image
 								alt="logo"
-								src="/wicket-new-adaptive.png"
+								src="/logo/wicket-new-adaptive.png"
 								width={40}
 								height={40}
 							/>
@@ -96,7 +96,7 @@ const Navbar = () => {
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Image
 							alt="logo"
-							src="/wicket-new-adaptive.png"
+							src="/logo/wicket-new-adaptive.png"
 							width={40}
 							height={40}
 						/>
@@ -198,7 +198,7 @@ const Navbar = () => {
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Image
 							alt="logo"
-							src="/wicket-new-adaptive.png"
+							src="/logo/wicket-new-adaptive.png"
 							width={40}
 							height={40}
 						/>

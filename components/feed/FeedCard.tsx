@@ -421,8 +421,8 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 					{commentsOpen && (
 						<div className="mt-5 flex flex-col gap-2">
 							{blogData.comments?.map((comment, index) =>
-								// check if comment is visible or if the commenter is the current user
-								comment.visible || comment.commenter.id === currentUser.id ? (
+								// make all comments visible if the post is from the current user
+								comment.visible || currentUser.id === blogData.uploader.id ? (
 									<div
 										className="bg-base-200 rounded-btn flex gap-2"
 										key={`comment_${index}`}

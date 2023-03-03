@@ -94,7 +94,7 @@ const AppBar = () => {
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
 							<Link href="/" className="relative w-7 h-7 md:hidden">
-								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
@@ -175,7 +175,7 @@ const AppBar = () => {
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
 							<Link href="/" className="relative w-7 h-7 md:hidden">
-								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
