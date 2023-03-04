@@ -468,10 +468,12 @@ const ProfilePage: NextPage = () => {
 												>
 													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
 														<div className="flex gap-5 items-center">
-															<img
+															<Image
 																src={thisUser.avatar_url}
 																alt="avatar"
 																className="w-12 h-12 mask mask-squircle bg-primary "
+																width={50}
+																height={50}
 															/>
 															<div>
 																<p className="font-bold leading-none">
