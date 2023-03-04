@@ -193,7 +193,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 						{/* landing profile */}
 						<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 							<Image
-								src={`https://avatars.dicebear.com/api/bottts/${targetUser.username}.svg`}
+								src={`https://api.dicebear.com/5.x/bottts/svg?seed=${targetUser.username}`}
 								alt="avatar"
 								className="w-32 h-32 bg-primary p-2 mask mask-squircle"
 								width={128}
@@ -341,7 +341,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									>
 										<div className="flex gap-2 items-center">
 											<Image
-												src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+												src={`https://api.dicebear.com/5.x/bottts/svg?seed=${connection.username}`}
 												alt="avatar"
 												className="w-12 h-12 mask mask-squircle p-1 bg-primary "
 												width={48}

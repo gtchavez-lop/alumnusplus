@@ -141,7 +141,7 @@ const DriftPage = () => {
 								<div className="flex flex-col items-center gap-2 cursor-pointer">
 									<Image
 										alt=""
-										src={`https://avatars.dicebear.com/api/bottts/${company.legalName}.svg`}
+										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${company.legalName}`}
 										className="rounded-full w-[100px] h-[100px]"
 										width={100}
 										height={100}

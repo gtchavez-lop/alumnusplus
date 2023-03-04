@@ -10,6 +10,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
+import Image from "next/image";
 import { NextPage } from "next";
 import _Industries from "@/lib/industryTypes.json";
 import dayjs from "dayjs";
@@ -107,10 +108,12 @@ const ProvisionerProfileEditPage: NextPage = () => {
 							<p className="text-xl font-bold">Account Information</p>
 							<label className="flex flex-col gap-3">
 								<span>Profile Picture</span>
-								<img
-									src={`https://avatars.dicebear.com/api/bottts/${_currentUser.legalName}.svg`}
+								<Image
+									src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.legalName}`}
 									alt="Profile Picture"
 									className="w-24 h-24 object-cover bg-primary mask mask-squircle p-3"
+									width={96}
+									height={96}
 								/>
 								<input
 									className="file-input 	file-input-primary"

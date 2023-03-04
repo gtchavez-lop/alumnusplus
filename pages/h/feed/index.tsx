@@ -87,7 +87,6 @@ const FeedPage = () => {
 				queryKey: ["recommendedUsers"],
 				queryFn: fetchRecommendedUsers,
 				enabled: !!_currentUser,
-				refetchOnMount: false,
 				onSuccess: () => {
 					console.log("recommendedUsers success");
 				},
@@ -154,7 +153,7 @@ const FeedPage = () => {
 							{/* create post */}
 							<div className="flex gap-2 w-full items-center">
 								<Image
-									src={`https://avatars.dicebear.com/api/bottts/${_currentUser.username}.svg`}
+									src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.username}`}
 									alt="avatar"
 									className="hidden md:block bg-primary mask mask-squircle p-1"
 									width={48}
@@ -274,7 +273,7 @@ const FeedPage = () => {
 													>
 														<div className="flex gap-2 items-center">
 															<Image
-																src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+																src={`https://api.dicebear.com/5.x/bottts/svg?seed=${thisUser.username}`}
 																alt="avatar"
 																className="w-12 h-12 p-1 mask mask-squircle bg-primary "
 																width={48}

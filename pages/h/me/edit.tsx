@@ -5,6 +5,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserHunter } from "@/lib/types";
+import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
 import _PhCities from "@/lib/ph_location.json";
@@ -92,7 +93,7 @@ const EditProfilePage: NextPage = () => {
 		setHasChanges(
 			JSON.stringify(tempUserDetails) !== JSON.stringify(_currentUserDetails),
 		);
-	}, [tempUserDetails]);
+	}, [tempUserDetails, _currentUserDetails]);
 
 	return (
 		<>
@@ -141,10 +142,12 @@ const EditProfilePage: NextPage = () => {
 								<p className="text-xl font-bold">Account Information</p>
 								<label className="flex flex-col gap-2">
 									<span>Profile Picture</span>
-									<img
-										src={`https://avatars.dicebear.com/api/bottts/${_currentUserDetails.username}.svg`}
+									<Image
+										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUserDetails.username}`}
 										alt="Profile Picture"
 										className="w-24 h-24 object-cover bg-primary mask mask-squircle p-3"
+										width={96}
+										height={96}
 									/>
 									<input
 										className="file-input 	file-input-primary"

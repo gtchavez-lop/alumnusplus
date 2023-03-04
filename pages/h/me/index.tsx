@@ -1,10 +1,20 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
-import { FiEdit, FiEdit2, FiEdit3 } from "react-icons/fi";
+import {
+	FiEdit,
+	FiEdit2,
+	FiEdit3,
+	FiFacebook,
+	FiGithub,
+	FiInstagram,
+	FiLinkedin,
+	FiTwitter,
+} from "react-icons/fi";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
+import { MdFacebook } from "react-icons/md";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
@@ -146,7 +156,7 @@ const ProfilePage: NextPage = () => {
 								{/* landing profile */}
 								<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 									<Image
-										src={`https://avatars.dicebear.com/api/bottts/${_userDetails.username}.svg`}
+										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_userDetails.username}`}
 										alt="avatar"
 										className="w-32 h-32 bg-primary p-2 mask mask-squircle"
 										width={128}
@@ -181,7 +191,7 @@ const ProfilePage: NextPage = () => {
 								</div>
 
 								{/* bio */}
-								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+								<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 									<div className="flex justify-between items-start">
 										<p className="text-2xl font-bold">Bio</p>
 									</div>
@@ -191,21 +201,21 @@ const ProfilePage: NextPage = () => {
 									</ReactMarkdown>
 								</div>
 								{/* skills */}
-								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+								<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 									<p className="text-2xl font-bold">Skillsets</p>
 									<div className="flex flex-col">
 										<h4 className="text-lg font-semibold">Primary Skill</h4>
-										<p className="badge badge-primary">
+										<p className="badge badge-primary badge-lg">
 											{_userDetails.skill_primary}
 										</p>
 									</div>
 									<div className="flex flex-col">
 										<h4 className="text-lg font-semibold">Secondary Skills</h4>
-										<p className="flex flex-wrap gap-4">
+										<p className="flex flex-wrap gap-2">
 											{_userDetails.skill_secondary.map((skill, index) => (
 												<span
 													key={`secondaryskill_${index}`}
-													className="badge badge-accent"
+													className="badge badge-accent badge-lg"
 												>
 													{skill}
 												</span>
@@ -214,21 +224,74 @@ const ProfilePage: NextPage = () => {
 									</div>
 								</div>
 								{/* residence */}
-								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+								<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 									<p className="text-2xl font-bold">Residence</p>
 									<div className="flex flex-col ">
-										<h4 className="text-lg font-semibold">Address</h4>
-										<p>{_userDetails.address.address}</p>
-										<h4 className="text-lg font-semibold mt-3">
-											City of Residence
-										</h4>
-										<p className="badge badge-accent">
-											{_userDetails.address.city}
+										<p>
+											{_userDetails.address.address},{" "}
+											{_userDetails.address.city} -{" "}
+											{_userDetails.address.postalCode}
 										</p>
 									</div>
 								</div>
+								{/* socials */}
+								<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
+									<p className="text-2xl font-bold">Social Media Links</p>
+									<div className="flex flex-wrap gap-2">
+										{_userDetails.social_media_links.facebook && (
+											<Link
+												href={_userDetails.social_media_links.facebook}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-primary"
+											>
+												<FiFacebook className="text-xl" />
+											</Link>
+										)}
+										{_userDetails.social_media_links.twitter && (
+											<Link
+												href={_userDetails.social_media_links.twitter}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-primary"
+											>
+												<FiTwitter className="text-xl" />
+											</Link>
+										)}
+										{_userDetails.social_media_links.instagram && (
+											<Link
+												href={_userDetails.social_media_links.instagram}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-primary"
+											>
+												<FiInstagram className="text-xl" />
+											</Link>
+										)}
+										{_userDetails.social_media_links.linkedin && (
+											<Link
+												href={_userDetails.social_media_links.linkedin}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-primary"
+											>
+												<FiLinkedin className="text-xl" />
+											</Link>
+										)}
+										{_userDetails.social_media_links.github && (
+											<Link
+												href={_userDetails.social_media_links.github}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-primary"
+											>
+												<FiGithub className="text-xl" />
+											</Link>
+										)}
+									</div>
+								</div>
 								{/* activity */}
-								<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+								<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 									<p className="text-2xl font-bold">Recent Activities</p>
 									<div className="flex flex-col gap-2">
 										{userActivities.isSuccess &&
@@ -250,6 +313,11 @@ const ProfilePage: NextPage = () => {
 													</Link>
 												</div>
 											))}
+
+										{userActivities.isSuccess &&
+											userActivities.data.length === 0 && (
+												<p className="text-center">No activities yet</p>
+											)}
 
 										{userActivities.isLoading &&
 											Array(5)
@@ -307,7 +375,7 @@ const ProfilePage: NextPage = () => {
 												>
 													<div className="flex gap-2 items-center">
 														<Image
-															src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+															src={`https://api.dicebear.com/5.x/bottts/svg?seed=${connection.username}`}
 															alt="avatar"
 															className="w-12 h-12 mask mask-squircle p-1 bg-primary "
 															width={50}
@@ -371,7 +439,7 @@ const ProfilePage: NextPage = () => {
 						<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
 							<div className="flex gap-5 items-center">
 								<img
-									src={`https://avatars.dicebear.com/api/bottts/${thisUser.username}.svg`}
+									src={`https://api.dicebear.com/5.x/bottts/svg?seed=${thisUser.username}`}
 									alt="avatar"
 									className="w-12 h-12 p-1 mask mask-squircle bg-primary "
 								/>
