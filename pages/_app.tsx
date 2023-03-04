@@ -109,7 +109,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 						<AppBar />
 						<Navbar />
 
-						<div className="flex justify-center bg-base-100 select-none overflow-x-hidden">
+						<div className="flex justify-center bg-base-100 overflow-x-hidden">
 							<div className="w-full max-w-5xl px-5 lg:px-0 min-h-screen pt-16 lg:pt-0">
 								<AnimatePresence mode="wait">
 									<Component

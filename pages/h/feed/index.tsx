@@ -56,8 +56,8 @@ const FeedPage = () => {
 		const joined = convertedMapToString.join(",");
 
 		const { data, error } = await supabase
-			.from("recommended_hunters")
-			.select("id,fullname,username,email")
+			.from("new_recommended_hunters")
+			.select("*")
 			.not("id", "in", `(${joined})`)
 			.limit(2);
 
@@ -153,9 +153,9 @@ const FeedPage = () => {
 							{/* create post */}
 							<div className="flex gap-2 w-full items-center">
 								<Image
-									src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.username}`}
+									src={_currentUser.avatar_url}
 									alt="avatar"
-									className="hidden md:block bg-primary mask mask-squircle p-1"
+									className="hidden md:block bg-primary mask mask-squircle"
 									width={48}
 									height={48}
 								/>
@@ -273,16 +273,16 @@ const FeedPage = () => {
 													>
 														<div className="flex gap-2 items-center">
 															<Image
-																src={`https://api.dicebear.com/5.x/bottts/svg?seed=${thisUser.username}`}
+																src={thisUser.avatar_url}
 																alt="avatar"
-																className="w-12 h-12 p-1 mask mask-squircle bg-primary "
+																className="w-12 h-12 mask mask-squircle bg-primary "
 																width={48}
 																height={48}
 															/>
 															<div>
 																<p className="font-bold leading-none">
-																	{thisUser.fullname.first}{" "}
-																	{thisUser.fullname.last}
+																	{thisUser.full_name.first}{" "}
+																	{thisUser.full_name.last}
 																</p>
 																<p className="opacity-50 leading-none">
 																	@{thisUser.username}

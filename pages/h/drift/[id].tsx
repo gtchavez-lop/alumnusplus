@@ -2,17 +2,21 @@ import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdMoreHoriz, MdSend, MdWarning } from "react-icons/md";
 
+import { $accountDetails } from "@/lib/globalStates";
+import Footer from "@/components/Footer";
 import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
+import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { useStore } from "@nanostores/react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query;
+	const { id } = context.params as { id: string };
 
 	const { data, error } = await supabase
 		.from("user_provisioners")
@@ -22,9 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	if (error) {
 		console.log(error);
-		return {
-			notFound: true,
-		};
 	}
 
 	return {
@@ -34,17 +35,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	};
 };
 
-const ProvisionerPage: NextPage<{
-	companyData: IUserProvisioner;
-	notFound: boolean;
-}> = ({ companyData, notFound }) => {
+const ProvisionerPage: NextPage<{ companyData: IUserProvisioner }> = ({
+	companyData,
+}) => {
 	const [tabSelected, setTabSelected] = useState<"about" | "jobs">("about");
 
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
 			.select("*,uploader:uploader_id(legalName)")
-			// .order("createdAt", { ascending: false })
 			.eq("uploader_id", companyData.id);
 
 		if (error) {
@@ -57,10 +56,11 @@ const ProvisionerPage: NextPage<{
 	const [allJobPosts] = useQueries({
 		queries: [
 			{
-				queryKey: ["currentJob"],
+				queryKey: ["driftData", companyData.legalName],
 				queryFn: fetchAllJobs,
 				refetchOnMount: false,
 				refetchOnWindowFocus: false,
+				enabled: !!companyData,
 			},
 		],
 	});
@@ -79,21 +79,21 @@ const ProvisionerPage: NextPage<{
 						<div className="col-span-full lg:col-span-3">
 							{/* profile */}
 							<div className="relative rounded-btn flex flex-col gap-3">
-								<div className="absolute h-[200px] w-full">
+								<div className="absolute h-[250px] w-full">
 									<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 									<Image
 										className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
-										src={`https://picsum.photos/seed/${companyData.legalName}/900/450`}
+										src={`https://picsum.photos/seed/${companyData.legalName}/900/500`}
 										alt="background"
 										width={900}
-										height={450}
+										height={500}
 										priority
 									/>
 								</div>
-								<div className="z-10 mt-[150px] px-5 flex items-end gap-5">
+								<div className="z-10 mt-[200px] px-5 flex items-end gap-5">
 									<Image
 										className="mask mask-squircle bg-primary"
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${companyData.legalName}`}
+										src={`https://api.dicebear.com/5.x/shapes/png?seed=${companyData.legalName}`}
 										alt="profile"
 										width={100}
 										height={100}
@@ -105,32 +105,7 @@ const ProvisionerPage: NextPage<{
 										</p>
 										<p className="text-sm">0 followers</p>
 									</div>
-								</div>
-								<div className="z-10 flex justify-end items-center gap-2 mt-5">
-									<div className="btn btn-primary">Follow</div>
-									<div className="btn btn-primary">Share Page</div>
-									<div className="dropdown dropdown-bottom dropdown-end">
-										<label tabIndex={0} className="btn">
-											<MdMoreHoriz />
-										</label>
-										<ul
-											tabIndex={0}
-											className="dropdown-content menu p-2 shadow bg-base-300 mt-2 rounded-box w-max"
-										>
-											<li>
-												<p>
-													<MdSend />
-													<span>Email this Company</span>
-												</p>
-											</li>
-											<li>
-												<p className="text-error">
-													<MdWarning />
-													<span>Report Abuse</span>
-												</p>
-											</li>
-										</ul>
-									</div>
+									<button className="btn btn-primary ml-auto">Follow</button>
 								</div>
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
@@ -168,17 +143,17 @@ const ProvisionerPage: NextPage<{
 												About this company
 											</p>
 
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Full Description
 												</p>
-												<div className="prose">
+												<div>
 													<ReactMarkdown>
 														{companyData.fullDescription}
 													</ReactMarkdown>
 												</div>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Contact information
 												</p>
@@ -193,25 +168,25 @@ const ProvisionerPage: NextPage<{
 													</p>
 												</div>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Industry
 												</p>
 												<p>{companyData.industryType}</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Company Size
 												</p>
 												<p>{companyData.companySize} people</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Founding Year
 												</p>
 												<p>{companyData.foundingYear} people</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Location
 												</p>
@@ -263,6 +238,46 @@ const ProvisionerPage: NextPage<{
 										</motion.div>
 									)}
 								</AnimatePresence>
+							</div>
+						</div>
+						<div className="col-span-full lg:col-span-2">
+							<div className="divider col-span-full" />
+							<div className="grid grid-cols-2 mt-5 font-light text-sm opacity-75">
+								<div className="flex flex-col">
+									<p className="font-bold text-lg">Features</p>
+									<Link
+										href="/util/features#blogging"
+										className="link link-hover"
+									>
+										Mini Blogging
+									</Link>
+									<Link
+										href="/util/features#companyhunting"
+										className="link link-hover"
+									>
+										Geo-Company Hunting
+									</Link>
+									<Link
+										href="/util/features#jobposting"
+										className="link link-hover"
+									>
+										Job Posting
+									</Link>
+									<Link
+										href="/util/features#metaverse"
+										className="link link-hover"
+									>
+										Metaverse
+									</Link>
+								</div>
+								<div>
+									<p className="font-bold text-lg">Wicket Journeys</p>
+									<p className="link link-hover">About Us</p>
+									<p className="link link-hover">Contact Us</p>
+									<p className="link link-hover">Terms of use</p>
+									<p className="link link-hover">Privacy policy</p>
+									<p className="link link-hover">Cookie policy</p>
+								</div>
 							</div>
 						</div>
 					</div>

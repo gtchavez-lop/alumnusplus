@@ -32,6 +32,7 @@ const RegisterHunterSubPage = () => {
 			city: "",
 			postalCode: "",
 		},
+		avatar_url: "",
 		bio: "",
 		email: "",
 		birthdate: "",
@@ -83,12 +84,13 @@ const RegisterHunterSubPage = () => {
 	});
 
 	const handleSignUp = async () => {
-		const { data, error } = await supabase.auth.signUp({
+		const { error } = await supabase.auth.signUp({
 			email: localRegData.email,
 			password: localPassword.password,
 			options: {
 				data: {
 					...localRegData,
+					avatar_url: `https://api.dicebear.com/5.x/bottts-neutral/png?seed=${localRegData.username}`,
 					created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 					updated_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				},
