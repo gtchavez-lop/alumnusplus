@@ -189,7 +189,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									}
 								>
 									<Image
-										src={`https://avatars.dicebear.com/api/bottts/${blogData.uploader.username}.svg`}
+										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${blogData.uploader.username}`}
 										alt="avatar"
 										className="w-10 h-10 rounded-full"
 										width={40}
@@ -280,7 +280,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									>
 										<div className="flex items-center gap-3">
 											<Image
-												src={`https://avatars.dicebear.com/api/bottts/${currentUser.username}.svg`}
+												src={`https://api.dicebear.com/5.x/bottts/svg?seed=${currentUser.username}`}
 												alt="avatar"
 												className="w-10 h-10 rounded-full"
 												width={40}
@@ -404,7 +404,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										>
 											<div className="flex items-center gap-3">
 												<Image
-													src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
+													src={`https://api.dicebear.com/5.x/bottts/svg?seed=${comment.commenter.username}`}
 													alt="avatar"
 													className="w-10 h-10 rounded-full"
 													width={40}

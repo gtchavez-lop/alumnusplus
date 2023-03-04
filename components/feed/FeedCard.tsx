@@ -4,20 +4,16 @@ import {
 	FiLoader,
 	FiMessageSquare,
 	FiMoreHorizontal,
-	FiX,
 } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
-	MdArchive,
 	MdDelete,
-	MdDisabledVisible,
 	MdMoreHoriz,
 	MdVisibility,
 	MdVisibilityOff,
 } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
-import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -301,7 +297,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						}
 					>
 						<Image
-							src={`https://avatars.dicebear.com/api/bottts/${blogData.uploader.username}.svg`}
+							src={`https://api.dicebear.com/5.x/bottts/svg?seed=${blogData.uploader.username}`}
 							alt="avatar"
 							className="w-12 h-12 p-1 mask mask-squircle bg-primary"
 							width={48}
@@ -436,7 +432,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 											className="flex gap-3"
 										>
 											<Image
-												src={`https://avatars.dicebear.com/api/bottts/${comment.commenter.username}.svg`}
+												src={`https://api.dicebear.com/5.x/bottts/svg?seed=${comment.commenter.username}`}
 												alt="avatar"
 												className="w-10 h-10 mask mask-squircle bg-primary p-1"
 												width={40}
@@ -553,7 +549,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							<form onSubmit={(e) => handleComment(e)}>
 								<div className="flex gap-2 mt-5">
 									<Image
-										src={`https://avatars.dicebear.com/api/bottts/${currentUser.username}.svg`}
+										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${currentUser.username}`}
 										alt="avatar"
 										className="w-10 h-10 mask mask-squircle bg-primary p-1"
 										width={40}

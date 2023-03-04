@@ -1,5 +1,6 @@
 import { AnimPageTransition } from "@/lib/animations";
 import Footer from "@/components/Footer";
+import Image from "next/image";
 import { NextPage } from "next";
 import { motion } from "framer-motion";
 
@@ -90,11 +91,12 @@ const AboutPage: NextPage = () => {
 							Philippines.
 						</p>
 					</div>
-					<div className="w-full lg:w-8/12 ">
-						<img
+					<div className="w-full lg:w-8/12 relative">
+						<Image
 							className="w-full h-full object-cover rounded-btn"
 							src="https://scontent.fmnl17-2.fna.fbcdn.net/v/t1.15752-9/315092373_702370021036486_3384845880542952343_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=ae9488&_nc_eui2=AeH3092hEVMner9C85AwEIJepaKSLdlVJM-lopIt2VUkz3TkFwVsmlGcJ4SRiP4v9-e-oC_QxRqzC5ymwOkiX7u6&_nc_ohc=JyElUvVdYIwAX-w9cp2&_nc_ht=scontent.fmnl17-2.fna&oh=03_AdStBFcFDF5SuNy3NtYhLKrLnAD4Tt6Y50WpAQI_0LKhbg&oe=6421600D"
 							alt="A group of People"
+							fill
 						/>
 					</div>
 				</div>
@@ -119,15 +121,19 @@ const AboutPage: NextPage = () => {
 									key={`person-${key + 1}`}
 									className="p-4 pb-6 flex justify-center flex-col items-center"
 								>
-									<img
+									<Image
 										className="md:block hidden object-cover object-center w-[100px] h-[100px] rounded-full"
 										src={person.img}
 										alt={person.name}
+										width={100}
+										height={100}
 									/>
-									<img
+									<Image
 										className="md:hidden block object-cover object-center w-[100px] h-[100px] rounded-full"
 										src={person.img}
 										alt={person.name}
+										width={100}
+										height={100}
 									/>
 									<p className="font-medium text-xl leading-5 mt-4 text-center">
 										{person.name}
