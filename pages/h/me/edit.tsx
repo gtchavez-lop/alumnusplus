@@ -143,17 +143,28 @@ const EditProfilePage: NextPage = () => {
 								<label className="flex flex-col gap-2">
 									<span>Profile Picture</span>
 									<Image
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUserDetails.username}`}
+										src={tempUserDetails.avatar_url}
 										alt="Profile Picture"
-										className="w-24 h-24 object-cover bg-primary mask mask-squircle p-3"
+										className="w-24 h-24 object-cover bg-primary mask mask-squircle"
 										width={96}
 										height={96}
 									/>
 									<input
-										className="file-input 	file-input-primary"
+										className="file-input file-input-primary"
 										type="file"
 										accept="image/png, image/gif, image/jpeg"
-										disabled
+										onChange={(e) => {
+											// set the file to base64
+											const file = e.target.files?.[0] as Blob;
+											const reader = new FileReader();
+											reader.readAsDataURL(file);
+											reader.onload = () => {
+												setTempUserDetails({
+													...tempUserDetails,
+													avatar_url: reader.result?.toString() || "",
+												});
+											};
+										}}
 									/>
 								</label>
 								<label className="flex flex-col">

@@ -34,7 +34,6 @@ const JobPostings = () => {
 		queryFn: fetchProvJobs,
 		enabled: !!_currentUser,
 		refetchOnWindowFocus: false,
-		refetchOnMount: false,
 	});
 
 	return (

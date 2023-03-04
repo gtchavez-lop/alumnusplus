@@ -150,8 +150,9 @@ const AppBar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/h/events"
+							<button
+								disabled
+								// href="/h/events"
 								className={`btn ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
@@ -159,7 +160,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>
@@ -221,8 +222,9 @@ const AppBar = () => {
 							>
 								<MdOutlineWork className="text-lg" />
 							</Link>
-							<Link
-								href={"/p/events"}
+							<button
+								disabled
+								// href={"/p/events"}
 								className={`btn btn-block ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
@@ -230,7 +232,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdOutlineEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>

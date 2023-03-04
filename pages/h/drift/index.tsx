@@ -136,20 +136,22 @@ const DriftPage = () => {
 								key={`company-${index}`}
 								href={`/h/drift/${company.id}`}
 								passHref
-								className="p-3 bg-base-300 rounded-btn h-[224px]"
+								className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
 							>
 								<div className="flex flex-col items-center gap-2 cursor-pointer">
 									<Image
 										alt=""
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${company.legalName}`}
-										className="rounded-full w-[100px] h-[100px]"
+										src={`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`}
+										className="mask mask-squircle w-[100px] h-[100px]"
 										width={100}
 										height={100}
 									/>
 									<p>{company.legalName}</p>
 								</div>
 
-								<div className="btn btn-primary btn-block mt-5">See more</div>
+								<div className="btn btn-primary lg:hidden btn-block mt-5">
+									See more
+								</div>
 							</Link>
 						))}
 					</div>

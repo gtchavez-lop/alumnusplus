@@ -69,7 +69,7 @@ const Prov_Dashboard = () => {
 								<>
 									<Image
 										alt="avatar"
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.legalName}`}
+										src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
 										className="w-24 h-24 mask mask-squircle"
 										width={96}
 										height={96}
@@ -214,7 +214,7 @@ const Prov_Dashboard = () => {
 								<>
 									<Image
 										alt="avatar"
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.legalName}`}
+										src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
 										className="w-24 h-24 mask mask-squircle"
 										width={96}
 										height={96}

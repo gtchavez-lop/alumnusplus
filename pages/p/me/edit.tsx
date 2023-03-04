@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import {
 	ChangeEvent,
 	DOMAttributes,
@@ -14,7 +15,6 @@ import Image from "next/image";
 import { NextPage } from "next";
 import _Industries from "@/lib/industryTypes.json";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
@@ -94,12 +94,36 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
 					<p className="text-4xl font-bold">Edit Your Profile</p>
-					<div className="flex justify-end items-center mt-5 gap-2">
-						<div onClick={handleChanges} className="btn btn-success">
-							Save Changes
-						</div>
-						<div className="btn btn-ghost">Discard and Go Back</div>
-					</div>
+
+					<AnimatePresence mode="wait">
+						{JSON.stringify(_currentUser) !==
+							JSON.stringify(tempUserDetails) && (
+							<motion.div
+								initial={{ opacity: 0, y: 20 }}
+								animate={{
+									opacity: 1,
+									y: 0,
+									transition: { easings: "circOut" },
+								}}
+								exit={{ opacity: 0, y: 20, transition: { easings: "circIn" } }}
+								className="flex justify-center fixed bottom-0 left-0 py-5 bg-base-100 w-full"
+							>
+								<div className="flex justify-end gap-2 w-full max-w-5xl">
+									<div onClick={handleChanges} className="btn btn-success">
+										Save Changes
+									</div>
+									<div
+										onClick={() => {
+											router.back();
+										}}
+										className="btn btn-ghost"
+									>
+										Discard and Go Back
+									</div>
+								</div>
+							</motion.div>
+						)}
+					</AnimatePresence>
 
 					{/* content */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
@@ -109,9 +133,9 @@ const ProvisionerProfileEditPage: NextPage = () => {
 							<label className="flex flex-col gap-3">
 								<span>Profile Picture</span>
 								<Image
-									src={`https://api.dicebear.com/5.x/bottts/svg?seed=${_currentUser.legalName}`}
+									src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
 									alt="Profile Picture"
-									className="w-24 h-24 object-cover bg-primary mask mask-squircle p-3"
+									className="w-24 h-24 object-cover bg-primary mask mask-squircle"
 									width={96}
 									height={96}
 								/>

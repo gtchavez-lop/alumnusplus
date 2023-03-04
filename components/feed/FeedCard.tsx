@@ -9,6 +9,7 @@ import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
 	MdDelete,
 	MdMoreHoriz,
+	MdShare,
 	MdVisibility,
 	MdVisibilityOff,
 } from "react-icons/md";
@@ -49,8 +50,6 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 }) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [commentsOpen, setCommentsOpen] = useState(false);
-	const [isMoreOpen, setIsMoreOpen] = useState(false);
-	const { route } = useRouter();
 	const currentUser = useStore($accountDetails) as IUserHunter;
 	const [cardRef] = useAutoAnimate<HTMLDivElement>();
 
@@ -170,6 +169,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				id: currentUser.id,
 				username: currentUser.username,
 				full_name: currentUser.full_name,
+				avatar: currentUser.avatar_url,
 			},
 			visible: true,
 		};
@@ -297,9 +297,9 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						}
 					>
 						<Image
-							src={`https://api.dicebear.com/5.x/bottts/svg?seed=${blogData.uploader.username}`}
+							src={currentUser.avatar_url}
 							alt="avatar"
-							className="w-12 h-12 p-1 mask mask-squircle bg-primary"
+							className="w-12 h-12 mask mask-squircle bg-primary"
 							width={48}
 							height={48}
 						/>
@@ -327,15 +327,24 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 					</div>
 				</div>
 
-				<div className="mt-5 h-[101px] overflow-hidden">
+				<Link
+					href={`/h/feed/${blogData.id}`}
+					className="mt-5 h-[101px] overflow-hidden relative"
+				>
+					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-base-200" />
 					<ReactMarkdown
-						// components={markdownRenderer}
 						rehypePlugins={[rehypeRaw]}
-						className="prose-sm prose-headings:text-xl "
+						className="prose-sm prose-headings:text-xl -z-10"
 					>
-						{`${blogData.content.slice(0, 200)}...`}
+						{`${blogData.content.slice(0, 500)}...`}
 					</ReactMarkdown>
-				</div>
+				</Link>
+				<Link
+					href={`/h/feed/${blogData.id}`}
+					className="text-center pt-2 opacity-50 z-10"
+				>
+					Read more
+				</Link>
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
@@ -358,7 +367,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							<span className="ml-2">{blogData.comments?.length ?? 0}</span>
 						</motion.button>
 					</div>
-					<div className="md:hidden dropdown dropdown-top dropdown-end">
+					{/* <div className="md:hidden dropdown dropdown-top dropdown-end">
 						<label tabIndex={0} className="btn btn-ghost">
 							<FiMoreHorizontal />
 						</label>
@@ -383,9 +392,9 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 								</button>
 							</li>
 						</ul>
-					</div>
-					<div className="md:flex gap-2 hidden ">
-						{!isMoreOpen ? (
+					</div> */}
+					<div className="flex gap-2">
+						{/* {!isMoreOpen ? (
 							<Link
 								scroll={false}
 								href={`/h/feed/${blogData.id}`}
@@ -399,16 +408,17 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 								Loading Page
 								<FiLoader className="animate-spin" />
 							</div>
-						)}
+						)} */}
 						<button
-							className="btn btn-ghost"
+							className="btn btn-ghost gap-2"
 							onClick={() => {
-								const thisLink = `${route}/h/feed/${blogData.id}`;
+								const baseURL = window.location.origin;
+								const thisLink = `${baseURL}/h/feed/${blogData.id}`;
 								navigator.clipboard.writeText(thisLink);
 								toast("Link Shared");
 							}}
 						>
-							Share
+							<MdShare />
 						</button>
 					</div>
 				</div>
@@ -429,14 +439,13 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 													? "/h/me"
 													: `/h/${comment.commenter.username}`
 											}
-											className="flex gap-3"
 										>
 											<Image
-												src={`https://api.dicebear.com/5.x/bottts/svg?seed=${comment.commenter.username}`}
+												src={comment.commenter.avatar_url}
 												alt="avatar"
-												className="w-10 h-10 mask mask-squircle bg-primary p-1"
-												width={40}
-												height={40}
+												className="w-12 h-12 mask mask-squircle bg-primary"
+												width={48}
+												height={48}
 											/>
 										</Link>
 										{/* content */}
@@ -549,9 +558,9 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							<form onSubmit={(e) => handleComment(e)}>
 								<div className="flex gap-2 mt-5">
 									<Image
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${currentUser.username}`}
+										src={currentUser.avatar_url}
 										alt="avatar"
-										className="w-10 h-10 mask mask-squircle bg-primary p-1"
+										className="w-10 h-10 mask mask-squircle bg-primary"
 										width={40}
 										height={40}
 									/>

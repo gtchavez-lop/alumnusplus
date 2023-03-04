@@ -16,7 +16,7 @@ const ConnectionsPage = () => {
 
 		const { data, error } = await supabase
 			.from("user_hunters")
-			.select("id,email,full_name,username,birthdate")
+			.select("id,email,full_name,username,birthdate,avatar_url")
 			.in("id", thisUserConnection);
 
 		if (error) {
@@ -33,7 +33,7 @@ const ConnectionsPage = () => {
 		const reqString = `(${thisUserConnections.concat(currentUser.id)})`;
 
 		const { data, error } = await supabase
-			.from("recommended_hunters")
+			.from("new_recommended_hunters")
 			.select("*")
 			.filter("id", "not.in", reqString)
 			.limit(2);
@@ -84,9 +84,9 @@ const ConnectionsPage = () => {
 							<div className="col-span-3 flex flex-col gap-3">
 								<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 									<Image
-										src={`https://api.dicebear.com/5.x/bottts/svg?seed=${currentUser.username}`}
+										src={currentUser.avatar_url}
 										alt="avatar"
-										className="w-32 h-32 bg-primary p-2 mask mask-squircle"
+										className="w-32 h-32 bg-primary mask mask-squircle"
 										width={128}
 										height={128}
 									/>
@@ -116,15 +116,15 @@ const ConnectionsPage = () => {
 													className="flex gap-2 items-center hover:bg-base-300 py-2 px-3 rounded-btn transition"
 												>
 													<Image
-														src={`https://api.dicebear.com/5.x/bottts/svg?seed=${item.username}`}
+														src={item.avatar_url}
 														alt="avatar"
-														className="w-12 h-12 mask mask-squircle bg-primary p-1"
+														className="w-12 h-12 mask mask-squircle bg-primary"
 														width={48}
 														height={48}
 													/>
 													<div>
 														<h4 className="leading-tight">
-															{item.fullname.first} {item.fullname.last}
+															{item.full_name.first} {item.full_name.last}
 														</h4>
 														<p className="text-sm opacity-50 leading-none">
 															@{item.username}
@@ -155,9 +155,9 @@ const ConnectionsPage = () => {
 								>
 									<div className="flex gap-2 items-center">
 										<Image
-											src={`https://api.dicebear.com/5.x/bottts/svg?seed=${item.username}`}
+											src={item.avatar_url}
 											alt="avatar"
-											className="w-12 h-12 mask mask-squircle bg-primary p-1"
+											className="w-12 h-12 mask mask-squircle bg-primary"
 											width={48}
 											height={48}
 										/>
