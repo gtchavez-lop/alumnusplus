@@ -54,6 +54,8 @@ const CreateNewJobPage = () => {
 			return;
 		}
 
+		toast.loading("Posting job...");
+
 		const { error } = await supabase
 			.from("public_jobs")
 			.insert<TProvJobPost[]>([
@@ -64,7 +66,9 @@ const CreateNewJobPage = () => {
 			]);
 
 		if (error) {
+			toast.dismiss();
 			toast.error(error.message);
+			return;
 		}
 
 		if (!error) {

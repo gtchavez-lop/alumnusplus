@@ -193,9 +193,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 						{/* landing profile */}
 						<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 							<Image
-								src={`https://avatars.dicebear.com/api/bottts/${targetUser.username}.svg`}
+								src={`https://api.dicebear.com/5.x/bottts-neutral/png?seed=${targetUser.username}`}
 								alt="avatar"
-								className="w-32 h-32 bg-primary p-2 mask mask-squircle"
+								className="w-32 h-32 bg-primary mask mask-squircle"
 								width={128}
 								height={128}
 							/>
@@ -216,7 +216,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							</div>
 						</div>
 						{/* bio */}
-						<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+						<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 							<div className="flex justify-between items-start">
 								<p className="text-2xl font-bold">Bio</p>
 							</div>
@@ -226,7 +226,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							</ReactMarkdown>
 						</div>
 						{/* skills */}
-						<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+						<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 							<p className="text-2xl font-bold">Skillsets</p>
 							<div className="flex flex-col">
 								<h4 className="text-lg font-semibold">Primary Skill</h4>
@@ -249,7 +249,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							</div>
 						</div>
 						{/* residence */}
-						<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+						<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 							<p className="text-2xl font-bold">Residence</p>
 							<div className="flex flex-col ">
 								<h4 className="text-lg font-semibold">Address</h4>
@@ -261,7 +261,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							</div>
 						</div>
 						{/* activity */}
-						<div className="flex flex-col border-2 border-base-content border-opacity-30 rounded-btn p-5 gap-3">
+						<div className="flex flex-col shadow-lg rounded-btn p-5 gap-3">
 							<p className="text-2xl font-bold">Recent Activities</p>
 							<div className="flex flex-col gap-2">
 								{userActivities.isSuccess &&
@@ -341,9 +341,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									>
 										<div className="flex gap-2 items-center">
 											<Image
-												src={`https://avatars.dicebear.com/api/bottts/${connection.username}.svg`}
+												src={`https://api.dicebear.com/5.x/bottts-neutral/png?seed=${connection.username}`}
 												alt="avatar"
-												className="w-12 h-12 mask mask-squircle p-1 bg-primary "
+												className="w-12 h-12 mask mask-squircle bg-primary "
 												width={48}
 												height={48}
 											/>

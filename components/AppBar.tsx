@@ -40,11 +40,16 @@ const AppBar = () => {
 				<div className="fixed py-5 flex justify-between items-center w-full z-50 bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
 						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
-						<Link href="/" className="relative w-7 h-7 md:hidden">
-							<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+						<Link href="/" className="relative w-8 h-8 md:hidden">
+							<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 						</Link>
 						<Link href="/" className="hidden md:block">
-							<Image alt="logo" width={75} height={75} src="/wicket-full.png" />
+							<Image
+								alt="logo"
+								width={75}
+								height={75}
+								src="/logo/wicket-new-full-vector.svg"
+							/>
 						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
@@ -89,7 +94,7 @@ const AppBar = () => {
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
 							<Link href="/" className="relative w-7 h-7 md:hidden">
-								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
@@ -145,8 +150,9 @@ const AppBar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/h/events"
+							<button
+								disabled
+								// href="/h/events"
 								className={`btn ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
@@ -154,7 +160,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>
@@ -170,7 +176,7 @@ const AppBar = () => {
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
 							<Link href="/" className="relative w-7 h-7 md:hidden">
-								<Image alt="logo" fill src="/wicket-new-adaptive.png" />
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
@@ -216,8 +222,9 @@ const AppBar = () => {
 							>
 								<MdOutlineWork className="text-lg" />
 							</Link>
-							<Link
-								href={"/p/events"}
+							<button
+								disabled
+								// href={"/p/events"}
 								className={`btn btn-block ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
@@ -225,7 +232,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdOutlineEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>

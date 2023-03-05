@@ -103,7 +103,7 @@ const ProvProfilePage: NextPage = () => {
 							<div className="col-span-full lg:col-span-3">
 								{/* profile */}
 								<div className="relative rounded-btn overflow-hidden flex flex-col gap-3">
-									<div className="absolute h-[200px] w-full">
+									<div className="absolute h-[250px] w-full">
 										<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 										<Image
 											className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
@@ -114,10 +114,10 @@ const ProvProfilePage: NextPage = () => {
 											priority
 										/>
 									</div>
-									<div className="z-10 mt-[150px] px-5 flex items-end gap-5">
+									<div className="z-10 mt-[200px] px-5 flex items-end gap-5">
 										<Image
 											className="mask mask-squircle bg-primary"
-											src={`https://avatars.dicebear.com/api/bottts/${_currentUser.legalName}.svg`}
+											src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
 											alt="profile"
 											width={100}
 											height={100}
@@ -162,7 +162,7 @@ const ProvProfilePage: NextPage = () => {
 								</div>
 								{/* content */}
 								<div className="mt-10">
-									<AnimatePresence>
+									<AnimatePresence mode="wait">
 										{tabSelected === "jobs" && (
 											<motion.div
 												variants={AnimTabTransition}
@@ -171,13 +171,16 @@ const ProvProfilePage: NextPage = () => {
 												exit="exit"
 												className="flex flex-col gap-5"
 											>
-												<Link
-													href="/p/jobs/new"
-													className="btn btn-ghost btn-block gap-2"
-												>
-													Create New Job Post
-													<MdAdd />
-												</Link>
+												{latestJobs.isSuccess &&
+													latestJobs.data?.length > 0 && (
+														<Link
+															href="/p/jobs/new"
+															className="btn btn-ghost btn-block gap-2"
+														>
+															Create New Job Post
+															<MdAdd />
+														</Link>
+													)}
 												{latestJobs.isSuccess &&
 													latestJobs.data?.length < 1 && (
 														<div className="flex justify-center items-center flex-col py-16">
@@ -195,13 +198,16 @@ const ProvProfilePage: NextPage = () => {
 																<p className="leading-tight">
 																	Post your first adventure
 																</p>
-																<div className="btn btn-primary mt-5">
+																<Link
+																	href="/p/jobs/new"
+																	className="btn btn-primary mt-5 gap-2"
+																>
 																	Create your first post
-																</div>
+																	<MdAdd />
+																</Link>
 															</div>
 														</div>
 													)}
-
 												{latestJobs.isSuccess &&
 													latestJobs.data?.length > 0 && (
 														<div className="flex flex-col gap-2">
@@ -225,17 +231,15 @@ const ProvProfilePage: NextPage = () => {
 													About this company
 												</p>
 
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Full Description
 													</p>
-													<div className="prose">
-														<ReactMarkdown>
-															{_currentUser.fullDescription}
-														</ReactMarkdown>
-													</div>
+													<ReactMarkdown className="prose">
+														{_currentUser.fullDescription}
+													</ReactMarkdown>
 												</div>
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Contact information
 													</p>
@@ -254,25 +258,25 @@ const ProvProfilePage: NextPage = () => {
 														</p>
 													</div>
 												</div>
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Industry
 													</p>
 													<p>{_currentUser.industryType}</p>
 												</div>
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Company Size
 													</p>
 													<p>{_currentUser.companySize} people</p>
 												</div>
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Founding Year
 													</p>
 													<p>{_currentUser.foundingYear} people</p>
 												</div>
-												<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+												<div className="mt-3 shadow-lg p-5 rounded-btn">
 													<p className="text-lg font-bold text-primary">
 														Location
 													</p>
@@ -305,12 +309,7 @@ const ProvProfilePage: NextPage = () => {
 										</div>
 										<div>
 											<p className="text-lg font-bold">0</p>
-											<p>New Followers</p>
-											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
-										</div>
-										<div>
-											<p className="text-lg font-bold">0</p>
-											<p>Custom Buttons Clicks</p>
+											<p>Total Followers</p>
 											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
 										</div>
 									</div>

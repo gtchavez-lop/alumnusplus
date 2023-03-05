@@ -1,6 +1,7 @@
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -15,7 +16,7 @@ const ConnectionsPage = () => {
 
 		const { data, error } = await supabase
 			.from("user_hunters")
-			.select("id,email,full_name,username,birthdate")
+			.select("id,email,full_name,username,birthdate,avatar_url")
 			.in("id", thisUserConnection);
 
 		if (error) {
@@ -32,7 +33,7 @@ const ConnectionsPage = () => {
 		const reqString = `(${thisUserConnections.concat(currentUser.id)})`;
 
 		const { data, error } = await supabase
-			.from("recommended_hunters")
+			.from("new_recommended_hunters")
 			.select("*")
 			.filter("id", "not.in", reqString)
 			.limit(2);
@@ -82,10 +83,12 @@ const ConnectionsPage = () => {
 						<section className="items-center grid grid-cols-1 lg:grid-cols-5 gap-5 mb-5">
 							<div className="col-span-3 flex flex-col gap-3">
 								<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
-									<img
-										src={`https://avatars.dicebear.com/api/bottts/${currentUser.username}.svg`}
+									<Image
+										src={currentUser.avatar_url}
 										alt="avatar"
-										className="w-32 h-32 bg-primary p-2 mask mask-squircle"
+										className="w-32 h-32 bg-primary mask mask-squircle"
+										width={128}
+										height={128}
 									/>
 									<div>
 										<h4 className="text-3xl font-bold leading-tight">
@@ -112,14 +115,16 @@ const ConnectionsPage = () => {
 													key={`recommendedUsers_${index}`}
 													className="flex gap-2 items-center hover:bg-base-300 py-2 px-3 rounded-btn transition"
 												>
-													<img
-														src={`https://avatars.dicebear.com/api/bottts/${item.username}.svg`}
+													<Image
+														src={item.avatar_url}
 														alt="avatar"
-														className="w-12 h-12 mask mask-squircle bg-primary p-1"
+														className="w-12 h-12 mask mask-squircle bg-primary"
+														width={48}
+														height={48}
 													/>
 													<div>
 														<h4 className="leading-tight">
-															{item.fullname.first} {item.fullname.last}
+															{item.full_name.first} {item.full_name.last}
 														</h4>
 														<p className="text-sm opacity-50 leading-none">
 															@{item.username}
@@ -149,10 +154,12 @@ const ConnectionsPage = () => {
 									className="bg-base-200 p-4 rounded-btn flex gap-2 flex-col hover:bg-base-300 transition"
 								>
 									<div className="flex gap-2 items-center">
-										<img
-											src={`https://avatars.dicebear.com/api/bottts/${item.username}.svg`}
+										<Image
+											src={item.avatar_url}
 											alt="avatar"
-											className="w-12 h-12 mask mask-squircle bg-primary p-1"
+											className="w-12 h-12 mask mask-squircle bg-primary"
+											width={48}
+											height={48}
 										/>
 										<div>
 											<h4 className="leading-tight">

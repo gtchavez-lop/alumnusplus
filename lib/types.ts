@@ -505,6 +505,7 @@ export interface IUserHunter {
     city: string
     postalCode: string
   }
+  avatar_url: string
   bio: string
   birthdate: string
   birthplace: string
@@ -550,6 +551,7 @@ export interface IUserProvisioner {
     postalCode: string | null
   }
   alternativeNames: string[]
+  avatar_url: string
   companyEmail: string
   companySize: string
   companyType: string
@@ -587,6 +589,7 @@ export interface IAccountData {
 }
 
 export type TBlogPostComment = {
+	visible: boolean
   id: string
   content: string
   createdAt: string

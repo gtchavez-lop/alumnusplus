@@ -54,7 +54,7 @@ const Navbar = () => {
 						<Link href="/" className="text-lg font-bold">
 							<Image
 								alt="logo"
-								src="/wicket-new-adaptive.png"
+								src="/logo/wicket-new-adaptive.png"
 								width={40}
 								height={40}
 							/>
@@ -96,7 +96,7 @@ const Navbar = () => {
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Image
 							alt="logo"
-							src="/wicket-new-adaptive.png"
+							src="/logo/wicket-new-adaptive.png"
 							width={40}
 							height={40}
 						/>
@@ -131,16 +131,17 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/h/events"
+							<button
+								// href="/h/events"
 								className={`btn w-full ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
+								disabled
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 						<div className="flex gap-1">
 							<div className="dropdown dropdown-end dropdown-hover">
@@ -198,7 +199,7 @@ const Navbar = () => {
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Image
 							alt="logo"
-							src="/wicket-new-adaptive.png"
+							src="/logo/wicket-new-adaptive.png"
 							width={40}
 							height={40}
 						/>
@@ -223,16 +224,17 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/p/events"
+							<button
+								// href="/p/events"
 								className={`btn w-full ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
+								disabled
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 							<Link
 								href="/p/me"
 								className={`btn w-full ${

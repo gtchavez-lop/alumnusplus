@@ -85,7 +85,7 @@ const Home = () => {
 				className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0 "
 			>
 				<Image
-					src="/wicket-full.png"
+					src="/logo/wicket-new-full-vector.svg"
 					className="w-64 fill-primary"
 					width={200}
 					height={200}

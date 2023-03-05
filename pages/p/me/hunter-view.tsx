@@ -1,7 +1,6 @@
 import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdMoreHoriz, MdSend, MdWarning } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import Image from "next/image";
@@ -10,12 +9,14 @@ import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
 const ProvisionerPage: NextPage = () => {
 	const [tabSelected, setTabSelected] = useState<"about" | "jobs">("about");
 	const companyData = useStore($accountDetails) as IUserProvisioner;
+	const router = useRouter();
 
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
@@ -56,21 +57,21 @@ const ProvisionerPage: NextPage = () => {
 						<div className="col-span-full lg:col-span-3">
 							{/* profile */}
 							<div className="relative rounded-btn flex flex-col gap-3">
-								<div className="absolute h-[200px] w-full">
+								<div className="absolute h-[250px] w-full">
 									<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 									<Image
 										className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
-										src={`https://picsum.photos/seed/${companyData.legalName}/900/450`}
+										src={`https://picsum.photos/seed/${companyData.legalName}/900/500`}
 										alt="background"
 										width={900}
-										height={450}
+										height={500}
 										priority
 									/>
 								</div>
-								<div className="z-10 mt-[150px] px-5 flex items-end gap-5">
+								<div className="z-10 mt-[200px] px-5 flex items-end gap-5">
 									<Image
 										className="mask mask-squircle bg-primary"
-										src={`https://avatars.dicebear.com/api/bottts/${companyData.legalName}.svg`}
+										src={`https://api.dicebear.com/5.x/shapes/png?seed=${companyData.legalName}`}
 										alt="profile"
 										width={100}
 										height={100}
@@ -84,9 +85,14 @@ const ProvisionerPage: NextPage = () => {
 									</div>
 								</div>
 								<div className="z-10 flex justify-end items-center gap-2 mt-5">
-									<p className="text-sm opacity-50">
-										You are viewing as a hunter, some actions are not accessible
-									</p>
+									<button
+										onClick={() => {
+											router.back();
+										}}
+										className="btn btn-ghost"
+									>
+										Exit Hunter View
+									</button>
 								</div>
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
@@ -124,7 +130,7 @@ const ProvisionerPage: NextPage = () => {
 												About this company
 											</p>
 
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Full Description
 												</p>
@@ -134,7 +140,7 @@ const ProvisionerPage: NextPage = () => {
 													</ReactMarkdown>
 												</div>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Contact information
 												</p>
@@ -149,25 +155,25 @@ const ProvisionerPage: NextPage = () => {
 													</p>
 												</div>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Industry
 												</p>
 												<p>{companyData.industryType}</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Company Size
 												</p>
 												<p>{companyData.companySize} people</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Founding Year
 												</p>
 												<p>{companyData.foundingYear} people</p>
 											</div>
-											<div className="mt-3 border-2 border-base-content border-opacity-20 p-5 rounded-btn">
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">
 													Location
 												</p>
