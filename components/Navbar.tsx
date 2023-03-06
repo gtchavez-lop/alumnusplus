@@ -92,7 +92,7 @@ const Navbar = () => {
 				</div>
 			)}
 			{_accountType === "hunter" && (
-				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
+				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50 print:invisible">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Image
 							alt="logo"

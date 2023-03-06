@@ -166,7 +166,7 @@ const ProfilePage: NextPage = () => {
 						<section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
 							<div className="col-span-3 flex flex-col gap-3">
 								{/* landing profile */}
-								<div className="flex items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
+								<div className="flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 									<div className="relative">
 										<Image
 											src={_currentUser.avatar_url}
@@ -177,7 +177,7 @@ const ProfilePage: NextPage = () => {
 										/>
 
 										{_currentUser.subscription_type === "junior" && (
-											<div className="badge badge-primary absolute bottom-1 -right-5">
+											<div className="badge badge-primary absolute bottom-1 sm:-right-5">
 												Junior
 											</div>
 										)}

@@ -35,7 +35,7 @@ const FeedPage = () => {
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select(
-				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username),upvoters",
+				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url),upvoters",
 			)
 			.order("createdAt", { ascending: false })
 			.in("uploader", connections);
@@ -296,7 +296,7 @@ const FeedPage = () => {
 								</div>
 							</div>
 
-							<div className="grid grid-cols-2 mt-5 font-light text-sm opacity-50">
+							<div className="grid grid-cols-2 mt-5 font-light text-sm opacity-75">
 								<div className="flex flex-col">
 									<p className="font-bold text-lg">Features</p>
 									<Link

@@ -86,7 +86,7 @@ const ConnectionsPage = () => {
 									<Image
 										src={currentUser.avatar_url}
 										alt="avatar"
-										className="w-32 h-32 bg-primary mask mask-squircle"
+										className="w-32 h-32 bg-primary mask mask-squircle object-center object-cover"
 										width={128}
 										height={128}
 									/>
@@ -118,7 +118,7 @@ const ConnectionsPage = () => {
 													<Image
 														src={item.avatar_url}
 														alt="avatar"
-														className="w-12 h-12 mask mask-squircle bg-primary"
+														className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 														width={48}
 														height={48}
 													/>
@@ -157,7 +157,7 @@ const ConnectionsPage = () => {
 										<Image
 											src={item.avatar_url}
 											alt="avatar"
-											className="w-12 h-12 mask mask-squircle bg-primary"
+											className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 											width={48}
 											height={48}
 										/>

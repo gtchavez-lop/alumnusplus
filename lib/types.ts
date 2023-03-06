@@ -499,6 +499,24 @@ export interface Database {
   }
 }
 
+
+export type HWorkExperience = {
+  jobPosition: string
+  companyName: string
+  location: string
+  startDate: string
+  endDate: string
+  isCurrent: boolean
+}
+
+export type HEducation = {
+  institution: string
+  location: string
+  degreeType: "primary" | "secondary" | "bachelor" | "master" | "doctorate" | "bachelor undergraduate" | "master undergraduate" | "doctorate undergraduate" | "other"
+  degreeName: string
+  yearGraduated: string
+}
+
 export interface IUserHunter {
   address: {
     address: string 
@@ -510,15 +528,13 @@ export interface IUserHunter {
   birthdate: string
   birthplace: string
   connections: string[]
+  cover_letter: string
   created_at: string
-  education: {
-    degree: string | ""
-    end_date: string | ""
-    institution: string | ""
-    major: string | ""
-    start_date: string | ""
-  }[]
+  civil_status: "single" | "married" | "divorced" | "widowed" | "separated"
+  citizenship: string
+  education: HEducation[]
   email: string
+  experience: HWorkExperience[]
   full_name: {
     first: string 
     last: string

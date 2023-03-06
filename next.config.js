@@ -9,6 +9,7 @@ const nextConfig = {
 			"images.unsplash.com",
 			"images.pexels.com",
 			"scontent.fmnl17-2.fna.fbcdn.net",
+			"i.pravatar.cc",
 		],
 	},
 };

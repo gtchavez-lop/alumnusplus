@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
+import { HEducation, HWorkExperience, IUserHunter } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
+import Compressor from "compressorjs";
 import Fuse from "fuse.js";
-import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
@@ -13,6 +14,7 @@ import _Skills from "@/lib/skills.json";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -30,6 +32,17 @@ const EditProfilePage: NextPage = () => {
 	const [citySearchResults, setCitySearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);
+	const [tabSelected, setTabSelected] = useState<
+		| "account"
+		| "personal"
+		| "skillset"
+		| "residence"
+		| "socials"
+		| "employment"
+		| "education"
+	>("account");
+	const [tabContentRef] = useAutoAnimate();
+	const [employmentHistoryRef] = useAutoAnimate();
 
 	const f_PhCities = new Fuse(_PhCities, {
 		keys: ["city", "admin_name"],
@@ -107,6 +120,76 @@ const EditProfilePage: NextPage = () => {
 				>
 					<h1 className="text-4xl font-bold">Edit Your Profile</h1>
 
+					{/* tabs desktop */}
+					<div className="tabs hidden lg:flex justify-center tabs-boxed mt-5">
+						<p
+							onClick={() => setTabSelected("account")}
+							className={`tab ${tabSelected === "account" && "tab-active"}`}
+						>
+							Account
+						</p>
+						<p
+							onClick={() => setTabSelected("personal")}
+							className={`tab ${tabSelected === "personal" && "tab-active"}`}
+						>
+							Personal
+						</p>
+						<p
+							onClick={() => setTabSelected("skillset")}
+							className={`tab ${tabSelected === "skillset" && "tab-active"}`}
+						>
+							Skillset
+						</p>
+						<p
+							onClick={() => setTabSelected("residence")}
+							className={`tab ${tabSelected === "residence" && "tab-active"}`}
+						>
+							Residence
+						</p>
+						<p
+							onClick={() => setTabSelected("socials")}
+							className={`tab ${tabSelected === "socials" && "tab-active"}`}
+						>
+							Socials
+						</p>
+						<p
+							onClick={() => setTabSelected("employment")}
+							className={`tab ${tabSelected === "employment" && "tab-active"}`}
+						>
+							Employment
+						</p>
+						<p
+							onClick={() => setTabSelected("education")}
+							className={`tab ${tabSelected === "education" && "tab-active"}`}
+						>
+							Education
+						</p>
+					</div>
+					{/* dropdown mobile */}
+					<select
+						className="select select-primary mt-5 w-full lg:hidden"
+						value={tabSelected}
+						onChange={(e) =>
+							setTabSelected(
+								e.target.value as
+									| "account"
+									| "personal"
+									| "skillset"
+									| "residence"
+									| "socials"
+									| "employment"
+									| "education",
+							)
+						}
+					>
+						<option value="account">Account</option>
+						<option value="personal">Personal</option>
+						<option value="skillset">Skillset</option>
+						<option value="residence">Residence</option>
+						<option value="employment">Employment</option>
+						<option value="education">Education</option>
+					</select>
+
 					<AnimatePresence mode="wait">
 						{hasChanges && (
 							<motion.div
@@ -121,7 +204,7 @@ const EditProfilePage: NextPage = () => {
 									opacity: 0,
 									transition: { easings: "circIn" },
 								}}
-								className="fixed bottom-0 left-0 p-5 bg-base-100 w-full flex justify-center"
+								className="fixed bottom-0 left-0 p-5 bg-base-100 w-full flex justify-center z-40"
 							>
 								<div className="col-span-full flex justify-end items-center w-full gap-2 max-w-5xl">
 									<button onClick={handleChanges} className="btn btn-success">
@@ -135,9 +218,9 @@ const EditProfilePage: NextPage = () => {
 						)}
 					</AnimatePresence>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 p-5">
-						{/* lefthand side */}
-						<div className="flex flex-col gap-8">
+					{/* tab content */}
+					<div ref={tabContentRef} className="mt-5 w-full max-w-2xl mx-auto">
+						{tabSelected === "account" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Account Information</p>
 								<label className="flex flex-col gap-2">
@@ -153,17 +236,27 @@ const EditProfilePage: NextPage = () => {
 										className="file-input file-input-primary"
 										type="file"
 										accept="image/png, image/gif, image/jpeg"
-										onChange={(e) => {
+										onChange={({ currentTarget }) => {
+											// check if file exceeds 1mb
+											const file = currentTarget.files?.[0] as Blob;
+											if (file.size > 1000000) {
+												toast.error("File size exceeds 1 megabyte.");
+												return;
+											}
 											// set the file to base64
-											const file = e.target.files?.[0] as Blob;
-											const reader = new FileReader();
-											reader.readAsDataURL(file);
-											reader.onload = () => {
-												setTempUserDetails({
-													...tempUserDetails,
-													avatar_url: reader.result?.toString() || "",
-												});
-											};
+											new Compressor(file, {
+												quality: 0.4,
+												success(result) {
+													const reader = new FileReader();
+													reader.readAsDataURL(result);
+													reader.onload = () => {
+														setTempUserDetails({
+															...tempUserDetails,
+															avatar_url: reader.result?.toString() || "",
+														});
+													};
+												},
+											});
 										}}
 									/>
 								</label>
@@ -193,6 +286,8 @@ const EditProfilePage: NextPage = () => {
 									/>
 								</label>
 							</div>
+						)}
+						{tabSelected === "personal" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Personal Information</p>
 								<label className="flex flex-col">
@@ -307,10 +402,8 @@ const EditProfilePage: NextPage = () => {
 									</select>
 								</label>
 							</div>
-						</div>
-
-						{/* right hand side */}
-						<div className="flex flex-col gap-8">
+						)}
+						{tabSelected === "skillset" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Skillset Information</p>
 
@@ -430,7 +523,8 @@ const EditProfilePage: NextPage = () => {
 									)}
 								</label>
 							</div>
-
+						)}
+						{tabSelected === "residence" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Residence Information</p>
 
@@ -510,7 +604,8 @@ const EditProfilePage: NextPage = () => {
 									/>
 								</label>
 							</div>
-
+						)}
+						{tabSelected === "socials" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Other Social Links</p>
 
@@ -583,7 +678,299 @@ const EditProfilePage: NextPage = () => {
 									/>
 								</label>
 							</div>
-						</div>
+						)}
+						{tabSelected === "employment" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Employment Information</p>
+
+								<div
+									className="mt-4 flex flex-col gap-2"
+									ref={employmentHistoryRef}
+								>
+									{tempUserDetails.experience.map((exp, i) => (
+										<div
+											key={`expereince_${i}`}
+											className="bg-base-200 rounded-btn p-5"
+										>
+											<p className="text-lg">
+												{exp.jobPosition} - {exp.companyName}
+											</p>
+											<p>{exp.location}</p>
+											<p className="mt-2 text-sm opacity-75">
+												{exp.startDate} -{" "}
+												{exp.isCurrent ? "Present" : exp.endDate}
+											</p>
+
+											<div className="flex justify-end mt-2 gap-2">
+												<button
+													className="btn btn-error btn-sm"
+													onClick={() => {
+														const newExperience =
+															tempUserDetails.experience.filter(
+																(_, index) => index !== i,
+															);
+														setTempUserDetails({
+															...tempUserDetails,
+															experience: newExperience,
+														});
+													}}
+												>
+													Delete
+												</button>
+											</div>
+										</div>
+									))}
+									{tempUserDetails.experience.length === 0 && (
+										<p className="text-center text-sm opacity-75">
+											No Employment History
+										</p>
+									)}
+								</div>
+
+								{/* add experience form */}
+								<p className="mt-5 text-lg font-bold">
+									Add new Employment History
+								</p>
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										const form = e.target as HTMLFormElement;
+
+										const formData = new FormData(form);
+										const data = Object.fromEntries(formData.entries());
+
+										const newExperience: HWorkExperience = {
+											companyName: data.companyName as string,
+											jobPosition: data.jobPosition as string,
+											location: data.location as string,
+											startDate: data.startDate as string,
+											endDate: data.endDate as string,
+											isCurrent: data.isCurrent === "on",
+										};
+
+										setTempUserDetails({
+											...tempUserDetails,
+											experience: [
+												...tempUserDetails.experience,
+												newExperience,
+											],
+										});
+
+										// reset form
+										form.reset();
+									}}
+									className="flex flex-col"
+								>
+									<label className="flex flex-col">
+										<span>Job Position</span>
+										<input
+											className="input input-primary"
+											name="jobPosition"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Company Name</span>
+										<input
+											className="input input-primary"
+											name="companyName"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Location</span>
+										<input
+											className="input input-primary"
+											name="location"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Start Date</span>
+										<input
+											className="input input-primary"
+											name="startDate"
+											type="date"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>End Date</span>
+										<input
+											className="input input-primary"
+											name="endDate"
+											type="date"
+										/>
+									</label>
+									<label className="flex items-center mt-2 gap-2">
+										<input
+											className="toggle toggle-primary"
+											name="isCurrent"
+											type="checkbox"
+										/>
+										<span>Is this your current job?</span>
+									</label>
+									<button
+										type="submit"
+										className="btn btn-primary btn-block mt-10"
+									>
+										Add Experience
+									</button>
+								</form>
+							</div>
+						)}
+						{tabSelected === "education" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Education Information</p>
+
+								<div
+									className="mt-4 flex flex-col gap-2"
+									ref={employmentHistoryRef}
+								>
+									{tempUserDetails.education.map((edu, i) => (
+										<div
+											key={`education_${i}`}
+											className="bg-base-200 rounded-btn p-5"
+										>
+											<p className="text-lg">
+												<span className="capitalize">{edu.degreeType}</span> -{" "}
+												{edu.institution}
+											</p>
+											<p>{edu.location}</p>
+											{edu.degreeName && (
+												<p className="mt-2 text-sm opacity-75">
+													{edu.degreeName}
+												</p>
+											)}
+											<p className="mt-2 text-sm opacity-75">
+												{edu.yearGraduated}
+											</p>
+
+											<div className="flex justify-end mt-2 gap-2">
+												<button
+													className="btn btn-error btn-sm"
+													onClick={() => {
+														const newEducation =
+															tempUserDetails.education.filter(
+																(_, index) => index !== i,
+															);
+														setTempUserDetails({
+															...tempUserDetails,
+															education: newEducation,
+														});
+													}}
+												>
+													Delete
+												</button>
+											</div>
+										</div>
+									))}
+									{tempUserDetails.education.length === 0 && (
+										<p className="text-center text-sm opacity-75">
+											No Education History
+										</p>
+									)}
+								</div>
+
+								{/* add education form */}
+								<p className="mt-5 text-lg font-bold">
+									Add new Education History
+								</p>
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										const form = e.target as HTMLFormElement;
+
+										const formData = new FormData(form);
+										const data = Object.fromEntries(formData.entries());
+
+										const newEducation: HEducation = {
+											institution: data.institution as string,
+											degreeType: data.degreeType as
+												| "primary"
+												| "secondary"
+												| "bachelor"
+												| "master"
+												| "doctorate"
+												| "bachelor undergraduate"
+												| "master undergraduate"
+												| "doctorate undergraduate"
+												| "other",
+											degreeName: data.degreeName as string,
+											location: data.location as string,
+											yearGraduated: data.yearGraduated as string,
+										};
+
+										setTempUserDetails({
+											...tempUserDetails,
+											education: [...tempUserDetails.education, newEducation],
+										});
+
+										// reset form
+										form.reset();
+									}}
+									className="flex flex-col"
+								>
+									<label className="flex flex-col">
+										<span>Degree Type</span>
+										<select className="select select-primary" name="degreeType">
+											<option value="primary">Primary</option>
+											<option value="secondary">Secondary</option>
+											<option value="bachelor">Bachelor</option>
+											<option value="master">Master</option>
+											<option value="doctorate">Doctorate</option>
+											<option value="bachelor undergraduate">
+												Bachelor Undergraduate
+											</option>
+											<option value="master undergraduate">
+												Master Undergraduate
+											</option>
+											<option value="doctorate undergraduate">
+												Doctorate Undergraduate
+											</option>
+											<option value="other">Other</option>
+										</select>
+									</label>
+									<label className="flex flex-col">
+										<span>Degree Name</span>
+										<input
+											className="input input-primary"
+											name="degreeName"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Institution</span>
+										<input
+											className="input input-primary"
+											name="institution"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Location</span>
+										<input
+											className="input input-primary"
+											name="location"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Year Graduated</span>
+										<input
+											className="input input-primary"
+											name="yearGraduated"
+											type="text"
+										/>
+									</label>
+									<button
+										type="submit"
+										className="btn btn-primary btn-block mt-10"
+									>
+										Add Education
+									</button>
+								</form>
+							</div>
+						)}
 					</div>
 				</motion.main>
 			)}
