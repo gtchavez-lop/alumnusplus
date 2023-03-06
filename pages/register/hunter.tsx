@@ -327,6 +327,11 @@ const RegisterHunterSubPage = () => {
 											type="date"
 											id="birthdate"
 											value={localRegData.birthdate}
+											max={
+												dayjs().diff(dayjs().subtract(18, "year"), "year") === 0
+													? dayjs().format("YYYY-MM-DD")
+													: dayjs().subtract(18, "year").format("YYYY-MM-DD")
+											}
 											className="input input-primary"
 											onChange={(e) =>
 												setLocalRegData({
