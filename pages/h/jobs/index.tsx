@@ -2,9 +2,11 @@ import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { $accountDetails } from "@/lib/globalStates";
+import CvBuilder from "@/components/jobs/CvBuilder";
 import { IUserHunter } from "@/lib/types";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
@@ -28,6 +30,7 @@ interface Job {
 const JobPage = () => {
 	const [tabSelected, setTabSelected] = useState("all");
 	const _userDetails = useStore($accountDetails) as IUserHunter;
+	const [tabContentRef] = useAutoAnimate();
 
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
@@ -124,14 +127,10 @@ const JobPage = () => {
 				</div>
 
 				{/* content */}
-				{/* all jobs */}
-				<AnimatePresence mode="wait">
+				<div ref={tabContentRef}>
+					{/* all jobs */}
 					{tabSelected === "all" && (
 						<motion.div
-							variants={AnimTabTransition}
-							initial="initial"
-							animate="animate"
-							exit="exit"
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
 							key={"all_jobs"}
 						>
@@ -161,31 +160,21 @@ const JobPage = () => {
 					)}
 					{tabSelected === "recommended" && (
 						<motion.div
-							variants={AnimTabTransition}
-							initial="initial"
-							animate="animate"
-							exit="exit"
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
 							key={"recommended_jobs"}
 						>
 							<p>Recommended</p>
 							{/* {jobs.map((job, index) => (
-              <JobCard job={job} key={`jobcard_${index}`} />
-            ))} */}
+								<JobCard job={job} key={`jobcard_${index}`} />
+							))} */}
 						</motion.div>
 					)}
 					{tabSelected === "builder" && (
-						<motion.div
-							variants={AnimTabTransition}
-							initial="initial"
-							animate="animate"
-							exit="exit"
-							className=" mt-10"
-						>
-							{/* <CvBuilder /> */}
+						<motion.div className=" mt-10">
+							<CvBuilder />
 						</motion.div>
 					)}
-				</AnimatePresence>
+				</div>
 			</motion.main>
 		</>
 	);

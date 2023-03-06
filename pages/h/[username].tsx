@@ -47,7 +47,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 	const fetchUserConnections = async () => {
 		const { data, error } = await supabase
 			.from("user_hunters")
-			.select("id,username,full_name")
+			.select("id,username,full_name,avatar_url")
 			.in("id", targetUser.connections);
 
 		if (error) {
@@ -193,9 +193,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 						{/* landing profile */}
 						<div className="flex items-center gap-2 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 							<Image
-								src={`https://api.dicebear.com/5.x/bottts-neutral/png?seed=${targetUser.username}`}
+								src={targetUser.avatar_url}
 								alt="avatar"
-								className="w-32 h-32 bg-primary mask mask-squircle"
+								className="w-32 h-32 bg-primary mask mask-squircle object-center object-cover"
 								width={128}
 								height={128}
 							/>
@@ -341,9 +341,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									>
 										<div className="flex gap-2 items-center">
 											<Image
-												src={`https://api.dicebear.com/5.x/bottts-neutral/png?seed=${connection.username}`}
+												src={connection.avatar_url}
 												alt="avatar"
-												className="w-12 h-12 mask mask-squircle bg-primary "
+												className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 												width={48}
 												height={48}
 											/>

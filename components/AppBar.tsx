@@ -89,11 +89,11 @@ const AppBar = () => {
 					variants={AppBarAnimation}
 					initial="initial"
 					animate="animate"
-					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50"
+					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50 print:invisible"
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<Link href="/" className="relative w-7 h-7 md:hidden">
+							<Link href="/feed" className="relative w-7 h-7 lg:hidden">
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">

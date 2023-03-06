@@ -169,7 +169,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				id: currentUser.id,
 				username: currentUser.username,
 				full_name: currentUser.full_name,
-				avatar: currentUser.avatar_url,
+				avatar_url: currentUser.avatar_url,
 			},
 			visible: true,
 		};
@@ -297,9 +297,9 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						}
 					>
 						<Image
-							src={currentUser.avatar_url}
+							src={blogData.uploader.avatar_url}
 							alt="avatar"
-							className="w-12 h-12 mask mask-squircle bg-primary"
+							className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 							width={48}
 							height={48}
 						/>
@@ -314,7 +314,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 								}
 							>
 								{blogData.uploader.full_name.first}{" "}
-								{blogData.uploader.full_name.last}{" "}
+								{blogData.uploader.full_name.last}
 							</Link>
 							<span className="text-primary opacity-50">posted</span>
 						</p>
@@ -443,7 +443,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 											<Image
 												src={comment.commenter.avatar_url}
 												alt="avatar"
-												className="w-12 h-12 mask mask-squircle bg-primary"
+												className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 												width={48}
 												height={48}
 											/>
@@ -560,7 +560,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 									<Image
 										src={currentUser.avatar_url}
 										alt="avatar"
-										className="w-10 h-10 mask mask-squircle bg-primary"
+										className="w-10 h-10 mask mask-squircle bg-primary object-center object-cover"
 										width={40}
 										height={40}
 									/>
