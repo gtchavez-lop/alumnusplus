@@ -97,8 +97,8 @@ const EditProfilePage: NextPage = () => {
 
 		toast.dismiss();
 		toast.success("Changes saved successfully.");
+		setHasChanges(false);
 		$accountDetails.set(tempUserDetails);
-		router.push("/h/me");
 	};
 
 	// detect changes
@@ -106,7 +106,7 @@ const EditProfilePage: NextPage = () => {
 		setHasChanges(
 			JSON.stringify(tempUserDetails) !== JSON.stringify(_currentUserDetails),
 		);
-	}, [tempUserDetails, _currentUserDetails]);
+	}, [tempUserDetails]);
 
 	return (
 		<>
@@ -210,16 +210,27 @@ const EditProfilePage: NextPage = () => {
 									<button onClick={handleChanges} className="btn btn-success">
 										Save Changes
 									</button>
-									<Link href="/h/me" className="btn btn-ghost">
-										Discard and Go back
-									</Link>
+									<button
+										onClick={() => {
+											setTempUserDetails(_currentUserDetails);
+											setHasChanges(false);
+											toast.success("Changes discarded.");
+											setHasChanges(false);
+										}}
+										className="btn btn-ghost"
+									>
+										Discard and Reset
+									</button>
 								</div>
 							</motion.div>
 						)}
 					</AnimatePresence>
 
 					{/* tab content */}
-					<div ref={tabContentRef} className="mt-5 w-full max-w-2xl mx-auto">
+					<div
+						ref={tabContentRef}
+						className="mt-5 w-full max-w-2xl mx-auto overflow-hidden"
+					>
 						{tabSelected === "account" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
 								<p className="text-xl font-bold">Account Information</p>
@@ -344,6 +355,15 @@ const EditProfilePage: NextPage = () => {
 										className="input input-primary"
 										value={tempUserDetails.full_name.last}
 										type="text"
+										onChange={(e) => {
+											setTempUserDetails({
+												...tempUserDetails,
+												full_name: {
+													...tempUserDetails.full_name,
+													last: e.target.value,
+												},
+											});
+										}}
 									/>
 								</label>
 								<label className="flex flex-col">
@@ -352,6 +372,11 @@ const EditProfilePage: NextPage = () => {
 										className="input input-primary"
 										value={tempUserDetails.birthdate}
 										type="date"
+										max={
+											dayjs().diff(dayjs().subtract(18, "year"), "year") === 0
+												? dayjs().format("YYYY-MM-DD")
+												: dayjs().subtract(18, "year").format("YYYY-MM-DD")
+										}
 										onChange={(e) => {
 											setTempUserDetails({
 												...tempUserDetails,
@@ -961,6 +986,9 @@ const EditProfilePage: NextPage = () => {
 											name="yearGraduated"
 											type="text"
 										/>
+										<span className="self-end text-sm opacity-75">
+											If you are graduating this year, just type the year today
+										</span>
 									</label>
 									<button
 										type="submit"

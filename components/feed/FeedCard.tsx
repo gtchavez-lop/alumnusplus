@@ -316,7 +316,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 								{blogData.uploader.full_name.first}{" "}
 								{blogData.uploader.full_name.last}
 							</Link>
-							<span className="text-primary opacity-50">posted</span>
+							<span className="text-primary opacity-50 ml-1">posted</span>
 						</p>
 						<p className="text-sm flex gap-2 leading-none">
 							<span className="opacity-50">@{blogData.uploader.username}</span>
