@@ -624,7 +624,7 @@ export type THunterBlogPost = {
 
 export interface TProvJobPost {
   id:                 string;
-  uploader_id:        string;
+  uploader_id:        IUserProvisioner;
   job_title:          string;
   full_description:   string;
   short_description:  string;

@@ -9,9 +9,9 @@ import {
 	FiLinkedin,
 	FiTwitter,
 } from "react-icons/fi";
+import { IUserHunter, TProvJobPost } from "@/lib/types";
 
 import { AnimPageTransition } from "@/lib/animations";
-import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { MdFacebook } from "react-icons/md";
@@ -32,7 +32,12 @@ const ProfilePage: NextPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const router = useRouter();
 	const [tabSelected, setTabSelected] = useState<
-		"about" | "posts" | "experiences" | "education" | "connections"
+		| "about"
+		| "posts"
+		| "experiences"
+		| "education"
+		| "connections"
+		| "savedjobs"
 	>("about");
 	const [tabContentRef] = useAutoAnimate();
 
@@ -119,43 +124,70 @@ const ProfilePage: NextPage = () => {
 		return data;
 	};
 
-	const [userConnections, recommendedUsers, userActivities] = useQueries({
-		queries: [
-			{
-				queryKey: ["userConnections"],
-				queryFn: fetchUserConnections,
-				enabled: !!_currentUser,
-				onError: (): void => {
-					console.error("failed to fetch user connections");
+	const fetchUserSavedJobs = async () => {
+		const savedJobs = _currentUser.saved_jobs as string[];
+
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.select("*,uploader_id(*)")
+			.in("id", savedJobs);
+
+		if (error) {
+			return [];
+		}
+
+		return data as TProvJobPost[];
+	};
+
+	const [userConnections, recommendedUsers, userActivities, savedJobs] =
+		useQueries({
+			queries: [
+				{
+					queryKey: ["userConnections"],
+					queryFn: fetchUserConnections,
+					enabled: !!_currentUser,
+					onError: (): void => {
+						console.error("failed to fetch user connections");
+					},
+					onSuccess: (): void => {
+						console.info("✅ User Connections Fetched");
+					},
 				},
-				onSuccess: (): void => {
-					console.info("✅ User Connections Fetched");
+				{
+					queryKey: ["recommendedUsers"],
+					queryFn: fetchRecommendedUsers,
+					enabled: !!_currentUser,
+					onError: () => {
+						console.error("failed to fetch recommended users");
+					},
+					onSuccess: () => {
+						console.info("✅ Recommended Users Fetched");
+					},
 				},
-			},
-			{
-				queryKey: ["recommendedUsers"],
-				queryFn: fetchRecommendedUsers,
-				enabled: !!_currentUser,
-				onError: () => {
-					console.error("failed to fetch recommended users");
+				{
+					queryKey: ["userActivities"],
+					queryFn: fetchUserActivities,
+					enabled: !!_currentUser,
+					onError: () => {
+						toast.error("Failed to fetch user activities");
+					},
+					onSuccess: () => {
+						console.info("✅ User Activities Fetched");
+					},
 				},
-				onSuccess: () => {
-					console.info("✅ Recommended Users Fetched");
+				{
+					queryKey: ["savedJobs"],
+					queryFn: fetchUserSavedJobs,
+					enabled: !!_currentUser,
+					onError: () => {
+						toast.error("Failed to fetch saved jobs");
+					},
+					onSuccess: () => {
+						console.info("✅ User Saved Jobs Fetched");
+					},
 				},
-			},
-			{
-				queryKey: ["userActivities"],
-				queryFn: fetchUserActivities,
-				enabled: !!_currentUser,
-				onError: () => {
-					toast.error("Failed to fetch user activities");
-				},
-				onSuccess: () => {
-					console.info("✅ User Activities Fetched");
-				},
-			},
-		],
-	});
+			],
+		});
 
 	return (
 		<>
@@ -235,7 +267,8 @@ const ProfilePage: NextPage = () => {
 													| "about"
 													| "posts"
 													| "experiences"
-													| "education",
+													| "education"
+													| "savedjobs",
 											)
 										}
 										className="select select-primary w-full"
@@ -244,6 +277,7 @@ const ProfilePage: NextPage = () => {
 										<option value="posts">Posts</option>
 										<option value="experiences">Experiences</option>
 										<option value="education">Education</option>
+										<option value="savedjobs">Saved Jobs</option>
 									</select>
 								</div>
 								{/* desktop tabs */}
@@ -280,6 +314,14 @@ const ProfilePage: NextPage = () => {
 											}`}
 										>
 											Education
+										</li>
+										<li
+											onClick={() => setTabSelected("savedjobs")}
+											className={`tab ${
+												tabSelected === "savedjobs" && "tab-active"
+											}`}
+										>
+											Saved Jobs
 										</li>
 									</ul>
 								</div>
@@ -479,6 +521,44 @@ const ProfilePage: NextPage = () => {
 													</p>
 												</div>
 											))}
+										</div>
+									)}
+									{tabSelected === "savedjobs" && (
+										<div className="flex flex-col gap-2">
+											{savedJobs.isSuccess &&
+												savedJobs.data.map((job, index) => (
+													<Link
+														key={`savedjob_${index}`}
+														href={`/h/jobs/${job.id}`}
+													>
+														<div
+															key={`savedjob_${index}`}
+															className="relative flex flex-col overflow-hidden p-5 border-2 border-primary border-opacity-10 hover:border-opacity-100 transition rounded-btn"
+														>
+															<p className="text-lg">{job.job_title}</p>
+															<p className="text-sm opacity-75">
+																{job.uploader_id.legalName}
+															</p>
+															<p>
+																{job.job_location} - {job.job_type}
+															</p>
+															<div className="mt-5 flex gap-2 flex-wrap">
+																{job.job_skills.map((tag, index) => (
+																	<span
+																		key={`tag_${index}`}
+																		className="badge badge-accent"
+																	>
+																		{tag}
+																	</span>
+																))}
+															</div>
+														</div>
+													</Link>
+												))}
+
+											{savedJobs.isSuccess && savedJobs.data.length === 0 && (
+												<p className="text-center">No saved jobs yet</p>
+											)}
 										</div>
 									)}
 								</div>

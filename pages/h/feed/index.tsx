@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
@@ -26,6 +27,7 @@ const FeedPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [feedList_ui] = useAutoAnimate<HTMLDivElement>();
 	const [mainFeed_ui] = useAutoAnimate<HTMLDivElement>();
+	const router = useRouter();
 
 	const fetchFeed = async () => {
 		const connections: string[] = _currentUser.connections.concat(
@@ -237,8 +239,32 @@ const FeedPage = () => {
 						</div>
 
 						{/* friend suggest and footer */}
-						<div className="col-span-full lg:col-span-2">
-							<div className="flex flex-col rounded-btn py-2 gap-3">
+						<div className="col-span-full lg:col-span-2 flex flex-col gap-5">
+							{/* search for people */}
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									const formData = new FormData(e.currentTarget);
+
+									const searchQuery = formData.get("searchQuery");
+
+									if (!searchQuery) {
+										toast.error("Search query is required");
+									}
+
+									router.push(`/h/search?query=${searchQuery}`);
+								}}
+								className="flex flex-col gap-3"
+							>
+								<input
+									type="text"
+									name="searchQuery"
+									placeholder="Search for people"
+									className="input input-bordered"
+								/>
+							</form>
+
+							<div className="flex flex-col rounded-btn gap-3">
 								<p className="text-2xl font-bold">Suggested Connections</p>
 
 								{recommendedUsers.isLoading && (
@@ -296,7 +322,7 @@ const FeedPage = () => {
 								</div>
 							</div>
 
-							<div className="grid grid-cols-2 mt-5 font-light text-sm opacity-75">
+							<div className="grid grid-cols-2 font-light text-sm opacity-75">
 								<div className="flex flex-col">
 									<p className="font-bold text-lg">Features</p>
 									<Link
