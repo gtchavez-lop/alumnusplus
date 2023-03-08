@@ -259,8 +259,9 @@ const FeedPage = () => {
 								<input
 									type="text"
 									name="searchQuery"
-									placeholder="Search for people"
+									placeholder="Search Feature is disabled for demo"
 									className="input input-bordered"
+									disabled
 								/>
 							</form>
 
