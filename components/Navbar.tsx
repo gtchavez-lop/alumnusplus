@@ -144,7 +144,7 @@ const Navbar = () => {
 							</button>
 						</div>
 						<div className="flex gap-1">
-							<div className="dropdown dropdown-end dropdown-hover">
+							<div className="dropdown dropdown-end dropdown-hover invisible">
 								<Link
 									href="/h/notifications"
 									tabIndex={0}

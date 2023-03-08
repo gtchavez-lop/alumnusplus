@@ -250,6 +250,7 @@ const FeedPage = () => {
 
 									if (!searchQuery) {
 										toast.error("Search query is required");
+										return;
 									}
 
 									router.push(`/h/search?query=${searchQuery}`);
@@ -259,9 +260,8 @@ const FeedPage = () => {
 								<input
 									type="text"
 									name="searchQuery"
-									placeholder="Search Feature is disabled for demo"
+									placeholder="Search for people"
 									className="input input-bordered"
-									disabled
 								/>
 							</form>
 
@@ -351,13 +351,17 @@ const FeedPage = () => {
 										Metaverse
 									</Link>
 								</div>
-								<div>
+								<div className="flex flex-col">
 									<p className="font-bold text-lg">Wicket Journeys</p>
-									<p className="link link-hover">About Us</p>
-									<p className="link link-hover">Contact Us</p>
-									<p className="link link-hover">Terms of use</p>
-									<p className="link link-hover">Privacy policy</p>
-									<p className="link link-hover">Cookie policy</p>
+									<Link href={"/util/about"} className="link link-hover">
+										About Us
+									</Link>
+									<Link href={"/util/about"} className="link link-hover">
+										Contact Us
+									</Link>
+									<p className="link link-hover opacity-50">Terms of use</p>
+									<p className="link link-hover opacity-50">Privacy policy</p>
+									<p className="link link-hover opacity-50">Cookie policy</p>
 								</div>
 							</div>
 						</div>

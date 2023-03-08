@@ -35,7 +35,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	};
 };
 
-const JobPage: NextPage<{ jobData: TProvJobPost }> = ({ jobData }) => {
+interface LocalProvJobPost extends TProvJobPost {
+	uploader_id: IUserProvisioner;
+}
+
+const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFavorite, setIsFavorite] = useState(false);
 
@@ -147,8 +151,10 @@ const JobPage: NextPage<{ jobData: TProvJobPost }> = ({ jobData }) => {
 										Skill Profile
 									</h2>
 									<div className="flex gap-2 flex-wrap">
-										{jobData.job_skills.map((skill) => (
-											<p className="badge badge-primary">{skill}</p>
+										{jobData.job_skills.map((skill, index) => (
+											<p key={`skill_${index}`} className="badge badge-primary">
+												{skill}
+											</p>
 										))}
 									</div>
 								</div>
@@ -158,8 +164,10 @@ const JobPage: NextPage<{ jobData: TProvJobPost }> = ({ jobData }) => {
 										Job Qualifications
 									</h2>
 									<ul className="flex gap-2 flex-wrap list-disc pl-7">
-										{jobData.job_qualifications.map((qual) => (
-											<li className="">{qual}</li>
+										{jobData.job_qualifications.map((qual, index) => (
+											<li key={`qualification_${index}`} className="">
+												{qual}
+											</li>
 										))}
 									</ul>
 								</div>

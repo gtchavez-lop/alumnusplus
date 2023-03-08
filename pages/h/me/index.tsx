@@ -9,7 +9,7 @@ import {
 	FiLinkedin,
 	FiTwitter,
 } from "react-icons/fi";
-import { IUserHunter, TProvJobPost } from "@/lib/types";
+import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
@@ -26,6 +26,10 @@ import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
+
+interface LocalProvJobPost extends TProvJobPost {
+	uploader_id: IUserProvisioner;
+}
 
 const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -136,7 +140,7 @@ const ProfilePage: NextPage = () => {
 			return [];
 		}
 
-		return data as TProvJobPost[];
+		return data as LocalProvJobPost[];
 	};
 
 	const [userConnections, recommendedUsers, userActivities, savedJobs] =

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
 import { IUserHunter } from "@/lib/types";
+import { MdWarning } from "react-icons/md";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -163,7 +164,11 @@ const JobPage = () => {
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
 							key={"recommended_jobs"}
 						>
-							<p>Recommended</p>
+							<div className="alert alert-warning w-full">
+								<MdWarning className="text-3xl" />
+								This feature is currently under development. We will notify you
+								when it&apos;s ready.
+							</div>
 							{/* {jobs.map((job, index) => (
 								<JobCard job={job} key={`jobcard_${index}`} />
 							))} */}
