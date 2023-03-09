@@ -1,8 +1,8 @@
+import { $accountData, $accountDetails } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
 import { HEducation, HWorkExperience, IUserHunter } from "@/lib/types";
 
-import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Compressor from "compressorjs";
 import Fuse from "fuse.js";
@@ -18,10 +18,45 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
+const PageTabs = [
+	{
+		title: "Account",
+		value: "account",
+	},
+	{
+		title: "Personal",
+		value: "personal",
+	},
+	{
+		title: "Skillset",
+		value: "skillset",
+	},
+	{
+		title: "Residence",
+		value: "residence",
+	},
+	{
+		title: "Socials",
+		value: "socials",
+	},
+	{
+		title: "Employment",
+		value: "employment",
+	},
+	{
+		title: "Education",
+		value: "education",
+	},
+	{
+		title: "Verification",
+		value: "verification",
+	},
+];
+
 const EditProfilePage: NextPage = () => {
 	const [hasChanges, setHasChanges] = useState(false);
-	const router = useRouter();
 	const _currentUserDetails = useStore($accountDetails) as IUserHunter;
+	const _currentAccountDetails = useStore($accountData);
 	const [tempUserDetails, setTempUserDetails] =
 		useState<IUserHunter>(_currentUserDetails);
 	const [primarySkillSearchResults, setPrimarySkillSearchResults] = useState<
@@ -40,6 +75,7 @@ const EditProfilePage: NextPage = () => {
 		| "socials"
 		| "employment"
 		| "education"
+		| "verification"
 	>("account");
 	const [tabContentRef] = useAutoAnimate();
 	const [employmentHistoryRef] = useAutoAnimate();
@@ -122,48 +158,27 @@ const EditProfilePage: NextPage = () => {
 
 					{/* tabs desktop */}
 					<div className="tabs hidden lg:flex justify-center tabs-boxed mt-5">
-						<p
-							onClick={() => setTabSelected("account")}
-							className={`tab ${tabSelected === "account" && "tab-active"}`}
-						>
-							Account
-						</p>
-						<p
-							onClick={() => setTabSelected("personal")}
-							className={`tab ${tabSelected === "personal" && "tab-active"}`}
-						>
-							Personal
-						</p>
-						<p
-							onClick={() => setTabSelected("skillset")}
-							className={`tab ${tabSelected === "skillset" && "tab-active"}`}
-						>
-							Skillset
-						</p>
-						<p
-							onClick={() => setTabSelected("residence")}
-							className={`tab ${tabSelected === "residence" && "tab-active"}`}
-						>
-							Residence
-						</p>
-						<p
-							onClick={() => setTabSelected("socials")}
-							className={`tab ${tabSelected === "socials" && "tab-active"}`}
-						>
-							Socials
-						</p>
-						<p
-							onClick={() => setTabSelected("employment")}
-							className={`tab ${tabSelected === "employment" && "tab-active"}`}
-						>
-							Employment
-						</p>
-						<p
-							onClick={() => setTabSelected("education")}
-							className={`tab ${tabSelected === "education" && "tab-active"}`}
-						>
-							Education
-						</p>
+						{PageTabs.map((tab, index) => (
+							<p
+								key={`tab-${index}`}
+								onClick={() =>
+									setTabSelected(
+										tab.value as
+											| "account"
+											| "personal"
+											| "skillset"
+											| "residence"
+											| "socials"
+											| "employment"
+											| "education"
+											| "verification",
+									)
+								}
+								className={`tab ${tabSelected === tab.value && "tab-active"}`}
+							>
+								{tab.title}
+							</p>
+						))}
 					</div>
 					{/* dropdown mobile */}
 					<select
@@ -182,12 +197,11 @@ const EditProfilePage: NextPage = () => {
 							)
 						}
 					>
-						<option value="account">Account</option>
-						<option value="personal">Personal</option>
-						<option value="skillset">Skillset</option>
-						<option value="residence">Residence</option>
-						<option value="employment">Employment</option>
-						<option value="education">Education</option>
+						{PageTabs.map((tab, index) => (
+							<option key={`tab-${index}`} value={tab.value}>
+								{tab.title}
+							</option>
+						))}
 					</select>
 
 					<AnimatePresence mode="wait">
@@ -997,6 +1011,40 @@ const EditProfilePage: NextPage = () => {
 										Add Education
 									</button>
 								</form>
+							</div>
+						)}
+						{tabSelected === "verification" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Verification Status</p>
+
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">Email Verification Status</p>
+										<p className="text-sm opacity-75 leading-none ml-4">
+											{_currentAccountDetails?.email_confirmed_at
+												? `Your email has been verified since ${dayjs(
+														_currentAccountDetails?.email_confirmed_at,
+												  ).format("MMMM D, YYYY")}`
+												: "Your email has not been verified"}
+										</p>
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">Identity Verification Status</p>
+										<p className="text-sm opacity-75 leading-none ml-4">
+											{tempUserDetails.is_verified
+												? "Your identity has been verified"
+												: "Your identity has not been verified"}
+										</p>
+										{!tempUserDetails.is_verified && (
+											<Link
+												href={"/h/me/verify"}
+												className="btn btn-primary btn-block mt-4"
+											>
+												Verify Identity
+											</Link>
+										)}
+									</div>
+								</div>
 							</div>
 						)}
 					</div>

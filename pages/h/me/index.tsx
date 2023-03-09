@@ -10,11 +10,16 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
+import {
+	MdCheck,
+	MdCheckCircle,
+	MdCheckCircleOutline,
+	MdFacebook,
+} from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
-import { MdFacebook } from "react-icons/md";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
@@ -30,6 +35,33 @@ import { useStore } from "@nanostores/react";
 interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;
 }
+
+const PageTabs = [
+	{
+		name: "About",
+		value: "about",
+	},
+	{
+		name: "Posts",
+		value: "posts",
+	},
+	{
+		name: "Experiences",
+		value: "experiences",
+	},
+	{
+		name: "Education",
+		value: "education",
+	},
+	// {
+	// 	name: "Connections",
+	// 	value: "connections",
+	// },
+	{
+		name: "Saved Jobs",
+		value: "savedjobs",
+	},
+];
 
 const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -219,24 +251,27 @@ const ProfilePage: NextPage = () => {
 
 										{_currentUser.subscription_type === "junior" && (
 											<div className="badge badge-primary absolute bottom-1 sm:-right-5">
-												Junior
+												Junior Hunter
 											</div>
 										)}
 										{_currentUser.subscription_type === "senior" && (
 											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Senior
+												Senior Hunter
 											</div>
 										)}
 										{_currentUser.subscription_type === "expert" && (
 											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Expert
+												Expert Hunter
 											</div>
 										)}
 									</div>
 									<div>
-										<p className="text-3xl font-bold">
+										<p className="text-3xl font-bold flex gap-1 items-center">
 											{_currentUser.full_name.first}{" "}
 											{_currentUser.full_name.last}
+											{_currentUser.is_verified && (
+												<MdCheckCircleOutline className="text-blue-500 text-lg" />
+											)}
 										</p>
 
 										<p className="font-semibold opacity-75">
@@ -277,56 +312,36 @@ const ProfilePage: NextPage = () => {
 										}
 										className="select select-primary w-full"
 									>
-										<option value="about">About</option>
-										<option value="posts">Posts</option>
-										<option value="experiences">Experiences</option>
-										<option value="education">Education</option>
-										<option value="savedjobs">Saved Jobs</option>
+										{PageTabs.map((tab, index) => (
+											<option key={`tab-${index}`} value={tab.value}>
+												{tab.name}
+											</option>
+										))}
 									</select>
 								</div>
 								{/* desktop tabs */}
 								<div className="hidden lg:block my-3">
 									<ul className="tabs tabs-boxed gap-1">
-										<li
-											onClick={() => setTabSelected("about")}
-											className={`tab ${
-												tabSelected === "about" && "tab-active"
-											}`}
-										>
-											About
-										</li>
-										<li
-											onClick={() => setTabSelected("posts")}
-											className={`tab ${
-												tabSelected === "posts" && "tab-active"
-											}`}
-										>
-											Posts
-										</li>
-										<li
-											onClick={() => setTabSelected("experiences")}
-											className={`tab ${
-												tabSelected === "experiences" && "tab-active"
-											}`}
-										>
-											Experiences
-										</li>
-										<li
-											onClick={() => setTabSelected("education")}
-											className={`tab ${
-												tabSelected === "education" && "tab-active"
-											}`}
-										>
-											Education
-										</li>
-										<li
-											onClick={() => setTabSelected("savedjobs")}
-											className={`tab ${
-												tabSelected === "savedjobs" && "tab-active"
-											}`}
-										>
-											Saved Jobs
-										</li>
+										{PageTabs.map((tab, index) => (
+											<li
+												key={`tab-${index}`}
+												onClick={() =>
+													setTabSelected(
+														tab.value as
+															| "about"
+															| "posts"
+															| "experiences"
+															| "education"
+															| "savedjobs",
+													)
+												}
+												className={`tab ${
+													tabSelected === tab.value && "tab-active"
+												}`}
+											>
+												{tab.name}
+											</li>
+										))}
 									</ul>
 								</div>
 

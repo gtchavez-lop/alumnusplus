@@ -542,7 +542,10 @@ export interface IUserHunter {
   }
   gender: "male" | "female" | "non-binary" | "other" | "prefer not to say"
   id: string
-  phone: string | null
+  id_type: "national id" | "passport" | "driver's license" | "other"
+  id_number: string
+  is_verified: boolean
+  phone: string | ""
   saved_jobs: string[]
   skill_primary: string
   skill_secondary: string[]
@@ -602,6 +605,7 @@ export interface IAccountData {
   raw_user_meta_data: Json | IUserHunter | IUserProvisioner
   created_at: string
   phone: string,
+  email_confirmed_at: string
 }
 
 export type TBlogPostComment = {
