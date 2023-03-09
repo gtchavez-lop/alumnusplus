@@ -5,26 +5,38 @@
 @tailwind utilities;
 
 /* Scrollbar */
-/* Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #d4d4d4 transparent;
-  user-select: none;
+::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
 }
-
-/* Chrome, Edge, and Safari */
-*::-webkit-scrollbar {
-  width: 10px;
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
 }
-
-*::-webkit-scrollbar-track {
-  background: #ffffff;
+::-webkit-scrollbar-thumb {
+  background: #334ec7;
+  border: 0px none #ffffff;
+  border-radius: 50px;
 }
-
-*::-webkit-scrollbar-thumb {
-  background-color: #d4d4d4;
-  border-radius: 4px;
-  border: 3px none #ffffff;
+::-webkit-scrollbar-thumb:hover {
+  background: #334ec7;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #334ec7;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+::-webkit-scrollbar-track:hover {
+  background: transparent;
+}
+::-webkit-scrollbar-track:active {
+  background: transparent;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 @layer base {

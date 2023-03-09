@@ -10,6 +10,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
 import Fuse from "fuse.js";
 import { IUserHunter } from "@/lib/types";
+import _Citizenhip from "@/lib/citizenship.json";
 import _PHCities from "@/lib/ph_location.json";
 import _Skillset from "@/lib/skills.json";
 import dayjs from "dayjs";
@@ -32,8 +33,13 @@ const RegisterHunterSubPage = () => {
 			city: "",
 			postalCode: "",
 		},
+		avatar_url: "",
 		bio: "",
+		citizenship: "Filipino",
+		civil_status: "single",
+		cover_letter: "",
 		email: "",
+		experience: [],
 		birthdate: "",
 		birthplace: "",
 		connections: [],
@@ -46,6 +52,9 @@ const RegisterHunterSubPage = () => {
 		},
 		gender: "male",
 		id: "",
+		id_number: "",
+		id_type: "other",
+		is_verified: false,
 		phone: "",
 		saved_jobs: [],
 		skill_primary: "",
@@ -66,6 +75,7 @@ const RegisterHunterSubPage = () => {
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);
+	const [citizenshipResults, setCitizenshipResults] = useState<string[]>([]);
 	const [skillsetPrimarySearchResults, setSkillsetPrimarySearchResults] =
 		useState<string[]>([]);
 	const [skillsetSecondaryInput, setSkillsetSecondaryInput] =
@@ -82,13 +92,19 @@ const RegisterHunterSubPage = () => {
 		threshold: 0.3,
 	});
 
+	const Citizenship = new Fuse(_Citizenhip, {
+		keys: ["nationality"],
+		threshold: 0.3,
+	});
+
 	const handleSignUp = async () => {
-		const { data, error } = await supabase.auth.signUp({
+		const { error } = await supabase.auth.signUp({
 			email: localRegData.email,
 			password: localPassword.password,
 			options: {
 				data: {
 					...localRegData,
+					avatar_url: `https://api.dicebear.com/5.x/bottts-neutral/png?seed=${localRegData.username}`,
 					created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 					updated_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				},
@@ -314,6 +330,11 @@ const RegisterHunterSubPage = () => {
 											type="date"
 											id="birthdate"
 											value={localRegData.birthdate}
+											max={
+												dayjs().diff(dayjs().subtract(18, "year"), "year") === 0
+													? dayjs().format("YYYY-MM-DD")
+													: dayjs().subtract(18, "year").format("YYYY-MM-DD")
+											}
 											className="input input-primary"
 											onChange={(e) =>
 												setLocalRegData({
@@ -338,6 +359,71 @@ const RegisterHunterSubPage = () => {
 												})
 											}
 										/>
+									</label>
+
+									<label className="flex flex-col">
+										<span>Civil Status</span>
+										<select
+											id="civil_status"
+											value={localRegData.civil_status}
+											className='select select-primary'
+											onChange={(e) =>
+												setLocalRegData({
+													...localRegData,
+													civil_status: e.target.value as
+														| "single"
+														| "married"
+														| "widowed"
+														| "separated"
+														| "divorced",
+												})
+											}
+										>
+											<option value="single">Single</option>
+											<option value="married">Married</option>
+											<option value="widowed">Widowed</option>
+											<option value="separated">Separated</option>
+											<option value="divorced">Divorced</option>
+										</select>
+									</label>
+
+									<label className="flex flex-col">
+										<span>Citizenship</span>
+										<input
+											type="text"
+											id="citizenship"
+											value={localRegData.citizenship}
+											className="input input-primary"
+											onChange={(e) => {
+												setLocalRegData({
+													...localRegData,
+													citizenship: e.target.value,
+												});
+												const inputquery = e.target.value;
+												const res = Citizenship.search(inputquery);
+												const mapped = res.map((r) => r.item.nationality);
+												setCitizenshipResults(mapped);
+											}}
+										/>
+										{citizenshipResults.length > 0 && (
+											<div className="rounded-btn bg-base-200 w-full mt-1">
+												{citizenshipResults.map((result, index) => (
+													<div
+														key={`citizenship-result-${index}`}
+														className="p-2 cursor-pointer"
+														onClick={() => {
+															setLocalRegData({
+																...localRegData,
+																citizenship: result,
+															});
+															setCitizenshipResults([]);
+														}}
+													>
+														{result}
+													</div>
+												))}
+											</div>
+										)}
 									</label>
 
 									<label className="flex flex-col">

@@ -14,6 +14,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -38,15 +39,26 @@ const AppBar = () => {
 			{_accountType === null && (
 				<div className="fixed py-5 flex justify-between items-center w-full z-50 bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
-						<p className="text-lg text-primary font-bold">Wicket</p>
+						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
+						<Link href="/" className="relative w-8 h-8 md:hidden">
+							<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
+						</Link>
+						<Link href="/" className="hidden md:block">
+							<Image
+								alt="logo"
+								width={75}
+								height={75}
+								src="/logo/wicket-new-full-vector.svg"
+							/>
+						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
 								<MdPersonAdd className="text-lg" />
-								<span>Sign Up</span>
+								{/* <span>Sign Up</span> */}
 							</Link>
 							<Link href="/login" className='btn btn-ghost w-full gap-2'>
 								<MdPerson className="text-lg" />
-								<span>Log In</span>
+								{/* <span>Log In</span> */}
 							</Link>
 							<div
 								onClick={() => {
@@ -77,11 +89,13 @@ const AppBar = () => {
 					variants={AppBarAnimation}
 					initial="initial"
 					animate="animate"
-					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50"
+					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50 print:invisible"
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<p className="text-lg font-bold">Wicket</p>
+							<Link href="/feed" className="relative w-7 h-7 lg:hidden">
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
+							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href="/h/notifications"
@@ -136,8 +150,9 @@ const AppBar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/h/events"
+							<button
+								disabled
+								// href="/h/events"
 								className={`btn ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
@@ -145,7 +160,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>
@@ -160,7 +175,9 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<p className="text-lg font-bold">Wicket</p>
+							<Link href="/" className="relative w-7 h-7 md:hidden">
+								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
+							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href={"/p/notifications"}
@@ -205,8 +222,9 @@ const AppBar = () => {
 							>
 								<MdOutlineWork className="text-lg" />
 							</Link>
-							<Link
-								href={"/p/events"}
+							<button
+								disabled
+								// href={"/p/events"}
 								className={`btn btn-block ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
@@ -214,7 +232,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdOutlineEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 					</div>
 				</motion.div>

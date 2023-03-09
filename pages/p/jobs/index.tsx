@@ -30,11 +30,10 @@ const JobPostings = () => {
 	};
 
 	const provJobs = useQuery({
-		queryKey: ["provJobList"],
+		queryKey: ["allJobPosts"],
 		queryFn: fetchProvJobs,
 		enabled: !!_currentUser,
 		refetchOnWindowFocus: false,
-		refetchOnMount: false,
 	});
 
 	return (

@@ -499,25 +499,42 @@ export interface Database {
   }
 }
 
+
+export type HWorkExperience = {
+  jobPosition: string
+  companyName: string
+  location: string
+  startDate: string
+  endDate: string
+  isCurrent: boolean
+}
+
+export type HEducation = {
+  institution: string
+  location: string
+  degreeType: "primary" | "secondary" | "bachelor" | "master" | "doctorate" | "bachelor undergraduate" | "master undergraduate" | "doctorate undergraduate" | "other"
+  degreeName: string
+  yearGraduated: string
+}
+
 export interface IUserHunter {
   address: {
     address: string 
     city: string
     postalCode: string
   }
+  avatar_url: string
   bio: string
   birthdate: string
   birthplace: string
   connections: string[]
+  cover_letter: string
   created_at: string
-  education: {
-    degree: string | ""
-    end_date: string | ""
-    institution: string | ""
-    major: string | ""
-    start_date: string | ""
-  }[]
+  civil_status: "single" | "married" | "divorced" | "widowed" | "separated"
+  citizenship: string
+  education: HEducation[]
   email: string
+  experience: HWorkExperience[]
   full_name: {
     first: string 
     last: string
@@ -525,7 +542,10 @@ export interface IUserHunter {
   }
   gender: "male" | "female" | "non-binary" | "other" | "prefer not to say"
   id: string
-  phone: string | null
+  id_type: "national id" | "passport" | "driver's license" | "other"
+  id_number: string
+  is_verified: boolean
+  phone: string | ""
   saved_jobs: string[]
   skill_primary: string
   skill_secondary: string[]
@@ -549,7 +569,8 @@ export interface IUserProvisioner {
     city: string | null
     postalCode: string | null
   }
-  alternativeNames: Json | []
+  alternativeNames: string[]
+  avatar_url: string
   companyEmail: string
   companySize: string
   companyType: string
@@ -572,7 +593,7 @@ export interface IUserProvisioner {
     youtube: string | ""
     github: string | ""
   }
-  tags: Json | []
+  tags: string[]
   type: "provisioner"
   website: string | ""
 }
@@ -584,9 +605,11 @@ export interface IAccountData {
   raw_user_meta_data: Json | IUserHunter | IUserProvisioner
   created_at: string
   phone: string,
+  email_confirmed_at: string
 }
 
 export type TBlogPostComment = {
+	visible: boolean
   id: string
   content: string
   createdAt: string
@@ -605,7 +628,7 @@ export type THunterBlogPost = {
 
 export interface TProvJobPost {
   id:                 string;
-  uploader_id:        string;
+  uploader_id:        IUserProvisioner | string;
   job_title:          string;
   full_description:   string;
   short_description:  string;

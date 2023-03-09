@@ -7,3 +7,4 @@ export const $accountData = atom<IAccountData | null>(null);
 export const $accountDetails = atom<IUserHunter | IUserProvisioner | null>(null);
 export const $accountType = atom<"hunter" | "provisioner" | null>(null);
 export const $registrationData = atom<IUserHunter | IUserProvisioner | null>(null);
+export const $currentLocation = atom<string | null>(null);

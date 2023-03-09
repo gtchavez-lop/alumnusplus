@@ -11,6 +11,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -51,7 +52,12 @@ const Navbar = () => {
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Link href="/" className="text-lg font-bold">
-							Wicket
+							<Image
+								alt="logo"
+								src="/logo/wicket-new-adaptive.png"
+								width={40}
+								height={40}
+							/>
 						</Link>
 						<div className="flex gap-1">
 							<Link href="/register" className='btn btn-primary w-full gap-2'>
@@ -86,9 +92,14 @@ const Navbar = () => {
 				</div>
 			)}
 			{_accountType === "hunter" && (
-				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
+				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50 print:invisible">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
-						<p className="text-lg font-bold">Wicket</p>
+						<Image
+							alt="logo"
+							src="/logo/wicket-new-adaptive.png"
+							width={40}
+							height={40}
+						/>
 						<div className="flex gap-1">
 							<Link
 								href="/h/feed"
@@ -120,19 +131,20 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/h/events"
+							<button
+								// href="/h/events"
 								className={`btn w-full ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
+								disabled
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 						</div>
 						<div className="flex gap-1">
-							<div className="dropdown dropdown-end dropdown-hover">
+							<div className="dropdown dropdown-end dropdown-hover invisible">
 								<Link
 									href="/h/notifications"
 									tabIndex={0}
@@ -185,7 +197,12 @@ const Navbar = () => {
 			{_accountType === "provisioner" && (
 				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
 					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
-						<p className="text-lg font-bold">Wicket</p>
+						<Image
+							alt="logo"
+							src="/logo/wicket-new-adaptive.png"
+							width={40}
+							height={40}
+						/>
 						<div className="flex gap-1">
 							<Link
 								href="/p/dashboard"
@@ -207,16 +224,17 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/p/events"
+							<button
+								// href="/p/events"
 								className={`btn w-full ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
+								disabled
 							>
 								<MdEvent className="text-lg" />
-							</Link>
+							</button>
 							<Link
 								href="/p/me"
 								className={`btn w-full ${

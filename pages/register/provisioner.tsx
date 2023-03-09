@@ -21,6 +21,7 @@ const ProvisionerPage: NextPage = () => {
 			city: "",
 			postalCode: "",
 		},
+		avatar_url: "",
 		alternativeNames: [],
 		companyEmail: "",
 		companySize: "",
@@ -70,6 +71,7 @@ const ProvisionerPage: NextPage = () => {
 			options: {
 				data: {
 					...localRegData,
+					avatar_url: `https://api.dicebear.com/5.x/shapes/png?seed=${localRegData.legalName}`,
 					created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 					updated_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				} as IUserProvisioner,

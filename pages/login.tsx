@@ -1,5 +1,9 @@
-import { $accountDetails, $accountType } from "@/lib/globalStates";
-import { IUserHunter, IUserProvisioner } from "@/lib/types";
+import {
+	$accountData,
+	$accountDetails,
+	$accountType,
+} from "@/lib/globalStates";
+import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { FormEvent } from "react";
@@ -17,32 +21,15 @@ const LogInPage = () => {
 		e.preventDefault();
 		toast.dismiss();
 
-		let inputForms = [
-			e.currentTarget.email,
-			e.currentTarget.password,
-			e.currentTarget.password_confirmation,
-		];
+		let inputForms = [e.currentTarget.email, e.currentTarget.password];
 
 		const loginData = {
 			email: e.currentTarget.email.value as string,
 			password: e.currentTarget.password.value as string,
-			password_confirmation: e.currentTarget.password_confirmation
-				.value as string,
 		};
 
-		if (loginData.password !== loginData.password_confirmation) {
-			toast.error("Passwords do not match");
-			return;
-		}
-
-		if (
-			!(
-				loginData.email &&
-				loginData.password &&
-				loginData.password_confirmation
-			)
-		) {
-			// make the missing input field have a class of "input-error"
+		// make the missing input field have a class of "input-error"
+		if (!(loginData.email && loginData.password)) {
 			toast.error("Please fill in all fields");
 
 			inputForms.forEach((input) => {
@@ -56,6 +43,7 @@ const LogInPage = () => {
 			return;
 		}
 
+		// remove the "input-error" class from all input fields if they are filled
 		inputForms.forEach((input) => {
 			if (!input.value) {
 				input.classList.add("input-error");
@@ -80,6 +68,9 @@ const LogInPage = () => {
 
 		$accountType.set(metadata.type);
 		$accountDetails.set(metadata);
+		$accountData.set(userData.user as unknown as IAccountData);
+
+		toast.success("Welcome back!");
 
 		if (metadata.type === "hunter") {
 			router.push("/h/feed");
@@ -107,15 +98,13 @@ const LogInPage = () => {
 
 						<div className="hidden lg:relative lg:block lg:p-12">
 							<Link
-								className="avatar w-16 h-16 rounded-full overflow-hidden"
+								className="avatar w-16 h-16 relative bg-primary-content rounded-full"
 								href="/"
 							>
-								<span className="sr-only">Home</span>
 								<Image
-									className="h-8 sm:h-10"
-									src="/favicon.ico"
-									width={32}
-									height={32}
+									src="/logo/wicket-new-adaptive.png"
+									fill
+									className="p-1"
 									alt=""
 								/>
 							</Link>
@@ -135,15 +124,13 @@ const LogInPage = () => {
 						<div className="max-w-xl lg:max-w-3xl">
 							<div className="relative -mt-16 block lg:hidden">
 								<Link
-									className="avatar w-16 h-16 rounded-full overflow-hidden"
+									className="avatar w-16 h-16 relative bg-primary-content rounded-full"
 									href="/"
 								>
-									<span className="sr-only">Home</span>
 									<Image
-										className="h-8 sm:h-10"
-										src="/favicon.ico"
-										width={32}
-										height={32}
+										src="/logo/wicket-new-adaptive.png"
+										fill
+										className="p-1"
 										alt=""
 									/>
 								</Link>
@@ -175,7 +162,7 @@ const LogInPage = () => {
 									/>
 								</label>
 
-								<div className="col-span-6 sm:col-span-3">
+								<div className="col-span-full">
 									<p className="block text-sm font-medium text-opacity-70">
 										Password
 									</p>
@@ -188,7 +175,7 @@ const LogInPage = () => {
 									/>
 								</div>
 
-								<div className="col-span-6 sm:col-span-3">
+								{/* <div className="col-span-6 sm:col-span-3">
 									<p className="block text-sm font-medium text-opacity-70">
 										Password Confirmation
 									</p>
@@ -199,7 +186,7 @@ const LogInPage = () => {
 										name="password_confirmation"
 										className="input input-primary input-bordered w-full"
 									/>
-								</div>
+								</div> */}
 
 								<div className="col-span-6 sm:flex sm:items-center sm:gap-4">
 									<button type="submit" className="btn btn-primary">
