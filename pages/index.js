@@ -205,7 +205,7 @@ const Home = (e) => {
 
       <motion.div
         ref={desktopImg_2}
-        className="relative flex flex-col items-center min-h-[70vh] px-2 lg:px-0 mb-16"
+        className="relative flex flex-col items-center min-h-[70vh] px-2 lg:px-0 mb-16 text-"
       >
         <h2 className="text-center font-bold text-3xl">Platform Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
