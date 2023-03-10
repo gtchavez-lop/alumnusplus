@@ -1,8 +1,14 @@
+import { $accountData, $accountDetails } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
-import { HEducation, HWorkExperience, IUserHunter } from "@/lib/types";
+import {
+	HEducation,
+	HTraining,
+	HWorkExperience,
+	IAccountData,
+	IUserHunter,
+} from "@/lib/types";
 
-import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Compressor from "compressorjs";
 import Fuse from "fuse.js";
@@ -18,10 +24,49 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
+const PageTabs = [
+	{
+		title: "Account",
+		value: "account",
+	},
+	{
+		title: "Personal",
+		value: "personal",
+	},
+	{
+		title: "Skillset",
+		value: "skillset",
+	},
+	{
+		title: "Residence",
+		value: "residence",
+	},
+	{
+		title: "Socials",
+		value: "socials",
+	},
+	{
+		title: "Employment",
+		value: "employment",
+	},
+	{
+		title: "Education",
+		value: "education",
+	},
+	{
+		title: "Trainings",
+		value: "training",
+	},
+	{
+		title: "Verification",
+		value: "verification",
+	},
+];
+
 const EditProfilePage: NextPage = () => {
 	const [hasChanges, setHasChanges] = useState(false);
-	const router = useRouter();
 	const _currentUserDetails = useStore($accountDetails) as IUserHunter;
+	const _currentAccountDetails = useStore($accountData) as IAccountData;
 	const [tempUserDetails, setTempUserDetails] =
 		useState<IUserHunter>(_currentUserDetails);
 	const [primarySkillSearchResults, setPrimarySkillSearchResults] = useState<
@@ -40,6 +85,8 @@ const EditProfilePage: NextPage = () => {
 		| "socials"
 		| "employment"
 		| "education"
+		| "training"
+		| "verification"
 	>("account");
 	const [tabContentRef] = useAutoAnimate();
 	const [employmentHistoryRef] = useAutoAnimate();
@@ -110,7 +157,7 @@ const EditProfilePage: NextPage = () => {
 
 	return (
 		<>
-			{!!tempUserDetails && (
+			{!!tempUserDetails && !!_currentAccountDetails && (
 				<motion.main
 					variants={AnimPageTransition}
 					initial="initial"
@@ -122,48 +169,28 @@ const EditProfilePage: NextPage = () => {
 
 					{/* tabs desktop */}
 					<div className="tabs hidden lg:flex justify-center tabs-boxed mt-5">
-						<p
-							onClick={() => setTabSelected("account")}
-							className={`tab ${tabSelected === "account" && "tab-active"}`}
-						>
-							Account
-						</p>
-						<p
-							onClick={() => setTabSelected("personal")}
-							className={`tab ${tabSelected === "personal" && "tab-active"}`}
-						>
-							Personal
-						</p>
-						<p
-							onClick={() => setTabSelected("skillset")}
-							className={`tab ${tabSelected === "skillset" && "tab-active"}`}
-						>
-							Skillset
-						</p>
-						<p
-							onClick={() => setTabSelected("residence")}
-							className={`tab ${tabSelected === "residence" && "tab-active"}`}
-						>
-							Residence
-						</p>
-						<p
-							onClick={() => setTabSelected("socials")}
-							className={`tab ${tabSelected === "socials" && "tab-active"}`}
-						>
-							Socials
-						</p>
-						<p
-							onClick={() => setTabSelected("employment")}
-							className={`tab ${tabSelected === "employment" && "tab-active"}`}
-						>
-							Employment
-						</p>
-						<p
-							onClick={() => setTabSelected("education")}
-							className={`tab ${tabSelected === "education" && "tab-active"}`}
-						>
-							Education
-						</p>
+						{PageTabs.map((tab, index) => (
+							<p
+								key={`tab-${index}`}
+								onClick={() =>
+									setTabSelected(
+										tab.value as
+											| "account"
+											| "personal"
+											| "skillset"
+											| "residence"
+											| "socials"
+											| "employment"
+											| "education"
+											| "training"
+											| "verification",
+									)
+								}
+								className={`tab ${tabSelected === tab.value && "tab-active"}`}
+							>
+								{tab.title}
+							</p>
+						))}
 					</div>
 					{/* dropdown mobile */}
 					<select
@@ -178,16 +205,16 @@ const EditProfilePage: NextPage = () => {
 									| "residence"
 									| "socials"
 									| "employment"
+									| "training"
 									| "education",
 							)
 						}
 					>
-						<option value="account">Account</option>
-						<option value="personal">Personal</option>
-						<option value="skillset">Skillset</option>
-						<option value="residence">Residence</option>
-						<option value="employment">Employment</option>
-						<option value="education">Education</option>
+						{PageTabs.map((tab, index) => (
+							<option key={`tab-${index}`} value={tab.value}>
+								{tab.title}
+							</option>
+						))}
 					</select>
 
 					<AnimatePresence mode="wait">
@@ -997,6 +1024,201 @@ const EditProfilePage: NextPage = () => {
 										Add Education
 									</button>
 								</form>
+							</div>
+						)}
+						{tabSelected === "training" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Trainings and Seminars</p>
+
+								<div
+									className="mt-4 flex flex-col gap-2"
+									ref={employmentHistoryRef}
+								>
+									{tempUserDetails.trainings.length === 0 && (
+										<p className="text-center text-sm opacity-75">
+											No Trainings and Seminars History
+										</p>
+									)}
+									{tempUserDetails.trainings.map((training, i) => (
+										<div
+											key={`training-${i}`}
+											className="bg-base-200 rounded-btn p-5"
+										>
+											<p className="text-lg font-bold">{training.title}</p>
+											<p className="">
+												{dayjs(training.date).format("MMMM D, YYYY")}
+											</p>
+											<p className="">
+												{training.organizer} | {training.location}
+											</p>
+											<p className="capitalize">{training.type}</p>
+											<div className="flex justify-end mt-2 gap-2">
+												<button
+													className="btn btn-error btn-sm"
+													onClick={() => {
+														const newTraining =
+															tempUserDetails.trainings.filter(
+																(_, index) => index !== i,
+															);
+														setTempUserDetails({
+															...tempUserDetails,
+															trainings: newTraining,
+														});
+													}}
+												>
+													Delete
+												</button>
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* add training form */}
+								<p className="mt-5 text-lg font-bold">
+									Add new Training and Seminar
+								</p>
+
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										const form = e.target as HTMLFormElement;
+
+										const formData = new FormData(form);
+										const data = Object.fromEntries(formData.entries());
+
+										const newTraining: HTraining = {
+											title: data.title as string,
+											date: data.date as string,
+											organizer: data.organizer as string,
+											location: data.location as string,
+											type: data.type as
+												| "short course"
+												| "certificate"
+												| "diploma"
+												| "degree"
+												| "other",
+										};
+
+										setTempUserDetails({
+											...tempUserDetails,
+											trainings: [...tempUserDetails.trainings, newTraining],
+										});
+
+										// reset form
+										form.reset();
+									}}
+									className="flex flex-col"
+								>
+									<label className="flex flex-col">
+										<span>Title</span>
+										<input
+											className="input input-primary"
+											name="title"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Organizer</span>
+										<input
+											className="input input-primary"
+											name="organizer"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Location</span>
+										<input
+											className="input input-primary"
+											name="location"
+											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Training/Seminar Type</span>
+										<select className="select select-primary" name="type">
+											<option value="certificate">Certificate</option>
+											<option value="short course">Short Course</option>
+											<option value="diploma">Diploma</option>
+											<option value="degree">Degree</option>
+											<option value="other">Other</option>
+										</select>
+									</label>
+									<label className="flex flex-col">
+										<span>Date</span>
+										<input
+											className="input input-primary"
+											name="date"
+											type="date"
+											max={dayjs().format("YYYY-MM-DD")}
+										/>
+									</label>
+									<button
+										type="submit"
+										className="btn btn-primary btn-block mt-10"
+									>
+										Add Training
+									</button>
+								</form>
+							</div>
+						)}
+						{tabSelected === "verification" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Verification Status</p>
+
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">Email Verification Status</p>
+										{_currentAccountDetails.email_confirmed_at ? (
+											<p className="text-sm opacity-75 text-success leading-none ml-4">
+												Your email has been verified since{" "}
+												{dayjs(
+													_currentAccountDetails.email_confirmed_at,
+												).format("MMMM D, YYYY")}
+											</p>
+										) : (
+											<p className="text-sm opacity-75 leading-none ml-4">
+												Your email has not been verified
+											</p>
+										)}
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">Identity Verification Status</p>
+										{tempUserDetails.is_verified ? (
+											<p className="text-sm opacity-75 text-success leading-none ml-4">
+												Your identity has been verified
+											</p>
+										) : (
+											<p className="text-sm opacity-75 leading-none ml-4">
+												Your identity has not been verified
+											</p>
+										)}
+										{!tempUserDetails.is_verified && (
+											<Link
+												href={"/h/me/verify"}
+												className="btn btn-primary btn-block mt-4"
+											>
+												Verify Identity
+											</Link>
+										)}
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">ID Type</p>
+										<p className="text-sm opacity-75 leading-none ml-4">
+											{tempUserDetails.id_type === "national id" &&
+												"Philippine National Identity Card"}
+											{tempUserDetails.id_type === "passport" && "Passport"}
+											{tempUserDetails.id_type === "driver's license" &&
+												"Driver's License"}
+											{tempUserDetails.id_type === "other" && "Other IDs"}
+										</p>
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-lg">ID Number</p>
+										<p className="text-sm opacity-75 leading-none ml-4">
+											{tempUserDetails.id_number}
+										</p>
+									</div>
+								</div>
 							</div>
 						)}
 					</div>

@@ -1,4 +1,5 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { AnimatePresence, motion } from "framer-motion";
 import {
 	FiEdit,
 	FiEdit2,
@@ -10,15 +11,24 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
+import {
+	MdCheck,
+	MdCheckCircle,
+	MdCheckCircleOutline,
+	MdFacebook,
+	MdInfo,
+	MdNote,
+	MdSchool,
+	MdTrain,
+	MdWork,
+} from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
-import { MdFacebook } from "react-icons/md";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -31,6 +41,43 @@ interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;
 }
 
+const PageTabs = [
+	{
+		name: "About",
+		value: "about",
+		icon: MdInfo,
+	},
+	{
+		name: "Posts",
+		value: "posts",
+		icon: MdNote,
+	},
+	{
+		name: "Experiences",
+		value: "experiences",
+		icon: MdWork,
+	},
+	{
+		name: "Education",
+		value: "education",
+		icon: MdSchool,
+	},
+	// {
+	// 	name: "Connections",
+	// 	value: "connections",
+	// },
+	{
+		name: "Trainings",
+		value: "trainings",
+		icon: MdTrain,
+	},
+	{
+		name: "Saved Jobs",
+		value: "savedjobs",
+		icon: MdCheckCircleOutline,
+	},
+];
+
 const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const _currentUser = useStore($accountDetails) as IUserHunter;
@@ -41,6 +88,7 @@ const ProfilePage: NextPage = () => {
 		| "experiences"
 		| "education"
 		| "connections"
+		| "trainings"
 		| "savedjobs"
 	>("about");
 	const [tabContentRef] = useAutoAnimate();
@@ -219,24 +267,27 @@ const ProfilePage: NextPage = () => {
 
 										{_currentUser.subscription_type === "junior" && (
 											<div className="badge badge-primary absolute bottom-1 sm:-right-5">
-												Junior
+												Junior Hunter
 											</div>
 										)}
 										{_currentUser.subscription_type === "senior" && (
 											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Senior
+												Senior Hunter
 											</div>
 										)}
 										{_currentUser.subscription_type === "expert" && (
 											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Expert
+												Expert Hunter
 											</div>
 										)}
 									</div>
 									<div>
-										<p className="text-3xl font-bold">
+										<p className="text-3xl font-bold flex gap-1 items-center">
 											{_currentUser.full_name.first}{" "}
 											{_currentUser.full_name.last}
+											{_currentUser.is_verified && (
+												<MdCheckCircleOutline className="text-blue-500 text-lg" />
+											)}
 										</p>
 
 										<p className="font-semibold opacity-75">
@@ -277,56 +328,36 @@ const ProfilePage: NextPage = () => {
 										}
 										className="select select-primary w-full"
 									>
-										<option value="about">About</option>
-										<option value="posts">Posts</option>
-										<option value="experiences">Experiences</option>
-										<option value="education">Education</option>
-										<option value="savedjobs">Saved Jobs</option>
+										{PageTabs.map((tab, index) => (
+											<option key={`tab-${index}`} value={tab.value}>
+												{tab.name}
+											</option>
+										))}
 									</select>
 								</div>
 								{/* desktop tabs */}
 								<div className="hidden lg:block my-3">
-									<ul className="tabs tabs-boxed gap-1">
-										<li
-											onClick={() => setTabSelected("about")}
-											className={`tab ${
-												tabSelected === "about" && "tab-active"
-											}`}
-										>
-											About
-										</li>
-										<li
-											onClick={() => setTabSelected("posts")}
-											className={`tab ${
-												tabSelected === "posts" && "tab-active"
-											}`}
-										>
-											Posts
-										</li>
-										<li
-											onClick={() => setTabSelected("experiences")}
-											className={`tab ${
-												tabSelected === "experiences" && "tab-active"
-											}`}
-										>
-											Experiences
-										</li>
-										<li
-											onClick={() => setTabSelected("education")}
-											className={`tab ${
-												tabSelected === "education" && "tab-active"
-											}`}
-										>
-											Education
-										</li>
-										<li
-											onClick={() => setTabSelected("savedjobs")}
-											className={`tab ${
-												tabSelected === "savedjobs" && "tab-active"
-											}`}
-										>
-											Saved Jobs
-										</li>
+									<ul className="tabs tabs-boxed justify-evenly">
+										{PageTabs.map((tab, index) => (
+											<li
+												key={`tab-${index}`}
+												onClick={() =>
+													setTabSelected(
+														tab.value as
+															| "about"
+															| "posts"
+															| "experiences"
+															| "education"
+															| "savedjobs",
+													)
+												}
+												className={`tab flex items-center gap-2 transition ${
+													tabSelected === tab.value && "tab-active"
+												}`}
+											>
+												{tab.name}
+											</li>
+										))}
 									</ul>
 								</div>
 
@@ -522,6 +553,32 @@ const ProfilePage: NextPage = () => {
 													)}
 													<p className="mt-2 text-sm opacity-75">
 														{edu.yearGraduated}
+													</p>
+												</div>
+											))}
+										</div>
+									)}
+									{tabSelected === "trainings" && (
+										<div className="flex flex-col gap-2">
+											{_currentUser.trainings.length === 0 && (
+												<p className="text-center">
+													No Seminars/Training history yet
+												</p>
+											)}
+											{_currentUser.trainings.map((training, i) => (
+												<div
+													key={`training-${i}`}
+													className="shadow-md rounded-btn p-5"
+												>
+													<p className="text-lg font-bold">{training.title}</p>
+													<p className="">
+														{dayjs(training.date).format("MMMM D, YYYY")}
+													</p>
+													<p className="text-sm opacity-75">
+														{training.organizer} | {training.location}
+													</p>
+													<p className="text-sm opacity-75 capitalize">
+														{training.type}
 													</p>
 												</div>
 											))}

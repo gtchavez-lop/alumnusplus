@@ -52,6 +52,9 @@ const RegisterHunterSubPage = () => {
 		},
 		gender: "male",
 		id: "",
+		id_number: "",
+		id_type: "other",
+		is_verified: false,
 		phone: "",
 		saved_jobs: [],
 		skill_primary: "",
@@ -66,6 +69,7 @@ const RegisterHunterSubPage = () => {
 		},
 		subscription_type: "junior",
 		type: "hunter",
+		trainings: [],
 		updated_at: "",
 		username: "",
 	});

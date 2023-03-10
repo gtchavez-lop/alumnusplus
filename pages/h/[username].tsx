@@ -13,6 +13,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
+import { MdCheckCircleOutline } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -21,6 +22,33 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
+
+const PageTabs = [
+	{
+		name: "About",
+		value: "about",
+	},
+	{
+		name: "Posts",
+		value: "posts",
+	},
+	{
+		name: "Experiences",
+		value: "experiences",
+	},
+	{
+		name: "Education",
+		value: "education",
+	},
+	// {
+	// 	name: "Connections",
+	// 	value: "connections",
+	// },
+	{
+		name: "Trainings",
+		value: "trainings",
+	},
+];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { query } = context;
@@ -52,7 +80,13 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isConnected, setIsConnected] = useState(false);
 	const [tabSelected, setTabSelected] = useState<
-		"about" | "posts" | "experiences" | "education" | "connections"
+		| "about"
+		| "posts"
+		| "experiences"
+		| "education"
+		| "connections"
+		| "trainings"
+		| "savedjobs"
 	>("about");
 	const [tabContentRef] = useAutoAnimate();
 
@@ -90,13 +124,15 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 				queryKey: ["userConnections"],
 				queryFn: fetchUserConnections,
 				enabled: !!targetUser,
-				refetchOnWindowFocus: false,
+				refetchOnMount: true,
+				refetchOnWindowFocus: true,
 			},
 			{
 				queryKey: ["userActivities"],
 				queryFn: fetchUserActivities,
 				enabled: !!targetUser,
-				refetchOnWindowFocus: false,
+				refetchOnMount: true,
+				refetchOnWindowFocus: true,
 			},
 		],
 	});
@@ -215,23 +251,26 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 
 								{targetUser.subscription_type === "junior" && (
 									<div className="badge badge-primary absolute bottom-1 sm:-right-5">
-										Junior
+										Junior Hunter
 									</div>
 								)}
 								{targetUser.subscription_type === "senior" && (
 									<div className="badge badge-primary absolute bottom-1 -right-5">
-										Senior
+										Senior Hunter
 									</div>
 								)}
 								{targetUser.subscription_type === "expert" && (
 									<div className="badge badge-primary absolute bottom-1 -right-5">
-										Expert
+										Expert Hunter
 									</div>
 								)}
 							</div>
 							<div>
-								<p className="text-3xl font-bold">
+								<p className="text-3xl font-bold flex gap-1 items-center">
 									{targetUser.full_name.first} {targetUser.full_name.last}
+									{targetUser.is_verified && (
+										<MdCheckCircleOutline className="text-blue-500 text-lg" />
+									)}
 								</p>
 
 								<p className="font-semibold opacity-75">
@@ -256,48 +295,42 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 											| "about"
 											| "posts"
 											| "experiences"
-											| "education",
+											| "education"
+											| "savedjobs",
 									)
 								}
 								className="select select-primary w-full"
 							>
-								<option value="about">About</option>
-								<option value="posts">Posts</option>
-								<option value="experiences">Experiences</option>
-								<option value="education">Education</option>
+								{PageTabs.map((tab, index) => (
+									<option key={`tab-${index}`} value={tab.value}>
+										{tab.name}
+									</option>
+								))}
 							</select>
 						</div>
 						{/* desktop tabs */}
 						<div className="hidden lg:block my-3">
-							<ul className="tabs tabs-boxed gap-1">
-								<li
-									onClick={() => setTabSelected("about")}
-									className={`tab ${tabSelected === "about" && "tab-active"}`}
-								>
-									About
-								</li>
-								<li
-									onClick={() => setTabSelected("posts")}
-									className={`tab ${tabSelected === "posts" && "tab-active"}`}
-								>
-									Posts
-								</li>
-								<li
-									onClick={() => setTabSelected("experiences")}
-									className={`tab ${
-										tabSelected === "experiences" && "tab-active"
-									}`}
-								>
-									Experiences
-								</li>
-								<li
-									onClick={() => setTabSelected("education")}
-									className={`tab ${
-										tabSelected === "education" && "tab-active"
-									}`}
-								>
-									Education
-								</li>
+							<ul className="tabs tabs-boxed justify-evenly">
+								{PageTabs.map((tab, index) => (
+									<li
+										key={`tab-${index}`}
+										onClick={() =>
+											setTabSelected(
+												tab.value as
+													| "about"
+													| "posts"
+													| "experiences"
+													| "education"
+													| "savedjobs",
+											)
+										}
+										className={`tab flex items-center gap-2 transition ${
+											tabSelected === tab.value && "tab-active"
+										}`}
+									>
+										{tab.name}
+									</li>
+								))}
 							</ul>
 						</div>
 
@@ -467,7 +500,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							)}
 							{tabSelected === "education" && (
 								<div className="flex flex-col gap-2">
-									{targetUser.education.length === 0 && (
+									{targetUser.experience.length === 0 && (
 										<p className="text-center">No education history yet</p>
 									)}
 									{targetUser.education.map((edu, i) => (
@@ -487,6 +520,32 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 											)}
 											<p className="mt-2 text-sm opacity-75">
 												{edu.yearGraduated}
+											</p>
+										</div>
+									))}
+								</div>
+							)}
+							{tabSelected === "trainings" && (
+								<div className="flex flex-col gap-2">
+									{targetUser.trainings.length === 0 && (
+										<p className="text-center">
+											No Seminars/Training history yet
+										</p>
+									)}
+									{targetUser.trainings.map((training, i) => (
+										<div
+											key={`training-${i}`}
+											className="shadow-md rounded-btn p-5"
+										>
+											<p className="text-lg font-bold">{training.title}</p>
+											<p className="">
+												{dayjs(training.date).format("MMMM D, YYYY")}
+											</p>
+											<p className="text-sm opacity-75">
+												{training.organizer} | {training.location}
+											</p>
+											<p className="text-sm opacity-75 capitalize">
+												{training.type}
 											</p>
 										</div>
 									))}

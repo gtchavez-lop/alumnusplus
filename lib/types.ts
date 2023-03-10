@@ -517,6 +517,14 @@ export type HEducation = {
   yearGraduated: string
 }
 
+export type HTraining = {
+  organizer: string
+  location: string
+  type: "short course" | "certificate" | "diploma" | "degree" | "other"
+  title: string
+  date: string
+}
+
 export interface IUserHunter {
   address: {
     address: string 
@@ -542,7 +550,10 @@ export interface IUserHunter {
   }
   gender: "male" | "female" | "non-binary" | "other" | "prefer not to say"
   id: string
-  phone: string | null
+  id_type: "national id" | "passport" | "driver's license" | "other"
+  id_number: string
+  is_verified: boolean
+  phone: string | ""
   saved_jobs: string[]
   skill_primary: string
   skill_secondary: string[]
@@ -556,6 +567,7 @@ export interface IUserHunter {
   }
   subscription_type: "junior" | "senior" | "expert"
   type: "hunter"
+  trainings: HTraining[]
   updated_at: string
   username: string
 }
@@ -598,10 +610,10 @@ export interface IUserProvisioner {
 export interface IAccountData {
   id: string
   email: string
-  encrypted_password: string
   raw_user_meta_data: Json | IUserHunter | IUserProvisioner
   created_at: string
   phone: string,
+  email_confirmed_at: string
 }
 
 export type TBlogPostComment = {

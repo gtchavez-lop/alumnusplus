@@ -1,5 +1,9 @@
-import { $accountDetails, $accountType } from "@/lib/globalStates";
-import { IUserHunter, IUserProvisioner } from "@/lib/types";
+import {
+	$accountData,
+	$accountDetails,
+	$accountType,
+} from "@/lib/globalStates";
+import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 
 import { AnimPageTransition } from "@/lib/animations";
 import { FormEvent } from "react";
@@ -62,8 +66,18 @@ const LogInPage = () => {
 			| IUserHunter
 			| IUserProvisioner;
 
+		const accountData: IAccountData = {
+			created_at: userData.user?.created_at as string,
+			email: userData.user?.email as string,
+			id: userData.user?.id as string,
+			email_confirmed_at: userData.user?.email_confirmed_at as string,
+			phone: userData.user?.phone as string,
+			raw_user_meta_data: metadata,
+		};
+
 		$accountType.set(metadata.type);
 		$accountDetails.set(metadata);
+		$accountData.set(accountData);
 
 		toast.success("Welcome back!");
 
