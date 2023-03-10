@@ -1,4 +1,5 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { AnimatePresence, motion } from "framer-motion";
 import {
 	FiEdit,
 	FiEdit2,
@@ -15,6 +16,11 @@ import {
 	MdCheckCircle,
 	MdCheckCircleOutline,
 	MdFacebook,
+	MdInfo,
+	MdNote,
+	MdSchool,
+	MdTrain,
+	MdWork,
 } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
@@ -23,7 +29,6 @@ import Link from "next/link";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -40,26 +45,36 @@ const PageTabs = [
 	{
 		name: "About",
 		value: "about",
+		icon: MdInfo,
 	},
 	{
 		name: "Posts",
 		value: "posts",
+		icon: MdNote,
 	},
 	{
 		name: "Experiences",
 		value: "experiences",
+		icon: MdWork,
 	},
 	{
 		name: "Education",
 		value: "education",
+		icon: MdSchool,
 	},
 	// {
 	// 	name: "Connections",
 	// 	value: "connections",
 	// },
 	{
+		name: "Trainings",
+		value: "trainings",
+		icon: MdTrain,
+	},
+	{
 		name: "Saved Jobs",
 		value: "savedjobs",
+		icon: MdCheckCircleOutline,
 	},
 ];
 
@@ -73,6 +88,7 @@ const ProfilePage: NextPage = () => {
 		| "experiences"
 		| "education"
 		| "connections"
+		| "trainings"
 		| "savedjobs"
 	>("about");
 	const [tabContentRef] = useAutoAnimate();
@@ -321,7 +337,7 @@ const ProfilePage: NextPage = () => {
 								</div>
 								{/* desktop tabs */}
 								<div className="hidden lg:block my-3">
-									<ul className="tabs tabs-boxed gap-1">
+									<ul className="tabs tabs-boxed justify-evenly">
 										{PageTabs.map((tab, index) => (
 											<li
 												key={`tab-${index}`}
@@ -335,7 +351,7 @@ const ProfilePage: NextPage = () => {
 															| "savedjobs",
 													)
 												}
-												className={`tab ${
+												className={`tab flex items-center gap-2 transition ${
 													tabSelected === tab.value && "tab-active"
 												}`}
 											>
@@ -537,6 +553,32 @@ const ProfilePage: NextPage = () => {
 													)}
 													<p className="mt-2 text-sm opacity-75">
 														{edu.yearGraduated}
+													</p>
+												</div>
+											))}
+										</div>
+									)}
+									{tabSelected === "trainings" && (
+										<div className="flex flex-col gap-2">
+											{_currentUser.trainings.length === 0 && (
+												<p className="text-center">
+													No Seminars/Training history yet
+												</p>
+											)}
+											{_currentUser.trainings.map((training, i) => (
+												<div
+													key={`training-${i}`}
+													className="shadow-md rounded-btn p-5"
+												>
+													<p className="text-lg font-bold">{training.title}</p>
+													<p className="">
+														{dayjs(training.date).format("MMMM D, YYYY")}
+													</p>
+													<p className="text-sm opacity-75">
+														{training.organizer} | {training.location}
+													</p>
+													<p className="text-sm opacity-75 capitalize">
+														{training.type}
 													</p>
 												</div>
 											))}

@@ -1,6 +1,11 @@
 import "@/styles/globals.css";
 
-import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import {
+	$accountData,
+	$accountDetails,
+	$accountType,
+	$themeMode,
+} from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -43,6 +48,14 @@ export default function App({ Component, pageProps, router }: AppProps) {
 						...newData,
 						id: data.user?.id as string,
 					});
+					$accountData.set({
+						created_at: data.user?.created_at as string,
+						email: data.user?.email as string,
+						id: data.user?.id as string,
+						email_confirmed_at: data.user?.email_confirmed_at as string,
+						phone: data.user?.phone as string,
+						raw_user_meta_data: metadata,
+					});
 				}
 			} else if (metadata && metadata.type === "provisioner") {
 				$accountType.set("provisioner");
@@ -59,6 +72,14 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					$accountDetails.set({
 						...newData,
 						id: data.user?.id as string,
+					});
+					$accountData.set({
+						created_at: data.user?.created_at as string,
+						email: data.user?.email as string,
+						id: data.user?.id as string,
+						email_confirmed_at: data.user?.email_confirmed_at as string,
+						phone: data.user?.phone as string,
+						raw_user_meta_data: metadata,
 					});
 				}
 			}

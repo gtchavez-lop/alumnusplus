@@ -69,6 +69,7 @@ const RegisterHunterSubPage = () => {
 		},
 		subscription_type: "junior",
 		type: "hunter",
+		trainings: [],
 		updated_at: "",
 		username: "",
 	});

@@ -517,6 +517,14 @@ export type HEducation = {
   yearGraduated: string
 }
 
+export type HTraining = {
+  organizer: string
+  location: string
+  type: "short course" | "certificate" | "diploma" | "degree" | "other"
+  title: string
+  date: string
+}
+
 export interface IUserHunter {
   address: {
     address: string 
@@ -559,6 +567,7 @@ export interface IUserHunter {
   }
   subscription_type: "junior" | "senior" | "expert"
   type: "hunter"
+  trainings: HTraining[]
   updated_at: string
   username: string
 }
@@ -601,7 +610,6 @@ export interface IUserProvisioner {
 export interface IAccountData {
   id: string
   email: string
-  encrypted_password: string
   raw_user_meta_data: Json | IUserHunter | IUserProvisioner
   created_at: string
   phone: string,

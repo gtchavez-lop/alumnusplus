@@ -7,7 +7,9 @@ import { IsNationalId } from "@/lib/id_types";
 import { MdWarning } from "react-icons/md";
 import Tesseract from "tesseract.js";
 import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
 const NationalID_RegexFormat = /^[0-9]{4}-[0-9]{4}-[0-9]{4}$-[0-9]{4}$/;
@@ -19,6 +21,7 @@ const VerifyIdentity = () => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [tempUserData, setTempUserData] = useState<IUserHunter>(_currentUser);
+	const router = useRouter();
 
 	// const setupStream = async () => {
 	// 	try {
@@ -145,17 +148,47 @@ const VerifyIdentity = () => {
 			if (res.isNationalId) {
 				toast.success("National ID is valid.");
 				toast.loading("Updating account details...");
+
+				const { error } = await supabase
+					.from("user_hunters")
+					.update({
+						id_type: "national id" as
+							| "national id"
+							| "passport"
+							| "driver's license"
+							| "other",
+						id_number: textInput.value,
+						is_verified: true,
+					})
+					.eq("id", _currentUser.id);
+
+				if (error) {
+					toast.dismiss();
+					toast.error(error.message);
+					filInput.disabled = false;
+					textInput.disabled = false;
+					button.disabled = false;
+					return;
+				}
+
+				toast.dismiss();
+				toast.success("Account details updated.");
+				router.push("/h/me");
 			} else {
+				toast.dismiss();
 				toast.error("National ID is invalid.");
+				filInput.disabled = false;
+				textInput.disabled = false;
+				button.disabled = false;
+				return;
 			}
 		} else {
 			toast.error("Unable to detect ID.");
+			filInput.disabled = false;
+			textInput.disabled = false;
+			button.disabled = false;
+			return;
 		}
-
-		// enable fields
-		filInput.disabled = false;
-		textInput.disabled = false;
-		button.disabled = false;
 	};
 
 	return (
@@ -232,7 +265,10 @@ const VerifyIdentity = () => {
 				>
 					<label className="flex flex-col">
 						<span>Select ID Type</span>
-						<select className="select select-primary mb-2">
+						<select
+							disabled={_currentUser.is_verified}
+							className="select select-primary mb-2"
+						>
 							<option value="national id">National ID</option>
 							<option disabled>UMID (Coming Soon)</option>
 							<option disabled>Driver&apos;s License (Coming Soon)</option>
@@ -246,6 +282,7 @@ const VerifyIdentity = () => {
 					<label className="flex flex-col">
 						<span>Id Number</span>
 						<input
+							disabled={_currentUser.is_verified}
 							type="text"
 							value={tempUserData.id_number}
 							onChange={(e) => {
@@ -271,6 +308,7 @@ const VerifyIdentity = () => {
 					<label className="flex flex-col">
 						<span>Select Image</span>
 						<input
+							disabled={_currentUser.is_verified}
 							type="file"
 							accept="image/*"
 							className="file-input file-input-primary"
