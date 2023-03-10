@@ -75,7 +75,7 @@ const Template_1: NextPage = () => {
 								{_currentUser.cover_letter}
 							</ReactMarkdown>
 						</div> */}
-						<div className="grid mt-6">
+						<div className="grid mt-2">
 							<h2 className="text-3xl leading-loose col-span-1 text-primary font-thin">
 								ABOUT ME
 							</h2>
@@ -83,7 +83,10 @@ const Template_1: NextPage = () => {
 								{_currentUser.cover_letter}
 							</p>
 						</div>
-						<div className="grid grid-cols-2 gap-5 mt-2">
+						<div className="divider">
+							
+						</div>
+						<div className="grid grid-cols-2 mt-2">
 							<div className="text-3xl leading-loose col-span-1 text-primary font-thin">
 								<h2>Education</h2>
 								<p className="text-justify prose prose-base max-w-max leading-tight font-semibold">
@@ -153,12 +156,20 @@ const Template_1: NextPage = () => {
 								))}
 							</div>
 						</div> */}
-						<div className="grid grid-cols-2 gap-5 mt-6">
-							<div className="text-3xl leading-loose col-span-1 text-primary font-thin">
+						<div className="grid grid-cols-2 gap-5 mt-3">
+							<div className="text-3xl leading-loose col-span-1">
 							<h2 className="text-3xl leading-none font-thin text-primary">
 								Seminars/Trainings
 							</h2>
-							{}
+							{_currentUser.trainings.map((item, index) => (
+								<>
+								<h2 className="text-2xl font-bold prose mt-5">{item.title}</h2>
+								<p className="text-xl font-thin prose prose-sm">{item.organizer}</p>
+								<p className="text-base font-thin prose prose-sm">{item.location}</p>
+								<p className="text-base font-thin prose prose-sm">{item.date}</p>
+								</>
+							)
+							)}
 							</div>
 							<div className="text-3xl leading-loose col-span-1 text-primary font-thin">
 							<h2 className="text-3xl leading-none font-thin text-primary">
@@ -182,8 +193,8 @@ const Template_1: NextPage = () => {
 						<div className="grid grid-cols-2 mt-10">
 							<div>
 							</div>
-							<div className="py-10 ml-auto text-right">
-								<h2 className="text-2xl leading-none font-bold col-span-1 text-primary">
+							<div className="py-2 ml-auto text-right">
+								<h2 className="text-2xl leading-none font-bold text-primary divider">
 									Contact Info
 								</h2>
 								<p className="flex items-center justify-end gap-2">
