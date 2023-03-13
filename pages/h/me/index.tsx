@@ -53,6 +53,10 @@ const PageTabs = [
 		icon: MdNote,
 	},
 	{
+		name: "Connections",
+		value: "connections",
+	},
+	{
 		name: "Experiences",
 		value: "experiences",
 		icon: MdWork,
@@ -62,10 +66,6 @@ const PageTabs = [
 		value: "education",
 		icon: MdSchool,
 	},
-	// {
-	// 	name: "Connections",
-	// 	value: "connections",
-	// },
 	{
 		name: "Trainings",
 		value: "trainings",
@@ -167,7 +167,7 @@ const ProfilePage: NextPage = () => {
 			.from("new_recommended_hunters")
 			.select("id,full_name,username,email,avatar_url")
 			.not("id", "in", `(${joined})`)
-			.limit(2);
+			.limit(5);
 
 		if (error || localConnection.length === 0) {
 			return [];
@@ -351,7 +351,7 @@ const ProfilePage: NextPage = () => {
 															| "savedjobs",
 													)
 												}
-												className={`tab flex items-center gap-2 transition ${
+												className={`tab tab-sm flex items-center gap-2 transition ${
 													tabSelected === tab.value && "tab-active"
 												}`}
 											>
@@ -584,6 +584,39 @@ const ProfilePage: NextPage = () => {
 											))}
 										</div>
 									)}
+									{tabSelected === "connections" && (
+										<div className="flex flex-col md:grid grid-cols-2 gap-2">
+											{_currentUser.connections.length === 0 && (
+												<p className="text-center">No connections yet</p>
+											)}
+											{userConnections.data!.map((connection, index) => (
+												<Link
+													href={`/h/${connection.username}`}
+													key={`connection_${index}`}
+													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
+												>
+													<div className="flex gap-2 items-center">
+														<Image
+															src={connection.avatar_url}
+															alt="avatar"
+															className="w-12 h-12 mask mask-squircle bg-primary object-cover object-center"
+															width={48}
+															height={48}
+														/>
+														<div>
+															<p className="font-bold leading-none">
+																{connection.full_name.first}{" "}
+																{connection.full_name.last}
+															</p>
+															<p className="opacity-50 leading-none">
+																@{connection.username}
+															</p>
+														</div>
+													</div>
+												</Link>
+											))}
+										</div>
+									)}
 									{tabSelected === "savedjobs" && (
 										<div className="flex flex-col gap-2">
 											{savedJobs.isSuccess &&
@@ -627,7 +660,7 @@ const ProfilePage: NextPage = () => {
 
 							{/* second column */}
 							<div className="col-span-2 flex flex-col gap-5">
-								<div className="flex flex-col rounded-btn p-2 gap-3">
+								{/* <div className="flex flex-col rounded-btn p-2 gap-3">
 									<p className="text-2xl font-bold">Your Connections</p>
 
 									{userConnections.isLoading && (
@@ -696,7 +729,7 @@ const ProfilePage: NextPage = () => {
 												See all Connections
 											</Link>
 										)}
-								</div>
+								</div> */}
 								<div className="flex flex-col rounded-btn p-2 gap-3">
 									<p className="text-2xl font-bold">Suggested Connections</p>
 
@@ -734,7 +767,7 @@ const ProfilePage: NextPage = () => {
 															<Image
 																src={thisUser.avatar_url}
 																alt="avatar"
-																className="w-12 h-12 mask mask-squircle bg-primary "
+																className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 																width={50}
 																height={50}
 															/>

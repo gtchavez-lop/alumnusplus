@@ -507,6 +507,7 @@ export type HWorkExperience = {
   startDate: string
   endDate: string
   isCurrent: boolean
+  description: string
 }
 
 export type HEducation = {

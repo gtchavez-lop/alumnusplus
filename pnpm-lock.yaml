@@ -5,6 +5,7 @@ specifiers:
   '@headlessui/react': ^1.7.11
   '@nanostores/react': ^0.4.1
   '@next/font': 13.1.6
+  '@rive-app/react-canvas': ^3.0.38
   '@supabase/auth-helpers-nextjs': ^0.5.4
   '@supabase/auth-helpers-react': ^0.3.1
   '@supabase/supabase-js': ^2.8.0
@@ -71,6 +72,7 @@ dependencies:
   uuidv4: 6.2.13
 
 devDependencies:
+  '@rive-app/react-canvas': 3.0.38_react@18.2.0
   '@supabase/auth-helpers-react': 0.3.1_h4fmw4dd6b3xkulak4k3c7hqqu
   autoprefixer: 10.4.13_postcss@8.4.21
   fuse.js: 6.6.2
@@ -511,6 +513,19 @@ packages:
       tiny-glob: 0.2.9
       tslib: 2.5.0
     dev: false
+
+  /@rive-app/canvas/1.0.102:
+    resolution: {integrity: sha512-EoJ+rNHh6ORn6wH1dKoI9trNddwSPkmYnGrVA7ShZwaDKl3LTDP8eWwSJp1wYmB2HE3dBjHZHQabQpFW8ohX7g==}
+    dev: true
+
+  /@rive-app/react-canvas/3.0.38_react@18.2.0:
+    resolution: {integrity: sha512-V5+/I1ZJP416sp1uIQqm0kn9mA1fq1pNx1Il/f5AQYQw8Fu4P7Ume4+2HrMfWN1EHMvSqEgaBfsBUpFtYMQ1vw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@rive-app/canvas': 1.0.102
+      react: 18.2.0
+    dev: true
 
   /@rometools/cli-darwin-arm64/11.0.0:
     resolution: {integrity: sha512-F3vkdY+s3FLIEnAjSbyHTuIPB88cLpccimW4ecid5I7S6GzGG3iUJI4xT00JhH73K4P/qW20/9r+kH1T9Du8Xg==}
