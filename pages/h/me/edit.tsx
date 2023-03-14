@@ -15,6 +15,7 @@ import Fuse from "fuse.js";
 import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
+import { ToastError } from "@/components/customToasts";
 import _PhCities from "@/lib/ph_location.json";
 import _Skills from "@/lib/skills.json";
 import dayjs from "dayjs";
@@ -791,6 +792,21 @@ const EditProfilePage: NextPage = () => {
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
 
+										// check if all fields are filled
+										if (
+											!(
+												data.companyName &&
+												data.jobPosition &&
+												data.location &&
+												data.startDate &&
+												data.endDate &&
+												data.description
+											)
+										) {
+											toast.error("Please fill all fields");
+											return;
+										}
+
 										const newExperience: HWorkExperience = {
 											companyName: data.companyName as string,
 											jobPosition: data.jobPosition as string,
@@ -798,6 +814,7 @@ const EditProfilePage: NextPage = () => {
 											startDate: data.startDate as string,
 											endDate: data.endDate as string,
 											isCurrent: data.isCurrent === "on",
+											description: data.description as string,
 										};
 
 										setTempUserDetails({
@@ -810,15 +827,29 @@ const EditProfilePage: NextPage = () => {
 
 										// reset form
 										form.reset();
+
+										// scroll up
+										window.scrollTo({
+											top: 0,
+											behavior: "smooth",
+										});
 									}}
 									className="flex flex-col"
 								>
 									<label className="flex flex-col">
-										<span>Job Position</span>
+										<span>Job Position Title</span>
 										<input
 											className="input input-primary"
 											name="jobPosition"
 											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Job Description</span>
+										<textarea
+											className="textarea textarea-primary"
+											name="description"
+											rows={4}
 										/>
 									</label>
 									<label className="flex flex-col">
@@ -851,6 +882,7 @@ const EditProfilePage: NextPage = () => {
 											className="input input-primary"
 											name="endDate"
 											type="date"
+											max={dayjs().format("YYYY-MM-DD")}
 										/>
 									</label>
 									<label className="flex items-center mt-2 gap-2">

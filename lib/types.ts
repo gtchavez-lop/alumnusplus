@@ -507,6 +507,7 @@ export type HWorkExperience = {
   startDate: string
   endDate: string
   isCurrent: boolean
+  description: string
 }
 
 export type HEducation = {
@@ -548,6 +549,7 @@ export interface IUserHunter {
     last: string
     middle: string
   }
+  followedCompanies: string[]
   gender: "male" | "female" | "non-binary" | "other" | "prefer not to say"
   id: string
   id_type: "national id" | "passport" | "driver's license" | "other"
@@ -587,6 +589,7 @@ export interface IUserProvisioner {
     email: string
     phone: string | null
   }
+  followers: string[]
   foundingYear: number
   fullDescription: string
   id: string

@@ -1,15 +1,15 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import Rive, { useRive } from "@rive-app/react-canvas";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
-import { FiX } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -28,6 +28,14 @@ const FeedPage = () => {
 	const [feedList_ui] = useAutoAnimate<HTMLDivElement>();
 	const [mainFeed_ui] = useAutoAnimate<HTMLDivElement>();
 	const router = useRouter();
+	const { rive: riveLoadingState, RiveComponent: RiveLoadingComponent } =
+		useRive({
+			src: "/loading_feed.riv",
+			autoplay: true,
+			onLoad: () => {
+				console.log("loaded");
+			},
+		});
 
 	const fetchFeed = async () => {
 		const connections: string[] = _currentUser.connections.concat(
@@ -37,7 +45,7 @@ const FeedPage = () => {
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select(
-				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url),upvoters",
+				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url,is_verified),upvoters",
 			)
 			.order("createdAt", { ascending: false })
 			.in("uploader", connections);
@@ -61,7 +69,7 @@ const FeedPage = () => {
 			.from("new_recommended_hunters")
 			.select("*")
 			.not("id", "in", `(${joined})`)
-			.limit(2);
+			.limit(5);
 
 		if (error || localConnection.length === 0) {
 			return [];
@@ -138,7 +146,7 @@ const FeedPage = () => {
 
 	return (
 		<>
-			{_currentUser && feedList.isSuccess && recommendedUsers.isSuccess && (
+			{_currentUser && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -213,18 +221,17 @@ const FeedPage = () => {
 							{/* feed list */}
 							<div className="mt-10">
 								<div className="flex flex-col gap-5" ref={feedList_ui}>
-									{feedList.isLoading &&
-										Array(10)
-											.fill(0)
-											.map((_, i) => (
-												<div
-													key={`feedloading-${i}`}
-													style={{
-														animationDelay: `${i * 100}ms`,
-													}}
-													className="h-[200px] bg-zinc-500/50 animate-pulse duration-200"
-												/>
-											))}
+									{feedList.isLoading && (
+										<>
+											<div className="w-64 h-64 object-cover self-center mt-5">
+												<RiveLoadingComponent />
+											</div>
+											<p className="text-center w-full self-center max-w-xs">
+												Loading feed... This may take a while if you have a lot
+												of followers
+											</p>
+										</>
+									)}
 
 									{feedList.isSuccess &&
 										feedList.data.map((item: THunterBlogPost) => (
@@ -302,7 +309,7 @@ const FeedPage = () => {
 															<Image
 																src={thisUser.avatar_url}
 																alt="avatar"
-																className="w-12 h-12 mask mask-squircle bg-primary "
+																className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 																width={48}
 																height={48}
 															/>

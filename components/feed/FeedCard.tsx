@@ -7,6 +7,7 @@ import {
 } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
+	MdCheckCircleOutline,
 	MdDelete,
 	MdMoreHoriz,
 	MdShare,
@@ -305,18 +306,22 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						/>
 					</Link>
 					<div className="flex flex-col gap-1 justify-center">
-						<p className="leading-none">
+						<p className="leading-none flex w-full">
 							<Link
 								href={
 									currentUser.id === blogData.uploader.id
 										? "/h/me"
 										: `/h/${blogData.uploader.username}`
 								}
+								className="flex"
 							>
 								{blogData.uploader.full_name.first}{" "}
 								{blogData.uploader.full_name.last}
+								{blogData.uploader.is_verified && (
+									<MdCheckCircleOutline className="text-primary ml-1" />
+								)}
 							</Link>
-							<span className="text-primary opacity-50 ml-1">posted</span>
+							<span className=" opacity-50 ml-1">posted</span>
 						</p>
 						<p className="text-sm flex gap-2 leading-none">
 							<span className="opacity-50">@{blogData.uploader.username}</span>
