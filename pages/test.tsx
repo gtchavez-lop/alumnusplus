@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import Rive, { useRive } from "@rive-app/react-canvas";
+import Rive, { useRive } from "@rivpne-app/react-canvas";
 
 import GabCVTemplate_1 from "@/components/resume_template/gab_1";
 import { NextPage } from "next";

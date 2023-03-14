@@ -20,9 +20,14 @@ const templates = [
 		value: "carlo1",
 	},
 	{
+		name: "Carlo 2",
+		value: "carlo2",
+	},
+	{
 		name: "Gabbie 1",
 		value: "gabbie1",
 	},
+	
 ];
 
 const CvBuilder: FC = () => {

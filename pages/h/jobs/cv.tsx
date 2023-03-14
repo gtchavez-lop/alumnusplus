@@ -12,6 +12,7 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import Carlo2 from "@/components/resume_template/carlo2";
 
 const DefaultTemplate: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
@@ -169,6 +170,7 @@ const GeneratedCV: NextPage = () => {
 				<div className="hidden lg:block print:block">
 					{template === "default" && <DefaultTemplate />}
 					{template === "carlo1" && <Carlo1 />}
+					{template === "carlo2" && <Carlo2 />}
 					{template === "gabbie1" && <Gab1 />}
 				</div>
 			)}

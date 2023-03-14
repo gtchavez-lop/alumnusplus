@@ -6,8 +6,9 @@ import Image from "next/image";
 import { NextPage } from "next";
 import dayjs from "dayjs";
 import { useStore } from "@nanostores/react";
+import { FC } from "react";
 
-const Carlo1: NextPage = () => {
+const Carlo1: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	return (
