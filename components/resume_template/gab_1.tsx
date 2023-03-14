@@ -8,8 +8,9 @@ import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { motion } from "framer-motion";
 import { useStore } from "@nanostores/react";
+import { FC } from "react";
 
-const GabCVTemplate_1: NextPage = () => {
+const GabCVTemplate_1: FC = () => {
     const _currentUser = useStore($accountDetails) as IUserHunter;
 
     return (

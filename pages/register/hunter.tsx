@@ -50,6 +50,7 @@ const RegisterHunterSubPage = () => {
 			last: "",
 			middle: "",
 		},
+		followedCompanies: [],	
 		gender: "male",
 		id: "",
 		id_number: "",

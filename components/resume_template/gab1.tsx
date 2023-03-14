@@ -7,8 +7,9 @@ import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { useStore } from "@nanostores/react";
+import { FC } from "react";
 
-const Gab1: NextPage = () => {
+const Gab1: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	return (

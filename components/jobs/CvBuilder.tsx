@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { HEducation, HWorkExperience, IUserHunter } from "@/lib/types";
-import { MdAdd, MdDelete } from "react-icons/md";
+import { MdAdd, MdCheckCircle, MdDelete } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import dayjs from "dayjs";
@@ -10,11 +10,32 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
+const templates = [
+	{
+		name: "Default",
+		value: "default",
+	},
+	{
+		name: "Carlo 1",
+		value: "carlo1",
+	},
+	{
+		name: "Carlo 2",
+		value: "carlo2",
+	},
+	{
+		name: "Gabbie 1",
+		value: "gabbie1",
+	},
+	
+];
+
 const CvBuilder: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [tempUserDetails, setTempUserDetails] =
 		useState<IUserHunter>(_currentUser);
 	const router = useRouter();
+	const [selectedTemplate, setSelectedTemplate] = useState<string>("default");
 
 	const generateCV = async () => {
 		toast.loading("Generating CV...");
@@ -33,7 +54,7 @@ const CvBuilder: FC = () => {
 		}
 
 		toast.dismiss();
-		router.push("/h/jobs/cv");
+		router.push(`/h/jobs/cv?template=${selectedTemplate}`);
 	};
 
 	return (
@@ -67,6 +88,28 @@ const CvBuilder: FC = () => {
 								Your cover letter must be at least 200 characters long
 							</p>
 						)}
+
+						{/* templates */}
+						<p className="mt-10 text-2xl font-bold">Select Template</p>
+						<div className="mt-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+							{templates.map((template, key) => (
+								<div key={`template-${key}`}
+									onClick={() => setSelectedTemplate(template.value)}
+									className={`h-[140px] cursor-pointer hover:scale-[0.98] transition p-2 flex flex-col items-center justify-end rounded-btn bg-base-300 ${
+										selectedTemplate === template.value &&
+										"bg-primary text-primary-content ring-2 ring-primary/100"
+									}`}
+								>
+									{selectedTemplate === template.value && (
+										<MdCheckCircle className="text-4xl" />
+									)}
+									<p>{template.name}</p>
+								</div>
+							))}
+							<div className="h-[140px] transition p-2 flex flex-col items-center justify-end rounded-btn">
+								<p className="text-lg">More templates coming soon</p>
+							</div>
+						</div>
 
 						<div className="flex justify-end mt-2 gap-2">
 							<button

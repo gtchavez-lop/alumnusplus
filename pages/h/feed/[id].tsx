@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
+	MdCheckCircle,
 	MdComment,
 	MdDelete,
 	MdEdit,
@@ -38,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 	const { data: blogData, error } = await supabase
 		.from("public_posts")
 		.select(
-			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username,avatar_url),upvoters",
+			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username,avatar_url,is_verified),upvoters",
 		)
 		.eq("id", id)
 		.single();
@@ -286,6 +287,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 				username: currentUser.username,
 				full_name: currentUser.full_name,
 				avatar_url: currentUser.avatar_url,
+				is_verified: currentUser.is_verified,
 			},
 			visible: true,
 		};
@@ -344,10 +346,13 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 											? "/me"
 											: `/h/${blogData.uploader.username}`
 									}
-									className="font-semibold hover:underline underline-offset-2 leading-tight"
+									className="font-semibold hover:underline underline-offset-2 leading-tight flex items-center"
 								>
 									{blogData.uploader.full_name.first}{" "}
 									{blogData.uploader.full_name.last}
+									{blogData.uploader.is_verified && (
+										<MdCheckCircle className="text-primary ml-1" />
+									)}
 								</Link>
 								<p className="leading-none">
 									{dayjs(blogData.createdAt).fromNow()}
@@ -465,9 +470,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 												className="mask mask-squircle"
 											/>
 											<div>
-												<p className="font-semibold leading-tight">
+												<p className="font-semibold leading-tight flex items-center">
 													{currentUser.full_name.first}{" "}
 													{currentUser.full_name.last}
+													{currentUser.is_verified && (
+														<MdCheckCircle className="text-primary text-sm ml-1" />
+													)}
 												</p>
 												<p className="text-sm leading-tight">
 													@{currentUser.username}
@@ -517,10 +525,13 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 																		? "/h/me"
 																		: `/h/${comment.commenter.username}`
 																}
-																className="font-bold text-sm leading-none hover:underline w-full"
+																className="font-bold text-sm leading-none hover:underline w-full flex items-center"
 															>
 																{comment.commenter.full_name.first}{" "}
 																{comment.commenter.full_name.last}
+																{comment.commenter.is_verified && (
+																	<MdCheckCircle className="text-primary ml-1" />
+																)}
 															</Link>
 															<ReactMarkdown
 																// components={markdownRenderer}

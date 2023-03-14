@@ -6,6 +6,7 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { GetServerSideProps, NextPage } from "next";
+import { MdCheckCircle, MdCheckCircleOutline } from "react-icons/md";
 import { useEffect, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -13,7 +14,6 @@ import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { MdCheckCircleOutline } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -93,7 +93,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 	const fetchUserConnections = async () => {
 		const { data, error } = await supabase
 			.from("user_hunters")
-			.select("id,username,full_name,avatar_url")
+			.select("id,username,full_name,avatar_url,is_verified")
 			.in("id", targetUser.connections);
 
 		if (error) {
@@ -592,7 +592,11 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								userConnections.data.length > 0 &&
 								userConnections.data.slice(0, 3).map((connection, index) => (
 									<Link
-										href={`/h/${connection.username}`}
+										href={
+											connection.username === _currentUser.username
+												? "/h/me"
+												: `/h/${connection.username}`
+										}
 										key={`connection_${index}`}
 										className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
 									>
@@ -605,9 +609,13 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 												height={48}
 											/>
 											<div>
-												<p className="font-bold leading-none">
+												<p className="font-bold leading-none flex items-center">
 													{connection.full_name.first}{" "}
 													{connection.full_name.last}
+
+													{connection.is_verified && (
+														<MdCheckCircle className="text-primary ml-1" />
+													)}
 												</p>
 												<p className="opacity-50 leading-none">
 													@{connection.username}
