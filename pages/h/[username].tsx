@@ -14,7 +14,6 @@ import { AnimPageTransition } from "@/lib/animations";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { MdCheckCircleOutline } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
