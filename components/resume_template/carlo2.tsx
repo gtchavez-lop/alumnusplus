@@ -1,24 +1,17 @@
-import { $accountDetails } from "@/lib/globalStates";
-import { IUserHunter } from "@/lib/types";
-import { useStore } from "@nanostores/react";
-import dayjs from "dayjs";
-import Image from "next/image";
-import { FC } from "react";
 import { MdEmail, MdPhone } from "react-icons/md";
+
+import { $accountDetails } from "@/lib/globalStates";
+import { FC } from "react";
+import { IUserHunter } from "@/lib/types";
+import Image from "next/image";
+import dayjs from "dayjs";
+import { useStore } from "@nanostores/react";
 
 const Carlo2: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	return (
 		<>
 			<div className="grid grid-cols-5 gap-5 mt-4">
-				{/* <div className="grid grid-cols-2 items-center">
-								<h1 className="text-7xl font-bold">
-									{_currentUser.full_name.first} {_currentUser.full_name.last}
-								</h1>
-								<p className="text-4xl font-thin text-center">
-									{_currentUser.skill_primary}
-								</p>
-							</div> */}
 				<div className="col-span-2 row-start-1 row-span-2 mx-auto">
 					<Image
 						src={_currentUser.avatar_url}
@@ -32,9 +25,6 @@ const Carlo2: FC = () => {
 					<h1 className="text-8xl font-bold">{_currentUser.full_name.first}</h1>
 					<h1 className="text-8xl font-bold">{_currentUser.full_name.last}</h1>
 					<p className="text-2xl font-thin">{_currentUser.skill_primary}</p>
-					{/* <div className="divider">
-
-								</div> */}
 				</div>
 
 				<div className="col-span-2 row-start-3">
@@ -77,9 +67,6 @@ const Carlo2: FC = () => {
 				</div>
 
 				<div className="text-left col-span-3 row-start-3">
-					{/* <div className="divider">
-
-								</div> */}
 					<h2 className="text-2xl leading-loose text-primary font-semibold">
 						EDUCATION
 					</h2>
@@ -136,7 +123,7 @@ const Carlo2: FC = () => {
 					</h2>
 					<div className="flex flex-col gap-2">
 						{_currentUser.trainings.map((item, index) => (
-							<div>
+							<div key={`training_${index}`}>
 								<h2 className="text-xl font-bold underline underline-offset-8">
 									{item.title}
 								</h2>
