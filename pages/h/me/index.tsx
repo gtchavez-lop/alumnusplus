@@ -86,6 +86,11 @@ const PageTabs = [
 		icon: MdTrain,
 	},
 	{
+		name: "Trainings",
+		value: "trainings",
+		icon: MdTrain,
+	},
+	{
 		name: "Saved Jobs",
 		value: "savedjobs",
 		icon: MdCheckCircleOutline,
