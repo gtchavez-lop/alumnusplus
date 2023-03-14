@@ -32,6 +32,7 @@ const ProvisionerPage: NextPage = () => {
 		},
 		foundingYear: 0,
 		fullDescription: "",
+		followers: [],
 		id: "",
 		industryType: "",
 		jobPostings: [],

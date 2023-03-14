@@ -206,7 +206,7 @@ export default function PrivacyPolicyPage() {
 				</p>
 
 				<ul className="list-disc mt-2 pl-8">
-					<li>Data about a person's sex life or sexual orientation</li>
+					<li>Data about a person&apos;s sex life or sexual orientation</li>
 					<li>Student Data</li>
 					<li>Social Security Numbers or other government identifiers</li>
 				</ul>
@@ -235,14 +235,14 @@ export default function PrivacyPolicyPage() {
 						to track location-based information from your mobile device, either
 						continuously or while you are using our mobile application/s, to
 						provide certain location-based services. If you wish to change our
-						access or permissions, you may do so in your device's settings.
+						access or permissions, you may do so in your device&apos;s settings.
 					</li>
 					<li className="mt-2">
 						<b>Mobile Device Access.</b> We may request access or permission to
 						certain features from your mobile device, including your mobile
 						&apos;s microphone, camera, social media accounts, storage,
 						calendar, gallery, and other features. If you wish to change our
-						access or permissions, you may do so in your device's settings.
+						access or permissions, you may do so in your device&apos;s settings.
 					</li>
 					<li className="mt-2">
 						<b>Mobile Device Data.</b> We automatically collect device
@@ -619,7 +619,7 @@ export default function PrivacyPolicyPage() {
 					We do not knowingly solicit data from or market to children under 18
 					years of age. By using the Services, you represent that you are at
 					least 18 or that you are the parent or guardian of such a minor and
-					consent to such minor dependent's use of the Services. If we learn
+					consent to such minor dependent&apos;s use of the Services. If we learn
 					that personal information from users less than 18 years of age has
 					been collected, we will deactivate the account and take reasonable
 					measures to promptly delete such data from our records. If you become
@@ -671,8 +671,8 @@ export default function PrivacyPolicyPage() {
 					may be expressed and/or implied consent depending on the applicable
 					law, you have the right to withdraw your consent at any time. You can
 					withdraw your consent at any time by contacting us by using the
-					contact details provided in the section "HOW CAN YOU CONTACT US ABOUT
-					THIS NOTICE?" below.
+					contact details provided in the section &quot;HOW CAN YOU CONTACT US ABOUT
+					THIS NOTICE?&quot; below.
 				</p>
 
 				<p className="mt-2">
@@ -737,7 +737,7 @@ export default function PrivacyPolicyPage() {
 
 				<p className="mt-2">
 					Most web browsers and some mobile operating systems and mobile
-					applications include a Do-Not-Track ("DNT") feature or setting you can
+					applications include a Do-Not-Track (&quot;DNT&quot;) feature or setting you can
 					activate to signal your privacy preference not to have data about your
 					online browsing activities monitored and collected. At this stage, no
 					uniform technology standard for recognizing and implementing DNT
@@ -759,8 +759,8 @@ export default function PrivacyPolicyPage() {
 				</p>
 
 				<p className="mt-2">
-					California Civil Code Section 1798.83, also known as the "Shine The
-					Light" law, permits our users who are California residents to request
+					California Civil Code Section 1798.83, also known as the &quot;Shine The
+					Light&quot; law, permits our users who are California residents to request
 					and obtain from us, once a year and free of charge, information about
 					categories of personal information (if any) we disclosed to third
 					parties for direct marketing purposes and the names and addresses of
@@ -793,7 +793,7 @@ export default function PrivacyPolicyPage() {
 
 				<p className="mt-2">
 					We may update this privacy notice from time to time. The updated
-					version will be indicated by an updated "Revised" date and the updated
+					version will be indicated by an updated &quot;Revised&quot; date and the updated
 					version will be effective as soon as it is accessible. If we make
 					material changes to this privacy notice, we may notify you either by
 					prominently posting a notice of such changes or by directly sending

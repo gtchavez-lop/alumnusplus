@@ -87,8 +87,8 @@ const CvBuilder: FC = () => {
 						{/* templates */}
 						<p className="mt-10 text-2xl font-bold">Select Template</p>
 						<div className="mt-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-							{templates.map((template) => (
-								<div
+							{templates.map((template, key) => (
+								<div key={`template-${key}`}
 									onClick={() => setSelectedTemplate(template.value)}
 									className={`h-[140px] cursor-pointer hover:scale-[0.98] transition p-2 flex flex-col items-center justify-end rounded-btn bg-base-300 ${
 										selectedTemplate === template.value &&
