@@ -1,15 +1,14 @@
-import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
-import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
-import Footer from "@/components/Footer";
+import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -28,6 +27,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	if (error) {
 		console.log(error);
+		return {
+			props: {
+				companyData: null,
+			}
+		}
 	}
 
 	return {

@@ -105,8 +105,9 @@ const Prov_Dashboard = () => {
 									<div className="stat-title">Job Posts</div>
 									<div
 										className={`stat-value ${
-											jobs.isLoading &&
-											"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent"
+											jobs.isLoading ||
+											(!jobs.isSuccess &&
+												"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent")
 										}`}
 									>
 										{jobs.isSuccess ? jobs.data.length : "0"}

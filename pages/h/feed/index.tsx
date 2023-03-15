@@ -1,6 +1,5 @@
 import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
-import Rive, { useRive } from "@rive-app/react-canvas";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -8,12 +7,12 @@ import FeedCard from "@/components/feed/FeedCard";
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
+import { useRive } from "@rive-app/react-canvas";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
