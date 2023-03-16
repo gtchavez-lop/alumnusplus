@@ -1,15 +1,14 @@
-import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
-import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
-import Footer from "@/components/Footer";
+import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -18,58 +17,46 @@ import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.params as { id: string };
+	const { id } = context.query as { id: string };
 
-	const { data, error } = await supabase
+	const { data: company, error: company_error } = await supabase
 		.from("user_provisioners")
 		.select("*")
 		.eq("id", id)
 		.single();
 
-	if (error) {
-		console.log(error);
+	const { data: jobs, error: jobs_error } = await supabase
+		.from("public_jobs")
+		.select("*,uploader:uploader_id(legalName)")
+		.eq("uploader_id", id);
+
+	if (company_error || jobs_error) {
+		console.error(company_error, jobs_error);
+		return {
+			props: {
+				companyData: null,
+				jobs: null,
+			},
+		};
 	}
 
 	return {
 		props: {
-			companyData: data as IUserProvisioner,
+			companyData: company as IUserProvisioner,
+			jobs: jobs as TProvJobPost[],
 		},
 	};
 };
 
-const ProvisionerPage: NextPage<{ companyData: IUserProvisioner }> = ({
-	companyData,
-}) => {
+const ProvisionerPage: NextPage<{
+	companyData: IUserProvisioner;
+	jobs: TProvJobPost[];
+}> = ({ companyData, jobs }) => {
 	const [tabSelected, setTabSelected] = useState<"about" | "jobs">("about");
 	const [tabContents] = useAutoAnimate();
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFollowed, setIsFollowed] = useState(false);
 	const router = useRouter();
-
-	const fetchAllJobs = async () => {
-		const { data, error } = await supabase
-			.from("public_jobs")
-			.select("*,uploader:uploader_id(legalName)")
-			.eq("uploader_id", companyData.id);
-
-		if (error) {
-			console.log(error);
-		}
-
-		return data as TProvJobPost[];
-	};
-
-	const [allJobPosts] = useQueries({
-		queries: [
-			{
-				queryKey: ["driftData", companyData.legalName],
-				queryFn: fetchAllJobs,
-				refetchOnMount: false,
-				refetchOnWindowFocus: false,
-				enabled: !!companyData,
-			},
-		],
-	});
 
 	const handleFollowCompany = async () => {
 		toast.loading("Following company...");
@@ -282,7 +269,7 @@ const ProvisionerPage: NextPage<{ companyData: IUserProvisioner }> = ({
 								)}
 								{tabSelected === "jobs" && (
 									<div>
-										{!allJobPosts.isSuccess && (
+										{jobs.length === 0 && (
 											<div className="flex justify-center items-center flex-col py-16">
 												<Image
 													alt=""
@@ -299,32 +286,30 @@ const ProvisionerPage: NextPage<{ companyData: IUserProvisioner }> = ({
 											</div>
 										)}
 										<div className="flex flex-col gap-2">
-											{allJobPosts.isSuccess &&
-												allJobPosts.data.map((job, index) => (
-													<JobCard
-														job={{
-															...job,
-															uploader: {
-																legalName: companyData.legalName,
-															},
-														}}
-														key={`jobCard_${index}`}
-													/>
-												))}
+											{jobs.map((job, index) => (
+												<JobCard
+													job={{
+														...job,
+														uploader: {
+															legalName: companyData.legalName,
+														},
+													}}
+													key={`jobCard_${index}`}
+												/>
+											))}
 
-											{allJobPosts.isSuccess &&
-												allJobPosts.data.length === 0 && (
-													<div className="flex justify-center items-center flex-col py-16">
-														<Image
-															alt=""
-															priority
-															src="/file-search.png"
-															width={200}
-															height={200}
-														/>
-														<p>No job posts found for this company</p>
-													</div>
-												)}
+											{jobs.length === 0 && (
+												<div className="flex justify-center items-center flex-col py-16">
+													<Image
+														alt=""
+														priority
+														src="/file-search.png"
+														width={200}
+														height={200}
+													/>
+													<p>No job posts found for this company</p>
+												</div>
+											)}
 										</div>
 									</div>
 								)}
@@ -384,7 +369,7 @@ const ProvisionerPage: NextPage<{ companyData: IUserProvisioner }> = ({
 			<label htmlFor="unfollowmodal" className="modal">
 				<label htmlFor="" className="modal-box">
 					<h3 className="text-lg font-bold">
-						Do you want to unfollow {companyData.legalName}?
+						Do you want to unfollow this company?
 					</h3>
 					<p>You will no longer receive updates from this company.</p>
 

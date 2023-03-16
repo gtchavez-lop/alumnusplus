@@ -48,6 +48,7 @@ const ProvisionerPage: NextPage = () => {
 		},
 		tags: [],
 		type: "provisioner",
+		totalVisits: 0,
 		website: "",
 	});
 	const [localPassword, setLocalPassword] = useState({

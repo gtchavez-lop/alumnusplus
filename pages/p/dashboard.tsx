@@ -105,8 +105,9 @@ const Prov_Dashboard = () => {
 									<div className="stat-title">Job Posts</div>
 									<div
 										className={`stat-value ${
-											jobs.isLoading &&
-											"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent"
+											jobs.isLoading ||
+											(!jobs.isSuccess &&
+												"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent")
 										}`}
 									>
 										{jobs.isSuccess ? jobs.data.length : "0"}
@@ -153,7 +154,7 @@ const Prov_Dashboard = () => {
 								{jobs.isSuccess && (
 									<>
 										{jobs.data.map((job) => (
-											<JobCardProv key={job.id} job={job} />
+											<JobCardProv viewMode="list" key={job.id} job={job} />
 										))}
 
 										{jobs.data.length === 0 && (

@@ -28,8 +28,8 @@ const JobCard: FC<{ job: Job }> = ({ job }) => {
 			}}
 		>
 			<Link
-				href={`/h/jobs/${job.id}`}
-				className="flex flex-col w-full min-h-[200px] rounded-btn p-5 border-2 border-base-200 hover:bg-base-200 transition-all"
+				href={`/h/jobs/posting?id=${job.id}`}
+				className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-200 hover:bg-primary/30 transition-all"
 			>
 				<h1 className="text-xl font-bold">{job.job_title}</h1>
 				<p className="text-primary">{job.uploader.legalName}</p>

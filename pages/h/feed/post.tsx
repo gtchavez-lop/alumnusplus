@@ -33,8 +33,8 @@ import { uuid } from "uuidv4";
 
 dayjs.extend(relative);
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-	const { id } = query;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const { id } = context.query;
 
 	const { data: blogData, error } = await supabase
 		.from("public_posts")
@@ -344,7 +344,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									href={
 										currentUser.id === blogData.uploader.id
 											? "/me"
-											: `/h/${blogData.uploader.username}`
+											: `/h?user=${blogData.uploader.username}`
 									}
 									className="font-semibold hover:underline underline-offset-2 leading-tight flex items-center"
 								>

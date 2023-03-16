@@ -39,10 +39,6 @@ const PageTabs = [
 		value: "skillset",
 	},
 	{
-		title: "Residence",
-		value: "residence",
-	},
-	{
 		title: "Socials",
 		value: "socials",
 	},
@@ -454,6 +450,81 @@ const EditProfilePage: NextPage = () => {
 										<option value="prefer not to say">Prefer not to say</option>
 									</select>
 								</label>
+								<label className="flex flex-col">
+									<span>Address</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.address}
+										type="text"
+										onChange={(e) => {
+											setTempUserDetails({
+												...tempUserDetails,
+												address: {
+													...tempUserDetails.address,
+													address: e.target.value,
+												},
+											});
+										}}
+									/>
+								</label>
+								<label className="flex flex-col">
+									<span>City</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.city}
+										type="text"
+										onChange={(e) => {
+											let res = f_PhCities.search(e.target.value);
+											let filtered = res.map((item) => {
+												return {
+													city: item.item.city,
+													admin_name: item.item.admin_name,
+												};
+											});
+											let limited = filtered.slice(0, 5);
+
+											setCitySearchResults(limited);
+											setTempUserDetails({
+												...tempUserDetails,
+												address: {
+													...tempUserDetails.address,
+													city: e.target.value,
+												},
+											});
+										}}
+									/>
+									{citySearchResults.length > 0 && (
+										<div className="flex flex-col gap-2 bg-base-100 p-2 rounded-btn mt-3">
+											{citySearchResults.map((item, index) => (
+												<button
+													className="btn btn-ghost btn-block justify-start"
+													key={`city_${index}`}
+													onClick={() => {
+														setTempUserDetails({
+															...tempUserDetails,
+															address: {
+																...tempUserDetails.address,
+																city: item.city,
+															},
+														});
+
+														setCitySearchResults([]);
+													}}
+												>
+													{item.city}, {item.admin_name}
+												</button>
+											))}
+										</div>
+									)}
+								</label>
+								<label className="flex flex-col">
+									<span>Postal Code</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.postalCode}
+										type="number"
+									/>
+								</label>
 							</div>
 						)}
 						{tabSelected === "skillset" && (
@@ -574,87 +645,6 @@ const EditProfilePage: NextPage = () => {
 											Must be at least 3 skills
 										</span>
 									)}
-								</label>
-							</div>
-						)}
-						{tabSelected === "residence" && (
-							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
-								<p className="text-xl font-bold">Residence Information</p>
-
-								<label className="flex flex-col">
-									<span>Address</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.address}
-										type="text"
-										onChange={(e) => {
-											setTempUserDetails({
-												...tempUserDetails,
-												address: {
-													...tempUserDetails.address,
-													address: e.target.value,
-												},
-											});
-										}}
-									/>
-								</label>
-								<label className="flex flex-col">
-									<span>City</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.city}
-										type="text"
-										onChange={(e) => {
-											let res = f_PhCities.search(e.target.value);
-											let filtered = res.map((item) => {
-												return {
-													city: item.item.city,
-													admin_name: item.item.admin_name,
-												};
-											});
-											let limited = filtered.slice(0, 5);
-
-											setCitySearchResults(limited);
-											setTempUserDetails({
-												...tempUserDetails,
-												address: {
-													...tempUserDetails.address,
-													city: e.target.value,
-												},
-											});
-										}}
-									/>
-									{citySearchResults.length > 0 && (
-										<div className="flex flex-col gap-2 bg-base-100 p-2 rounded-btn mt-3">
-											{citySearchResults.map((item, index) => (
-												<button
-													className="btn btn-ghost btn-block justify-start"
-													key={`city_${index}`}
-													onClick={() => {
-														setTempUserDetails({
-															...tempUserDetails,
-															address: {
-																...tempUserDetails.address,
-																city: item.city,
-															},
-														});
-
-														setCitySearchResults([]);
-													}}
-												>
-													{item.city}, {item.admin_name}
-												</button>
-											))}
-										</div>
-									)}
-								</label>
-								<label className="flex flex-col">
-									<span>Postal Code</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.postalCode}
-										type="number"
-									/>
 								</label>
 							</div>
 						)}

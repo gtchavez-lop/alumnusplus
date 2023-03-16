@@ -607,6 +607,7 @@ export interface IUserProvisioner {
   }
   tags: string[]
   type: "provisioner"
+  totalVisits: number
   website: string | ""
 }
 

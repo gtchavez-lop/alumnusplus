@@ -9,6 +9,8 @@ import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
 	MdCheckCircleOutline,
 	MdDelete,
+	MdFavorite,
+	MdFavoriteBorder,
 	MdMoreHoriz,
 	MdShare,
 	MdVisibility,
@@ -294,7 +296,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						href={
 							currentUser.id === blogData.uploader.id
 								? "/h/me"
-								: `/h/${blogData.uploader.username}`
+								: `/h?user=${blogData.uploader.username}`
 						}
 					>
 						<Image
@@ -311,7 +313,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 								href={
 									currentUser.id === blogData.uploader.id
 										? "/h/me"
-										: `/h/${blogData.uploader.username}`
+										: `/h?user=${blogData.uploader.username}`
 								}
 								className="flex"
 							>
@@ -333,7 +335,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				</div>
 
 				<Link
-					href={`/h/feed/${blogData.id}`}
+					href={`/h/feed/post?id=${blogData.id}`}
 					className="mt-5 h-[101px] overflow-hidden relative"
 				>
 					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-base-200" />
@@ -345,7 +347,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 					</ReactMarkdown>
 				</Link>
 				<Link
-					href={`/h/feed/${blogData.id}`}
+					href={`/h/feed/post?id=${blogData.id}`}
 					className="text-center pt-2 opacity-50 z-10"
 				>
 					Read more
@@ -353,11 +355,13 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<button
-							onClick={upvoteHandler}
-							className={`btn ${isLiked ? "btn-primary" : "btn-ghost"} gap-2`}
-						>
-							<FiArrowUp className="font-bold" />
+						<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
+							{isLiked ? (
+								<MdFavorite className="text-lg text-red-500" />
+							) : (
+								<MdFavoriteBorder className="text-lg " />
+							)}
+							{/* <FiArrowUp className="font-bold" /> */}
 							{blogData.upvoters ? blogData.upvoters.length : 0}
 						</button>
 						<motion.button
@@ -372,48 +376,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							<span className="ml-2">{blogData.comments?.length ?? 0}</span>
 						</motion.button>
 					</div>
-					{/* <div className="md:hidden dropdown dropdown-top dropdown-end">
-						<label tabIndex={0} className="btn btn-ghost">
-							<FiMoreHorizontal />
-						</label>
-						<ul
-							tabIndex={0}
-							className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-						>
-							<li>
-								<Link scroll={false} href={`/h/feed/${blogData.id}`}>
-									Read More
-								</Link>
-							</li>
-							<li>
-								<button
-									onClick={() => {
-										const thisLink = `${route}/h/feed/${blogData.id}`;
-										navigator.clipboard.writeText(thisLink);
-										toast("Link Shared");
-									}}
-								>
-									Share
-								</button>
-							</li>
-						</ul>
-					</div> */}
 					<div className="flex gap-2">
-						{/* {!isMoreOpen ? (
-							<Link
-								scroll={false}
-								href={`/h/feed/${blogData.id}`}
-								className="btn btn-ghost"
-								onClick={() => setIsMoreOpen(true)}
-							>
-								Read More
-							</Link>
-						) : (
-							<div className="btn btn-ghost btn-disabled items-center gap-2">
-								Loading Page
-								<FiLoader className="animate-spin" />
-							</div>
-						)} */}
 						<button
 							className="btn btn-ghost gap-2"
 							onClick={() => {

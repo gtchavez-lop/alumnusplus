@@ -86,11 +86,6 @@ const PageTabs = [
 		icon: MdTrain,
 	},
 	{
-		name: "Trainings",
-		value: "trainings",
-		icon: MdTrain,
-	},
-	{
 		name: "Saved Jobs",
 		value: "savedjobs",
 		icon: MdCheckCircleOutline,
@@ -215,65 +210,70 @@ const ProfilePage: NextPage = () => {
 		}
 
 		return data;
-	}
+	};
 
-	const [userConnections, recommendedUsers, userActivities, savedJobs, savedCompanies] =
-		useQueries({
-			queries: [
-				{
-					queryKey: ["userConnections"],
-					queryFn: fetchUserConnections,
-					enabled: !!_currentUser,
-					onError: (): void => {
-						console.error("failed to fetch user connections");
-					},
-					onSuccess: (): void => {
-						console.info("✅ User Connections Fetched");
-					},
+	const [
+		userConnections,
+		recommendedUsers,
+		userActivities,
+		savedJobs,
+		savedCompanies,
+	] = useQueries({
+		queries: [
+			{
+				queryKey: ["userConnections"],
+				queryFn: fetchUserConnections,
+				enabled: !!_currentUser,
+				onError: (): void => {
+					console.error("failed to fetch user connections");
 				},
-				{
-					queryKey: ["recommendedUsers"],
-					queryFn: fetchRecommendedUsers,
-					enabled: !!_currentUser,
-					onError: () => {
-						console.error("failed to fetch recommended users");
-					},
-					onSuccess: () => {
-						console.info("✅ Recommended Users Fetched");
-					},
+				onSuccess: (): void => {
+					console.info("✅ User Connections Fetched");
 				},
-				{
-					queryKey: ["userActivities"],
-					queryFn: fetchUserActivities,
-					enabled: !!_currentUser,
-					onError: () => {
-						toast.error("Failed to fetch user activities");
-					},
-					onSuccess: () => {
-						console.info("✅ User Activities Fetched");
-					},
+			},
+			{
+				queryKey: ["recommendedUsers"],
+				queryFn: fetchRecommendedUsers,
+				enabled: !!_currentUser,
+				onError: () => {
+					console.error("failed to fetch recommended users");
 				},
-				{
-					queryKey: ["savedJobs"],
-					queryFn: fetchUserSavedJobs,
-					enabled: !!_currentUser,
-					onError: () => {
-						toast.error("Failed to fetch saved jobs");
-					},
-					onSuccess: () => {
-						console.info("✅ User Saved Jobs Fetched");
-					},
+				onSuccess: () => {
+					console.info("✅ Recommended Users Fetched");
 				},
-				{
-					queryKey: ["savedCompanies"],
-					queryFn: fetchSavedCompanies,
-					enabled: !!_currentUser,
-					onError: () => {
-						toast.error("Failed to fetch saved companies");
-					}
-				}
-			],
-		});
+			},
+			{
+				queryKey: ["userActivities"],
+				queryFn: fetchUserActivities,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch user activities");
+				},
+				onSuccess: () => {
+					console.info("✅ User Activities Fetched");
+				},
+			},
+			{
+				queryKey: ["savedJobs"],
+				queryFn: fetchUserSavedJobs,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch saved jobs");
+				},
+				onSuccess: () => {
+					console.info("✅ User Saved Jobs Fetched");
+				},
+			},
+			{
+				queryKey: ["savedCompanies"],
+				queryFn: fetchSavedCompanies,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch saved companies");
+				},
+			},
+		],
+	});
 
 	return (
 		<>
@@ -534,7 +534,7 @@ const ProfilePage: NextPage = () => {
 											)}
 											{userConnections.data!.map((connection, index) => (
 												<Link
-													href={`/h/${connection.username}`}
+													href={`/h?user=${connection.username}`}
 													key={`connection_${index}`}
 													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
 												>
@@ -568,20 +568,19 @@ const ProfilePage: NextPage = () => {
 												</p>
 											)}
 
-											{
-											savedCompanies.isSuccess &&
-											savedCompanies.data.map((company, i) => (
-												<Link
-												href={`/h/drift/${company.id}`}
-													key={`company_${i}`}
-													className="shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
-												>
-													<p className="text-lg">{company.legalName}</p>
-													<p className="mt-2 text-sm opacity-75">
-														{company.shortDescription}
-													</p>
-												</Link>
-											))}
+											{savedCompanies.isSuccess &&
+												savedCompanies.data.map((company, i) => (
+													<Link
+														href={`/h/drift/${company.id}`}
+														key={`company_${i}`}
+														className="shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
+													>
+														<p className="text-lg">{company.legalName}</p>
+														<p className="mt-2 text-sm opacity-75">
+															{company.shortDescription}
+														</p>
+													</Link>
+												))}
 										</div>
 									)}
 									{tabSelected === "experiences" && (
@@ -609,7 +608,9 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "education" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.experience.length === 0 && (
-												<p className="text-center col-span-full">No education history yet</p>
+												<p className="text-center col-span-full">
+													No education history yet
+												</p>
 											)}
 											{_currentUser.education.map((edu, i) => (
 												<div
