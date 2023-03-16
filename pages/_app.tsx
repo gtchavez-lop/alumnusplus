@@ -19,12 +19,14 @@ import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
+import { useStore } from "@nanostores/react";
 
-const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: false });
-const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const { initialSession } = pageProps;
+	const _accountType = useStore($accountType) as "hunter" | "provisioner";
 
 	const checkUser = async () => {
 		const { data } = await supabase.auth.getUser();
@@ -56,6 +58,10 @@ export default function App({ Component, pageProps, router }: AppProps) {
 						phone: data.user?.phone as string,
 						raw_user_meta_data: metadata,
 					});
+
+					if (router.pathname === "/") {
+						router.push("/h/feed");
+					}
 				}
 			} else if (metadata && metadata.type === "provisioner") {
 				$accountType.set("provisioner");
@@ -81,21 +87,19 @@ export default function App({ Component, pageProps, router }: AppProps) {
 						phone: data.user?.phone as string,
 						raw_user_meta_data: metadata,
 					});
+
+					if (router.pathname === "/") {
+						router.push("/p/dashboard");
+					}
 				}
 			}
 
 			// change route depending on account type
-			if (router.pathname === "/") {
-				if (metadata.type === "hunter") {
-					router.push("/h/feed");
-				} else if (metadata.type === "provisioner") {
-					router.push("/p/dashboard");
-				}
-			}
 		}
 	};
 
 	useEffect(() => {
+		// check if user is logged in and redirect based on account type
 		checkUser();
 
 		// get theme from localStorage
@@ -106,6 +110,16 @@ export default function App({ Component, pageProps, router }: AppProps) {
 			$themeMode.set(theme as "light" | "dark");
 			document.documentElement.setAttribute("data-theme", theme);
 		}
+
+		// protect all /h and /p routes
+		// if router.pathname has /h or /p in it and accountType is not set, redirect to /
+		// if (
+		// 	(router.pathname.includes("/h") || router.pathname.includes("/p")) &&
+		// 	!_accountType
+		// ) {
+		// 	console.log("User not detected. Redirecting to /");
+		// 	router.push("/");
+		// }
 	});
 
 	return (

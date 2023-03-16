@@ -114,14 +114,14 @@ const ProvProfilePage: NextPage = () => {
 				queryFn: fetchJobs,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
-				refetchOnMount: true,
+				refetchOnMount: false,
 			},
 			{
 				queryKey: ["prov_followers"],
 				queryFn: fetchFollowers,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
-				refetchOnMount: true,
+				refetchOnMount: false,
 			},
 		],
 	});
@@ -145,7 +145,7 @@ const ProvProfilePage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 					>
-						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5 overflow-hidden">
 							<div className="col-span-full lg:col-span-3">
 								{/* profile */}
 								<div className="relative rounded-btn overflow-hidden flex flex-col gap-3">
@@ -209,7 +209,7 @@ const ProvProfilePage: NextPage = () => {
 								</ul>
 
 								{/* content */}
-								<div className="mt-10" ref={tabContent}>
+								<div className="mt-10 overflow-hidden" ref={tabContent}>
 									{tabSelected === "jobs" && (
 										<motion.div
 											variants={AnimTabTransition}
@@ -256,7 +256,11 @@ const ProvProfilePage: NextPage = () => {
 											{latestJobs.isSuccess && latestJobs.data?.length > 0 && (
 												<div className="flex flex-col gap-2">
 													{latestJobs.data.map((job) => (
-														<JobCardProv key={job.id} job={job} />
+														<JobCardProv
+															viewMode="list"
+															key={job.id}
+															job={job}
+														/>
 													))}
 												</div>
 											)}
@@ -360,17 +364,9 @@ const ProvProfilePage: NextPage = () => {
 								</div>
 							</div>
 							<div className="col-span-full lg:col-span-2 flex flex-col gap-3">
-								<div className="flex flex-col gap-3">
+								{/* <div className="flex flex-col gap-3">
 									<p className="text-2xl font-bold">Analytics</p>
 									<div>
-										{/* <div>
-											<p className="text-lg font-bold">0</p>
-											<p>Search Appearances</p>
-											<p className="text-sm opacity-75 leading-none">
-												Last 7 Days
-											</p>
-											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
-										</div> */}
 										<div>
 											<p className="text-lg font-bold">
 												{_currentUser.totalVisits}
@@ -386,7 +382,7 @@ const ProvProfilePage: NextPage = () => {
 											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
 										</div>
 									</div>
-								</div>
+								</div> */}
 								<div className="bg-base-200 p-4 rounded-btn flex flex-col gap-4">
 									<label className="flex items-center justify-between">
 										<span>Dark Mode</span>

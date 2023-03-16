@@ -154,7 +154,7 @@ const Prov_Dashboard = () => {
 								{jobs.isSuccess && (
 									<>
 										{jobs.data.map((job) => (
-											<JobCardProv key={job.id} job={job} />
+											<JobCardProv viewMode="list" key={job.id} job={job} />
 										))}
 
 										{jobs.data.length === 0 && (

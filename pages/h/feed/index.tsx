@@ -300,7 +300,7 @@ const FeedPage = () => {
 											{recommendedUsers.isSuccess &&
 												recommendedUsers.data.map((thisUser, index) => (
 													<Link
-														href={`/h/${thisUser.username}`}
+														href={`/h?user=${thisUser.username}`}
 														key={`connection_${index}`}
 														className="flex gap-2 items-center justify-between p-2 hover:bg-base-200 rounded-btn"
 													>
