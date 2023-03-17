@@ -119,10 +119,10 @@ const AppBar = () => {
 								</Link>
 							</div>
 						</div>
-						<div className="flex justify-evenly md:justify-center gap-3 py-2 pt-4 w-full">
+						<div className="grid grid-cols-4 py-2 pt-4 w-full gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn ${
+								className={`btn btn-block ${
 									router.pathname.includes("/h/feed")
 										? "btn-primary"
 										: "btn-ghost"
@@ -132,7 +132,7 @@ const AppBar = () => {
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn ${
+								className={`btn btn-block ${
 									router.pathname.includes("/h/drift")
 										? "btn-primary"
 										: "btn-ghost"
@@ -142,7 +142,7 @@ const AppBar = () => {
 							</Link>
 							<Link
 								href='/h/jobs'
-								className={`btn ${
+								className={`btn btn-block ${
 									router.pathname.includes("/h/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -153,7 +153,7 @@ const AppBar = () => {
 							<button
 								disabled
 								// href="/h/events"
-								className={`btn ${
+								className={`btn btn-block ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"

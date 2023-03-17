@@ -4,6 +4,7 @@ import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
+import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
@@ -109,6 +110,7 @@ const FeedPage = () => {
 	});
 
 	const handlePost = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const content = formData.get("content");
 
@@ -160,25 +162,53 @@ const FeedPage = () => {
 							ref={mainFeed_ui}
 						>
 							{/* create post */}
-							<div className="flex gap-2 w-full items-center">
-								<Image
-									src={_currentUser.avatar_url}
-									alt="avatar"
-									className="hidden md:block bg-primary mask mask-squircle"
-									width={48}
-									height={48}
-								/>
-								<div
-									onClick={() => setIsMakingPost(true)}
-									className="btn btn-primary btn-block max-w-md"
-								>
-									Create Post
-								</div>
+							<div ref={mainFeed_ui} className="flex gap-2 w-full relative">
+								{!isMakingPost ? (
+									<>
+										<div className=" relative w-12 h-12">
+											<Image
+												src={_currentUser.avatar_url}
+												alt="avatar"
+												className="bg-primary mask mask-squircle"
+												fill
+											/>
+										</div>
+
+										<input
+											placeholder="What's on your mind?"
+											readOnly
+											onClick={() => setIsMakingPost(true)}
+											className="input input-primary rounded-full w-full"
+										/>
+									</>
+								) : (
+									<form onSubmit={handlePost} className="w-full">
+										<textarea
+											placeholder="What's on your mind?"
+											rows={10}
+											name="content"
+											className="textarea textarea-primary w-full"
+										/>
+										<p className="text-xs opacity-75">Markdown</p>
+										<div className="flex justify-end gap-2">
+											<button
+												type="reset"
+												onClick={() => setIsMakingPost(false)}
+												className="btn btn-ghost"
+											>
+												Cancel
+											</button>
+											<button type="submit" className="btn btn-primary">
+												Post
+											</button>
+										</div>
+									</form>
+								)}
 							</div>
 
 							{/* create post dropdown */}
-							{isMakingPost && (
-								<div className="w-full">
+							{/* {isMakingPost && (
+								<div className="w-full hidden lg:block">
 									<form
 										onSubmit={(e) => {
 											e.preventDefault();
@@ -215,16 +245,17 @@ const FeedPage = () => {
 										</div>
 									</form>
 								</div>
-							)}
+							)} */}
 
 							{/* feed list */}
 							<div className="mt-10">
 								<div className="flex flex-col gap-5" ref={feedList_ui}>
 									{feedList.isLoading && (
 										<>
-											<div className="w-64 h-64 object-cover self-center mt-5">
+											<FiLoader className="animate-spin duration-500 text-3xl self-center" />
+											{/* <div className="w-64 h-64 object-cover self-center mt-5">
 												<RiveLoadingComponent />
-											</div>
+											</div> */}
 											<p className="text-center w-full self-center max-w-xs">
 												Loading feed... This may take a while if you have a lot
 												of followers

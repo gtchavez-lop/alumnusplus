@@ -12,7 +12,6 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
