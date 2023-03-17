@@ -27,7 +27,11 @@ const templates = [
 		name: "Gabbie 1",
 		value: "gabbie1",
 	},
-	
+	{
+		name: "Gabbie 2",
+		value: "gabbie2",
+	},
+
 ];
 
 const CvBuilder: FC = () => {
@@ -95,10 +99,9 @@ const CvBuilder: FC = () => {
 							{templates.map((template, key) => (
 								<div key={`template-${key}`}
 									onClick={() => setSelectedTemplate(template.value)}
-									className={`h-[140px] cursor-pointer hover:scale-[0.98] transition p-2 flex flex-col items-center justify-end rounded-btn bg-base-300 ${
-										selectedTemplate === template.value &&
+									className={`h-[140px] cursor-pointer hover:scale-[0.98] transition p-2 flex flex-col items-center justify-end rounded-btn bg-base-300 ${selectedTemplate === template.value &&
 										"bg-primary text-primary-content ring-2 ring-primary/100"
-									}`}
+										}`}
 								>
 									{selectedTemplate === template.value && (
 										<MdCheckCircle className="text-4xl" />
