@@ -20,23 +20,24 @@ const Gab2: FC = () => {
     return (
         <>
             <div className="grid grid-cols-5 gap-5 mt-4 ">
-                <div className="flex flex-col col-span-5 items-center ">
+
+                <div className="relative flex flex-col col-span-5 items-center">
+                    {/* header */}
                     <Image
-                        src="/cvtemplate/gab2_header2.svg"
+                        src="/cvtemplate/gab2_header.svg"
                         alt=""
-                        width={1100}
-                        height={300}
-                        className="border-b-4 border-[#b5805a]"
+                        width={1200}
+                        height={100}
                     />
-                    <div className="absolute pt-10">
-                        <h1 className=" text-orange-200 text-5xl uppercase ">
-                            {_currentUser.full_name.first} {_currentUser.full_name.last}
-                        </h1>
-                    </div>
-                    <div className="absolute pt-24">
-                        <p className="leading-9 text-lg uppercase text-orange-200">
-                            {_currentUser.skill_primary}
-                        </p>
+                    <div className="absolute w-full leading-3">
+                        <div className="text-center mt-5 ">
+                            <h1 className=" text-orange-200 text-5xl uppercase ">
+                                {_currentUser.full_name.first} {_currentUser.full_name.last}
+                            </h1>
+                            <p className="leading-9 text-lg uppercase text-orange-200 text-center">
+                                {_currentUser.skill_primary}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
