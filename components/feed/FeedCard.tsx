@@ -24,12 +24,15 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
+
+dayjs.extend(relativeTime);
 
 type IComment = {
 	id: string;
@@ -55,6 +58,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 	const [commentsOpen, setCommentsOpen] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
 	const [cardRef] = useAutoAnimate<HTMLDivElement>();
+	const [isClicked, setIsClicked] = useState(false);
 
 	const checkIfLiked = async () => {
 		const upvotersList = blogData.upvoters as string[];
@@ -290,9 +294,16 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 	return (
 		<>
+			{isClicked && (
+				<div className="fixed z-40 bg-base-100/75 inset-0 w-screen h-screen flex justify-center items-center">
+					<FiLoader className="text-xl animate-spin" />
+				</div>
+			)}
+
 			<div className="flex flex-col p-5 rounded-btn bg-base-200">
-				<div className="flex gap-3">
+				<div className="flex items-center gap-2">
 					<Link
+						className="relative w-8 h-8 lg:w-10 lg:h-10 mask mask-squircle bg-primary "
 						href={
 							currentUser.id === blogData.uploader.id
 								? "/h/me"
@@ -302,9 +313,8 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						<Image
 							src={blogData.uploader.avatar_url}
 							alt="avatar"
-							className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
-							width={48}
-							height={48}
+							className="object-center object-cover"
+							fill
 						/>
 					</Link>
 					<div className="flex flex-col gap-1 justify-center">
@@ -327,9 +337,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 						</p>
 						<p className="text-sm flex gap-2 leading-none">
 							<span className="opacity-50">@{blogData.uploader.username}</span>
-							<span>
-								{dayjs(blogData.createdAt).format("MMM DD YYYY h:MM A")}
-							</span>
+							<span>{dayjs(blogData.createdAt).fromNow()}</span>
 						</p>
 					</div>
 				</div>
@@ -337,6 +345,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				<Link
 					href={`/h/feed/post?id=${blogData.id}`}
 					className="mt-5 h-[101px] overflow-hidden relative"
+					onClick={() => setIsClicked(true)}
 				>
 					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-base-200" />
 					<ReactMarkdown
@@ -349,6 +358,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				<Link
 					href={`/h/feed/post?id=${blogData.id}`}
 					className="text-center pt-2 opacity-50 z-10"
+					onClick={() => setIsClicked(true)}
 				>
 					Read more
 				</Link>
@@ -381,7 +391,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							className="btn btn-ghost gap-2"
 							onClick={() => {
 								const baseURL = window.location.origin;
-								const thisLink = `${baseURL}/h/feed/${blogData.id}`;
+								const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
 								navigator.clipboard.writeText(thisLink);
 								toast("Link Shared");
 							}}

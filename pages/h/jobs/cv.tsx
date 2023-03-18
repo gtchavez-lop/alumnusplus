@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import Carlo2 from "@/components/resume_template/carlo2";
+import Gab2 from "@/components/resume_template/gab2";
 
 const DefaultTemplate: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
@@ -172,6 +173,7 @@ const GeneratedCV: NextPage = () => {
 					{template === "carlo1" && <Carlo1 />}
 					{template === "carlo2" && <Carlo2 />}
 					{template === "gabbie1" && <Gab1 />}
+					{template === "gabbie2" && <Gab2 />}
 				</div>
 			)}
 
