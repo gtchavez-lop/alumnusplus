@@ -7,6 +7,7 @@ import FeedCard from "@/components/feed/FeedCard";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
+import { MdSearch } from "react-icons/md";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -28,14 +29,6 @@ const FeedPage = () => {
 	const [feedList_ui] = useAutoAnimate<HTMLDivElement>();
 	const [mainFeed_ui] = useAutoAnimate<HTMLDivElement>();
 	const router = useRouter();
-	const { rive: riveLoadingState, RiveComponent: RiveLoadingComponent } =
-		useRive({
-			src: "/loading_feed.riv",
-			autoplay: true,
-			onLoad: () => {
-				console.log("loaded");
-			},
-		});
 
 	const fetchFeed = async () => {
 		const connections: string[] = _currentUser.connections.concat(
@@ -292,14 +285,17 @@ const FeedPage = () => {
 
 									router.push(`/h/search?query=${searchQuery}`);
 								}}
-								className="flex flex-col gap-3"
+								className="flex flex-col lg:flex-row lg:items-center gap-3"
 							>
 								<input
 									type="text"
 									name="searchQuery"
 									placeholder="Search for people"
-									className="input input-bordered"
+									className="input input-bordered flex-1"
 								/>
+								<button type="submit" className="btn btn-primary">
+									<MdSearch className="text-lg" />
+								</button>
 							</form>
 
 							<div className="flex flex-col rounded-btn gap-3">

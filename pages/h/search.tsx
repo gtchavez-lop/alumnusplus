@@ -1,7 +1,6 @@
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
-import { GetServerSideProps } from "next";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,7 +44,6 @@ const SearchPage = () => {
 				queryKey: ["searchresults"],
 				queryFn: searchOnload,
 				enabled: router.query.query ? true : false,
-				refetchOnMount: false,
 				refetchOnWindowFocus: false,
 			},
 		],
@@ -113,7 +111,7 @@ const SearchPage = () => {
 									href={
 										hunter.username === _currentUser?.username
 											? "/h/me"
-											: `/h/${hunter.username}`
+											: `/h?user=${hunter.username}`
 									}
 									passHref
 									className="p-3 hover:border-opacity-0 group hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"

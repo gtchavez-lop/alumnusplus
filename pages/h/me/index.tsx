@@ -497,11 +497,11 @@ const ProfilePage: NextPage = () => {
 												userActivities.data.map((activity, index) => (
 													<Link
 														key={`blogpost_${index}`}
-														href={`/h/feed/${activity.id}`}
+														href={`/h/feed/post?id=${activity.id}`}
 													>
 														<div
 															key={`activity_${index}`}
-															className="relative flex gap-2 items-center justify-between overflow-hidden p-5 hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
+															className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary hover:border-transparent hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
 														>
 															<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-base-100" />
 															<ReactMarkdown className="prose prose-sm h-[150px] ">
@@ -573,7 +573,7 @@ const ProfilePage: NextPage = () => {
 													<Link
 														href={`/h/drift/${company.id}`}
 														key={`company_${i}`}
-														className="shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
+														className="bg-base-200 shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
 													>
 														<p className="text-lg">{company.legalName}</p>
 														<p className="mt-2 text-sm opacity-75">
@@ -666,11 +666,11 @@ const ProfilePage: NextPage = () => {
 												savedJobs.data.map((job, index) => (
 													<Link
 														key={`savedjob_${index}`}
-														href={`/h/jobs/${job.id}`}
+														href={`/h/jobs/posting?id=${job.id}`}
 													>
 														<div
 															key={`savedjob_${index}`}
-															className="relative flex flex-col overflow-hidden p-5 border-2 border-primary border-opacity-10 hover:border-opacity-100 transition rounded-btn"
+															className="relative flex flex-col bg-base-200 overflow-hidden p-5 hover:bg-primary/30 transition rounded-btn"
 														>
 															<p className="text-lg">{job.job_title}</p>
 															<p className="text-sm opacity-75">

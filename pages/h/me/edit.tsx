@@ -1223,23 +1223,27 @@ const EditProfilePage: NextPage = () => {
 											</Link>
 										)}
 									</div>
-									<div className="flex flex-col gap-1">
-										<p className="text-lg">ID Type</p>
-										<p className="text-sm opacity-75 leading-none ml-4">
-											{tempUserDetails.id_type === "national id" &&
-												"Philippine National Identity Card"}
-											{tempUserDetails.id_type === "passport" && "Passport"}
-											{tempUserDetails.id_type === "driver's license" &&
-												"Driver's License"}
-											{tempUserDetails.id_type === "other" && "Other IDs"}
-										</p>
-									</div>
-									<div className="flex flex-col gap-1">
-										<p className="text-lg">ID Number</p>
-										<p className="text-sm opacity-75 leading-none ml-4">
-											{tempUserDetails.id_number}
-										</p>
-									</div>
+									{tempUserDetails.is_verified && (
+										<>
+											<div className="flex flex-col gap-1">
+												<p className="text-lg">ID Type</p>
+												<p className="text-sm opacity-75 leading-none ml-4">
+													{tempUserDetails.id_type === "national id" &&
+														"Philippine National Identity Card"}
+													{tempUserDetails.id_type === "passport" && "Passport"}
+													{tempUserDetails.id_type === "driver's license" &&
+														"Driver's License"}
+													{tempUserDetails.id_type === "other" && "Other IDs"}
+												</p>
+											</div>
+											<div className="flex flex-col gap-1">
+												<p className="text-lg">ID Number</p>
+												<p className="text-sm opacity-75 leading-none ml-4">
+													{tempUserDetails.id_number}
+												</p>
+											</div>
+										</>
+									)}
 								</div>
 							</div>
 						)}

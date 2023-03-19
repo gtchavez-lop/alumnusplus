@@ -3,10 +3,11 @@ import {
 	$accountDetails,
 	$accountType,
 } from "@/lib/globalStates";
+import { FormEvent, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
-import { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -16,6 +17,7 @@ import { useRouter } from "next/router";
 
 const LogInPage = () => {
 	const router = useRouter();
+	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -176,12 +178,35 @@ const LogInPage = () => {
 										Password
 									</p>
 
-									<input
-										type="password"
-										id="Password"
-										name="password"
-										className="input input-primary input-bordered w-full"
-									/>
+									<div className="flex gap-2 items-center">
+										{isPasswordRevealed ? (
+											<input
+												type="password"
+												id="Password"
+												name="password"
+												className="input input-primary input-bordered w-full"
+											/>
+										) : (
+											<input
+												type="text"
+												id="Password"
+												name="password"
+												className="input input-primary input-bordered w-full"
+											/>
+										)}
+										<div
+											onClick={() => {
+												setIsPasswordRevealed(!isPasswordRevealed);
+											}}
+											className="btn btn-ghost text-lg"
+										>
+											{isPasswordRevealed ? (
+												<MdVisibility />
+											) : (
+												<MdVisibilityOff />
+											)}
+										</div>
+									</div>
 								</div>
 
 								{/* <div className="col-span-6 sm:col-span-3">

@@ -93,13 +93,13 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<Link href="/feed" className="relative w-7 h-7 lg:hidden">
+							<Link href="/feed" className="relative w-9 h-9 lg:hidden">
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href="/h/notifications"
-									className={`btn ${
+									className={`btn invisible ${
 										router.pathname.includes("/h/notifications")
 											? "btn-primary"
 											: "btn-ghost"

@@ -3,8 +3,10 @@ import { MdEmail, MdPhone, MdPrint, MdWarning } from "react-icons/md";
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Carlo1 from "@/components/resume_template/carlo1";
+import Carlo2 from "@/components/resume_template/carlo2";
 import { FC } from "react";
 import Gab1 from "@/components/resume_template/gab1";
+import Gab2 from "@/components/resume_template/gab2";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import { NextPage } from "next";
@@ -12,8 +14,6 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import Carlo2 from "@/components/resume_template/carlo2";
-import Gab2 from "@/components/resume_template/gab2";
 
 const DefaultTemplate: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
@@ -131,15 +131,15 @@ const DefaultTemplate: FC = () => {
 			</div>
 
 			{/* print button */}
-			<div className="fixed bottom-0 right-0 mb-5 mr-5 print:hidden">
+			{/* <div className=" fixed bottom-0 right-0 mb-5 mr-5 print:hidden">
 				<button
 					onClick={() => window.print()}
-					className="btn btn-primary btn-lg gap-2 btn-block"
+					className="hidden lg:inline-flex btn btn-primary btn-lg gap-2 btn-block"
 				>
 					<MdPrint />
 					Print
 				</button>
-			</div>
+			</div> */}
 		</>
 	);
 };
@@ -178,14 +178,16 @@ const GeneratedCV: NextPage = () => {
 			)}
 
 			{/* print button */}
-			<div className="fixed bottom-0 right-0 mb-5 mr-5 print:hidden">
-				<button
-					onClick={() => window.print()}
-					className="btn btn-primary btn-lg gap-2 btn-block"
-				>
-					<MdPrint />
-					Print
-				</button>
+			<div className="hidden lg:flex fixed bottom-0 left-0 w-full p-5 justify-center print:hidden opacity-25 hover:opacity-100 transition-all">
+				<div className="flex justify-end w-full max-w-5xl">
+					<button
+						onClick={() => window.print()}
+						className="btn btn-primary btn-lg gap-2"
+					>
+						<MdPrint />
+						Print
+					</button>
+				</div>
 			</div>
 		</motion.main>
 	);
