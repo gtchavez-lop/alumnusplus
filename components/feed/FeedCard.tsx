@@ -417,13 +417,15 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 													? "/h/me"
 													: `/h/${comment.commenter.username}`
 											}
+											className="relative min-w-10 min-h-10 w-10 h-10"
 										>
 											<Image
 												src={comment.commenter.avatar_url}
 												alt="avatar"
-												className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
-												width={48}
-												height={48}
+												className="min-w-10 min-h-10 mask mask-squircle bg-primary object-center object-cover"
+												// width={48}
+												// height={48}
+												fill
 											/>
 										</Link>
 										{/* content */}
@@ -448,7 +450,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 											<ReactMarkdown
 												// components={markdownRenderer}
 												rehypePlugins={[rehypeRaw]}
-												className="prose pb-0"
+												className="prose pb-0 break-words"
 											>
 												{comment.content}
 											</ReactMarkdown>
@@ -456,7 +458,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 										{/* actions */}
 										{currentUser.id === blogData.uploader.id && (
 											<>
-												<div className="dropdown dropdown-bottom dropdown-end">
+												{/* <div className="dropdown dropdown-bottom dropdown-end">
 													<label tabIndex={0} className="btn btn-ghost">
 														<MdMoreHoriz />
 													</label>
@@ -493,7 +495,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 															</p>
 														</li>
 													</ul>
-												</div>
+												</div> */}
 
 												{/* delete comment modal */}
 												<input

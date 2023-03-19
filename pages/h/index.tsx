@@ -33,6 +33,10 @@ const PageTabs = [
 		value: "posts",
 	},
 	{
+		name: "Connections",
+		value: "connections",
+	},
+	{
 		name: "Experiences",
 		value: "experiences",
 	},
@@ -40,10 +44,6 @@ const PageTabs = [
 		name: "Education",
 		value: "education",
 	},
-	// {
-	// 	name: "Connections",
-	// 	value: "connections",
-	// },
 	{
 		name: "Trainings",
 		value: "trainings",
@@ -101,7 +101,17 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 			return [];
 		}
 
-		return data;
+		const alphaSorted = data.sort((a, b) => {
+			if (a.full_name!.first < b.full_name!.first) {
+				return -1;
+			}
+			if (a.full_name!.first > b.full_name!.first) {
+				return 1;
+			}
+			return 0;
+		});
+
+		return alphaSorted;
 	};
 
 	const fetchUserActivities = async () => {
@@ -237,7 +247,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
 				{targetUser && _currentUser && (
-					<section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+					<section className="flex flex-col gap-5">
 						<div className="col-span-3 flex flex-col gap-3">
 							{/* landing profile */}
 							<div className="flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
@@ -285,6 +295,25 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									</p>
 								</div>
 							</div>
+							<div className="flex justify-end my-3">
+								{isConnected ? (
+									<button
+										disabled={userConnections.isLoading}
+										onClick={removeFromConnections}
+										className="btn btn-warning"
+									>
+										Remove from connections
+									</button>
+								) : (
+									<button
+										disabled={userConnections.isLoading}
+										onClick={addToConnections}
+										className="btn btn-primary"
+									>
+										Add to connections
+									</button>
+								)}
+							</div>
 
 							{/* mobile select */}
 							<div className="lg:hidden">
@@ -310,7 +339,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								</select>
 							</div>
 							{/* desktop tabs */}
-							<div className="hidden lg:block my-3">
+							<div className="hidden lg:block mb-5">
 								<ul className="tabs tabs-boxed justify-evenly">
 									{PageTabs.map((tab, index) => (
 										<li
@@ -335,6 +364,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								</ul>
 							</div>
 
+							{/* tab contents */}
 							<div className="py-5" ref={tabContentRef}>
 								{tabSelected === "about" && (
 									<div className="flex flex-col gap-2">
@@ -443,19 +473,19 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									</div>
 								)}
 								{tabSelected === "posts" && (
-									<div className="flex flex-col gap-2">
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
 										{userActivities.isSuccess &&
 											userActivities.data.map((activity, index) => (
 												<Link
 													key={`blogpost_${index}`}
-													href={`/h/feed/${activity.id}`}
+													href={`/h/feed/post?id=${activity.id}`}
 												>
 													<div
 														key={`activity_${index}`}
-														className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary border-opacity-10 hover:border-opacity-100 transition rounded-btn"
+														className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary hover:border-transparent hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
 													>
 														<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-base-100" />
-														<ReactMarkdown className="prose prose-sm h-[100px] ">
+														<ReactMarkdown className="prose prose-sm h-[150px] ">
 															{`${activity.content.substring(0, 300)}`}
 														</ReactMarkdown>
 													</div>
@@ -474,6 +504,52 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 													<div
 														key={`activityloading_${index}`}
 														className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+													/>
+												))}
+									</div>
+								)}
+								{tabSelected === "connections" && (
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+										{userConnections.isSuccess &&
+											userConnections.data.map((connection, index) => (
+												<Link
+													href={`/h?user=${connection.username}`}
+													key={`connection_${index}`}
+													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
+												>
+													<div className="flex gap-2 items-center">
+														<Image
+															src={connection.avatar_url}
+															alt="avatar"
+															className="w-12 h-12 mask mask-squircle bg-primary object-cover object-center"
+															width={48}
+															height={48}
+														/>
+														<div>
+															<p className="font-bold leading-none">
+																{connection.full_name.first}{" "}
+																{connection.full_name.last}
+															</p>
+															<p className="opacity-50 leading-none">
+																@{connection.username}
+															</p>
+														</div>
+													</div>
+												</Link>
+											))}
+
+										{userConnections.isSuccess &&
+											userConnections.data.length === 0 && (
+												<p className="text-center">No connections yet</p>
+											)}
+
+										{userConnections.isLoading &&
+											Array(5)
+												.fill("")
+												.map((_, index) => (
+													<div
+														key={`activityloading_${index}`}
+														className="h-[72px] w-full bg-gray-500/25 rounded-btn animate-pulse"
 													/>
 												))}
 									</div>
@@ -557,7 +633,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 						</div>
 
 						{/* second column */}
-						<div className="col-span-2 flex flex-col gap-5">
+						{/* <div className="col-span-2 flex flex-col gap-5">
 							<div className="flex flex-col rounded-btn p-2 gap-3">
 								<p className="text-2xl font-bold">Connections</p>
 
@@ -632,26 +708,10 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								<p className="text-2xl font-bold">Actions</p>
 
 								<div className="flex gap-2 mt-4">
-									{isConnected ? (
-										<button
-											disabled={userConnections.isLoading}
-											onClick={removeFromConnections}
-											className="btn btn-warning"
-										>
-											Remove from connections
-										</button>
-									) : (
-										<button
-											disabled={userConnections.isLoading}
-											onClick={addToConnections}
-											className="btn btn-primary"
-										>
-											Add @{targetUser.username} to your connections
-										</button>
-									)}
+									
 								</div>
 							</div>
-						</div>
+						</div> */}
 					</section>
 				)}
 			</motion.main>

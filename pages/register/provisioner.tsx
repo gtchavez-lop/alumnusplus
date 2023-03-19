@@ -1,5 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
+import {
+	MdArrowBack,
+	MdArrowForward,
+	MdVisibility,
+	MdVisibilityOff,
+} from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
@@ -56,6 +61,7 @@ const ProvisionerPage: NextPage = () => {
 		confirmPassword: "",
 	});
 	const [passwordMatched, setPasswordMatched] = useState(true);
+	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);
@@ -143,47 +149,106 @@ const ProvisionerPage: NextPage = () => {
 
 									<label className="flex flex-col">
 										<span>Password</span>
-										<input
-											type="password"
-											id="password"
-											value={localPassword.password}
-											className={`input input-primary ${
-												!passwordMatched && "input-error"
-											}`}
-											onChange={(e) => {
-												setLocalPassword({
-													...localPassword,
-													password: e.currentTarget.value,
-												});
+										<div className="flex items-center gap-1">
+											{!isPasswordRevealed ? (
+												<input
+													type="password"
+													id="password"
+													value={localPassword.password}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
+													onChange={(e) => {
+														setLocalPassword({
+															...localPassword,
+															password: e.currentTarget.value,
+														});
 
-												setPasswordMatched(
-													localPassword.confirmPassword ===
-														e.currentTarget.value,
-												);
-											}}
-										/>
+														setPasswordMatched(
+															localPassword.confirmPassword ===
+																e.currentTarget.value,
+														);
+													}}
+												/>
+											) : (
+												<input
+													type="text"
+													id="password"
+													value={localPassword.password}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
+													onChange={(e) => {
+														setLocalPassword({
+															...localPassword,
+															password: e.currentTarget.value,
+														});
+
+														setPasswordMatched(
+															localPassword.confirmPassword ===
+																e.currentTarget.value,
+														);
+													}}
+												/>
+											)}
+											<div
+												onClick={() =>
+													setIsPasswordRevealed(!isPasswordRevealed)
+												}
+												className="btn btn-ghost text-lg"
+											>
+												{isPasswordRevealed ? (
+													<MdVisibilityOff />
+												) : (
+													<MdVisibility />
+												)}
+											</div>
+										</div>
 									</label>
 
 									<label className="flex flex-col">
 										<span>Confirm Password</span>
-										<input
-											type="password"
-											id="confirmPassword"
-											value={localPassword.confirmPassword}
-											className={`input input-primary ${
-												!passwordMatched && "input-error"
-											}`}
-											onChange={(e) => {
-												setLocalPassword({
-													...localPassword,
-													confirmPassword: e.currentTarget.value,
-												});
+										<div className="flex items-center gap-1">
+											{!isPasswordRevealed ? (
+												<input
+													type="password"
+													id="password"
+													value={localPassword.confirmPassword}
+													className={`input input-primary  flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
+													onChange={(e) => {
+														setLocalPassword({
+															...localPassword,
+															confirmPassword: e.currentTarget.value,
+														});
 
-												setPasswordMatched(
-													localPassword.password === e.currentTarget.value,
-												);
-											}}
-										/>
+														setPasswordMatched(
+															localPassword.password === e.currentTarget.value,
+														);
+													}}
+												/>
+											) : (
+												<input
+													type="text"
+													id="password"
+													value={localPassword.confirmPassword}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
+													onChange={(e) => {
+														setLocalPassword({
+															...localPassword,
+															confirmPassword: e.currentTarget.value,
+														});
+
+														setPasswordMatched(
+															localPassword.password === e.currentTarget.value,
+														);
+													}}
+												/>
+											)}
+										</div>
 									</label>
 
 									<div className="flex justify-end mt-10">

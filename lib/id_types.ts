@@ -59,6 +59,41 @@ const IsNationalId = (content: string, input: IUserHunter | IUserProvisioner, ty
   }
 }
 
+const IsDriversLicense = (content: string, input: IUserHunter | IUserProvisioner, type: "hunter" | "provisioner") => {
+  const returnValue: TReturnValue = {
+    isNationalId: false,
+    errorMessage: "",
+  }
+
+  if (type === "hunter") {
+    const this_input = input as IUserHunter
+    const conditions = {
+      full_name: {
+        first: content.toLowerCase().includes(this_input.full_name.first.toLowerCase()),
+        last: content.toLowerCase().includes(this_input.full_name.last.toLowerCase()),
+      },
+      keywords: {
+        "republic of the philippines": content.toLowerCase().includes("republic of the philippines"),
+        "department of transportation": content.toLowerCase().includes("department of transportation"),
+        "land transportation office": content.toLowerCase().includes("land transportation office"),
+        "driver's license": content.toLowerCase().includes("driver's license"),
+      },
+      id_number: content.toLowerCase().includes(this_input.id_number.toLowerCase()),
+    }
+    
+    console.log(conditions)
+    
+    // check if national id is valid
+    const isNationalId = conditions.full_name.first
+      && conditions.full_name.last
+      && conditions.keywords["republic of the philippines"]
+      && conditions.keywords["department of transportation"]
+      && conditions.keywords["land transportation office"]
+      && conditions.keywords["driver's license"]
+      && conditions.id_number
+  }
+}
+
 export {
   IsNationalId,
 }
