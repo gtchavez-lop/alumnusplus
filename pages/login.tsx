@@ -132,7 +132,7 @@ const LogInPage = () => {
 					</div>
 
 					<div className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:py-12 lg:px-16 xl:col-span-6">
-						<div className="max-w-xl lg:max-w-3xl">
+						<div className="w-full">
 							<div className="relative -mt-16 block lg:hidden">
 								<Link
 									className="avatar w-16 h-16 relative bg-primary-content rounded-full"
@@ -209,28 +209,25 @@ const LogInPage = () => {
 									</div>
 								</div>
 
-								{/* <div className="col-span-6 sm:col-span-3">
-									<p className="block text-sm font-medium text-opacity-70">
-										Password Confirmation
-									</p>
-
-									<input
-										type="password"
-										id="PasswordConfirmation"
-										name="password_confirmation"
-										className="input input-primary input-bordered w-full"
-									/>
-								</div> */}
-
-								<div className="col-span-6 sm:flex sm:items-center sm:gap-4">
-									<button type="submit" className="btn btn-primary">
+								<div className="col-span-full ">
+									<button type="submit" className="btn btn-primary mb-5">
 										Log in Account
 									</button>
 
 									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
-										Don&apos; have an account?
+										Don&apos;t have an account?
 										<Link href="/register" className="link link-secondary">
 											Sign up
+										</Link>
+										.
+									</p>
+									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
+										Forgot your password?
+										<Link
+											href="/util/passwordreset"
+											className="link link-secondary"
+										>
+											Recover here
 										</Link>
 										.
 									</p>
