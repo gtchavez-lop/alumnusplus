@@ -3,10 +3,11 @@ import {
 	$accountDetails,
 	$accountType,
 } from "@/lib/globalStates";
+import { FormEvent, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
-import { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -16,6 +17,7 @@ import { useRouter } from "next/router";
 
 const LogInPage = () => {
 	const router = useRouter();
+	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -130,7 +132,7 @@ const LogInPage = () => {
 					</div>
 
 					<div className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:py-12 lg:px-16 xl:col-span-6">
-						<div className="max-w-xl lg:max-w-3xl">
+						<div className="w-full">
 							<div className="relative -mt-16 block lg:hidden">
 								<Link
 									className="avatar w-16 h-16 relative bg-primary-content rounded-full"
@@ -176,36 +178,56 @@ const LogInPage = () => {
 										Password
 									</p>
 
-									<input
-										type="password"
-										id="Password"
-										name="password"
-										className="input input-primary input-bordered w-full"
-									/>
+									<div className="flex gap-2 items-center">
+										{isPasswordRevealed ? (
+											<input
+												type="password"
+												id="Password"
+												name="password"
+												className="input input-primary input-bordered w-full"
+											/>
+										) : (
+											<input
+												type="text"
+												id="Password"
+												name="password"
+												className="input input-primary input-bordered w-full"
+											/>
+										)}
+										<div
+											onClick={() => {
+												setIsPasswordRevealed(!isPasswordRevealed);
+											}}
+											className="btn btn-ghost text-lg"
+										>
+											{isPasswordRevealed ? (
+												<MdVisibility />
+											) : (
+												<MdVisibilityOff />
+											)}
+										</div>
+									</div>
 								</div>
 
-								{/* <div className="col-span-6 sm:col-span-3">
-									<p className="block text-sm font-medium text-opacity-70">
-										Password Confirmation
-									</p>
-
-									<input
-										type="password"
-										id="PasswordConfirmation"
-										name="password_confirmation"
-										className="input input-primary input-bordered w-full"
-									/>
-								</div> */}
-
-								<div className="col-span-6 sm:flex sm:items-center sm:gap-4">
-									<button type="submit" className="btn btn-primary">
+								<div className="col-span-full ">
+									<button type="submit" className="btn btn-primary mb-5">
 										Log in Account
 									</button>
 
 									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
-										Don&apos; have an account?
+										Don&apos;t have an account?
 										<Link href="/register" className="link link-secondary">
 											Sign up
+										</Link>
+										.
+									</p>
+									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
+										Forgot your password?
+										<Link
+											href="/util/passwordreset"
+											className="link link-secondary"
+										>
+											Recover here
 										</Link>
 										.
 									</p>

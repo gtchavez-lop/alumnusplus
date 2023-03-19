@@ -3,12 +3,14 @@ import { FormEvent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
+	MdCheckCircle,
 	MdComment,
 	MdDelete,
 	MdEdit,
 	MdFavorite,
 	MdFavoriteBorder,
 	MdMoreHoriz,
+	MdShare,
 	MdVisibility,
 	MdVisibilityOff,
 } from "react-icons/md";
@@ -32,13 +34,13 @@ import { uuid } from "uuidv4";
 
 dayjs.extend(relative);
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-	const { id } = query;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const { id } = context.query;
 
 	const { data: blogData, error } = await supabase
 		.from("public_posts")
 		.select(
-			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username,avatar_url),upvoters",
+			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username,avatar_url,is_verified),upvoters",
 		)
 		.eq("id", id)
 		.single();
@@ -286,6 +288,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 				username: currentUser.username,
 				full_name: currentUser.full_name,
 				avatar_url: currentUser.avatar_url,
+				is_verified: currentUser.is_verified,
 			},
 			visible: true,
 		};
@@ -342,12 +345,15 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									href={
 										currentUser.id === blogData.uploader.id
 											? "/me"
-											: `/h/${blogData.uploader.username}`
+											: `/h?user=${blogData.uploader.username}`
 									}
-									className="font-semibold hover:underline underline-offset-2 leading-tight"
+									className="font-semibold hover:underline underline-offset-2 leading-tight flex items-center"
 								>
 									{blogData.uploader.full_name.first}{" "}
 									{blogData.uploader.full_name.last}
+									{blogData.uploader.is_verified && (
+										<MdCheckCircle className="text-primary ml-1" />
+									)}
 								</Link>
 								<p className="leading-none">
 									{dayjs(blogData.createdAt).fromNow()}
@@ -428,7 +434,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 							{/* sidebar */}
 							<div className="col-span-2" ref={isCommentingRef}>
 								{/* upvote and comment toggler */}
-								<div className="flex items-center gap-3">
+								<div className="flex items-center gap-1">
 									<button
 										onClick={upvoteHandler}
 										className="btn btn-ghost gap-2 text-xl"
@@ -449,6 +455,15 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										<MdComment />
 										{blogData.comments.length}
 									</button>
+									<button
+										onClick={() => {
+											navigator.clipboard.writeText(window.location.href);
+											toast.success("Link copied to clipboard!");
+										}}
+										className="btn btn-ghost gap-2 text-xl ml-auto"
+									>
+										<MdShare />
+									</button>
 								</div>
 								{/* comment input */}
 								{isCommenting && (
@@ -465,9 +480,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 												className="mask mask-squircle"
 											/>
 											<div>
-												<p className="font-semibold leading-tight">
+												<p className="font-semibold leading-tight flex items-center">
 													{currentUser.full_name.first}{" "}
 													{currentUser.full_name.last}
+													{currentUser.is_verified && (
+														<MdCheckCircle className="text-primary text-sm ml-1" />
+													)}
 												</p>
 												<p className="text-sm leading-tight">
 													@{currentUser.username}
@@ -486,123 +504,124 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									</form>
 								)}
 								{/* comment section */}
-								<div className="mt-5">
-									{blogData.comments.length > 0 ? (
-										<div className="mt-10 flex flex-col gap-5">
-											{blogData.comments.map((comment, index: number) => (
-												<div
-													className="p-5 rounded-btn flex flex-col gap-2"
-													key={`comment_${index}`}
-												>
-													<div className="flex gap-2">
+								{blogData.comments.length > 0 ? (
+									<div className="mt-5 flex flex-col gap-1">
+										{blogData.comments.map((comment, index: number) => (
+											<div
+												className=" rounded-btn flex flex-col gap-2"
+												key={`comment_${index}`}
+											>
+												<div className="flex gap-2">
+													<Link
+														href={
+															currentUser.id === comment.commenter.id
+																? "/h/me"
+																: `/h/${comment.commenter.username}`
+														}
+													>
+														<Image
+															src={comment.commenter.avatar_url}
+															alt="avatar"
+															className="mask mask-squircle bg-primary"
+															width={36}
+															height={36}
+														/>
+													</Link>
+													<div className="flex flex-col w-full rounded-btn p-3 bg-base-300">
 														<Link
 															href={
 																currentUser.id === comment.commenter.id
 																	? "/h/me"
 																	: `/h/${comment.commenter.username}`
 															}
+															className="font-bold text-sm leading-none hover:underline w-full flex items-center"
 														>
-															<Image
-																src={comment.commenter.avatar_url}
-																alt="avatar"
-																className="mask mask-squircle bg-primary"
-																width={36}
-																height={36}
-															/>
-														</Link>
-														<div className="flex flex-col w-full rounded-btn p-3 bg-base-300">
-															<Link
-																href={
-																	currentUser.id === comment.commenter.id
-																		? "/h/me"
-																		: `/h/${comment.commenter.username}`
-																}
-																className="font-bold text-sm leading-none hover:underline w-full"
-															>
-																{comment.commenter.full_name.first}{" "}
-																{comment.commenter.full_name.last}
-															</Link>
-															<ReactMarkdown
-																// components={markdownRenderer}
-																rehypePlugins={[rehypeRaw]}
-																className="prose pb-0"
-															>
-																{comment.content}
-															</ReactMarkdown>
-														</div>
-													</div>
-													<div className="flex items-center">
-														{!comment.visible ? <MdVisibilityOff /> : null}
-														<div className="flex gap-3 ml-auto">
-															{blogData.uploader.id === currentUser.id && (
-																<>
-																	<label
-																		htmlFor="deleteCommentModal"
-																		className="hover:underline hover:text-error cursor-pointer"
-																	>
-																		Delete
-																	</label>
-																	<div
-																		onClick={() => {
-																			changeCommentVisibility(comment.id);
-																		}}
-																		className="hover:underline cursor-pointer"
-																	>
-																		{comment.visible ? (
-																			<>Hide Comment</>
-																		) : (
-																			<>Show Comment</>
-																		)}
-																	</div>
-																</>
+															{comment.commenter.full_name.first}{" "}
+															{comment.commenter.full_name.last}
+															{comment.commenter.is_verified && (
+																<MdCheckCircle className="text-primary ml-1" />
 															)}
-														</div>
-
-														{/* delete comment modal */}
-														<input
-															type="checkbox"
-															id="deleteCommentModal"
-															className="modal-toggle"
-														/>
-														<div className="modal">
-															<div className="modal-box">
-																<h2 className="text-lg font-bold">
-																	Confirm Delete Comment
-																</h2>
-																<p>
-																	Are you sure you want to delete this comment?
-																	This action can&apos;t be undone.
-																</p>
-
-																<div className="flex gap-2 mt-5 justify-end">
-																	<label
-																		htmlFor="deleteCommentModal"
-																		className="btn btn-ghost"
-																	>
-																		Cancel
-																	</label>
-																	<label
-																		htmlFor="deleteCommentModal"
-																		className="btn btn-error"
-																		onClick={() => {
-																			handleDeleteComment(comment.id);
-																		}}
-																	>
-																		Delete
-																	</label>
+														</Link>
+														<ReactMarkdown
+															// components={markdownRenderer}
+															rehypePlugins={[rehypeRaw]}
+															className="prose pb-0 break-all"
+														>
+															{comment.content}
+														</ReactMarkdown>
+													</div>
+												</div>
+												<div className="flex items-center">
+													{!comment.visible ? <MdVisibilityOff /> : null}
+													<div className="flex gap-3 ml-auto">
+														{blogData.uploader.id === currentUser.id && (
+															<>
+																<label
+																	htmlFor="deleteCommentModal"
+																	className="hover:underline hover:text-error cursor-pointer"
+																>
+																	Delete
+																</label>
+																<div
+																	onClick={() => {
+																		changeCommentVisibility(comment.id);
+																	}}
+																	className="hover:underline cursor-pointer"
+																>
+																	{comment.visible ? (
+																		<>Hide Comment</>
+																	) : (
+																		<>Show Comment</>
+																	)}
 																</div>
+															</>
+														)}
+													</div>
+
+													{/* delete comment modal */}
+													<input
+														type="checkbox"
+														id="deleteCommentModal"
+														className="modal-toggle"
+													/>
+													<div className="modal">
+														<div className="modal-box">
+															<h2 className="text-lg font-bold">
+																Confirm Delete Comment
+															</h2>
+															<p>
+																Are you sure you want to delete this comment?
+																This action can&apos;t be undone.
+															</p>
+
+															<div className="flex gap-2 mt-5 justify-end">
+																<label
+																	htmlFor="deleteCommentModal"
+																	className="btn btn-ghost"
+																>
+																	Cancel
+																</label>
+																<label
+																	htmlFor="deleteCommentModal"
+																	className="btn btn-error"
+																	onClick={() => {
+																		handleDeleteComment(comment.id);
+																	}}
+																>
+																	Delete
+																</label>
 															</div>
 														</div>
 													</div>
 												</div>
-											))}
-										</div>
-									) : (
-										<div className="mt-10 lg:p-5 flex flex-col gap-5">
-											<p className="opacity-50 text-center">No comments yet!</p>
-										</div>
-									)}
-								</div>
+											</div>
+										))}
+									</div>
+								) : (
+									<div className="mt-5 lg:p-5 flex flex-col gap-5">
+										<p className="opacity-50 text-center">No comments yet!</p>
+									</div>
+								)}
 							</div>
 						</div>
 					</motion.main>

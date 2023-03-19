@@ -7,7 +7,10 @@ import {
 } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
+	MdCheckCircleOutline,
 	MdDelete,
+	MdFavorite,
+	MdFavoriteBorder,
 	MdMoreHoriz,
 	MdShare,
 	MdVisibility,
@@ -21,12 +24,15 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
+
+dayjs.extend(relativeTime);
 
 type IComment = {
 	id: string;
@@ -52,6 +58,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 	const [commentsOpen, setCommentsOpen] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
 	const [cardRef] = useAutoAnimate<HTMLDivElement>();
+	const [isClicked, setIsClicked] = useState(false);
 
 	const checkIfLiked = async () => {
 		const upvotersList = blogData.upvoters as string[];
@@ -287,49 +294,58 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 	return (
 		<>
+			{isClicked && (
+				<div className="fixed z-40 bg-base-100/75 inset-0 w-screen h-screen flex justify-center items-center">
+					<FiLoader className="text-xl animate-spin" />
+				</div>
+			)}
+
 			<div className="flex flex-col p-5 rounded-btn bg-base-200">
-				<div className="flex gap-3">
+				<div className="flex items-center gap-2">
 					<Link
+						className="relative w-8 h-8 lg:w-10 lg:h-10 mask mask-squircle bg-primary "
 						href={
 							currentUser.id === blogData.uploader.id
 								? "/h/me"
-								: `/h/${blogData.uploader.username}`
+								: `/h?user=${blogData.uploader.username}`
 						}
 					>
 						<Image
 							src={blogData.uploader.avatar_url}
 							alt="avatar"
-							className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
-							width={48}
-							height={48}
+							className="object-center object-cover"
+							fill
 						/>
 					</Link>
 					<div className="flex flex-col gap-1 justify-center">
-						<p className="leading-none">
+						<p className="leading-none flex w-full">
 							<Link
 								href={
 									currentUser.id === blogData.uploader.id
 										? "/h/me"
-										: `/h/${blogData.uploader.username}`
+										: `/h?user=${blogData.uploader.username}`
 								}
+								className="flex"
 							>
 								{blogData.uploader.full_name.first}{" "}
 								{blogData.uploader.full_name.last}
+								{blogData.uploader.is_verified && (
+									<MdCheckCircleOutline className="text-primary ml-1" />
+								)}
 							</Link>
-							<span className="text-primary opacity-50 ml-1">posted</span>
+							<span className=" opacity-50 ml-1">posted</span>
 						</p>
 						<p className="text-sm flex gap-2 leading-none">
 							<span className="opacity-50">@{blogData.uploader.username}</span>
-							<span>
-								{dayjs(blogData.createdAt).format("MMM DD YYYY h:MM A")}
-							</span>
+							<span>{dayjs(blogData.createdAt).fromNow()}</span>
 						</p>
 					</div>
 				</div>
 
 				<Link
-					href={`/h/feed/${blogData.id}`}
+					href={`/h/feed/post?id=${blogData.id}`}
 					className="mt-5 h-[101px] overflow-hidden relative"
+					onClick={() => setIsClicked(true)}
 				>
 					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-base-200" />
 					<ReactMarkdown
@@ -340,19 +356,22 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 					</ReactMarkdown>
 				</Link>
 				<Link
-					href={`/h/feed/${blogData.id}`}
+					href={`/h/feed/post?id=${blogData.id}`}
 					className="text-center pt-2 opacity-50 z-10"
+					onClick={() => setIsClicked(true)}
 				>
 					Read more
 				</Link>
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<button
-							onClick={upvoteHandler}
-							className={`btn ${isLiked ? "btn-primary" : "btn-ghost"} gap-2`}
-						>
-							<FiArrowUp className="font-bold" />
+						<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
+							{isLiked ? (
+								<MdFavorite className="text-lg text-red-500" />
+							) : (
+								<MdFavoriteBorder className="text-lg " />
+							)}
+							{/* <FiArrowUp className="font-bold" /> */}
 							{blogData.upvoters ? blogData.upvoters.length : 0}
 						</button>
 						<motion.button
@@ -367,53 +386,12 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							<span className="ml-2">{blogData.comments?.length ?? 0}</span>
 						</motion.button>
 					</div>
-					{/* <div className="md:hidden dropdown dropdown-top dropdown-end">
-						<label tabIndex={0} className="btn btn-ghost">
-							<FiMoreHorizontal />
-						</label>
-						<ul
-							tabIndex={0}
-							className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-						>
-							<li>
-								<Link scroll={false} href={`/h/feed/${blogData.id}`}>
-									Read More
-								</Link>
-							</li>
-							<li>
-								<button
-									onClick={() => {
-										const thisLink = `${route}/h/feed/${blogData.id}`;
-										navigator.clipboard.writeText(thisLink);
-										toast("Link Shared");
-									}}
-								>
-									Share
-								</button>
-							</li>
-						</ul>
-					</div> */}
 					<div className="flex gap-2">
-						{/* {!isMoreOpen ? (
-							<Link
-								scroll={false}
-								href={`/h/feed/${blogData.id}`}
-								className="btn btn-ghost"
-								onClick={() => setIsMoreOpen(true)}
-							>
-								Read More
-							</Link>
-						) : (
-							<div className="btn btn-ghost btn-disabled items-center gap-2">
-								Loading Page
-								<FiLoader className="animate-spin" />
-							</div>
-						)} */}
 						<button
 							className="btn btn-ghost gap-2"
 							onClick={() => {
 								const baseURL = window.location.origin;
-								const thisLink = `${baseURL}/h/feed/${blogData.id}`;
+								const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
 								navigator.clipboard.writeText(thisLink);
 								toast("Link Shared");
 							}}
@@ -439,13 +417,15 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 													? "/h/me"
 													: `/h/${comment.commenter.username}`
 											}
+											className="relative min-w-10 min-h-10 w-10 h-10"
 										>
 											<Image
 												src={comment.commenter.avatar_url}
 												alt="avatar"
-												className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
-												width={48}
-												height={48}
+												className="min-w-10 min-h-10 mask mask-squircle bg-primary object-center object-cover"
+												// width={48}
+												// height={48}
+												fill
 											/>
 										</Link>
 										{/* content */}
@@ -470,7 +450,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 											<ReactMarkdown
 												// components={markdownRenderer}
 												rehypePlugins={[rehypeRaw]}
-												className="prose pb-0"
+												className="prose pb-0 break-words"
 											>
 												{comment.content}
 											</ReactMarkdown>
@@ -478,7 +458,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 										{/* actions */}
 										{currentUser.id === blogData.uploader.id && (
 											<>
-												<div className="dropdown dropdown-bottom dropdown-end">
+												{/* <div className="dropdown dropdown-bottom dropdown-end">
 													<label tabIndex={0} className="btn btn-ghost">
 														<MdMoreHoriz />
 													</label>
@@ -515,7 +495,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 															</p>
 														</li>
 													</ul>
-												</div>
+												</div> */}
 
 												{/* delete comment modal */}
 												<input

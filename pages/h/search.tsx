@@ -1,5 +1,6 @@
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
+import { FiLoader } from "react-icons/fi";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,22 +20,21 @@ const SearchPage = () => {
 		const { query } = router.query as { query: string };
 		const pattern = `%${query}%`;
 
-		const supabasequery = supabase
-			.from("user_hunters")
-			.select("id,username,full_name,email,avatar_url");
-
-		const { data, error } = await supabasequery.ilike(
-			"full_name->>first,full_name->>last,full_name->>middle,email,username",
-			pattern,
-		);
+		const { data, error } = await supabase.rpc("search_hunters", {
+			searchquery: pattern,
+		});
 
 		if (error) {
 			console.log(error);
 			return [];
 		}
 
+		// remove the current user from the search results
 		if (data) {
-			return data as IUserHunter[];
+			const filteredData = data.filter(
+				(hunter: IUserHunter) => hunter.username !== _currentUser?.username,
+			);
+			return filteredData as IUserHunter[];
 		}
 	};
 
@@ -43,7 +43,8 @@ const SearchPage = () => {
 			{
 				queryKey: ["searchresults"],
 				queryFn: searchOnload,
-				enabled: router.query.query !== undefined,
+				enabled: router.query.query ? true : false,
+				refetchOnWindowFocus: false,
 			},
 		],
 	});
@@ -65,23 +66,25 @@ const SearchPage = () => {
 
 							const searchQuery = formData.get("searchQuery");
 
-							if (!searchQuery) {
-								toast.error("Search query is required");
+							if (searchQuery!.length < 3) {
+								toast.error("Your query must be at least 3 characters long");
 							}
 
-							router.query.query = searchQuery as string;
+							window.location.href = `/h/search?query=${searchQuery}`;
+							// router.replace(`/h/search?query=${searchQuery}`);
+							// router.reload();
+							// searchresults.refetch();
 						}}
 						className="mb-5 flex gap-2 items-center"
 					>
 						<input
-							disabled
 							type="text"
 							className="input input-primary w-full items-center"
 							name="searchQuery"
-							placeholder="In-page search feautre is not yet available"
+							placeholder="Search for someone"
 						/>
 						<button
-							disabled
+							type="submit"
 							className="btn btn-primary gap-2 items-center hidden md:inline-flex"
 						>
 							<MdSearch className="text-lg" />
@@ -94,7 +97,13 @@ const SearchPage = () => {
 						<span className="font-bold">{router.query.query}</span>&apos;
 					</p>
 
-					{searchresults?.data!.length > 0 ? (
+					{searchresults.isLoading && (
+						<div className="mt-4 flex justify-center">
+							<FiLoader className="animate-spin text-2xl" />
+						</div>
+					)}
+
+					{searchresults?.isFetched ? (
 						<div className="mt-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
 							{searchresults.data?.map((hunter, index) => (
 								<Link
@@ -102,7 +111,7 @@ const SearchPage = () => {
 									href={
 										hunter.username === _currentUser?.username
 											? "/h/me"
-											: `/h/${hunter.username}`
+											: `/h?user=${hunter.username}`
 									}
 									passHref
 									className="p-3 hover:border-opacity-0 group hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"

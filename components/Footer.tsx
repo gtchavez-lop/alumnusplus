@@ -44,13 +44,8 @@ const Footer = () => {
 				</div>
 				<div>
 					<span className="footer-title">Legal</span>
-
-					<Link href={"/util/terms-of-use"} className="link link-hover">
-						Terms of use
-					</Link>
-					<Link href={"/util/privacy-policy"} className="link link-hover">
-						Privacy policy
-					</Link>
+					<p className="link link-hover">Terms of use</p>
+					<p className="link link-hover">Privacy policy</p>
 					<Link href={"/util/cookies"} className="link link-hover">
 						Cookie policy
 					</Link>

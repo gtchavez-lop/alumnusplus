@@ -65,8 +65,8 @@ const CreateNewJobPage = () => {
 				},
 			]);
 
+		toast.dismiss();
 		if (error) {
-			toast.dismiss();
 			toast.error(error.message);
 			return;
 		}

@@ -12,7 +12,8 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
-const NationalID_RegexFormat = /^[0-9]{4}-[0-9]{4}-[0-9]{4}$-[0-9]{4}$/;
+const NationalID_RegexFormat = /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/g;
+const DriverLicense_RegexFormat = /^[A-Z][0-9]{2}-[0-9]{2}-[0-9]{6}$/g;
 
 const VerifyIdentity = () => {
 	const [loadingValue, setLoadingValue] = useState(0);
@@ -22,6 +23,16 @@ const VerifyIdentity = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [tempUserData, setTempUserData] = useState<IUserHunter>(_currentUser);
 	const router = useRouter();
+	const [selectedIDType, setSelectedIDType] = useState<
+		"national id" | "passport" | "driver's license"
+	>("national id");
+
+	const formatIdNumber = (
+		input: string,
+		idType: "national id" | "passport" | "driver's license",
+	) => {
+		return input;
+	};
 
 	// const setupStream = async () => {
 	// 	try {
@@ -204,15 +215,18 @@ const VerifyIdentity = () => {
 				<h1 className="text-4xl font-bold">Verify Identity</h1>
 
 				{/* add warning as this is a beta feateure */}
+				<p className="alert alert-warning justify-start mt-3">
+					<MdWarning className="text-xl" />
+					<span>
+						This feature is a work in progress. Some features may not work or
+						may be replaced in the future
+					</span>
+				</p>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-					<p className="alert alert-warning justify-center">
-						<MdWarning />
-						This feature is a work in progress. Please use with caution.
-					</p>
-					<p className="alert alert-warning justify-center">
+					{/* <p className="alert alert-warning justify-center">
 						<MdWarning />
 						We only accept Philippine National Identity Card in this version.
-					</p>
+					</p> */}
 				</div>
 
 				{/* mobile webcam */}
@@ -270,8 +284,8 @@ const VerifyIdentity = () => {
 							className="select select-primary mb-2"
 						>
 							<option value="national id">National ID</option>
+							<option value="driver's license">Driver&apos;s License</option>
 							<option disabled>UMID (Coming Soon)</option>
-							<option disabled>Driver&apos;s License (Coming Soon)</option>
 							<option disabled>Passport (Coming Soon)</option>
 							<option disabled>Voter&apos;s ID (Coming Soon)</option>
 							<option disabled>PhilHealth ID (Coming Soon)</option>
@@ -282,24 +296,42 @@ const VerifyIdentity = () => {
 					<label className="flex flex-col">
 						<span>Id Number</span>
 						<input
+							placeholder={
+								selectedIDType === "national id"
+									? "0000-0000-0000-0000"
+									: selectedIDType === "driver's license"
+									? "A00000000-0000000-0000000"
+									: "0000-0000-0000-0000"
+							}
 							disabled={_currentUser.is_verified}
 							type="text"
 							value={tempUserData.id_number}
 							onChange={(e) => {
-								// format id number
-								const idNumber = e.target.value.replace(/[^0-9]/g, "");
-								const formattedIdNumber = idNumber.replace(
-									/(\d{4})(\d{4})(\d{4})(\d{4})/,
-									"$1-$2-$3-$4",
+								let formattedIdNumber = e.target.value;
+								console.log(
+									"driver's license",
+									DriverLicense_RegexFormat.test(e.target.value),
 								);
-								// limit id number to 19 characters
-								if (formattedIdNumber.length > 19) return;
+
+								if (selectedIDType === "national id") {
+									formattedIdNumber = e.target.value.replace(
+										NationalID_RegexFormat,
+										"$1-$2-$3-$4",
+									);
+								}
+
+								if (selectedIDType === "driver's license") {
+									// formattedIdNumber = e.target.value.replace(
+									// 	/[A-Za-z][0-9]+-[0-9]+-[0-9]+/,
+									// 	"$1-$2-$3",
+									// );
+								}
 
 								// set id number
 								setTempUserData({
 									...tempUserData,
 									id_number: formattedIdNumber,
-									id_type: "national id",
+									id_type: selectedIDType,
 								});
 							}}
 							className="input input-primary"

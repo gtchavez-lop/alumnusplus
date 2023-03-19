@@ -1,24 +1,44 @@
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	ChangeEvent,
-	DOMAttributes,
-	FormEvent,
-	SyntheticEvent,
-	useState,
-} from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
+import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import _Industries from "@/lib/industryTypes.json";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useStore } from "@nanostores/react";
+
+type TTab = {
+	name: string;
+	value: string;
+};
+
+const tabs: TTab[] = [
+	{
+		name: "Account",
+		value: "account",
+	},
+	{
+		name: "Company",
+		value: "company",
+	},
+	{
+		name: "Socials",
+		value: "socials",
+	},
+	{
+		name: "Verification",
+		value: "verification",
+	},
+];
 
 const ProvisionerProfileEditPage: NextPage = () => {
 	const router = useRouter();
@@ -31,6 +51,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 	const f_industryType = new Fuse(_Industries, {
 		threshold: 0.3,
 	});
+	const [tabSelected, setSelectedTab] = useState<
+		"account" | "company" | "socials" | "verification"
+	>("account");
+	const [tabContent] = useAutoAnimate();
 
 	const handleChanges = async () => {
 		// check if there are no changes, toast and return
@@ -106,7 +130,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 									transition: { easings: "circOut" },
 								}}
 								exit={{ opacity: 0, y: 20, transition: { easings: "circIn" } }}
-								className="flex justify-center fixed bottom-0 left-0 py-5 bg-base-100 w-full"
+								className="flex justify-center fixed z-10 bottom-0 left-0 py-5 bg-base-100 w-full"
 							>
 								<div className="flex justify-end gap-2 w-full max-w-5xl">
 									<div onClick={handleChanges} className="btn btn-success">
@@ -125,313 +149,402 @@ const ProvisionerProfileEditPage: NextPage = () => {
 						)}
 					</AnimatePresence>
 
-					{/* content */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-						{/* account information */}
-						<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
-							<p className="text-xl font-bold">Account Information</p>
-							<label className="flex flex-col gap-3">
-								<span>Profile Picture</span>
-								<Image
-									src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
-									alt="Profile Picture"
-									className="w-24 h-24 object-cover bg-primary mask mask-squircle"
-									width={96}
-									height={96}
-								/>
-								<input
-									className="file-input 	file-input-primary"
-									type="file"
-									accept="image/png, image/gif, image/jpeg"
-									disabled
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Email</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.contactInformation.email}
-									type="email"
-									readOnly
-									disabled
-								/>
-							</label>
-						</div>
+					{/* tabs desktop */}
+					<ul className="hidden lg:flex tabs tabs-boxed mt-10">
+						{tabs.map((item, index) => (
+							<li
+								key={`tab_desktop_${index}`}
+								onClick={() =>
+									setSelectedTab(
+										item.value as
+											| "account"
+											| "company"
+											| "socials"
+											| "verification",
+									)
+								}
+								className={`tab ${tabSelected === item.value && "tab-active"}`}
+							>
+								{item.name}
+							</li>
+						))}
+					</ul>
+					{/* mobile select */}
+					<select
+						value={tabSelected}
+						onChange={(item) =>
+							setSelectedTab(
+								item.currentTarget.value as
+									| "account"
+									| "company"
+									| "socials"
+									| "verification",
+							)
+						}
+						className="select w-full mt-5 select-primary lg:hidden"
+					>
+						{tabs.map((item, index) => (
+							<option
+								key={`tab_mobile_${index}`}
+								value={item.value}
+								className={`tab ${tabSelected === item.value && "tab-active"}`}
+							>
+								{item.name}
+							</option>
+						))}
+					</select>
 
-						{/* company details */}
-						<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
-							<p className="text-xl font-bold">Company Details</p>
+					{/* tab content */}
+					<div className="mt-10 w-full max-w-2xl mx-auto" ref={tabContent}>
+						{tabSelected === "account" && (
+							<div>
+								<p className="text-xl font-bold">Account Details</p>
 
-							<label className="flex flex-col">
-								<span>Company Name</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.legalName}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											legalName: e.target.value,
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Company Email</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.companyEmail}
-									type="email"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											companyEmail: e.target.value,
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Founding Year</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.foundingYear}
-									type="number"
-									max={dayjs().year()}
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											companyEmail: e.target.value,
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Industry Type</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.industryType}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											industryType: e.target.value,
-										});
-										let res = f_industryType.search(e.target.value);
-										let mappedRes = res.map((r) => r.item);
-										let limited = mappedRes.slice(0, 5);
-										setIndustryTypeSearchResults(limited);
-									}}
-								/>
-								{industryTypeSearchResults.length > 0 && (
-									<div className="flex flex-col gap-2 mt-4 bg-base-300 p-5 rounded-btn">
-										{industryTypeSearchResults.map((res, index) => (
-											<div
-												key={`industryTypeSearchResults-${index}`}
-												onClick={() => {
-													setTempUserDetails({
-														...tempUserDetails,
-														industryType: res,
-													});
-													setIndustryTypeSearchResults([]);
-												}}
-												className="btn btn-ghost btn-block justify-start"
-											>
-												{res}
+								<div className="mt-5">
+									<label className="flex flex-col gap-3">
+										<span>Profile Picture</span>
+										<Image
+											src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
+											alt="Profile Picture"
+											className="w-24 h-24 object-cover bg-primary mask mask-squircle"
+											width={96}
+											height={96}
+										/>
+										<input
+											className="file-input 	file-input-primary"
+											type="file"
+											accept="image/png, image/gif, image/jpeg"
+											disabled
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Email</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.contactInformation.email}
+											type="email"
+											readOnly
+											disabled
+										/>
+									</label>
+								</div>
+							</div>
+						)}
+						{tabSelected === "company" && (
+							<div>
+								<p className="text-xl font-bold">Company Details</p>
+
+								<div className="mt-5">
+									<label className="flex flex-col">
+										<span>Company Name</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.legalName}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													legalName: e.target.value,
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Company Email</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.companyEmail}
+											type="email"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													companyEmail: e.target.value,
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Founding Year</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.foundingYear}
+											type="number"
+											max={dayjs().year()}
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													companyEmail: e.target.value,
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Industry Type</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.industryType}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													industryType: e.target.value,
+												});
+												let res = f_industryType.search(e.target.value);
+												let mappedRes = res.map((r) => r.item);
+												let limited = mappedRes.slice(0, 5);
+												setIndustryTypeSearchResults(limited);
+											}}
+										/>
+										{industryTypeSearchResults.length > 0 && (
+											<div className="flex flex-col gap-2 mt-4 bg-base-300 p-5 rounded-btn">
+												{industryTypeSearchResults.map((res, index) => (
+													<div
+														key={`industryTypeSearchResults-${index}`}
+														onClick={() => {
+															setTempUserDetails({
+																...tempUserDetails,
+																industryType: res,
+															});
+															setIndustryTypeSearchResults([]);
+														}}
+														className="btn btn-ghost btn-block justify-start"
+													>
+														{res}
+													</div>
+												))}
 											</div>
-										))}
-									</div>
-								)}
-							</label>
-							<label className="flex flex-col">
-								<span>Search Tags (Optional)</span>
-								<input
-									className="input input-primary"
-									type="text"
-									onKeyDown={(e) => {
-										if (e.key === "Enter") {
-											setTempUserDetails({
-												...tempUserDetails,
-												tags: [...tempUserDetails.tags, e.currentTarget.value],
-											});
-											e.currentTarget.value = "";
-										}
-									}}
-								/>
-								{tempUserDetails.tags.length > 0 && (
-									<p className="flex flex-wrap gap-2 mt-3">
-										{tempUserDetails.tags.map((tag, index) => (
-											<span
-												key={`tag-${index}`}
-												onClick={() => {
+										)}
+									</label>
+									<label className="flex flex-col">
+										<span>Search Tags (Optional)</span>
+										<input
+											className="input input-primary"
+											type="text"
+											onKeyDown={(e) => {
+												if (e.key === "Enter") {
 													setTempUserDetails({
 														...tempUserDetails,
-														tags: tempUserDetails.tags.filter((t) => t !== tag),
+														tags: [
+															...tempUserDetails.tags,
+															e.currentTarget.value,
+														],
 													});
-												}}
-												className="badge badge-primary"
-											>
-												{tag}
-											</span>
-										))}
-									</p>
-								)}
-							</label>
-							<label className="flex flex-col">
-								<span>Short Description</span>
-								<textarea
-									className="textarea textarea-primary"
-									rows={3}
-									value={tempUserDetails.shortDescription}
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											shortDescription: e.target.value,
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Full Description</span>
-								<textarea
-									className="textarea textarea-primary"
-									rows={5}
-									value={tempUserDetails.fullDescription}
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											fullDescription: e.target.value,
-										});
-									}}
-								/>
-							</label>
-						</div>
+													e.currentTarget.value = "";
+												}
+											}}
+										/>
+										{tempUserDetails.tags.length > 0 && (
+											<p className="flex flex-wrap gap-2 mt-3">
+												{tempUserDetails.tags.map((tag, index) => (
+													<span
+														key={`tag-${index}`}
+														onClick={() => {
+															setTempUserDetails({
+																...tempUserDetails,
+																tags: tempUserDetails.tags.filter(
+																	(t) => t !== tag,
+																),
+															});
+														}}
+														className="badge badge-primary"
+													>
+														{tag}
+													</span>
+												))}
+											</p>
+										)}
+									</label>
+									<label className="flex flex-col">
+										<span>Short Description</span>
+										<textarea
+											className="textarea textarea-primary"
+											rows={3}
+											value={tempUserDetails.shortDescription}
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													shortDescription: e.target.value,
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Full Description</span>
+										<textarea
+											className="textarea textarea-primary"
+											rows={5}
+											value={tempUserDetails.fullDescription}
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													fullDescription: e.target.value,
+												});
+											}}
+										/>
+									</label>
+								</div>
+							</div>
+						)}
+						{tabSelected === "socials" && (
+							<div>
+								<p className="text-xl font-bold">Social Accounts</p>
 
-						{/* Social profiles */}
-						<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
-							<p className="text-xl font-bold">Social Profiles (Optional)</p>
+								<div className="mt-5">
+									<label className="flex flex-col">
+										<span>Website</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.website}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													website: e.target.value,
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Facebook</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.facebook}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														facebook: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Twitter</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.twitter}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														twitter: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Instagram</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.instagram}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														instagram: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>LinkedIn</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.linkedin}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														linkedin: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Youtube</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.youtube}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														youtube: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Github</span>
+										<input
+											className="input input-primary"
+											value={tempUserDetails.socialProfiles.github}
+											type="text"
+											onChange={(e) => {
+												setTempUserDetails({
+													...tempUserDetails,
+													socialProfiles: {
+														...tempUserDetails.socialProfiles,
+														github: e.target.value,
+													},
+												});
+											}}
+										/>
+									</label>
+								</div>
+							</div>
+						)}
+						{tabSelected === "verification" && (
+							<div>
+								<p className="text-xl font-bold">Verification Status</p>
 
-							<label className="flex flex-col">
-								<span>Website</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.website}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											website: e.target.value,
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Facebook</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.facebook}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												facebook: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Twitter</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.twitter}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												twitter: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Instagram</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.instagram}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												instagram: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>LinkedIn</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.linkedin}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												linkedin: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Youtube</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.youtube}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												youtube: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span>Github</span>
-								<input
-									className="input input-primary"
-									value={tempUserDetails.socialProfiles.github}
-									type="text"
-									onChange={(e) => {
-										setTempUserDetails({
-											...tempUserDetails,
-											socialProfiles: {
-												...tempUserDetails.socialProfiles,
-												github: e.target.value,
-											},
-										});
-									}}
-								/>
-							</label>
-						</div>
+								<div className="mt-5">
+									<div className="alert alert-warning justify-start">
+										<MdWarning />
+										<p>This feature is not available yet.</p>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 				</motion.main>
 			)}
 		</>
 	);
 };
+// <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+// 	{/* account information */}
+// 	<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
+// 		<p className="text-xl font-bold">Account Information</p>
+
+// 	</div>
+
+// 	{/* company details */}
+// 	<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
+// 		<p className="text-xl font-bold">Company Details</p>
+
+// 	</div>
+
+// 	{/* Social profiles */}
+// 	<div className="flex flex-col gap-3 bg-base-200 p-5 rounded-btn h-max">
+// 		<p className="text-xl font-bold">Social Profiles (Optional)</p>
+
+// 	</div>
+// </div>
 
 export default ProvisionerProfileEditPage;

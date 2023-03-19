@@ -1,19 +1,20 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
-import { FiX } from "react-icons/fi";
+import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
+import { MdSearch } from "react-icons/md";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
+import { useRive } from "@rive-app/react-canvas";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
@@ -37,7 +38,7 @@ const FeedPage = () => {
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select(
-				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url),upvoters",
+				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url,is_verified),upvoters",
 			)
 			.order("createdAt", { ascending: false })
 			.in("uploader", connections);
@@ -61,7 +62,7 @@ const FeedPage = () => {
 			.from("new_recommended_hunters")
 			.select("*")
 			.not("id", "in", `(${joined})`)
-			.limit(2);
+			.limit(5);
 
 		if (error || localConnection.length === 0) {
 			return [];
@@ -102,6 +103,7 @@ const FeedPage = () => {
 	});
 
 	const handlePost = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const content = formData.get("content");
 
@@ -138,7 +140,7 @@ const FeedPage = () => {
 
 	return (
 		<>
-			{_currentUser && feedList.isSuccess && recommendedUsers.isSuccess && (
+			{_currentUser && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -153,25 +155,53 @@ const FeedPage = () => {
 							ref={mainFeed_ui}
 						>
 							{/* create post */}
-							<div className="flex gap-2 w-full items-center">
-								<Image
-									src={_currentUser.avatar_url}
-									alt="avatar"
-									className="hidden md:block bg-primary mask mask-squircle"
-									width={48}
-									height={48}
-								/>
-								<div
-									onClick={() => setIsMakingPost(true)}
-									className="btn btn-primary btn-block max-w-md"
-								>
-									Create Post
-								</div>
+							<div ref={mainFeed_ui} className="flex gap-2 w-full relative">
+								{!isMakingPost ? (
+									<>
+										<div className=" relative w-12 h-12">
+											<Image
+												src={_currentUser.avatar_url}
+												alt="avatar"
+												className="bg-primary mask mask-squircle"
+												fill
+											/>
+										</div>
+
+										<input
+											placeholder="What's on your mind?"
+											readOnly
+											onClick={() => setIsMakingPost(true)}
+											className="input input-primary rounded-full w-full"
+										/>
+									</>
+								) : (
+									<form onSubmit={handlePost} className="w-full">
+										<textarea
+											placeholder="What's on your mind?"
+											rows={10}
+											name="content"
+											className="textarea textarea-primary w-full"
+										/>
+										<p className="text-xs opacity-75">Markdown</p>
+										<div className="flex justify-end gap-2">
+											<button
+												type="reset"
+												onClick={() => setIsMakingPost(false)}
+												className="btn btn-ghost"
+											>
+												Cancel
+											</button>
+											<button type="submit" className="btn btn-primary">
+												Post
+											</button>
+										</div>
+									</form>
+								)}
 							</div>
 
 							{/* create post dropdown */}
-							{isMakingPost && (
-								<div className="w-full">
+							{/* {isMakingPost && (
+								<div className="w-full hidden lg:block">
 									<form
 										onSubmit={(e) => {
 											e.preventDefault();
@@ -208,23 +238,23 @@ const FeedPage = () => {
 										</div>
 									</form>
 								</div>
-							)}
+							)} */}
 
 							{/* feed list */}
 							<div className="mt-10">
 								<div className="flex flex-col gap-5" ref={feedList_ui}>
-									{feedList.isLoading &&
-										Array(10)
-											.fill(0)
-											.map((_, i) => (
-												<div
-													key={`feedloading-${i}`}
-													style={{
-														animationDelay: `${i * 100}ms`,
-													}}
-													className="h-[200px] bg-zinc-500/50 animate-pulse duration-200"
-												/>
-											))}
+									{feedList.isLoading && (
+										<>
+											<FiLoader className="animate-spin duration-500 text-3xl self-center" />
+											{/* <div className="w-64 h-64 object-cover self-center mt-5">
+												<RiveLoadingComponent />
+											</div> */}
+											<p className="text-center w-full self-center max-w-xs">
+												Loading feed... This may take a while if you have a lot
+												of followers
+											</p>
+										</>
+									)}
 
 									{feedList.isSuccess &&
 										feedList.data.map((item: THunterBlogPost) => (
@@ -255,14 +285,17 @@ const FeedPage = () => {
 
 									router.push(`/h/search?query=${searchQuery}`);
 								}}
-								className="flex flex-col gap-3"
+								className="flex flex-col lg:flex-row lg:items-center gap-3"
 							>
 								<input
 									type="text"
 									name="searchQuery"
 									placeholder="Search for people"
-									className="input input-bordered"
+									className="input input-bordered flex-1"
 								/>
+								<button type="submit" className="btn btn-primary">
+									<MdSearch className="text-lg" />
+								</button>
 							</form>
 
 							<div className="flex flex-col rounded-btn gap-3">
@@ -294,7 +327,7 @@ const FeedPage = () => {
 											{recommendedUsers.isSuccess &&
 												recommendedUsers.data.map((thisUser, index) => (
 													<Link
-														href={`/h/${thisUser.username}`}
+														href={`/h?user=${thisUser.username}`}
 														key={`connection_${index}`}
 														className="flex gap-2 items-center justify-between p-2 hover:bg-base-200 rounded-btn"
 													>
@@ -302,7 +335,7 @@ const FeedPage = () => {
 															<Image
 																src={thisUser.avatar_url}
 																alt="avatar"
-																className="w-12 h-12 mask mask-squircle bg-primary "
+																className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 																width={48}
 																height={48}
 															/>

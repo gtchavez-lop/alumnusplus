@@ -12,15 +12,39 @@ import Link from "next/link";
 import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { supabase } from "@/lib/supabase";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+
+type TTabs = {
+	name: string;
+	value: string;
+};
+
+const tabs: TTabs[] = [
+	{
+		name: "About",
+		value: "about",
+	},
+	{
+		name: "Job Posts",
+		value: "jobs",
+	},
+	{
+		name: "Followers",
+		value: "followers",
+	},
+];
 
 const ProvProfilePage: NextPage = () => {
 	const _currentTheme = useStore($themeMode);
 	const router = useRouter();
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
-	const [tabSelected, setTabSelected] = useState<"about" | "jobs">("about");
+	const [tabSelected, setTabSelected] = useState<
+		"about" | "jobs" | "followers"
+	>("about");
+	const [tabContent] = useAutoAnimate();
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -68,11 +92,33 @@ const ProvProfilePage: NextPage = () => {
 		return data as TProvJobPost[];
 	};
 
-	const [latestJobs] = useQueries({
+	const fetchFollowers = async () => {
+		const queryString = _currentUser.followers;
+
+		const { data, error } = await supabase
+			.from("user_hunters")
+			.select("id,username,full_name,avatar_url")
+			.in("id", queryString);
+
+		if (error) {
+			return [];
+		}
+
+		return data;
+	};
+
+	const [latestJobs, followerList] = useQueries({
 		queries: [
 			{
 				queryKey: ["allJobPosts"],
 				queryFn: fetchJobs,
+				enabled: !!_currentUser,
+				refetchOnWindowFocus: false,
+				refetchOnMount: false,
+			},
+			{
+				queryKey: ["prov_followers"],
+				queryFn: fetchFollowers,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
@@ -99,7 +145,7 @@ const ProvProfilePage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 					>
-						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5 overflow-hidden">
 							<div className="col-span-full lg:col-span-3">
 								{/* profile */}
 								<div className="relative rounded-btn overflow-hidden flex flex-col gap-3">
@@ -127,7 +173,9 @@ const ProvProfilePage: NextPage = () => {
 											<p className="text-xl leading-tight font-bold">
 												Wicket Journeys
 											</p>
-											<p className="text-sm">69 followers</p>
+											<p className="text-sm">
+												{_currentUser.followers.length} followers
+											</p>
 										</div>
 									</div>
 									<div className="z-10 flex justify-end items-center gap-2 mt-5">
@@ -142,178 +190,199 @@ const ProvProfilePage: NextPage = () => {
 								</div>
 								<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
 								{/* tabs */}
-								<div className="grid grid-cols-2 gap-2">
-									<div
-										className={`btn btn-block ${
-											tabSelected === "about" ? "btn-primary" : "btn-ghost"
-										}`}
-										onClick={() => setTabSelected("about")}
-									>
-										About
-									</div>
-									<div
-										className={`btn btn-block ${
-											tabSelected === "jobs" ? "btn-primary" : "btn-ghost"
-										}`}
-										onClick={() => setTabSelected("jobs")}
-									>
-										Job Posts
-									</div>
-								</div>
+								<ul className="tabs tabs-boxed">
+									{tabs.map((item, index) => (
+										<li
+											key={`tab-${index}`}
+											onClick={() => {
+												setTabSelected(
+													item.value as "about" | "jobs" | "followers",
+												);
+											}}
+											className={`tab ${
+												tabSelected === item.value && "tab-active"
+											}`}
+										>
+											{item.name}
+										</li>
+									))}
+								</ul>
+
 								{/* content */}
-								<div className="mt-10">
-									<AnimatePresence mode="wait">
-										{tabSelected === "jobs" && (
-											<motion.div
-												variants={AnimTabTransition}
-												initial="initial"
-												animate="animate"
-												exit="exit"
-												className="flex flex-col gap-5"
-											>
-												{latestJobs.isSuccess &&
-													latestJobs.data?.length > 0 && (
+								<div className="mt-10 overflow-hidden" ref={tabContent}>
+									{tabSelected === "jobs" && (
+										<motion.div
+											variants={AnimTabTransition}
+											initial="initial"
+											animate="animate"
+											exit="exit"
+											className="flex flex-col gap-5"
+										>
+											{latestJobs.isSuccess && latestJobs.data?.length > 0 && (
+												<Link
+													href="/p/jobs/new"
+													className="btn btn-ghost btn-block gap-2"
+												>
+													Create New Job Post
+													<MdAdd />
+												</Link>
+											)}
+											{latestJobs.isSuccess && latestJobs.data?.length < 1 && (
+												<div className="flex justify-center items-center flex-col py-16">
+													<Image
+														alt=""
+														priority
+														src="/file-search.png"
+														width={200}
+														height={200}
+													/>
+													<div className="text-center flex flex-col items-center">
+														<p className="font-bold text-xl">
+															You haven&apos;t posted anything
+														</p>
+														<p className="leading-tight">
+															Post your first adventure
+														</p>
 														<Link
 															href="/p/jobs/new"
-															className="btn btn-ghost btn-block gap-2"
+															className="btn btn-primary mt-5 gap-2"
 														>
-															Create New Job Post
+															Create your first post
 															<MdAdd />
 														</Link>
-													)}
-												{latestJobs.isSuccess &&
-													latestJobs.data?.length < 1 && (
-														<div className="flex justify-center items-center flex-col py-16">
-															<Image
-																alt=""
-																priority
-																src="/file-search.png"
-																width={200}
-																height={200}
-															/>
-															<div className="text-center flex flex-col items-center">
-																<p className="font-bold text-xl">
-																	You haven&apos;t posted anything
-																</p>
-																<p className="leading-tight">
-																	Post your first adventure
-																</p>
-																<Link
-																	href="/p/jobs/new"
-																	className="btn btn-primary mt-5 gap-2"
-																>
-																	Create your first post
-																	<MdAdd />
-																</Link>
-															</div>
-														</div>
-													)}
-												{latestJobs.isSuccess &&
-													latestJobs.data?.length > 0 && (
-														<div className="flex flex-col gap-2">
-															{latestJobs.data.map((job) => (
-																<JobCardProv key={job.id} job={job} />
-															))}
-														</div>
-													)}
-											</motion.div>
-										)}
-
-										{tabSelected === "about" && (
-											<motion.div
-												key={"about_tab"}
-												variants={AnimTabTransition}
-												initial="initial"
-												animate="animate"
-												exit="exit"
-											>
-												<p className="text-2xl font-bold mb-5">
-													About this company
-												</p>
-
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Full Description
-													</p>
-													<ReactMarkdown className="prose">
-														{_currentUser.fullDescription}
-													</ReactMarkdown>
-												</div>
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Contact information
-													</p>
-													<div>
-														<p className="flex justify-between">
-															<span>Email</span>
-															<span>
-																{_currentUser.contactInformation.email}
-															</span>
-														</p>
-														<p className="flex justify-between">
-															<span>Phone</span>
-															<span>
-																{_currentUser.contactInformation.phone}
-															</span>
-														</p>
 													</div>
 												</div>
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Industry
-													</p>
-													<p>{_currentUser.industryType}</p>
+											)}
+											{latestJobs.isSuccess && latestJobs.data?.length > 0 && (
+												<div className="flex flex-col gap-2">
+													{latestJobs.data.map((job) => (
+														<JobCardProv
+															viewMode="list"
+															key={job.id}
+															job={job}
+														/>
+													))}
 												</div>
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Company Size
+											)}
+										</motion.div>
+									)}
+									{tabSelected === "about" && (
+										<motion.div
+											key={"about_tab"}
+											variants={AnimTabTransition}
+											initial="initial"
+											animate="animate"
+											exit="exit"
+										>
+											<p className="text-2xl font-bold mb-5">
+												About this company
+											</p>
+
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Full Description
+												</p>
+												<ReactMarkdown className="prose">
+													{_currentUser.fullDescription}
+												</ReactMarkdown>
+											</div>
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Contact information
+												</p>
+												<div>
+													<p className="flex justify-between">
+														<span>Email</span>
+														<span>{_currentUser.contactInformation.email}</span>
 													</p>
-													<p>{_currentUser.companySize} people</p>
+													<p className="flex justify-between">
+														<span>Phone</span>
+														<span>{_currentUser.contactInformation.phone}</span>
+													</p>
 												</div>
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Founding Year
-													</p>
-													<p>{_currentUser.foundingYear} people</p>
-												</div>
-												<div className="mt-3 shadow-lg p-5 rounded-btn">
-													<p className="text-lg font-bold text-primary">
-														Location
-													</p>
-													<p>
-														{_currentUser.address.address},{" "}
-														{_currentUser.address.city}
-													</p>
-												</div>
-											</motion.div>
-										)}
-									</AnimatePresence>
+											</div>
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Industry
+												</p>
+												<p>{_currentUser.industryType}</p>
+											</div>
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Company Size
+												</p>
+												<p>{_currentUser.companySize} people</p>
+											</div>
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Founding Year
+												</p>
+												<p>{_currentUser.foundingYear} people</p>
+											</div>
+											<div className="mt-3 shadow-lg p-5 rounded-btn">
+												<p className="text-lg font-bold text-primary">
+													Location
+												</p>
+												<p>
+													{_currentUser.address.address},{" "}
+													{_currentUser.address.city}
+												</p>
+											</div>
+										</motion.div>
+									)}
+									{tabSelected === "followers" && (
+										<div>
+											<h3 className="text-2xl font-bold">Followers</h3>
+
+											<div className="mt-4">
+												{followerList.isSuccess &&
+													followerList.data.map((item, index) => (
+														<div
+															key={`follower_${index}`}
+															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center"
+														>
+															<Image
+																width={50}
+																height={50}
+																className="mask mask-squircle"
+																alt={item.username}
+																src={item.avatar_url}
+															/>
+															<div>
+																<p className="leading-none text-lg font-bold">
+																	{item.full_name!.first} {item.full_name!.last}
+																</p>
+																<p className="leading-none opacity-75">
+																	@{item.username}
+																</p>
+															</div>
+														</div>
+													))}
+											</div>
+										</div>
+									)}
 								</div>
 							</div>
 							<div className="col-span-full lg:col-span-2 flex flex-col gap-3">
-								<div className="flex flex-col gap-3">
+								{/* <div className="flex flex-col gap-3">
 									<p className="text-2xl font-bold">Analytics</p>
 									<div>
 										<div>
-											<p className="text-lg font-bold">0</p>
-											<p>Search Appearances</p>
-											<p className="text-sm opacity-75 leading-none">
-												Last 7 Days
+											<p className="text-lg font-bold">
+												{_currentUser.totalVisits}
 											</p>
-											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
-										</div>
-										<div>
-											<p className="text-lg font-bold">0</p>
 											<p>Total Visits</p>
 											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
 										</div>
 										<div>
-											<p className="text-lg font-bold">0</p>
+											<p className="text-lg font-bold">
+												{_currentUser.followers.length ?? 0}
+											</p>
 											<p>Total Followers</p>
 											<div className="divider bg-base-content h-[1px] rounded-full opacity-40 mt-3" />
 										</div>
 									</div>
-								</div>
+								</div> */}
 								<div className="bg-base-200 p-4 rounded-btn flex flex-col gap-4">
 									<label className="flex items-center justify-between">
 										<span>Dark Mode</span>

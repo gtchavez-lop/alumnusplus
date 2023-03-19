@@ -15,6 +15,7 @@ import Fuse from "fuse.js";
 import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
+import { ToastError } from "@/components/customToasts";
 import _PhCities from "@/lib/ph_location.json";
 import _Skills from "@/lib/skills.json";
 import dayjs from "dayjs";
@@ -36,10 +37,6 @@ const PageTabs = [
 	{
 		title: "Skillset",
 		value: "skillset",
-	},
-	{
-		title: "Residence",
-		value: "residence",
 	},
 	{
 		title: "Socials",
@@ -453,6 +450,81 @@ const EditProfilePage: NextPage = () => {
 										<option value="prefer not to say">Prefer not to say</option>
 									</select>
 								</label>
+								<label className="flex flex-col">
+									<span>Address</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.address}
+										type="text"
+										onChange={(e) => {
+											setTempUserDetails({
+												...tempUserDetails,
+												address: {
+													...tempUserDetails.address,
+													address: e.target.value,
+												},
+											});
+										}}
+									/>
+								</label>
+								<label className="flex flex-col">
+									<span>City</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.city}
+										type="text"
+										onChange={(e) => {
+											let res = f_PhCities.search(e.target.value);
+											let filtered = res.map((item) => {
+												return {
+													city: item.item.city,
+													admin_name: item.item.admin_name,
+												};
+											});
+											let limited = filtered.slice(0, 5);
+
+											setCitySearchResults(limited);
+											setTempUserDetails({
+												...tempUserDetails,
+												address: {
+													...tempUserDetails.address,
+													city: e.target.value,
+												},
+											});
+										}}
+									/>
+									{citySearchResults.length > 0 && (
+										<div className="flex flex-col gap-2 bg-base-100 p-2 rounded-btn mt-3">
+											{citySearchResults.map((item, index) => (
+												<button
+													className="btn btn-ghost btn-block justify-start"
+													key={`city_${index}`}
+													onClick={() => {
+														setTempUserDetails({
+															...tempUserDetails,
+															address: {
+																...tempUserDetails.address,
+																city: item.city,
+															},
+														});
+
+														setCitySearchResults([]);
+													}}
+												>
+													{item.city}, {item.admin_name}
+												</button>
+											))}
+										</div>
+									)}
+								</label>
+								<label className="flex flex-col">
+									<span>Postal Code</span>
+									<input
+										className="input input-primary"
+										value={tempUserDetails.address.postalCode}
+										type="number"
+									/>
+								</label>
 							</div>
 						)}
 						{tabSelected === "skillset" && (
@@ -573,87 +645,6 @@ const EditProfilePage: NextPage = () => {
 											Must be at least 3 skills
 										</span>
 									)}
-								</label>
-							</div>
-						)}
-						{tabSelected === "residence" && (
-							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
-								<p className="text-xl font-bold">Residence Information</p>
-
-								<label className="flex flex-col">
-									<span>Address</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.address}
-										type="text"
-										onChange={(e) => {
-											setTempUserDetails({
-												...tempUserDetails,
-												address: {
-													...tempUserDetails.address,
-													address: e.target.value,
-												},
-											});
-										}}
-									/>
-								</label>
-								<label className="flex flex-col">
-									<span>City</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.city}
-										type="text"
-										onChange={(e) => {
-											let res = f_PhCities.search(e.target.value);
-											let filtered = res.map((item) => {
-												return {
-													city: item.item.city,
-													admin_name: item.item.admin_name,
-												};
-											});
-											let limited = filtered.slice(0, 5);
-
-											setCitySearchResults(limited);
-											setTempUserDetails({
-												...tempUserDetails,
-												address: {
-													...tempUserDetails.address,
-													city: e.target.value,
-												},
-											});
-										}}
-									/>
-									{citySearchResults.length > 0 && (
-										<div className="flex flex-col gap-2 bg-base-100 p-2 rounded-btn mt-3">
-											{citySearchResults.map((item, index) => (
-												<button
-													className="btn btn-ghost btn-block justify-start"
-													key={`city_${index}`}
-													onClick={() => {
-														setTempUserDetails({
-															...tempUserDetails,
-															address: {
-																...tempUserDetails.address,
-																city: item.city,
-															},
-														});
-
-														setCitySearchResults([]);
-													}}
-												>
-													{item.city}, {item.admin_name}
-												</button>
-											))}
-										</div>
-									)}
-								</label>
-								<label className="flex flex-col">
-									<span>Postal Code</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.postalCode}
-										type="number"
-									/>
 								</label>
 							</div>
 						)}
@@ -791,6 +782,21 @@ const EditProfilePage: NextPage = () => {
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
 
+										// check if all fields are filled
+										if (
+											!(
+												data.companyName &&
+												data.jobPosition &&
+												data.location &&
+												data.startDate &&
+												data.endDate &&
+												data.description
+											)
+										) {
+											toast.error("Please fill all fields");
+											return;
+										}
+
 										const newExperience: HWorkExperience = {
 											companyName: data.companyName as string,
 											jobPosition: data.jobPosition as string,
@@ -798,6 +804,7 @@ const EditProfilePage: NextPage = () => {
 											startDate: data.startDate as string,
 											endDate: data.endDate as string,
 											isCurrent: data.isCurrent === "on",
+											description: data.description as string,
 										};
 
 										setTempUserDetails({
@@ -810,15 +817,29 @@ const EditProfilePage: NextPage = () => {
 
 										// reset form
 										form.reset();
+
+										// scroll up
+										window.scrollTo({
+											top: 0,
+											behavior: "smooth",
+										});
 									}}
 									className="flex flex-col"
 								>
 									<label className="flex flex-col">
-										<span>Job Position</span>
+										<span>Job Position Title</span>
 										<input
 											className="input input-primary"
 											name="jobPosition"
 											type="text"
+										/>
+									</label>
+									<label className="flex flex-col">
+										<span>Job Description</span>
+										<textarea
+											className="textarea textarea-primary"
+											name="description"
+											rows={4}
 										/>
 									</label>
 									<label className="flex flex-col">
@@ -851,6 +872,7 @@ const EditProfilePage: NextPage = () => {
 											className="input input-primary"
 											name="endDate"
 											type="date"
+											max={dayjs().format("YYYY-MM-DD")}
 										/>
 									</label>
 									<label className="flex items-center mt-2 gap-2">
@@ -1201,23 +1223,27 @@ const EditProfilePage: NextPage = () => {
 											</Link>
 										)}
 									</div>
-									<div className="flex flex-col gap-1">
-										<p className="text-lg">ID Type</p>
-										<p className="text-sm opacity-75 leading-none ml-4">
-											{tempUserDetails.id_type === "national id" &&
-												"Philippine National Identity Card"}
-											{tempUserDetails.id_type === "passport" && "Passport"}
-											{tempUserDetails.id_type === "driver's license" &&
-												"Driver's License"}
-											{tempUserDetails.id_type === "other" && "Other IDs"}
-										</p>
-									</div>
-									<div className="flex flex-col gap-1">
-										<p className="text-lg">ID Number</p>
-										<p className="text-sm opacity-75 leading-none ml-4">
-											{tempUserDetails.id_number}
-										</p>
-									</div>
+									{tempUserDetails.is_verified && (
+										<>
+											<div className="flex flex-col gap-1">
+												<p className="text-lg">ID Type</p>
+												<p className="text-sm opacity-75 leading-none ml-4">
+													{tempUserDetails.id_type === "national id" &&
+														"Philippine National Identity Card"}
+													{tempUserDetails.id_type === "passport" && "Passport"}
+													{tempUserDetails.id_type === "driver's license" &&
+														"Driver's License"}
+													{tempUserDetails.id_type === "other" && "Other IDs"}
+												</p>
+											</div>
+											<div className="flex flex-col gap-1">
+												<p className="text-lg">ID Number</p>
+												<p className="text-sm opacity-75 leading-none ml-4">
+													{tempUserDetails.id_number}
+												</p>
+											</div>
+										</>
+									)}
 								</div>
 							</div>
 						)}

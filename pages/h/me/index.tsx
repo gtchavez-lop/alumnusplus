@@ -41,6 +41,16 @@ interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;
 }
 
+type TTabs =
+	| "about"
+	| "posts"
+	| "experiences"
+	| "education"
+	| "connections"
+	| "followedCompanies"
+	| "trainings"
+	| "savedjobs";
+
 const PageTabs = [
 	{
 		name: "About",
@@ -53,6 +63,14 @@ const PageTabs = [
 		icon: MdNote,
 	},
 	{
+		name: "Connections",
+		value: "connections",
+	},
+	{
+		name: "Followed Companies",
+		value: "followedCompanies",
+	},
+	{
 		name: "Experiences",
 		value: "experiences",
 		icon: MdWork,
@@ -62,10 +80,6 @@ const PageTabs = [
 		value: "education",
 		icon: MdSchool,
 	},
-	// {
-	// 	name: "Connections",
-	// 	value: "connections",
-	// },
 	{
 		name: "Trainings",
 		value: "trainings",
@@ -82,15 +96,7 @@ const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const router = useRouter();
-	const [tabSelected, setTabSelected] = useState<
-		| "about"
-		| "posts"
-		| "experiences"
-		| "education"
-		| "connections"
-		| "trainings"
-		| "savedjobs"
-	>("about");
+	const [tabSelected, setTabSelected] = useState<TTabs>("about");
 	const [tabContentRef] = useAutoAnimate();
 
 	const _globalTheme = useStore($themeMode);
@@ -167,7 +173,7 @@ const ProfilePage: NextPage = () => {
 			.from("new_recommended_hunters")
 			.select("id,full_name,username,email,avatar_url")
 			.not("id", "in", `(${joined})`)
-			.limit(2);
+			.limit(5);
 
 		if (error || localConnection.length === 0) {
 			return [];
@@ -191,55 +197,83 @@ const ProfilePage: NextPage = () => {
 		return data as LocalProvJobPost[];
 	};
 
-	const [userConnections, recommendedUsers, userActivities, savedJobs] =
-		useQueries({
-			queries: [
-				{
-					queryKey: ["userConnections"],
-					queryFn: fetchUserConnections,
-					enabled: !!_currentUser,
-					onError: (): void => {
-						console.error("failed to fetch user connections");
-					},
-					onSuccess: (): void => {
-						console.info("✅ User Connections Fetched");
-					},
+	const fetchSavedCompanies = async () => {
+		const savedCompanies = _currentUser.followedCompanies as string[];
+
+		const { data, error } = await supabase
+			.from("user_provisioners")
+			.select("legalName,shortDescription,id")
+			.in("id", savedCompanies);
+
+		if (error) {
+			return [];
+		}
+
+		return data;
+	};
+
+	const [
+		userConnections,
+		recommendedUsers,
+		userActivities,
+		savedJobs,
+		savedCompanies,
+	] = useQueries({
+		queries: [
+			{
+				queryKey: ["userConnections"],
+				queryFn: fetchUserConnections,
+				enabled: !!_currentUser,
+				onError: (): void => {
+					console.error("failed to fetch user connections");
 				},
-				{
-					queryKey: ["recommendedUsers"],
-					queryFn: fetchRecommendedUsers,
-					enabled: !!_currentUser,
-					onError: () => {
-						console.error("failed to fetch recommended users");
-					},
-					onSuccess: () => {
-						console.info("✅ Recommended Users Fetched");
-					},
+				onSuccess: (): void => {
+					console.info("✅ User Connections Fetched");
 				},
-				{
-					queryKey: ["userActivities"],
-					queryFn: fetchUserActivities,
-					enabled: !!_currentUser,
-					onError: () => {
-						toast.error("Failed to fetch user activities");
-					},
-					onSuccess: () => {
-						console.info("✅ User Activities Fetched");
-					},
+			},
+			{
+				queryKey: ["recommendedUsers"],
+				queryFn: fetchRecommendedUsers,
+				enabled: !!_currentUser,
+				onError: () => {
+					console.error("failed to fetch recommended users");
 				},
-				{
-					queryKey: ["savedJobs"],
-					queryFn: fetchUserSavedJobs,
-					enabled: !!_currentUser,
-					onError: () => {
-						toast.error("Failed to fetch saved jobs");
-					},
-					onSuccess: () => {
-						console.info("✅ User Saved Jobs Fetched");
-					},
+				onSuccess: () => {
+					console.info("✅ Recommended Users Fetched");
 				},
-			],
-		});
+			},
+			{
+				queryKey: ["userActivities"],
+				queryFn: fetchUserActivities,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch user activities");
+				},
+				onSuccess: () => {
+					console.info("✅ User Activities Fetched");
+				},
+			},
+			{
+				queryKey: ["savedJobs"],
+				queryFn: fetchUserSavedJobs,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch saved jobs");
+				},
+				onSuccess: () => {
+					console.info("✅ User Saved Jobs Fetched");
+				},
+			},
+			{
+				queryKey: ["savedCompanies"],
+				queryFn: fetchSavedCompanies,
+				enabled: !!_currentUser,
+				onError: () => {
+					toast.error("Failed to fetch saved companies");
+				},
+			},
+		],
+	});
 
 	return (
 		<>
@@ -252,8 +286,8 @@ const ProfilePage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full pt-24 pb-36"
 					>
-						<section className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-							<div className="col-span-3 flex flex-col gap-3">
+						<section className="flex flex-col gap-5">
+							<div className="flex flex-col gap-3">
 								{/* landing profile */}
 								<div className="flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 									<div className="relative">
@@ -317,14 +351,7 @@ const ProfilePage: NextPage = () => {
 									<select
 										value={tabSelected}
 										onChange={(e) =>
-											setTabSelected(
-												e.currentTarget.value as
-													| "about"
-													| "posts"
-													| "experiences"
-													| "education"
-													| "savedjobs",
-											)
+											setTabSelected(e.currentTarget.value as TTabs)
 										}
 										className="select select-primary w-full"
 									>
@@ -341,16 +368,7 @@ const ProfilePage: NextPage = () => {
 										{PageTabs.map((tab, index) => (
 											<li
 												key={`tab-${index}`}
-												onClick={() =>
-													setTabSelected(
-														tab.value as
-															| "about"
-															| "posts"
-															| "experiences"
-															| "education"
-															| "savedjobs",
-													)
-												}
+												onClick={() => setTabSelected(tab.value as TTabs)}
 												className={`tab flex items-center gap-2 transition ${
 													tabSelected === tab.value && "tab-active"
 												}`}
@@ -474,19 +492,19 @@ const ProfilePage: NextPage = () => {
 										</div>
 									)}
 									{tabSelected === "posts" && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{userActivities.isSuccess &&
 												userActivities.data.map((activity, index) => (
 													<Link
 														key={`blogpost_${index}`}
-														href={`/h/feed/${activity.id}`}
+														href={`/h/feed/post?id=${activity.id}`}
 													>
 														<div
 															key={`activity_${index}`}
-															className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary border-opacity-10 hover:border-opacity-100 transition rounded-btn"
+															className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary hover:border-transparent hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
 														>
 															<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-base-100" />
-															<ReactMarkdown className="prose prose-sm h-[100px] ">
+															<ReactMarkdown className="prose prose-sm h-[150px] ">
 																{`${activity.content.substring(0, 300)}`}
 															</ReactMarkdown>
 														</div>
@@ -509,8 +527,64 @@ const ProfilePage: NextPage = () => {
 													))}
 										</div>
 									)}
+									{tabSelected === "connections" && (
+										<div className="flex flex-col md:grid grid-cols-2 gap-2">
+											{_currentUser.connections.length === 0 && (
+												<p className="text-center">No connections yet</p>
+											)}
+											{userConnections.data!.map((connection, index) => (
+												<Link
+													href={`/h?user=${connection.username}`}
+													key={`connection_${index}`}
+													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
+												>
+													<div className="flex gap-2 items-center">
+														<Image
+															src={connection.avatar_url}
+															alt="avatar"
+															className="w-12 h-12 mask mask-squircle bg-primary object-cover object-center"
+															width={48}
+															height={48}
+														/>
+														<div>
+															<p className="font-bold leading-none">
+																{connection.full_name.first}{" "}
+																{connection.full_name.last}
+															</p>
+															<p className="opacity-50 leading-none">
+																@{connection.username}
+															</p>
+														</div>
+													</div>
+												</Link>
+											))}
+										</div>
+									)}
+									{tabSelected === "followedCompanies" && (
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+											{_currentUser.followedCompanies.length === 0 && (
+												<p className="text-center col-span-full">
+													You are not following any companies yet
+												</p>
+											)}
+
+											{savedCompanies.isSuccess &&
+												savedCompanies.data.map((company, i) => (
+													<Link
+														href={`/h/drift/${company.id}`}
+														key={`company_${i}`}
+														className="bg-base-200 shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
+													>
+														<p className="text-lg">{company.legalName}</p>
+														<p className="mt-2 text-sm opacity-75">
+															{company.shortDescription}
+														</p>
+													</Link>
+												))}
+										</div>
+									)}
 									{tabSelected === "experiences" && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.experience.length === 0 && (
 												<p className="text-center">No employment history yet</p>
 											)}
@@ -532,9 +606,11 @@ const ProfilePage: NextPage = () => {
 										</div>
 									)}
 									{tabSelected === "education" && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.experience.length === 0 && (
-												<p className="text-center">No education history yet</p>
+												<p className="text-center col-span-full">
+													No education history yet
+												</p>
 											)}
 											{_currentUser.education.map((edu, i) => (
 												<div
@@ -559,7 +635,7 @@ const ProfilePage: NextPage = () => {
 										</div>
 									)}
 									{tabSelected === "trainings" && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.trainings.length === 0 && (
 												<p className="text-center">
 													No Seminars/Training history yet
@@ -590,11 +666,11 @@ const ProfilePage: NextPage = () => {
 												savedJobs.data.map((job, index) => (
 													<Link
 														key={`savedjob_${index}`}
-														href={`/h/jobs/${job.id}`}
+														href={`/h/jobs/posting?id=${job.id}`}
 													>
 														<div
 															key={`savedjob_${index}`}
-															className="relative flex flex-col overflow-hidden p-5 border-2 border-primary border-opacity-10 hover:border-opacity-100 transition rounded-btn"
+															className="relative flex flex-col bg-base-200 overflow-hidden p-5 hover:bg-primary/30 transition rounded-btn"
 														>
 															<p className="text-lg">{job.job_title}</p>
 															<p className="text-sm opacity-75">
@@ -626,77 +702,7 @@ const ProfilePage: NextPage = () => {
 							</div>
 
 							{/* second column */}
-							<div className="col-span-2 flex flex-col gap-5">
-								<div className="flex flex-col rounded-btn p-2 gap-3">
-									<p className="text-2xl font-bold">Your Connections</p>
-
-									{userConnections.isLoading && (
-										<div className="flex flex-col gap-2">
-											{Array(5)
-												.fill("")
-												.map((_, index) => (
-													<div
-														style={{ animationDelay: `${index * 100}ms` }}
-														key={`connectionloading_${index}`}
-														className="h-[50px] w-full bg-zinc-500 rounded-btn animate-pulse duration-200"
-													/>
-												))}
-										</div>
-									)}
-
-									{userConnections.isSuccess && (
-										<div className="flex flex-col gap-2">
-											{userConnections.data.length < 1 && (
-												<p>
-													Looks like you have not connected to other people
-													right now. Add people to your connections to see their
-													posts and activities.
-												</p>
-											)}
-										</div>
-									)}
-
-									{userConnections.isSuccess &&
-										userConnections.data.length > 0 &&
-										userConnections.data
-											.slice(0, 3)
-											.map((connection, index) => (
-												<Link
-													href={`/h/${connection.username}`}
-													key={`connection_${index}`}
-													className="flex gap-2 items-center justify-between p-3 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
-												>
-													<div className="flex gap-2 items-center">
-														<Image
-															src={connection.avatar_url}
-															alt="avatar"
-															className="w-12 h-12 mask mask-squircle bg-primary "
-															width={50}
-															height={50}
-														/>
-														<div>
-															<p className="font-bold leading-none">
-																{connection.full_name.first}{" "}
-																{connection.full_name.last}
-															</p>
-															<p className="opacity-50 leading-none">
-																@{connection.username}
-															</p>
-														</div>
-													</div>
-												</Link>
-											))}
-
-									{userConnections.isSuccess &&
-										userConnections.data.length > 0 && (
-											<Link
-												href="/h/connections"
-												className="btn btn-ghost btn-block btn-sm"
-											>
-												See all Connections
-											</Link>
-										)}
-								</div>
+							<div className="flex flex-col gap-5">
 								<div className="flex flex-col rounded-btn p-2 gap-3">
 									<p className="text-2xl font-bold">Suggested Connections</p>
 
@@ -713,7 +719,7 @@ const ProfilePage: NextPage = () => {
 										</div>
 									)}
 
-									<div className="flex flex-col gap-2">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 										{recommendedUsers.isSuccess &&
 											recommendedUsers.data.length < 1 && (
 												<p>
@@ -729,12 +735,12 @@ const ProfilePage: NextPage = () => {
 													href={`/h/${thisUser.username}`}
 													key={`connection_${index}`}
 												>
-													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-base-300">
+													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-primary hover:bg-opacity-30 transition">
 														<div className="flex gap-5 items-center">
 															<Image
 																src={thisUser.avatar_url}
 																alt="avatar"
-																className="w-12 h-12 mask mask-squircle bg-primary "
+																className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 																width={50}
 																height={50}
 															/>
