@@ -24,7 +24,7 @@ const Pricing: FC = () => {
 							x: accountType === "hunter" ? 0 : "100%",
 						}}
 						transition={{ duration: 0.5, ease: [0.87, 0.29, 0.13, 0.8] }}
-						className="absolute w-1/2 h-full bg-base-300 rounded-full"
+						className="absolute w-1/2 h-full bg-primary/60 rounded-full"
 					/>
 
 					{/* buttons */}
@@ -96,13 +96,13 @@ const Pricing: FC = () => {
 											Blog Feed
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">Blog Post</p>
 										<p className=" text-center w-full">5 posts/day</p>
 										<p className=" text-center w-full">15 posts/day</p>
 										<p className=" text-center w-full">Unlimited</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Image Attachments on Posts
 										</p>
@@ -116,7 +116,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Upvoting Posts
 										</p>
@@ -130,7 +130,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Commenting on Posts
 										</p>
@@ -144,7 +144,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Advertisement Cards
 										</p>
@@ -158,7 +158,7 @@ const Pricing: FC = () => {
 											<FiX className="text-red-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Hunter Suggestion
 										</p>
@@ -182,7 +182,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Finder Proximity
 										</p>
@@ -191,7 +191,7 @@ const Pricing: FC = () => {
 										<p className=" text-center w-full">1.8km</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Job Prioritization
 										</p>
@@ -215,7 +215,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Metaverse Access
 										</p>
@@ -230,7 +230,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Voice Chatting
 										</p>
@@ -245,7 +245,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Avatar Customization
 										</p>
@@ -269,7 +269,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Profile Customization
 										</p>
@@ -284,7 +284,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Storage Limit
 										</p>
@@ -299,7 +299,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Profile Bio Template Options
 										</p>
@@ -314,7 +314,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Job Application Prioritization
 										</p>
@@ -338,7 +338,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Prioritization by Career Tagging
 										</p>
@@ -353,7 +353,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Prioritization by Proximity
 										</p>
@@ -377,7 +377,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">Audio Call</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
@@ -390,7 +390,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Text-based Messaging
 										</p>
@@ -405,7 +405,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Image Attachments
 										</p>
@@ -477,13 +477,13 @@ const Pricing: FC = () => {
 											Blog Feed
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">Blog Post</p>
 										<p className=" text-center w-full">5 posts/day</p>
 										<p className=" text-center w-full">15 posts/day</p>
 										<p className=" text-center w-full">Unlimited</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Image Attachments on Posts
 										</p>
@@ -497,7 +497,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Upvoting Posts
 										</p>
@@ -511,7 +511,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Commenting on Posts
 										</p>
@@ -525,7 +525,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Advertisement Cards
 										</p>
@@ -549,7 +549,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">Template</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
@@ -561,7 +561,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Prioritization
 										</p>
@@ -575,7 +575,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">Featured</p>
 										<p className=" text-center w-full">N/A</p>
 										<p className=" text-center w-full">1/Month</p>
@@ -590,7 +590,7 @@ const Pricing: FC = () => {
 											Metaverse
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Create / Host Venue
 										</p>
@@ -604,7 +604,7 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Maximum Participants
 										</p>
@@ -613,7 +613,7 @@ const Pricing: FC = () => {
 										<p className=" text-center w-full">50</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Invite Guest/s
 										</p>
@@ -637,7 +637,7 @@ const Pricing: FC = () => {
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Profile Customization
 										</p>
@@ -646,7 +646,7 @@ const Pricing: FC = () => {
 										<p className=" text-center w-full">Customized</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-base-300 rounded-full hover:py-2 transition-all">
+									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
 										<p className="col-span-2 text-center w-full">
 											Suggestion Prioritization on Hunters
 										</p>
