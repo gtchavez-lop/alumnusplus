@@ -12,7 +12,9 @@ interface Job {
 	short_description: string;
 	created_at: string;
 	job_type: string[];
-	uploader: Uploader;
+	uploader: {
+		legalName: string;
+	};
 }
 
 interface Uploader {

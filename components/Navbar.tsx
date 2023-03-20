@@ -13,6 +13,7 @@ import {
 
 import Image from "next/image";
 import Link from "next/link";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
@@ -21,6 +22,7 @@ const Navbar = () => {
 	const _accountType = useStore($accountType);
 	const _globalTheme = useStore($themeMode);
 	const router = useRouter();
+	const [navbarContainer] = useAutoAnimate();
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -48,9 +50,12 @@ const Navbar = () => {
 
 	return (
 		<>
-			{_accountType === null && (
-				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
-					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
+			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full h-auto z-50 print:invisible">
+				{_accountType === null && (
+					<div
+						// ref={navbarContainer}
+						className="mx-auto max-w-5xl w-full flex items-center justify-between"
+					>
 						<Link href="/" className="text-lg font-bold">
 							<Image
 								alt="logo"
@@ -89,11 +94,12 @@ const Navbar = () => {
 							</div>
 						</div>
 					</div>
-				</div>
-			)}
-			{_accountType === "hunter" && (
-				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50 print:invisible">
-					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
+				)}
+				{_accountType === "hunter" && (
+					<div
+						ref={navbarContainer}
+						className="mx-auto max-w-5xl w-full flex items-center justify-between"
+					>
 						<Image
 							alt="logo"
 							src="/logo/wicket-new-adaptive.png"
@@ -192,11 +198,12 @@ const Navbar = () => {
 							</Link>
 						</div>
 					</div>
-				</div>
-			)}
-			{_accountType === "provisioner" && (
-				<div className="fixed py-5 hidden lg:flex justify-between bg-base-100 w-full z-50">
-					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
+				)}
+				{_accountType === "provisioner" && (
+					<div
+						ref={navbarContainer}
+						className="mx-auto max-w-5xl w-full flex items-center justify-between"
+					>
 						<Image
 							alt="logo"
 							src="/logo/wicket-new-adaptive.png"
@@ -247,8 +254,8 @@ const Navbar = () => {
 							</Link>
 						</div>
 					</div>
-				</div>
-			)}
+				)}
+			</div>
 		</>
 	);
 };
