@@ -171,22 +171,22 @@ const ProvisionerPage: NextPage<{
 											{companyData.followers.length} followers
 										</p>
 									</div>
-									{!isFollowed ? (
-										<button
-											onClick={handleFollowCompany}
-											className="btn btn-primary ml-auto"
-										>
-											Follow
-										</button>
-									) : (
-										<label
-											htmlFor="unfollowmodal"
-											className="btn btn-warning ml-auto"
-										>
-											Unfollow
-										</label>
-									)}
 								</div>
+								{!isFollowed ? (
+									<button
+										onClick={handleFollowCompany}
+										className="btn btn-primary ml-auto"
+									>
+										Follow
+									</button>
+								) : (
+									<label
+										htmlFor="unfollowmodal"
+										className="btn btn-warning ml-auto"
+									>
+										Unfollow
+									</label>
+								)}
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
 							{/* tabs */}

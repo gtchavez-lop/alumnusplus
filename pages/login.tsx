@@ -3,14 +3,15 @@ import {
 	$accountDetails,
 	$accountType,
 } from "@/lib/globalStates";
+import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
+import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
@@ -18,9 +19,11 @@ import { useRouter } from "next/router";
 const LogInPage = () => {
 	const router = useRouter();
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
+	const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setIsLoggingIn(true);
 		toast.dismiss();
 
 		let inputForms = [e.currentTarget.email, e.currentTarget.password];
@@ -92,6 +95,21 @@ const LogInPage = () => {
 
 	return (
 		<>
+			<AnimatePresence mode="wait">
+				{isLoggingIn && (
+					<motion.div
+						variants={AnimPageTransition}
+						initial="initial"
+						animate="animate"
+						exit="exit"
+						className="fixed z-50 top-0 left-0 bg-base-100/80 select-none w-screen h-full flex flex-col justify-center items-center"
+					>
+						<FiLoader className="text-2xl animate-spin" />
+						<p>Logging you in</p>
+					</motion.div>
+				)}
+			</AnimatePresence>
+
 			<motion.div
 				variants={AnimPageTransition}
 				initial="initial"
@@ -179,7 +197,7 @@ const LogInPage = () => {
 									</p>
 
 									<div className="flex gap-2 items-center">
-										{isPasswordRevealed ? (
+										{!isPasswordRevealed ? (
 											<input
 												type="password"
 												id="Password"
@@ -201,9 +219,9 @@ const LogInPage = () => {
 											className="btn btn-ghost text-lg"
 										>
 											{isPasswordRevealed ? (
-												<MdVisibility />
-											) : (
 												<MdVisibilityOff />
+											) : (
+												<MdVisibility />
 											)}
 										</div>
 									</div>

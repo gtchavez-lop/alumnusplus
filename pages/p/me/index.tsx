@@ -317,7 +317,7 @@ const ProvProfilePage: NextPage = () => {
 												<p className="text-lg font-bold text-primary">
 													Founding Year
 												</p>
-												<p>{_currentUser.foundingYear} people</p>
+												<p>{_currentUser.foundingYear}</p>
 											</div>
 											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">

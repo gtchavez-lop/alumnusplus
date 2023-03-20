@@ -1,8 +1,8 @@
+import { AnimLoading, AnimPageTransition } from "@/lib/animations";
 import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
-import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
@@ -199,61 +199,16 @@ const FeedPage = () => {
 								)}
 							</div>
 
-							{/* create post dropdown */}
-							{/* {isMakingPost && (
-								<div className="w-full hidden lg:block">
-									<form
-										onSubmit={(e) => {
-											e.preventDefault();
-											handlePost(e);
-										}}
-										className="flex flex-col mt-5 gap-5"
-									>
-										<div className="form-control w-full ">
-											<p className="label">
-												<span className="label-text">Blog Content</span>
-												<span className="label-text">Markdown</span>
-											</p>
-											<textarea
-												name="content"
-												placeholder="Type here"
-												className="textarea textarea-bordered w-full h-screen max-h-[200px] font-mono"
-											/>
-										</div>
-
-										<div className="lg:flex lg:justify-end max-lg:grid max-lg:grid-cols-2 gap-2">
-											<button
-												type="button"
-												onClick={(e) => setIsMakingPost(false)}
-												className="btn btn-error max-lg:btn-block"
-											>
-												Cancel
-											</button>
-											<button
-												type="submit"
-												className="btn btn-primary max-lg:btn-block"
-											>
-												Create
-											</button>
-										</div>
-									</form>
-								</div>
-							)} */}
-
 							{/* feed list */}
 							<div className="mt-10">
 								<div className="flex flex-col gap-5" ref={feedList_ui}>
 									{feedList.isLoading && (
-										<>
+										<div className="py-10 flex flex-col">
 											<FiLoader className="animate-spin duration-500 text-3xl self-center" />
-											{/* <div className="w-64 h-64 object-cover self-center mt-5">
-												<RiveLoadingComponent />
-											</div> */}
 											<p className="text-center w-full self-center max-w-xs">
-												Loading feed... This may take a while if you have a lot
-												of followers
+												Loading feed... This may take a while.
 											</p>
-										</>
+										</div>
 									)}
 
 									{feedList.isSuccess &&
@@ -306,9 +261,11 @@ const FeedPage = () => {
 										{Array(5)
 											.fill("")
 											.map((_, index) => (
-												<div
+												<motion.div
+													variants={AnimLoading}
+													animate="animate"
 													key={`recommendedloading_${index}`}
-													className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
+													className="h-[72px] w-full bg-slate-500/50 rounded-btn animate-pulse"
 												/>
 											))}
 									</div>
@@ -318,9 +275,8 @@ const FeedPage = () => {
 									{recommendedUsers.isSuccess &&
 									recommendedUsers.data.length < 1 ? (
 										<p>
-											Looks like you have not connected to other people right
-											now. Add people to your connections to see their posts and
-											activities.
+											We can&apos;t find any recommended connections for you at
+											this moment.
 										</p>
 									) : (
 										<div className="flex flex-col gap-2">
@@ -386,15 +342,24 @@ const FeedPage = () => {
 								</div>
 								<div className="flex flex-col">
 									<p className="font-bold text-lg">Wicket Journeys</p>
-									<Link href={"/util/about"} className="link link-hover">
+									<Link href={"/util/about-us"} className="link link-hover">
 										About Us
 									</Link>
-									<Link href={"/util/about"} className="link link-hover">
+									<Link href={"/util/contact"} className="link link-hover">
 										Contact Us
 									</Link>
-									<p className="link link-hover opacity-50">Terms of use</p>
-									<p className="link link-hover opacity-50">Privacy policy</p>
-									<p className="link link-hover opacity-50">Cookie policy</p>
+									<Link href={"/util/terms-of-use"} className="link link-hover">
+										Terms of use
+									</Link>
+									<Link
+										href={"/util/privacy-policy"}
+										className="link link-hover"
+									>
+										Privacy Policy
+									</Link>
+									<Link href={"/util/cookies"} className="link link-hover">
+										Coockie Policy
+									</Link>
 								</div>
 							</div>
 						</div>

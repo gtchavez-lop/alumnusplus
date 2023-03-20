@@ -181,7 +181,10 @@ const GeneratedCV: NextPage = () => {
 			<div className="hidden lg:flex fixed bottom-0 left-0 w-full p-5 justify-center print:hidden opacity-25 hover:opacity-100 transition-all">
 				<div className="flex justify-end w-full max-w-5xl">
 					<button
-						onClick={() => window.print()}
+						onClick={() => {
+							window.document.title = `${_currentUser.username} - CV`;
+							window.print()
+						}}
 						className="btn btn-primary btn-lg gap-2"
 					>
 						<MdPrint />
