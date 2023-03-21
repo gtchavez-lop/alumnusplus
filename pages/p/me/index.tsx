@@ -163,7 +163,10 @@ const ProvProfilePage: NextPage = () => {
 									<div className="z-10 mt-[200px] px-5 flex items-end gap-5">
 										<Image
 											className="mask mask-squircle bg-primary"
-											src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
+											src={
+												_currentUser.avatar_url ||
+												`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`
+											}
 											alt="profile"
 											width={100}
 											height={100}

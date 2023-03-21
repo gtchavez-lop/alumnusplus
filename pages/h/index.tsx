@@ -6,12 +6,7 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { GetServerSideProps, NextPage } from "next";
-import {
-	MdCheckCircle,
-	MdCheckCircleOutline,
-	MdHelp,
-	MdQuestionAnswer,
-} from "react-icons/md";
+import { MdCheckCircleOutline, MdHelp } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
@@ -246,10 +241,12 @@ const DynamicUserPage: NextPage<{ targetQuery: string }> = ({
 	};
 
 	useEffect(() => {
-		if (!!_currentUser && _currentUser.connections.includes(targetQuery)) {
-			setIsConnected(true);
+		if (_currentUser && targetUser.isSuccess) {
+			if (_currentUser.connections.includes(targetUser.data!.id)) {
+				setIsConnected(true);
+			}
 		}
-	}, [_currentUser, targetQuery]);
+	});
 
 	return (
 		// <p>asdjklasdkljasd</p>
