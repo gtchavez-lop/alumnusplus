@@ -1,20 +1,11 @@
 import { FC, FormEvent, useEffect, useState } from "react";
-import {
-	FiArrowUp,
-	FiLoader,
-	FiMessageSquare,
-	FiMoreHorizontal,
-} from "react-icons/fi";
+import { FiLoader, FiMessageSquare } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
 	MdCheckCircleOutline,
-	MdDelete,
 	MdFavorite,
 	MdFavoriteBorder,
-	MdMoreHoriz,
 	MdShare,
-	MdVisibility,
-	MdVisibilityOff,
 } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -415,7 +406,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 											href={
 												currentUser.id === comment.commenter.id
 													? "/h/me"
-													: `/h/${comment.commenter.username}`
+													: `/h?user=${comment.commenter.username}`
 											}
 											className="relative min-w-10 min-h-10 w-10 h-10"
 										>
@@ -434,7 +425,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 												href={
 													currentUser.id === comment.commenter.id
 														? "/h/me"
-														: `/h/${comment.commenter.username}`
+														: `/h?user=${comment.commenter.username}`
 												}
 												className="font-bold text-sm leading-none hover:underline"
 											>
