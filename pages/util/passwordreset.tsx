@@ -50,6 +50,11 @@ const PasswordResetScreen: NextPage = () => {
 	const sendPasswordResetEmail = async (e: FormEvent) => {
 		e.preventDefault();
 
+		// console.log(
+		// 	"sendPasswordResetEmail",
+		// 	`${window.location.origin}/util/passwordreset`,
+		// );
+
 		const form = e.currentTarget as HTMLFormElement;
 		const emailInput = form.email as HTMLInputElement;
 
@@ -60,7 +65,7 @@ const PasswordResetScreen: NextPage = () => {
 		const { error } = await supabase.auth.resetPasswordForEmail(
 			emailInput.value,
 			{
-				redirectTo: `${window.location.origin}/util/passwordreset`,
+				redirectTo: "http://localhost:4000/util/passwordreset",
 			},
 		);
 

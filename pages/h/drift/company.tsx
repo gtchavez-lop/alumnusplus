@@ -157,7 +157,10 @@ const ProvisionerPage: NextPage<{
 								<div className="z-10 mt-[200px] px-5 flex items-end gap-5">
 									<Image
 										className="mask mask-squircle bg-primary"
-										src={`https://api.dicebear.com/5.x/shapes/png?seed=${companyData.legalName}`}
+										src={
+											companyData.avatar_url ||
+											`https://api.dicebear.com/5.x/shapes/png?seed=${companyData.legalName}`
+										}
 										alt="profile"
 										width={100}
 										height={100}
@@ -171,22 +174,22 @@ const ProvisionerPage: NextPage<{
 											{companyData.followers.length} followers
 										</p>
 									</div>
-									{!isFollowed ? (
-										<button
-											onClick={handleFollowCompany}
-											className="btn btn-primary ml-auto"
-										>
-											Follow
-										</button>
-									) : (
-										<label
-											htmlFor="unfollowmodal"
-											className="btn btn-warning ml-auto"
-										>
-											Unfollow
-										</label>
-									)}
 								</div>
+								{!isFollowed ? (
+									<button
+										onClick={handleFollowCompany}
+										className="btn btn-primary ml-auto"
+									>
+										Follow
+									</button>
+								) : (
+									<label
+										htmlFor="unfollowmodal"
+										className="btn btn-warning ml-auto"
+									>
+										Unfollow
+									</label>
+								)}
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
 							{/* tabs */}

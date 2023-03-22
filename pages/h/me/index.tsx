@@ -26,6 +26,7 @@ import {
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
+import Modal from "@/components/Modal";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
@@ -98,6 +99,7 @@ const ProfilePage: NextPage = () => {
 	const router = useRouter();
 	const [tabSelected, setTabSelected] = useState<TTabs>("about");
 	const [tabContentRef] = useAutoAnimate();
+	const [signOutModalVisible, setSignOutModalVisible] = useState(false);
 
 	const _globalTheme = useStore($themeMode);
 
@@ -771,7 +773,7 @@ const ProfilePage: NextPage = () => {
 										/>
 									</label>
 									<label
-										htmlFor="signoutmodal"
+										onClick={() => setSignOutModalVisible(true)}
 										className="btn btn-error w-full"
 									>
 										Sign out session
@@ -781,8 +783,29 @@ const ProfilePage: NextPage = () => {
 						</section>
 					</motion.main>
 
+					{signOutModalVisible && (
+						<>
+							<Modal
+								isVisible={signOutModalVisible}
+								setIsVisible={setSignOutModalVisible}
+							>
+								<p>Do you really want to end your session and log out?</p>
+								<div className="flex justify-end gap-2">
+									<button onClick={handleLogout} className="btn btn-ghost">
+										Yes
+									</button>
+									<button
+										className="btn btn-primary"
+										onClick={() => setSignOutModalVisible(false)}
+									>
+										No
+									</button>
+								</div>
+							</Modal>
+						</>
+					)}
 					{/* sign out modal */}
-					<input type="checkbox" id="signoutmodal" className="modal-toggle" />
+					{/* <input type="checkbox" id="signoutmodal" className="modal-toggle" />
 					<div className="modal">
 						<div className="modal-box">
 							<h3 className="font-bold text-lg">
@@ -805,7 +828,7 @@ const ProfilePage: NextPage = () => {
 								</button>
 							</div>
 						</div>
-					</div>
+					</div> */}
 				</>
 			)}
 		</>

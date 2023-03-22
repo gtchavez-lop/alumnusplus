@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { ChangeEvent, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -8,12 +9,12 @@ import Image from "next/image";
 import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import _Industries from "@/lib/industryTypes.json";
+import __web3storage from "@/lib/web3Storage";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
 type TTab = {
@@ -104,7 +105,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		// update global state
 		$accountDetails.set(tempUserDetails);
 		toast.success("Changes saved successfully");
-		router.push("/p/me");
+		// router.push("/p/me");
 	};
 
 	return (
@@ -150,7 +151,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					</AnimatePresence>
 
 					{/* tabs desktop */}
-					<ul className="hidden lg:flex tabs tabs-boxed mt-10">
+					<ul className="hidden lg:flex tabs tabs-boxed justify-center mt-10">
 						{tabs.map((item, index) => (
 							<li
 								key={`tab_desktop_${index}`}
@@ -204,7 +205,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 									<label className="flex flex-col gap-3">
 										<span>Profile Picture</span>
 										<Image
-											src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
+											src={
+												tempUserDetails.avatar_url ||
+												`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`
+											}
 											alt="Profile Picture"
 											className="w-24 h-24 object-cover bg-primary mask mask-squircle"
 											width={96}
@@ -213,8 +217,35 @@ const ProvisionerProfileEditPage: NextPage = () => {
 										<input
 											className="file-input 	file-input-primary"
 											type="file"
+											onChange={(e) => {
+												const input = e as ChangeEvent<HTMLInputElement>;
+												if (input.currentTarget.files) {
+													// blob
+													const file = input.currentTarget.files[0];
+													// check if there is an image
+													if (!file) {
+														toast.error("Please select an image");
+														return;
+													}
+													// limit to 1mb
+													if (file.size > 1000000) {
+														toast.error("File size too large");
+														return;
+													}
+													// convert to base64
+													const reader = new FileReader();
+													reader.readAsDataURL(file);
+													reader.onload = () => {
+														// set the image
+														setTempUserDetails({
+															...tempUserDetails,
+															avatar_url: reader.result as string,
+														});
+													};
+												}
+											}}
 											accept="image/png, image/gif, image/jpeg"
-											disabled
+											// disabled
 										/>
 									</label>
 									<label className="flex flex-col">

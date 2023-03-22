@@ -125,7 +125,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Wicket - A web3 social media platform</title>
+				<title>Wicket - Web3 Career Platform</title>
 
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 				<meta charSet="utf-8" />
