@@ -84,49 +84,54 @@ const Prov_Dashboard = () => {
 					</div>
 					<div className="col-span-full lg:col-span-3 flex flex-col gap-5">
 						{/* stats */}
-						<div className="flex flex-col gap-3">
-							<h2 className="text-2xl font-bold">Summary</h2>
-							<div className="stats stats-vertical md:stats-horizontal bg-base-200 w-full">
-								<div className="stat">
-									<div className="stat-figure text-secondary">
-										<FiUser className="text-2xl" />
+						{jobs.isSuccess && (
+							<div className="flex flex-col gap-3">
+								<h2 className="text-2xl font-bold">Summary</h2>
+								<div className="stats stats-vertical md:stats-horizontal bg-base-200 w-full">
+									<div className="stat">
+										<div className="stat-figure text-secondary">
+											<FiUser className="text-2xl" />
+										</div>
+										<div className="stat-title">Job Applicants</div>
+										<div className="stat-value bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent">
+											240
+										</div>
+										<div className="stat-desc">Since start of profile</div>
 									</div>
-									<div className="stat-title">Job Applicants</div>
-									<div className="stat-value bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent">
-										240
-									</div>
-									<div className="stat-desc">Since start of profile</div>
-								</div>
 
-								<div className="stat">
-									<div className="stat-figure text-secondary">
-										<FiBriefcase className="text-2xl" />
+									<div className="stat">
+										<div className="stat-figure text-secondary">
+											<FiBriefcase className="text-2xl" />
+										</div>
+										<div className="stat-title">Job Posts</div>
+										<div
+											className={`stat-value ${
+												jobs.isLoading ||
+												(!jobs.isSuccess &&
+													"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent")
+											}`}
+										>
+											{jobs.isSuccess ? jobs.data.length : "0"}
+										</div>
+										<div className="stat-desc">Current count</div>
 									</div>
-									<div className="stat-title">Job Posts</div>
-									<div
-										className={`stat-value ${
-											jobs.isLoading ||
-											(!jobs.isSuccess &&
-												"bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent")
-										}`}
-									>
-										{jobs.isSuccess ? jobs.data.length : "0"}
-									</div>
-									<div className="stat-desc">Current count</div>
-								</div>
 
-								<div className="stat">
-									<div className="stat-figure text-secondary">
-										<FiArchive className="text-2xl" />
+									<div className="stat">
+										<div className="stat-figure text-secondary">
+											<FiArchive className="text-2xl" />
+										</div>
+										<div className="stat-title">Archived Applicants</div>
+										<div className="stat-value bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent">
+											150
+										</div>
+										<div className="stat-desc">Since start of profile</div>
 									</div>
-									<div className="stat-title">Archived Applicants</div>
-									<div className="stat-value bg-zinc-500 bg-opacity-30 rounded-btn animate-pulse text-transparent">
-										150
-									</div>
-									<div className="stat-desc">Since start of profile</div>
 								</div>
 							</div>
-						</div>
+						)}
+						{jobs.isLoading && (
+							<div className="h-[112px] rounded-btn bg-slate-500/50 animate-pulse" />
+						)}
 
 						{/* posted Jobs */}
 						<div className="flex flex-col gap-3">

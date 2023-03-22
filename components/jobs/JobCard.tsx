@@ -1,5 +1,6 @@
 import { FC } from "react";
 import Link from "next/link";
+import { MdFavorite } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ interface Uploader {
 	legalName: string;
 }
 
-const JobCard: FC<{ job: Job }> = ({ job }) => {
+const JobCard: FC<{ job: Job; isSaved?: boolean }> = ({ job, isSaved }) => {
 	return (
 		<motion.div
 			animate={{
@@ -33,8 +34,15 @@ const JobCard: FC<{ job: Job }> = ({ job }) => {
 				href={`/h/jobs/posting?id=${job.id}`}
 				className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-200 hover:bg-primary/30 transition-all"
 			>
-				<h1 className="text-xl font-bold">{job.job_title}</h1>
-				<p className="text-primary">{job.uploader.legalName}</p>
+				<div className="flex items-start">
+					<div>
+						<h1 className="text-xl font-bold">{job.job_title}</h1>
+						<p className="text-primary">{job.uploader.legalName}</p>
+					</div>
+					<div className="ml-auto">
+						{isSaved ? <MdFavorite className="text-red-500" /> : null}
+					</div>
+				</div>
 
 				<p className="mt-4 text-sm">
 					{job.job_location} |{" "}

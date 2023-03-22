@@ -151,10 +151,6 @@ const DriftPage = () => {
 									/>
 									<p>{company.legalName}</p>
 								</div>
-
-								<div className="btn btn-primary lg:hidden btn-block mt-5">
-									See more
-								</div>
 							</Link>
 						))}
 					</div>

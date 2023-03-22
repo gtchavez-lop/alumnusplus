@@ -16,6 +16,7 @@ import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -23,29 +24,34 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useStore } from "@nanostores/react";
 
-const PageTabs = [
+type TTab = {
+	title: string;
+	value: string;
+};
+
+const PageTabs: TTab[] = [
 	{
-		name: "About",
+		title: "About",
 		value: "about",
 	},
 	{
-		name: "Posts",
+		title: "Posts",
 		value: "posts",
 	},
 	{
-		name: "Connections",
+		title: "Connections",
 		value: "connections",
 	},
 	{
-		name: "Experiences",
+		title: "Experiences",
 		value: "experiences",
 	},
 	{
-		name: "Education",
+		title: "Education",
 		value: "education",
 	},
 	{
-		name: "Trainings",
+		title: "Trainings",
 		value: "trainings",
 	},
 ];
@@ -65,15 +71,7 @@ const DynamicUserPage: NextPage<{ targetQuery: string }> = ({
 }) => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isConnected, setIsConnected] = useState(false);
-	const [tabSelected, setTabSelected] = useState<
-		| "about"
-		| "posts"
-		| "experiences"
-		| "education"
-		| "connections"
-		| "trainings"
-		| "savedjobs"
-	>("about");
+	const [tabSelected, setTabSelected] = useState<TTab["value"]>("about");
 	const [tabContentRef] = useAutoAnimate();
 
 	const fetchTargetUserData = async () => {
@@ -335,26 +333,24 @@ const DynamicUserPage: NextPage<{ targetQuery: string }> = ({
 								<select
 									value={tabSelected}
 									onChange={(e) =>
-										setTabSelected(
-											e.currentTarget.value as
-												| "about"
-												| "posts"
-												| "experiences"
-												| "education"
-												| "savedjobs",
-										)
+										setTabSelected(e.currentTarget.value as TTab["value"])
 									}
 									className="select select-primary w-full"
 								>
 									{PageTabs.map((tab, index) => (
 										<option key={`tab-${index}`} value={tab.value}>
-											{tab.name}
+											{tab.title}
 										</option>
 									))}
 								</select>
 							</div>
 							{/* desktop tabs */}
-							<div className="hidden lg:block mb-5">
+							<Tabs
+								activeTab={tabSelected}
+								onTabChange={(tab) => setTabSelected(tab as TTab["value"])}
+								tabs={PageTabs}
+							/>
+							{/* <div className="hidden lg:block mb-5">
 								<ul className="tabs tabs-boxed justify-evenly">
 									{PageTabs.map((tab, index) => (
 										<li
@@ -377,7 +373,7 @@ const DynamicUserPage: NextPage<{ targetQuery: string }> = ({
 										</li>
 									))}
 								</ul>
-							</div>
+							</div> */}
 
 							{/* tab contents */}
 							<div className="py-5" ref={tabContentRef}>

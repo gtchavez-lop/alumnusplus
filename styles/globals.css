@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -48,12 +48,23 @@
 }
 
 * {
-  font-family: "Inria Sans", sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 @layer components {
   .btn {
-    @apply max-w-max
+    @apply 
+      normal-case
+      no-animation 
+      active:duration-[0ms] 
+      hover:-translate-y-[2px];
+  }
+}
+
+/* @layer components {
+  .btn {
+    @apply 
+      max-w-max
       min-h-[40px] 
       max-h-[40px] 
       rounded-[20px]
@@ -80,4 +91,4 @@
   .fab-lg {
     @apply min-w-[96px] w-[96px] min-h-[96px] h-[96px] rounded-[28px] text-[36px];
   }
-}
+} */
