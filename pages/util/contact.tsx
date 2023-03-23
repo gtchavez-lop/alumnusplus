@@ -73,7 +73,7 @@ const ContactPage = () => {
 							</div>
 
 							<button className="btn btn-primary btn-block">
-								Send Message
+								Send Messagev
 							</button>
 						</form>
 					</div>

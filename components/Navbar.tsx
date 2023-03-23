@@ -1,4 +1,4 @@
-import { $accountType, $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import {
 	MdApps,
 	MdEvent,
@@ -17,12 +17,18 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import { IUserHunter } from "@/lib/types";
+
+
+
 
 const Navbar = () => {
 	const _accountType = useStore($accountType);
 	const _globalTheme = useStore($themeMode);
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
+
+	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -109,41 +115,37 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/feed")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-square ${router.pathname.includes("/h/feed")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdHome className="text-lg" />
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/drift")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-square ${router.pathname.includes("/h/drift")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdMap className="text-lg" />
 							</Link>
 							<Link
 								href="/h/jobs"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-square ${router.pathname.includes("/h/jobs")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdWork className="text-lg" />
 							</Link>
 							<button
 								// href="/h/events"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-square ${router.pathname.includes("/h/events")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 								disabled
 							>
 								<MdEvent className="text-lg" />
@@ -154,11 +156,10 @@ const Navbar = () => {
 								<Link
 									href="/h/notifications"
 									tabIndex={0}
-									className={`btn btn-square  ${
-										router.pathname.includes("/h/notifications")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
+									className={`btn btn-square  ${router.pathname.includes("/h/notifications")
+										? "btn-primary"
+										: "btn-ghost"
+										}`}
 								>
 									<MdNotifications className="text-lg" />
 								</Link>
@@ -186,16 +187,21 @@ const Navbar = () => {
 									</li>
 								</ul>
 							</div>
+							<div className="self-center">
+								<p className="font-semibold opacity-75">
+									{_currentUser.full_name.first}
+								</p>
+							</div>
 							<Link
 								href="/h/me"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/me")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-square ${router.pathname.includes("/h/me")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdPerson className="text-lg" />
 							</Link>
+
 						</div>
 					</div>
 				)}
@@ -213,42 +219,38 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/p/dashboard"
-								className={`btn ${
-									router.pathname.includes("/p/dashboard")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn ${router.pathname.includes("/p/dashboard")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdApps className="text-lg" />
 							</Link>
 							<Link
 								href="/p/jobs"
-								className={`btn ${
-									router.pathname.includes("/p/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn ${router.pathname.includes("/p/jobs")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdWork className="text-lg" />
 							</Link>
 							<button
 								// href="/p/events"
-								className={`btn ${
-									router.pathname.includes("/p/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn ${router.pathname.includes("/p/events")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 								disabled
 							>
 								<MdEvent className="text-lg" />
 							</button>
 							<Link
 								href="/p/me"
-								className={`btn ${
-									router.pathname.includes("/p/me")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn ${router.pathname.includes("/p/me")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdPerson className="text-lg" />
 							</Link>
