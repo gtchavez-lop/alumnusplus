@@ -294,14 +294,14 @@ const VerifyIdentity = () => {
 						</select>
 					</label>
 					<label className="flex flex-col">
-						<span>Id Number</span>
+						<span>ID Number</span>
 						<input
 							placeholder={
 								selectedIDType === "national id"
 									? "0000-0000-0000-0000"
 									: selectedIDType === "driver's license"
-									? "A00000000-0000000-0000000"
-									: "0000-0000-0000-0000"
+										? "A00000000-0000000-0000000"
+										: "0000-0000-0000-0000"
 							}
 							disabled={_currentUser.is_verified}
 							type="text"
