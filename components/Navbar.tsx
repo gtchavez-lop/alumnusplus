@@ -200,7 +200,6 @@ const Navbar = () => {
 									}`}
 							>
 								<MdPerson className="text-lg" />
-
 							</Link>
 
 						</div>
