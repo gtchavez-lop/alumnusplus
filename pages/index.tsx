@@ -2,11 +2,20 @@ import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import { AnimPageTransition } from "@/lib/animations";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { MdArrowDownward } from "react-icons/md";
-import Pricing from "@/components/landing/Pricing";
+import dynamic from "next/dynamic";
+
+// import Pricing from "@/components/landing/Pricing";
+
+const Pricing = dynamic(() => import("@/components/landing/Pricing"), {
+	ssr: false,
+});
+const Footer = dynamic(() => import("@/components/Footer"), {
+	ssr: false,
+});
 
 const jobList = [
 	"Web Developer",
@@ -19,6 +28,7 @@ const jobList = [
 	"Graphic Designer",
 	"Product Designer",
 ];
+const landingWords = ["Provide.", "Hunt.", "Connect."];
 
 const Home = () => {
 	const [activeJob, setActiveJob] = useState(jobList[0]);
@@ -47,7 +57,7 @@ const Home = () => {
 		// set interval for job list
 		const interval = setInterval(() => {
 			setActiveJob(jobList[Math.floor(Math.random() * jobList.length)]);
-		}, 2000);
+		}, 1500);
 
 		return () => {
 			clearInterval(interval);
@@ -57,7 +67,7 @@ const Home = () => {
 
 	return (
 		<>
-			<motion.div
+			{/* <motion.div
 				initial={{ opacity: 0 }}
 				animate={{
 					opacity: 1,
@@ -72,49 +82,98 @@ const Home = () => {
 					fill
 					alt=""
 				/>
-			</motion.div>
+			</motion.div> */}
+			{/* bg background */}
+			<div
+				style={{
+					opacity: scrollYValue > 50 ? 0 : 1,
+				}}
+				className="absolute transition-opacity w-full h-screen inset-0 flex justify-center items-end"
+			>
+				<motion.div
+					animate={{
+						background: [
+							"radial-gradient(rgba(199,72,95,1) 0%, rgba(199,72,95,0) 70%)",
+							"radial-gradient(rgba(51,78,199,1) 0%, rgba(51,78,199,0) 70%)",
+							"radial-gradient(rgba(199,157,32,1) 0%, rgba(199,157,32,0) 70%)",
+						],
+						transition: {
+							ease: "linear",
+							duration: 5,
+							repeat: Infinity,
+							repeatType: "mirror",
+						},
+					}}
+					style={{
+						background:
+							"radial-gradient(rgba(199,72,95,1) 0%, rgba(199,72,95,0) 70%)",
+					}}
+					className="w-[200vw] h-[200px] opacity-100 -mb-[100px]"
+				/>
+			</div>
 
 			<motion.div
 				variants={AnimPageTransition}
 				initial="initial"
 				animate="animate"
 				exit="exit"
-				className="relative flex flex-col items-start justify-center min-h-screen px-2 lg:px-0 "
+				className="relative flex flex-col items-center justify-center min-h-screen px-2 -mt-16 lg:mt-0 lg:px-0 "
 			>
-				<Image
-					src="/logo/wicket-new-full-vector.svg"
-					className="w-64 fill-primary"
-					width={200}
-					height={200}
-					alt=""
-				/>
-				<p className="text-3xl flex flex-col lg:flex-row lg:justify-center mt-5">
-					Job hunting for{" "}
-					<span className="text-primary relative">
-						<AnimatePresence>
-							<motion.span
-								key={activeJob}
-								initial={{ opacity: 0, y: 20 }}
-								animate={{
-									opacity: 1,
-									y: 0,
-									transition: { duration: 0.5, ease: "circOut" },
-								}}
-								exit={{
-									opacity: 0,
-									y: -20,
-									transition: { duration: 0.5, ease: "circOut" },
-								}}
-								transition={{ duration: 0.5 }}
-								className="absolute top-0 lg:left-2 w-max font-bold text-primary"
-							>
-								{activeJob}?
-							</motion.span>
-						</AnimatePresence>
-					</span>
+				<p className="text-center text-7xl font-black flex flex-col lg:flex-row">
+					{landingWords.map((word, index) => (
+						<motion.span
+							key={`word-${index}`}
+							className={`
+								bg-clip-text text-transparent bg-gradient-to-r
+								${index === 0 && "from-pink-500 to-pink-700"}
+								${index === 1 && "from-blue-500 to-blue-700"}
+								${index === 2 && "from-yellow-500 to-yellow-700"}
+							`}
+							animate={{
+								opacity: [0, 1],
+							}}
+							transition={{
+								duration: 2,
+								ease: "circOut",
+								delay: index * 1,
+							}}
+						>
+							{word}
+						</motion.span>
+					))}
+				</p>
+				{/* <div className="relative w-[500px] h-[75px]">
+					<Image
+						src="/logo/wicket-new-full-vector.svg"
+						className="w-64 fill-primary z-10"
+						fill
+						alt=""
+					/>
+				</div> */}
+				<p className="text-3xl flex flex-col justify-center w-full text-center mt-5 z-10">
+					<span>Job hunting for</span>
+					<AnimatePresence mode="wait">
+						<motion.span
+							initial={{ opacity: 0, x: 10 }}
+							animate={{
+								opacity: 1,
+								x: 0,
+								transition: { duration: 0.5, easings: "circIn" },
+							}}
+							exit={{
+								opacity: 0,
+								x: -10,
+								transition: { duration: 0.5, easings: "circOut" },
+							}}
+							key={activeJob}
+							className="font-bold text-primary w-full"
+						>
+							{activeJob}?
+						</motion.span>
+					</AnimatePresence>
 				</p>
 
-				<div className=" mt-10 w-full">
+				<div className="flex justify-center mt-10 w-full z-10">
 					{/* <Link href="/register" className="btn btn-primary w-[250px]">
 						Sign up an account
 					</Link>
