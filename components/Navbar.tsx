@@ -1,4 +1,4 @@
-import { $accountType, $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import {
 	MdApps,
 	MdEvent,
@@ -11,6 +11,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -23,6 +24,8 @@ const Navbar = () => {
 	const _globalTheme = useStore($themeMode);
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
+
+	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -65,11 +68,11 @@ const Navbar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							<Link href="/register" className='btn btn-primary w-full gap-2'>
+							<Link href="/register" className='btn btn-primary gap-2'>
 								<MdPersonAdd className="text-lg" />
 								<span>Sign Up</span>
 							</Link>
-							<Link href="/login" className='btn btn-ghost w-full gap-2'>
+							<Link href="/login" className='btn btn-ghost gap-2'>
 								<MdPerson className="text-lg" />
 								<span>Log In</span>
 							</Link>
@@ -88,14 +91,14 @@ const Navbar = () => {
 										localStorage.setItem("theme", "dark");
 									}
 								}}
-								className='btn btn-ghost w-full gap-2'
+								className='btn btn-ghost btn-square gap-2'
 							>
 								<MdOutlineDarkMode className="text-lg" />
 							</div>
 						</div>
 					</div>
 				)}
-				{_accountType === "hunter" && (
+				{_accountType === "hunter" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -109,7 +112,7 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn w-full ${
+								className={`btn btn-square ${
 									router.pathname.includes("/h/feed")
 										? "btn-primary"
 										: "btn-ghost"
@@ -119,7 +122,7 @@ const Navbar = () => {
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn w-full ${
+								className={`btn btn-square ${
 									router.pathname.includes("/h/drift")
 										? "btn-primary"
 										: "btn-ghost"
@@ -129,7 +132,7 @@ const Navbar = () => {
 							</Link>
 							<Link
 								href="/h/jobs"
-								className={`btn w-full ${
+								className={`btn btn-square ${
 									router.pathname.includes("/h/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -139,7 +142,7 @@ const Navbar = () => {
 							</Link>
 							<button
 								// href="/h/events"
-								className={`btn w-full ${
+								className={`btn btn-square ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"
@@ -150,11 +153,11 @@ const Navbar = () => {
 							</button>
 						</div>
 						<div className="flex gap-1">
-							<div className="dropdown dropdown-end dropdown-hover invisible">
+							<div className="dropdown dropdown-end dropdown-hover hidden">
 								<Link
 									href="/h/notifications"
 									tabIndex={0}
-									className={`btn w-full ${
+									className={`btn btn-square  ${
 										router.pathname.includes("/h/notifications")
 											? "btn-primary"
 											: "btn-ghost"
@@ -164,7 +167,7 @@ const Navbar = () => {
 								</Link>
 								<ul
 									tabIndex={0}
-									className="dropdown-content menu p-4 shadow-lg bg-base-200 rounded-btn w-[400px] gap-1 mt-1"
+									className="dropdown-content menu p-4 shadow-lg bg-base-200 rounded-btn btn-square w-[400px] gap-1 mt-1"
 								>
 									<li className="mb-2 text-lg font-bold">Notifications</li>
 									{Array(5)
@@ -186,9 +189,14 @@ const Navbar = () => {
 									</li>
 								</ul>
 							</div>
+							<div className="self-center">
+								<p className="font-semibold opacity-75">
+									{_currentUser.full_name.first}
+								</p>
+							</div>
 							<Link
 								href="/h/me"
-								className={`btn w-full ${
+								className={`btn btn-square ${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
@@ -199,7 +207,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "provisioner" && (
+				{_accountType === "provisioner" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -213,7 +221,7 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/p/dashboard"
-								className={`btn w-full ${
+								className={`btn ${
 									router.pathname.includes("/p/dashboard")
 										? "btn-primary"
 										: "btn-ghost"
@@ -223,7 +231,7 @@ const Navbar = () => {
 							</Link>
 							<Link
 								href="/p/jobs"
-								className={`btn w-full ${
+								className={`btn ${
 									router.pathname.includes("/p/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -233,7 +241,7 @@ const Navbar = () => {
 							</Link>
 							<button
 								// href="/p/events"
-								className={`btn w-full ${
+								className={`btn ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
 										: "btn-ghost"
@@ -244,7 +252,7 @@ const Navbar = () => {
 							</button>
 							<Link
 								href="/p/me"
-								className={`btn w-full ${
+								className={`btn ${
 									router.pathname.includes("/p/me")
 										? "btn-primary"
 										: "btn-ghost"
