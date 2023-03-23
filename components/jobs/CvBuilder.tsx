@@ -35,7 +35,7 @@ const templates = [
 	{
 		name: "Gabbie 2",
 		value: "gabbie2",
-		image: "/cvtemplate/preview_gab2.png"
+		image: "https://picsum.photos/200"
 	},
 
 ];
