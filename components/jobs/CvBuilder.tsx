@@ -14,28 +14,28 @@ const templates = [
 	{
 		name: "Default",
 		value: "default",
-		image: "https://picsum.photos/200"
+		image: "/cvtemplate/preview_default.png"
 	},
 	{
 		name: "Carlo 1",
 		value: "carlo1",
-		image: "https://picsum.photos/200"
+		image: "/cvtemplate/preview_carlo1.png"
 	},
 	{
 		name: "Carlo 2",
 		value: "carlo2",
-		image: "https://picsum.photos/200"
+		image: "/cvtemplate/preview_carlo2.png"
 
 	},
 	{
 		name: "Gabbie 1",
 		value: "gabbie1",
-		image: "https://picsum.photos/200"
+		image: "/cvtemplate/preview_gab1.png"
 	},
 	{
 		name: "Gabbie 2",
 		value: "gabbie2",
-		image: "https://picsum.photos/200"
+		image: "/cvtemplate/preview_gab2.png"
 	},
 
 ];
