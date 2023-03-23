@@ -14,7 +14,9 @@ import Compressor from "compressorjs";
 import Fuse from "fuse.js";
 import Image from "next/image";
 import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 import { NextPage } from "next";
+import Tabs from "@/components/Tabs";
 import { ToastError } from "@/components/customToasts";
 import _PhCities from "@/lib/ph_location.json";
 import _Skills from "@/lib/skills.json";
@@ -25,7 +27,20 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
-const PageTabs = [
+type TTabs = {
+	title: string;
+	value:
+		| "account"
+		| "personal"
+		| "skillset"
+		| "socials"
+		| "employment"
+		| "education"
+		| "training"
+		| "verification";
+};
+
+const PageTabs: TTabs[] = [
 	{
 		title: "Account",
 		value: "account",
@@ -87,6 +102,7 @@ const EditProfilePage: NextPage = () => {
 	>("account");
 	const [tabContentRef] = useAutoAnimate();
 	const [employmentHistoryRef] = useAutoAnimate();
+	const router = useRouter();
 
 	const f_PhCities = new Fuse(_PhCities, {
 		keys: ["city", "admin_name"],
@@ -162,33 +178,26 @@ const EditProfilePage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<h1 className="text-4xl font-bold">Edit Your Profile</h1>
+					<div className="flex flex-col lg:flex-row lg:items-center gap-2">
+						<button
+							onClick={() => {
+								router.push("/h/me");
+							}}
+							className="btn btn-ghost btn-square text-lg"
+						>
+							<MdArrowBack />
+						</button>
+						<h1 className="text-4xl font-bold">Edit Your Profile</h1>
+					</div>
 
 					{/* tabs desktop */}
-					<div className="tabs hidden lg:flex justify-center tabs-boxed mt-5">
-						{PageTabs.map((tab, index) => (
-							<p
-								key={`tab-${index}`}
-								onClick={() =>
-									setTabSelected(
-										tab.value as
-											| "account"
-											| "personal"
-											| "skillset"
-											| "residence"
-											| "socials"
-											| "employment"
-											| "education"
-											| "training"
-											| "verification",
-									)
-								}
-								className={`tab ${tabSelected === tab.value && "tab-active"}`}
-							>
-								{tab.title}
-							</p>
-						))}
-					</div>
+					<Tabs
+						activeTab={tabSelected}
+						tabs={PageTabs}
+						onTabChange={(e) => {
+							setTabSelected(e as TTabs["value"]);
+						}}
+					/>
 					{/* dropdown mobile */}
 					<select
 						className="select select-primary mt-5 w-full lg:hidden"

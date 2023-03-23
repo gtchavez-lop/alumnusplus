@@ -2,14 +2,11 @@ import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import { AnimPageTransition } from "@/lib/animations";
-import { FiArrowDown } from "react-icons/fi";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { MdArrowDownward } from "react-icons/md";
 import Pricing from "@/components/landing/Pricing";
-import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
 
 const jobList = [
 	"Web Developer",

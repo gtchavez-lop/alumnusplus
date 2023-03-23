@@ -193,18 +193,18 @@ const ProvisionerPage: NextPage<{
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
 							{/* tabs */}
-							<div className="grid grid-cols-2 gap-2">
+							<div className="tabs tabs-boxed justify-center lg:justify-start gap-2">
 								<div
-									className={`btn btn-block ${
-										tabSelected === "about" ? "btn-primary" : "btn-ghost"
+									className={`tab tab-lg lg:tab-md ${
+										tabSelected === "about" ? "tab-active" : ""
 									}`}
 									onClick={() => setTabSelected("about")}
 								>
 									About
 								</div>
 								<div
-									className={`btn btn-block ${
-										tabSelected === "jobs" ? "btn-primary" : "btn-ghost"
+									className={`tab tab-lg lg:tab-md ${
+										tabSelected === "jobs" ? "tab-active" : ""
 									}`}
 									onClick={() => setTabSelected("jobs")}
 								>

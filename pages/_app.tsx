@@ -7,26 +7,27 @@ import {
 	$themeMode,
 } from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
-import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { MdCheckCircleOutline, MdHourglassTop } from "react-icons/md";
 
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
+import { FiLoader } from "react-icons/fi";
 import Head from "next/head";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useEffect } from "react";
 import { useStore } from "@nanostores/react";
 
 const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
 
 export default function App({ Component, pageProps, router }: AppProps) {
-	const { initialSession } = pageProps;
-	const _accountType = useStore($accountType) as "hunter" | "provisioner";
+	const _currentTheme = useStore($themeMode);
 
 	const checkUser = async () => {
 		const { data } = await supabase.auth.getUser();
@@ -110,16 +111,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
 			$themeMode.set(theme as "light" | "dark");
 			document.documentElement.setAttribute("data-theme", theme);
 		}
-
-		// protect all /h and /p routes
-		// if router.pathname has /h or /p in it and accountType is not set, redirect to /
-		// if (
-		// 	(router.pathname.includes("/h") || router.pathname.includes("/p")) &&
-		// 	!_accountType
-		// ) {
-		// 	console.log("User not detected. Redirecting to /");
-		// 	router.push("/");
-		// }
 	});
 
 	return (
@@ -135,33 +126,53 @@ export default function App({ Component, pageProps, router }: AppProps) {
 				<link rel="manifest" href="/manifest.json" />
 			</Head>
 
-			<SessionContextProvider
-				supabaseClient={supabase}
-				initialSession={initialSession}
-			>
-				<QueryClientProvider client={tanstackClient}>
-					<>
-						<AppBar />
-						<Navbar />
+			<QueryClientProvider client={tanstackClient}>
+				<>
+					<AppBar />
+					<Navbar />
 
-						<div className="flex justify-center bg-base-100 overflow-x-hidden">
-							<div className="w-full max-w-5xl px-5 lg:px-0 min-h-screen pt-16 lg:pt-0">
-								<AnimatePresence mode="wait">
-									<Component
-										{...pageProps}
-										rotuer={router}
-										key={router.pathname}
-									/>
-								</AnimatePresence>
-							</div>
+					<div className="flex justify-center bg-base-100 overflow-x-hidden">
+						<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 lg:pt-0 ">
+							<AnimatePresence mode="wait">
+								<Component
+									{...pageProps}
+									rotuer={router}
+									key={router.pathname}
+								/>
+							</AnimatePresence>
 						</div>
+					</div>
 
-						<ReactQueryDevtools initialIsOpen={false} />
-					</>
-				</QueryClientProvider>
-			</SessionContextProvider>
+					<ReactQueryDevtools initialIsOpen={false} />
+				</>
+			</QueryClientProvider>
 
-			<Toaster position="bottom-center" />
+			<Toaster
+				toastOptions={{
+					style: {
+						background: _currentTheme === "dark" ? "#3D4451" : "#3D4451",
+						color: "#bec3ce", // _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+					},
+					success: {
+						icon: "✔️",
+						style: {
+							background: _currentTheme === "dark" ? "#22c55e" : "#bef264",
+							color: _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+						},
+					},
+					error: {
+						icon: "❌",
+						style: {
+							background: _currentTheme === "dark" ? "#f87171" : "#dc2626",
+							color: _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+						},
+					},
+					loading: {
+						icon: <FiLoader className="animate-spin text-lg" />,
+					},
+				}}
+				position="bottom-right"
+			/>
 		</>
 	);
 }

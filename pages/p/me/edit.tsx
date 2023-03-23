@@ -8,6 +8,7 @@ import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
+import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
 import __web3storage from "@/lib/web3Storage";
 import dayjs from "dayjs";
@@ -18,25 +19,37 @@ import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
 type TTab = {
-	name: string;
+	title: string;
 	value: string;
 };
 
 const tabs: TTab[] = [
 	{
-		name: "Account",
+		title: "Account",
 		value: "account",
 	},
 	{
-		name: "Company",
+		title: "Company",
 		value: "company",
 	},
 	{
-		name: "Socials",
+		title: "Socials",
 		value: "socials",
 	},
 	{
-		name: "Verification",
+		title: "Employment",
+		value: "employment",
+	},
+	{
+		title: "Education",
+		value: "education",
+	},
+	{
+		title: "Trainings",
+		value: "trainings",
+	},
+	{
+		title: "Verification",
 		value: "verification",
 	},
 ];
@@ -52,9 +65,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 	const f_industryType = new Fuse(_Industries, {
 		threshold: 0.3,
 	});
-	const [tabSelected, setSelectedTab] = useState<
-		"account" | "company" | "socials" | "verification"
-	>("account");
+	const [tabSelected, setSelectedTab] = useState("account");
 	const [tabContent] = useAutoAnimate();
 
 	const handleChanges = async () => {
@@ -151,36 +162,16 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					</AnimatePresence>
 
 					{/* tabs desktop */}
-					<ul className="hidden lg:flex tabs tabs-boxed justify-center mt-10">
-						{tabs.map((item, index) => (
-							<li
-								key={`tab_desktop_${index}`}
-								onClick={() =>
-									setSelectedTab(
-										item.value as
-											| "account"
-											| "company"
-											| "socials"
-											| "verification",
-									)
-								}
-								className={`tab ${tabSelected === item.value && "tab-active"}`}
-							>
-								{item.name}
-							</li>
-						))}
-					</ul>
+					<Tabs
+						activeTab={tabSelected}
+						onTabChange={(tab) => setSelectedTab(tab)}
+						tabs={tabs}
+					/>
 					{/* mobile select */}
 					<select
 						value={tabSelected}
 						onChange={(item) =>
-							setSelectedTab(
-								item.currentTarget.value as
-									| "account"
-									| "company"
-									| "socials"
-									| "verification",
-							)
+							setSelectedTab(item.currentTarget.value as TTab["value"])
 						}
 						className="select w-full mt-5 select-primary lg:hidden"
 					>
@@ -190,7 +181,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 								value={item.value}
 								className={`tab ${tabSelected === item.value && "tab-active"}`}
 							>
-								{item.name}
+								{item.title}
 							</option>
 						))}
 					</select>

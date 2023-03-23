@@ -22,11 +22,20 @@ import { useStore } from "@nanostores/react";
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.query;
 
-	const { data } = await supabase
+	const { data, error } = await supabase
 		.from("public_jobs")
-		.select("*,uploader_id(*)")
+		.select("*,uploader:uploader_id(*)")
 		.eq("id", id)
 		.single();
+
+	if (error) {
+		console.log(error);
+		return {
+			props: {
+				jobData: null,
+			},
+		};
+	}
 
 	return {
 		props: {
@@ -36,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface LocalProvJobPost extends TProvJobPost {
-	uploader_id: IUserProvisioner;
+	uploader: IUserProvisioner;
 }
 
 const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
@@ -93,8 +102,7 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 	}, [_currentUser, jobData, isFavorite]);
 
 	return (
-		jobData &&
-		_currentUser && (
+		jobData && (
 			<>
 				<motion.main
 					variants={AnimPageTransition}
@@ -133,7 +141,7 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 										About the Company
 									</h2>
 									<ReactMarkdown className="prose">
-										{jobData.uploader_id.shortDescription}
+										{jobData.uploader.shortDescription}
 									</ReactMarkdown>
 								</div>
 
