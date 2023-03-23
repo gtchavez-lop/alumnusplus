@@ -187,6 +187,11 @@ const Navbar = () => {
 									</li>
 								</ul>
 							</div>
+							<div className="self-center">
+								<p className="font-semibold opacity-75">
+									{_currentUser.full_name.first}
+								</p>
+							</div>
 							<Link
 								href="/h/me"
 								className={`btn btn-square ${router.pathname.includes("/h/me")
