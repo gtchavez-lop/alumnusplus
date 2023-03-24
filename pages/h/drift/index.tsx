@@ -18,6 +18,46 @@ import { useStore } from "@nanostores/react";
 const DriftPage = () => {
 	const _currentUser = useStore($accountDetails);
 
+	const getUserCity = async () => {
+		const request = await fetch(
+			"https://geolocation-db.com/json/0f761a30-fe14-11e9-b59f-e53803842572",
+		);
+
+		const response = await request.json();
+		return response;
+	};
+
+	const currentLocation = useQuery({
+		queryKey: ["currentLocation"],
+		queryFn: getUserCity,
+
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+	});
+
+	const fetchData = async () => {
+		const { data, error } = await supabase
+			.from("user_provisioners")
+			.select("*")
+			.eq("address->>city", currentLocation.data?.city);
+
+		if (error) {
+			console.log(error);
+			return [];
+		}
+
+		return data;
+	};
+
+	const usersInCity = useQuery({
+		queryKey: ["usersInCity"],
+		queryFn: fetchData,
+		enabled: currentLocation.isSuccess,
+
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+	});
+
 	const fetchDriftData = async () => {
 		const { data, error } = await supabase
 			.from("user_provisioners")
@@ -32,61 +72,16 @@ const DriftPage = () => {
 		return data as IUserProvisioner[];
 	};
 
-	// const fetchLocation = async () => {
-	// 	let data = {
-	// 		latitude: 0,
-	// 		longitude: 0,
-	// 		currentCity: "",
-	// 	};
-	// 	if (navigator.geolocation) {
-	// 		navigator.geolocation.getCurrentPosition((position) => {
-	// 			data.latitude = position.coords.latitude;
-	// 			data.longitude = position.coords.longitude;
-
-	// 			// get the current city from _PhLocation.json
-	// 			const currentCity = _PhLocation.find(
-	// 				(city) =>
-	// 					// nearest city
-	// 					Number.parseFloat(city.lat) - 0.06 <= data.latitude &&
-	// 					Number.parseFloat(city.lat) + 0.06 >= data.latitude &&
-	// 					Number.parseFloat(city.lng) - 0.06 <= data.longitude &&
-	// 					Number.parseFloat(city.lng) + 0.06 >= data.longitude,
-	// 			);
-
-	// 			data.currentCity = currentCity?.city || "Manila";
-	// 		});
-	// 		return data;
-	// 	} else {
-	// 		return data;
-	// 	}
-	// };
-
-	// const locationData = useQuery({
-	// 	queryKey: ["currentGeoLocation"],
-	// 	queryFn: fetchLocation,
-	// 	refetchOnMount: false,
-	// 	onSuccess: (data) => {
-	// 		console.log(data);
-	// 	},
-	// });
-
 	const [driftData] = useQueries({
 		queries: [
 			{
 				queryKey: ["driftData"],
 				enabled: !!_currentUser as boolean,
 				queryFn: fetchDriftData,
-				refetchOnMount: false,
+				refetchOnMount: true,
 			},
 		],
 	});
-
-	// const driftData = useQuery({
-	// 	queryKey: ["driftData"],
-	// 	enabled: !!_currentUser as boolean,
-	// 	queryFn: fetchDriftData as any | undefined | unknown | Function,
-	// 	refetchOnMount: false,
-	// });
 
 	return (
 		<>
@@ -130,29 +125,31 @@ const DriftPage = () => {
 					<h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
 						Companies near your area
 					</h1>
+
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-						{driftData.data!.map((company, index) => (
-							<Link
-								key={`company-${index}`}
-								href={`/h/drift/company?id=${company.id}`}
-								passHref
-								className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
-							>
-								<div className="flex flex-col items-center gap-2 cursor-pointer">
-									<Image
-										alt=""
-										src={
-											company.avatar_url ||
-											`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`
-										}
-										className="mask mask-squircle w-[100px] h-[100px]"
-										width={100}
-										height={100}
-									/>
-									<p>{company.legalName}</p>
-								</div>
-							</Link>
-						))}
+						{usersInCity.isFetched &&
+							usersInCity.data?.map((item, index) => (
+								<Link
+									key={`company-${index}`}
+									href={`/h/drift/company?id=${item.id}`}
+									passHref
+									className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
+								>
+									<div className="flex flex-col items-center gap-2 cursor-pointer">
+										<Image
+											alt=""
+											src={
+												item.avatar_url ||
+												`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${item.legalName}`
+											}
+											className="mask mask-squircle w-[100px] h-[100px]"
+											width={100}
+											height={100}
+										/>
+										<p>{item.legalName}</p>
+									</div>
+								</Link>
+							))}
 					</div>
 				</motion.main>
 			)}
