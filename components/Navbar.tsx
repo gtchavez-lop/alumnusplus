@@ -1,4 +1,4 @@
-import { $accountType, $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import {
 	MdApps,
 	MdEvent,
@@ -11,6 +11,7 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -23,6 +24,8 @@ const Navbar = () => {
 	const _globalTheme = useStore($themeMode);
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
+
+	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -95,7 +98,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "hunter" && (
+				{_accountType === "hunter" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -186,6 +189,11 @@ const Navbar = () => {
 									</li>
 								</ul>
 							</div>
+							<div className="self-center">
+								<p className="font-semibold opacity-75">
+									{_currentUser.full_name.first}
+								</p>
+							</div>
 							<Link
 								href="/h/me"
 								className={`btn btn-square ${
@@ -199,7 +207,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "provisioner" && (
+				{_accountType === "provisioner" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
