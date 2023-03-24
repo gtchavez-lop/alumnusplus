@@ -14,22 +14,28 @@ const templates = [
 	{
 		name: "Default",
 		value: "default",
+		image: "/cvtemplate/preview_default.png"
 	},
 	{
 		name: "Carlo 1",
 		value: "carlo1",
+		image: "/cvtemplate/preview_carlo1.png"
 	},
 	{
 		name: "Carlo 2",
 		value: "carlo2",
+		image: "/cvtemplate/preview_carlo2.png"
+
 	},
 	{
 		name: "Gabbie 1",
 		value: "gabbie1",
+		image: "/cvtemplate/preview_gab1.png"
 	},
 	{
 		name: "Gabbie 2",
 		value: "gabbie2",
+		image: "/cvtemplate/preview_gab2.png"
 	},
 
 ];
@@ -95,7 +101,28 @@ const CvBuilder: FC = () => {
 
 						{/* templates */}
 						<p className="mt-10 text-2xl font-bold">Select Template</p>
-						<div className="mt-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+						<div className="grid grid-cols-2 mt-2 md:grid-cols-4 lg:grid-cols-5 gap-4 ">
+							{templates.map((template, key) => (
+								<div key={`template-${key}`}
+									onClick={() => setSelectedTemplate(template.value)}
+									className={`relative overflow-hidden flex flex-col justify-end items-center h-[140px] cursor-pointer hover:scale-[0.98] transition rounded-btn bg-base-300 ${selectedTemplate === template.value && "text-primary ring-2 ring-primary/10"}`}>
+									<img src={template.image} alt=""
+										className={`absolute h-full w-full object-cover object-center ${selectedTemplate === template.value ? "opacity-100" : "opacity-50"}`} />
+									<div className="absolute w-full h-full inset-0 bg-gradient-to-t from-base-100 to-transparent z-20 "> </div>
+									{selectedTemplate === template.value && (
+										<MdCheckCircle className="absolute text-4xl bottom-14" />
+									)}
+									{
+										selectedTemplate !== template.value &&
+										<p className="absolute bottom-5 z-30">{template.name}</p>
+									}
+
+
+								</div>
+							))}
+
+						</div>
+						{/* <div className="mt-2 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
 							{templates.map((template, key) => (
 								<div key={`template-${key}`}
 									onClick={() => setSelectedTemplate(template.value)}
@@ -112,7 +139,7 @@ const CvBuilder: FC = () => {
 							<div className="h-[140px] transition p-2 flex flex-col items-center justify-end rounded-btn">
 								<p className="text-lg">More templates coming soon</p>
 							</div>
-						</div>
+						</div> */}
 
 						<div className="flex justify-end mt-2 gap-2">
 							<button

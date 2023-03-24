@@ -6,8 +6,9 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { GetServerSideProps, NextPage } from "next";
-import { MdCheckCircle, MdCheckCircleOutline } from "react-icons/md";
+import { MdCheckCircleOutline, MdHelp } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -15,37 +16,42 @@ import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
 
-const PageTabs = [
+type TTab = {
+	title: string;
+	value: string;
+};
+
+const PageTabs: TTab[] = [
 	{
-		name: "About",
+		title: "About",
 		value: "about",
 	},
 	{
-		name: "Posts",
+		title: "Posts",
 		value: "posts",
 	},
 	{
-		name: "Connections",
+		title: "Connections",
 		value: "connections",
 	},
 	{
-		name: "Experiences",
+		title: "Experiences",
 		value: "experiences",
 	},
 	{
-		name: "Education",
+		title: "Education",
 		value: "education",
 	},
 	{
-		name: "Trainings",
+		title: "Trainings",
 		value: "trainings",
 	},
 ];
@@ -53,48 +59,49 @@ const PageTabs = [
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { user } = context.query;
 
-	const { data, error } = await supabase
-		.from("user_hunters")
-		.select("*")
-		.eq("username", user)
-		.single();
-
-	if (error) {
-		return {
-			props: {
-				targetUser: null,
-			},
-		};
-	}
-
 	return {
 		props: {
-			targetUser: data as IUserHunter,
+			targetQuery: user as string,
 		},
 	};
 };
 
-const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
-	targetUser,
+const DynamicUserPage: NextPage<{ targetQuery: string }> = ({
+	targetQuery,
 }) => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isConnected, setIsConnected] = useState(false);
-	const [tabSelected, setTabSelected] = useState<
-		| "about"
-		| "posts"
-		| "experiences"
-		| "education"
-		| "connections"
-		| "trainings"
-		| "savedjobs"
-	>("about");
+	const [tabSelected, setTabSelected] = useState<TTab["value"]>("about");
 	const [tabContentRef] = useAutoAnimate();
+
+	const fetchTargetUserData = async () => {
+		const { data, error } = await supabase
+			.from("user_hunters")
+			.select("*")
+			.eq("username", targetQuery)
+			.single();
+
+		if (error) {
+			console.log(error);
+			return null;
+		}
+
+		return data as IUserHunter;
+	};
+
+	const targetUser = useQuery({
+		queryKey: ["targetUser", targetQuery],
+		queryFn: fetchTargetUserData,
+		enabled: !!targetQuery,
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+	});
 
 	const fetchUserConnections = async () => {
 		const { data, error } = await supabase
 			.from("user_hunters")
 			.select("id,username,full_name,avatar_url,is_verified")
-			.in("id", targetUser.connections);
+			.in("id", targetUser.data!.connections);
 
 		if (error) {
 			console.log(error);
@@ -118,7 +125,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select("*")
-			.eq("uploader", targetUser.id);
+			.eq("uploader", targetUser.data!.id);
 
 		if (error) {
 			console.log(error);
@@ -128,19 +135,19 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 		return data;
 	};
 
-	const [userConnections, userActivities] = useQueries({
+	const [targetUserConnections, targetUserActivities] = useQueries({
 		queries: [
 			{
-				queryKey: ["userConnections"],
+				queryKey: ["targetUserConnections", targetQuery],
 				queryFn: fetchUserConnections,
-				enabled: !!targetUser,
+				enabled: targetUser.isSuccess,
 				refetchOnMount: true,
 				refetchOnWindowFocus: true,
 			},
 			{
-				queryKey: ["userActivities"],
+				queryKey: ["targetUserActivities", targetQuery],
 				queryFn: fetchUserActivities,
-				enabled: !!targetUser,
+				enabled: targetUser.isSuccess,
 				refetchOnMount: true,
 				refetchOnWindowFocus: true,
 			},
@@ -150,7 +157,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 	const addToConnections = async () => {
 		toast.loading("Adding connection...");
 
-		const newConnections = [..._currentUser.connections, targetUser.id];
+		const newConnections = [..._currentUser.connections, targetUser.data!.id];
 
 		// update the user table
 		const { error } = await supabase
@@ -192,7 +199,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 		toast.loading("Removing connection...");
 
 		const newConnections = _currentUser.connections.filter(
-			(id) => id !== targetUser.id,
+			(id) => id !== targetUser.data!.id,
 		);
 
 		// update the user table
@@ -232,12 +239,15 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 	};
 
 	useEffect(() => {
-		if (!!_currentUser && _currentUser.connections.includes(targetUser.id)) {
-			setIsConnected(true);
+		if (_currentUser && targetUser.isSuccess) {
+			if (_currentUser.connections.includes(targetUser.data!.id)) {
+				setIsConnected(true);
+			}
 		}
-	}, [_currentUser, targetUser]);
+	});
 
 	return (
+		// <p>asdjklasdkljasd</p>
 		<>
 			<motion.main
 				variants={AnimPageTransition}
@@ -246,31 +256,31 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
-				{targetUser && _currentUser && (
+				{targetUser.isSuccess && _currentUser && (
 					<section className="flex flex-col gap-5">
 						<div className="col-span-3 flex flex-col gap-3">
 							{/* landing profile */}
 							<div className="flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 								<div className="relative">
 									<Image
-										src={targetUser.avatar_url}
+										src={targetUser.data!.avatar_url}
 										alt="avatar"
 										className="w-32 h-32 bg-primary mask mask-squircle object-cover object-center "
 										width={128}
 										height={128}
 									/>
 
-									{targetUser.subscription_type === "junior" && (
+									{targetUser.data!.subscription_type === "junior" && (
 										<div className="badge badge-primary absolute bottom-1 sm:-right-5">
 											Junior Hunter
 										</div>
 									)}
-									{targetUser.subscription_type === "senior" && (
+									{targetUser.data!.subscription_type === "senior" && (
 										<div className="badge badge-primary absolute bottom-1 -right-5">
 											Senior Hunter
 										</div>
 									)}
-									{targetUser.subscription_type === "expert" && (
+									{targetUser.data!.subscription_type === "expert" && (
 										<div className="badge badge-primary absolute bottom-1 -right-5">
 											Expert Hunter
 										</div>
@@ -278,19 +288,22 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								</div>
 								<div>
 									<p className="text-3xl font-bold flex gap-1 items-center">
-										{targetUser.full_name.first} {targetUser.full_name.last}
-										{targetUser.is_verified && (
+										{targetUser.data!.full_name.first}{" "}
+										{targetUser.data!.full_name.last}
+										{targetUser.data!.is_verified && (
 											<MdCheckCircleOutline className="text-blue-500 text-lg" />
 										)}
 									</p>
 
 									<p className="font-semibold opacity-75">
-										@{targetUser.username}
+										@{targetUser.data!.username}
 									</p>
 									<p>
 										Joined at:{" "}
 										<span className="opacity-50">
-											{dayjs(targetUser.created_at).format("MMMM DD, YYYY")}
+											{dayjs(targetUser.data!.created_at).format(
+												"MMMM DD, YYYY",
+											)}
 										</span>
 									</p>
 								</div>
@@ -298,7 +311,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							<div className="flex justify-end my-3">
 								{isConnected ? (
 									<button
-										disabled={userConnections.isLoading}
+										disabled={targetUserConnections.isLoading}
 										onClick={removeFromConnections}
 										className="btn btn-warning"
 									>
@@ -306,7 +319,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									</button>
 								) : (
 									<button
-										disabled={userConnections.isLoading}
+										disabled={targetUserConnections.isLoading}
 										onClick={addToConnections}
 										className="btn btn-primary"
 									>
@@ -320,26 +333,24 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								<select
 									value={tabSelected}
 									onChange={(e) =>
-										setTabSelected(
-											e.currentTarget.value as
-												| "about"
-												| "posts"
-												| "experiences"
-												| "education"
-												| "savedjobs",
-										)
+										setTabSelected(e.currentTarget.value as TTab["value"])
 									}
 									className="select select-primary w-full"
 								>
 									{PageTabs.map((tab, index) => (
 										<option key={`tab-${index}`} value={tab.value}>
-											{tab.name}
+											{tab.title}
 										</option>
 									))}
 								</select>
 							</div>
 							{/* desktop tabs */}
-							<div className="hidden lg:block mb-5">
+							<Tabs
+								activeTab={tabSelected}
+								onTabChange={(tab) => setTabSelected(tab as TTab["value"])}
+								tabs={PageTabs}
+							/>
+							{/* <div className="hidden lg:block mb-5">
 								<ul className="tabs tabs-boxed justify-evenly">
 									{PageTabs.map((tab, index) => (
 										<li
@@ -362,7 +373,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 										</li>
 									))}
 								</ul>
-							</div>
+							</div> */}
 
 							{/* tab contents */}
 							<div className="py-5" ref={tabContentRef}>
@@ -375,7 +386,8 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 											</div>
 
 											<ReactMarkdown className="prose">
-												{targetUser.bio || "This user has not added a bio yet"}
+												{targetUser.data!.bio ||
+													"This user has not added a bio yet"}
 											</ReactMarkdown>
 										</div>
 										{/* skills */}
@@ -384,7 +396,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 											<div className="flex flex-col">
 												<h4 className="text-lg font-semibold">Primary Skill</h4>
 												<p className="badge badge-primary badge-lg">
-													{targetUser.skill_primary}
+													{targetUser.data!.skill_primary}
 												</p>
 											</div>
 											<div className="flex flex-col">
@@ -392,14 +404,16 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 													Secondary Skills
 												</h4>
 												<p className="flex flex-wrap gap-2">
-													{targetUser.skill_secondary.map((skill, index) => (
-														<span
-															key={`secondaryskill_${index}`}
-															className="badge badge-accent badge-lg"
-														>
-															{skill}
-														</span>
-													))}
+													{targetUser.data!.skill_secondary.map(
+														(skill, index) => (
+															<span
+																key={`secondaryskill_${index}`}
+																className="badge badge-accent badge-lg"
+															>
+																{skill}
+															</span>
+														),
+													)}
 												</p>
 											</div>
 										</div>
@@ -408,9 +422,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 											<p className="text-2xl font-bold">Residence</p>
 											<div className="flex flex-col ">
 												<p>
-													{targetUser.address.address},{" "}
-													{targetUser.address.city} -{" "}
-													{targetUser.address.postalCode}
+													{targetUser.data!.address.address},{" "}
+													{targetUser.data!.address.city} -{" "}
+													{targetUser.data!.address.postalCode}
 												</p>
 											</div>
 										</div>
@@ -418,9 +432,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 										<div className="flex flex-col shadow-md rounded-btn p-5 gap-3">
 											<p className="text-2xl font-bold">Social Media Links</p>
 											<div className="flex flex-wrap gap-2">
-												{targetUser.social_media_links.facebook && (
+												{targetUser.data!.social_media_links.facebook && (
 													<Link
-														href={targetUser.social_media_links.facebook}
+														href={targetUser.data!.social_media_links.facebook}
 														target="_blank"
 														rel="noopener noreferrer"
 														className="btn btn-primary"
@@ -428,9 +442,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 														<FiFacebook className="text-xl" />
 													</Link>
 												)}
-												{targetUser.social_media_links.twitter && (
+												{targetUser.data!.social_media_links.twitter && (
 													<Link
-														href={targetUser.social_media_links.twitter}
+														href={targetUser.data!.social_media_links.twitter}
 														target="_blank"
 														rel="noopener noreferrer"
 														className="btn btn-primary"
@@ -438,9 +452,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 														<FiTwitter className="text-xl" />
 													</Link>
 												)}
-												{targetUser.social_media_links.instagram && (
+												{targetUser.data!.social_media_links.instagram && (
 													<Link
-														href={targetUser.social_media_links.instagram}
+														href={targetUser.data!.social_media_links.instagram}
 														target="_blank"
 														rel="noopener noreferrer"
 														className="btn btn-primary"
@@ -448,9 +462,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 														<FiInstagram className="text-xl" />
 													</Link>
 												)}
-												{targetUser.social_media_links.linkedin && (
+												{targetUser.data!.social_media_links.linkedin && (
 													<Link
-														href={targetUser.social_media_links.linkedin}
+														href={targetUser.data!.social_media_links.linkedin}
 														target="_blank"
 														rel="noopener noreferrer"
 														className="btn btn-primary"
@@ -458,9 +472,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 														<FiLinkedin className="text-xl" />
 													</Link>
 												)}
-												{targetUser.social_media_links.github && (
+												{targetUser.data!.social_media_links.github && (
 													<Link
-														href={targetUser.social_media_links.github}
+														href={targetUser.data!.social_media_links.github}
 														target="_blank"
 														rel="noopener noreferrer"
 														className="btn btn-primary"
@@ -474,8 +488,8 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								)}
 								{tabSelected === "posts" && (
 									<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-										{userActivities.isSuccess &&
-											userActivities.data.map((activity, index) => (
+										{targetUserActivities.isSuccess &&
+											targetUserActivities.data.map((activity, index) => (
 												<Link
 													key={`blogpost_${index}`}
 													href={`/h/feed/post?id=${activity.id}`}
@@ -492,12 +506,15 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 												</Link>
 											))}
 
-										{userActivities.isSuccess &&
-											userActivities.data.length === 0 && (
-												<p className="text-center">No activities yet</p>
+										{targetUserActivities.isSuccess &&
+											targetUserActivities.data.length === 0 && (
+												<div className="flex flex-col items-center col-span-full">
+													<MdHelp className="text-5xl text-primary" />
+													<p>No activities yet</p>
+												</div>
 											)}
 
-										{userActivities.isLoading &&
+										{targetUserActivities.isLoading &&
 											Array(5)
 												.fill("")
 												.map((_, index) => (
@@ -510,8 +527,8 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								)}
 								{tabSelected === "connections" && (
 									<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-										{userConnections.isSuccess &&
-											userConnections.data.map((connection, index) => (
+										{targetUserConnections.isSuccess &&
+											targetUserConnections.data.map((connection, index) => (
 												<Link
 													href={`/h?user=${connection.username}`}
 													key={`connection_${index}`}
@@ -538,12 +555,15 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 												</Link>
 											))}
 
-										{userConnections.isSuccess &&
-											userConnections.data.length === 0 && (
-												<p className="text-center">No connections yet</p>
+										{targetUserConnections.isSuccess &&
+											targetUserConnections.data.length === 0 && (
+												<div className="flex flex-col items-center col-span-full">
+													<MdHelp className="text-5xl text-primary" />
+													<p>No connections yet</p>
+												</div>
 											)}
 
-										{userConnections.isLoading &&
+										{targetUserConnections.isLoading &&
 											Array(5)
 												.fill("")
 												.map((_, index) => (
@@ -556,10 +576,13 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								)}
 								{tabSelected === "experiences" && (
 									<div className="flex flex-col gap-2">
-										{targetUser.experience.length === 0 && (
-											<p className="text-center">No employment history yet</p>
+										{targetUser.data!.experience.length === 0 && (
+											<div className="flex flex-col items-center col-span-full">
+												<MdHelp className="text-5xl text-primary" />
+												<p>No employment history yet</p>
+											</div>
 										)}
-										{targetUser.experience.map((exp, i) => (
+										{targetUser.data!.experience.map((exp, i) => (
 											<div
 												key={`expereince_${i}`}
 												className="shadow-md rounded-btn p-5"
@@ -578,10 +601,13 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								)}
 								{tabSelected === "education" && (
 									<div className="flex flex-col gap-2">
-										{targetUser.experience.length === 0 && (
-											<p className="text-center">No education history yet</p>
+										{targetUser.data!.education.length === 0 && (
+											<div className="flex flex-col items-center col-span-full">
+												<MdHelp className="text-5xl text-primary" />
+												<p>No education history yet</p>
+											</div>
 										)}
-										{targetUser.education.map((edu, i) => (
+										{targetUser.data!.education.map((edu, i) => (
 											<div
 												key={`education_${i}`}
 												className="shadow-md rounded-btn p-5"
@@ -605,12 +631,13 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								)}
 								{tabSelected === "trainings" && (
 									<div className="flex flex-col gap-2">
-										{targetUser.trainings.length === 0 && (
-											<p className="text-center">
-												No Seminars/Training history yet
-											</p>
+										{targetUser.data!.trainings.length === 0 && (
+											<div className="flex flex-col items-center col-span-full">
+												<MdHelp className="text-5xl text-primary" />
+												<p>No Seminars/Training history yet</p>
+											</div>
 										)}
-										{targetUser.trainings.map((training, i) => (
+										{targetUser.data!.trainings.map((training, i) => (
 											<div
 												key={`training-${i}`}
 												className="shadow-md rounded-btn p-5"
@@ -637,7 +664,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 							<div className="flex flex-col rounded-btn p-2 gap-3">
 								<p className="text-2xl font-bold">Connections</p>
 
-								{userConnections.isLoading && (
+								{targetUserConnections.isLoading && (
 									<div className="flex flex-col gap-2">
 										{Array(5)
 											.fill("")
@@ -654,9 +681,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									</div>
 								)}
 
-								{userConnections.isSuccess && (
+								{targetUserConnections.isSuccess && (
 									<div className="flex flex-col gap-2">
-										{userConnections.data.length < 1 && (
+										{targetUserConnections.data.length < 1 && (
 											<p>
 												Looks like you have not connected to other people right
 												now. Add people to your connections to see their posts
@@ -666,9 +693,9 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 									</div>
 								)}
 
-								{userConnections.isSuccess &&
-									userConnections.data.length > 0 &&
-									userConnections.data.slice(0, 3).map((connection, index) => (
+								{targetUserConnections.isSuccess &&
+									targetUserConnections.data.length > 0 &&
+									targetUserConnections.data.slice(0, 3).map((connection, index) => (
 										<Link
 											href={
 												connection.username === _currentUser.username
@@ -708,7 +735,7 @@ const DynamicUserPage: NextPage<{ targetUser: IUserHunter }> = ({
 								<p className="text-2xl font-bold">Actions</p>
 
 								<div className="flex gap-2 mt-4">
-									
+
 								</div>
 							</div>
 						</div> */}

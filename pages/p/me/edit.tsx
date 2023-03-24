@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { ChangeEvent, useState } from "react";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -7,35 +8,48 @@ import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
+import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
+import __web3storage from "@/lib/web3Storage";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
 type TTab = {
-	name: string;
+	title: string;
 	value: string;
 };
 
 const tabs: TTab[] = [
 	{
-		name: "Account",
+		title: "Account",
 		value: "account",
 	},
 	{
-		name: "Company",
+		title: "Company",
 		value: "company",
 	},
 	{
-		name: "Socials",
+		title: "Socials",
 		value: "socials",
 	},
 	{
-		name: "Verification",
+		title: "Employment",
+		value: "employment",
+	},
+	{
+		title: "Education",
+		value: "education",
+	},
+	{
+		title: "Trainings",
+		value: "trainings",
+	},
+	{
+		title: "Verification",
 		value: "verification",
 	},
 ];
@@ -51,9 +65,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 	const f_industryType = new Fuse(_Industries, {
 		threshold: 0.3,
 	});
-	const [tabSelected, setSelectedTab] = useState<
-		"account" | "company" | "socials" | "verification"
-	>("account");
+	const [tabSelected, setSelectedTab] = useState("account");
 	const [tabContent] = useAutoAnimate();
 
 	const handleChanges = async () => {
@@ -104,7 +116,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		// update global state
 		$accountDetails.set(tempUserDetails);
 		toast.success("Changes saved successfully");
-		router.push("/p/me");
+		// router.push("/p/me");
 	};
 
 	return (
@@ -150,36 +162,16 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					</AnimatePresence>
 
 					{/* tabs desktop */}
-					<ul className="hidden lg:flex tabs tabs-boxed mt-10">
-						{tabs.map((item, index) => (
-							<li
-								key={`tab_desktop_${index}`}
-								onClick={() =>
-									setSelectedTab(
-										item.value as
-											| "account"
-											| "company"
-											| "socials"
-											| "verification",
-									)
-								}
-								className={`tab ${tabSelected === item.value && "tab-active"}`}
-							>
-								{item.name}
-							</li>
-						))}
-					</ul>
+					<Tabs
+						activeTab={tabSelected}
+						onTabChange={(tab) => setSelectedTab(tab)}
+						tabs={tabs}
+					/>
 					{/* mobile select */}
 					<select
 						value={tabSelected}
 						onChange={(item) =>
-							setSelectedTab(
-								item.currentTarget.value as
-									| "account"
-									| "company"
-									| "socials"
-									| "verification",
-							)
+							setSelectedTab(item.currentTarget.value as TTab["value"])
 						}
 						className="select w-full mt-5 select-primary lg:hidden"
 					>
@@ -189,7 +181,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 								value={item.value}
 								className={`tab ${tabSelected === item.value && "tab-active"}`}
 							>
-								{item.name}
+								{item.title}
 							</option>
 						))}
 					</select>
@@ -204,7 +196,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 									<label className="flex flex-col gap-3">
 										<span>Profile Picture</span>
 										<Image
-											src={`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`}
+											src={
+												tempUserDetails.avatar_url ||
+												`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`
+											}
 											alt="Profile Picture"
 											className="w-24 h-24 object-cover bg-primary mask mask-squircle"
 											width={96}
@@ -213,8 +208,35 @@ const ProvisionerProfileEditPage: NextPage = () => {
 										<input
 											className="file-input 	file-input-primary"
 											type="file"
+											onChange={(e) => {
+												const input = e as ChangeEvent<HTMLInputElement>;
+												if (input.currentTarget.files) {
+													// blob
+													const file = input.currentTarget.files[0];
+													// check if there is an image
+													if (!file) {
+														toast.error("Please select an image");
+														return;
+													}
+													// limit to 1mb
+													if (file.size > 1000000) {
+														toast.error("File size too large");
+														return;
+													}
+													// convert to base64
+													const reader = new FileReader();
+													reader.readAsDataURL(file);
+													reader.onload = () => {
+														// set the image
+														setTempUserDetails({
+															...tempUserDetails,
+															avatar_url: reader.result as string,
+														});
+													};
+												}
+											}}
 											accept="image/png, image/gif, image/jpeg"
-											disabled
+											// disabled
 										/>
 									</label>
 									<label className="flex flex-col">

@@ -141,16 +141,15 @@ const DriftPage = () => {
 								<div className="flex flex-col items-center gap-2 cursor-pointer">
 									<Image
 										alt=""
-										src={`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`}
+										src={
+											company.avatar_url ||
+											`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`
+										}
 										className="mask mask-squircle w-[100px] h-[100px]"
 										width={100}
 										height={100}
 									/>
 									<p>{company.legalName}</p>
-								</div>
-
-								<div className="btn btn-primary lg:hidden btn-block mt-5">
-									See more
 								</div>
 							</Link>
 						))}

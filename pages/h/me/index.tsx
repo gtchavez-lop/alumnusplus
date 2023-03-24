@@ -26,8 +26,10 @@ import {
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
+import Modal from "@/components/Modal";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
+import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
@@ -53,42 +55,36 @@ type TTabs =
 
 const PageTabs = [
 	{
-		name: "About",
+		title: "About",
 		value: "about",
-		icon: MdInfo,
 	},
 	{
-		name: "Posts",
+		title: "Posts",
 		value: "posts",
-		icon: MdNote,
 	},
 	{
-		name: "Connections",
+		title: "Connections",
 		value: "connections",
 	},
 	{
-		name: "Followed Companies",
+		title: "Followed Companies",
 		value: "followedCompanies",
 	},
 	{
-		name: "Experiences",
+		title: "Experiences",
 		value: "experiences",
-		icon: MdWork,
 	},
 	{
-		name: "Education",
+		title: "Education",
 		value: "education",
-		icon: MdSchool,
 	},
 	{
-		name: "Trainings",
+		title: "Trainings",
 		value: "trainings",
-		icon: MdTrain,
 	},
 	{
-		name: "Saved Jobs",
+		title: "Saved Jobs",
 		value: "savedjobs",
-		icon: MdCheckCircleOutline,
 	},
 ];
 
@@ -98,6 +94,7 @@ const ProfilePage: NextPage = () => {
 	const router = useRouter();
 	const [tabSelected, setTabSelected] = useState<TTabs>("about");
 	const [tabContentRef] = useAutoAnimate();
+	const [signOutModalVisible, setSignOutModalVisible] = useState(false);
 
 	const _globalTheme = useStore($themeMode);
 
@@ -357,27 +354,19 @@ const ProfilePage: NextPage = () => {
 									>
 										{PageTabs.map((tab, index) => (
 											<option key={`tab-${index}`} value={tab.value}>
-												{tab.name}
+												{tab.title}
 											</option>
 										))}
 									</select>
 								</div>
 								{/* desktop tabs */}
-								<div className="hidden lg:block my-3">
-									<ul className="tabs tabs-boxed justify-evenly">
-										{PageTabs.map((tab, index) => (
-											<li
-												key={`tab-${index}`}
-												onClick={() => setTabSelected(tab.value as TTabs)}
-												className={`tab flex items-center gap-2 transition ${
-													tabSelected === tab.value && "tab-active"
-												}`}
-											>
-												{tab.name}
-											</li>
-										))}
-									</ul>
-								</div>
+								<Tabs
+									tabs={PageTabs}
+									activeTab={tabSelected}
+									onTabChange={(e) => {
+										setTabSelected(e as TTabs);
+									}}
+								/>
 
 								<div className="py-5" ref={tabContentRef}>
 									{tabSelected === "about" && (
@@ -571,7 +560,7 @@ const ProfilePage: NextPage = () => {
 											{savedCompanies.isSuccess &&
 												savedCompanies.data.map((company, i) => (
 													<Link
-														href={`/h/drift/${company.id}`}
+														href={`/h/drift/company?id=${company.id}`}
 														key={`company_${i}`}
 														className="bg-base-200 shadow-md rounded-btn p-5 hover:bg-primary hover:bg-opacity-30 transition"
 													>
@@ -771,7 +760,7 @@ const ProfilePage: NextPage = () => {
 										/>
 									</label>
 									<label
-										htmlFor="signoutmodal"
+										onClick={() => setSignOutModalVisible(true)}
 										className="btn btn-error w-full"
 									>
 										Sign out session
@@ -781,8 +770,29 @@ const ProfilePage: NextPage = () => {
 						</section>
 					</motion.main>
 
+					{signOutModalVisible && (
+						<>
+							<Modal
+								isVisible={signOutModalVisible}
+								setIsVisible={setSignOutModalVisible}
+							>
+								<p>Do you really want to end your session and log out?</p>
+								<div className="flex justify-end gap-2">
+									<button onClick={handleLogout} className="btn btn-ghost">
+										Yes
+									</button>
+									<button
+										className="btn btn-primary"
+										onClick={() => setSignOutModalVisible(false)}
+									>
+										No
+									</button>
+								</div>
+							</Modal>
+						</>
+					)}
 					{/* sign out modal */}
-					<input type="checkbox" id="signoutmodal" className="modal-toggle" />
+					{/* <input type="checkbox" id="signoutmodal" className="modal-toggle" />
 					<div className="modal">
 						<div className="modal-box">
 							<h3 className="font-bold text-lg">
@@ -805,7 +815,7 @@ const ProfilePage: NextPage = () => {
 								</button>
 							</div>
 						</div>
-					</div>
+					</div> */}
 				</>
 			)}
 		</>
