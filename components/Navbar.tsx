@@ -11,16 +11,13 @@ import {
 	MdWork,
 } from "react-icons/md";
 
+import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import { IUserHunter } from "@/lib/types";
-
-
-
 
 const Navbar = () => {
 	const _accountType = useStore($accountType);
@@ -101,7 +98,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "hunter" && (
+				{_accountType === "hunter" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -115,37 +112,41 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn btn-square ${router.pathname.includes("/h/feed")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn btn-square ${
+									router.pathname.includes("/h/feed")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdHome className="text-lg" />
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn btn-square ${router.pathname.includes("/h/drift")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn btn-square ${
+									router.pathname.includes("/h/drift")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdMap className="text-lg" />
 							</Link>
 							<Link
 								href="/h/jobs"
-								className={`btn btn-square ${router.pathname.includes("/h/jobs")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn btn-square ${
+									router.pathname.includes("/h/jobs")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdWork className="text-lg" />
 							</Link>
 							<button
 								// href="/h/events"
-								className={`btn btn-square ${router.pathname.includes("/h/events")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn btn-square ${
+									router.pathname.includes("/h/events")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 								disabled
 							>
 								<MdEvent className="text-lg" />
@@ -156,10 +157,11 @@ const Navbar = () => {
 								<Link
 									href="/h/notifications"
 									tabIndex={0}
-									className={`btn btn-square  ${router.pathname.includes("/h/notifications")
-										? "btn-primary"
-										: "btn-ghost"
-										}`}
+									className={`btn btn-square  ${
+										router.pathname.includes("/h/notifications")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
 								>
 									<MdNotifications className="text-lg" />
 								</Link>
@@ -194,18 +196,18 @@ const Navbar = () => {
 							</div>
 							<Link
 								href="/h/me"
-								className={`btn btn-square ${router.pathname.includes("/h/me")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn btn-square ${
+									router.pathname.includes("/h/me")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdPerson className="text-lg" />
 							</Link>
-
 						</div>
 					</div>
 				)}
-				{_accountType === "provisioner" && (
+				{_accountType === "provisioner" && _currentUser && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -219,38 +221,42 @@ const Navbar = () => {
 						<div className="flex gap-1">
 							<Link
 								href="/p/dashboard"
-								className={`btn ${router.pathname.includes("/p/dashboard")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn ${
+									router.pathname.includes("/p/dashboard")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdApps className="text-lg" />
 							</Link>
 							<Link
 								href="/p/jobs"
-								className={`btn ${router.pathname.includes("/p/jobs")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn ${
+									router.pathname.includes("/p/jobs")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdWork className="text-lg" />
 							</Link>
 							<button
 								// href="/p/events"
-								className={`btn ${router.pathname.includes("/p/events")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn ${
+									router.pathname.includes("/p/events")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 								disabled
 							>
 								<MdEvent className="text-lg" />
 							</button>
 							<Link
 								href="/p/me"
-								className={`btn ${router.pathname.includes("/p/me")
-									? "btn-primary"
-									: "btn-ghost"
-									}`}
+								className={`btn ${
+									router.pathname.includes("/p/me")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
 							>
 								<MdPerson className="text-lg" />
 							</Link>

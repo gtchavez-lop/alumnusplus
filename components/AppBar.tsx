@@ -52,11 +52,11 @@ const AppBar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							<Link href="/register" className='btn btn-primary w-full gap-2'>
+							<Link href="/register" className='btn btn-primary gap-2'>
 								<MdPersonAdd className="text-lg" />
 								{/* <span>Sign Up</span> */}
 							</Link>
-							<Link href="/login" className='btn btn-ghost w-full gap-2'>
+							<Link href="/login" className='btn btn-ghost gap-2'>
 								<MdPerson className="text-lg" />
 								{/* <span>Log In</span> */}
 							</Link>
@@ -75,7 +75,7 @@ const AppBar = () => {
 										localStorage.setItem("theme", "dark");
 									}
 								}}
-								className='btn btn-ghost w-full gap-2'
+								className='btn btn-ghost gap-2'
 							>
 								<MdOutlineDarkMode className="text-lg" />
 							</div>
@@ -122,7 +122,7 @@ const AppBar = () => {
 						<div className="grid grid-cols-4 py-2 pt-4 w-full gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn btn-block ${
+								className={`btn ${
 									router.pathname.includes("/h/feed")
 										? "btn-primary"
 										: "btn-ghost"
@@ -132,7 +132,7 @@ const AppBar = () => {
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn btn-block ${
+								className={`btn ${
 									router.pathname.includes("/h/drift")
 										? "btn-primary"
 										: "btn-ghost"
@@ -142,7 +142,7 @@ const AppBar = () => {
 							</Link>
 							<Link
 								href='/h/jobs'
-								className={`btn btn-block ${
+								className={`btn ${
 									router.pathname.includes("/h/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -153,7 +153,7 @@ const AppBar = () => {
 							<button
 								disabled
 								// href="/h/events"
-								className={`btn btn-block ${
+								className={`btn  ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"
@@ -204,7 +204,7 @@ const AppBar = () => {
 						<div className="grid grid-cols-3 gap-3 py-5 w-full">
 							<Link
 								href={"/p/dashboard"}
-								className={`btn btn-block ${
+								className={`btn  ${
 									router.pathname.includes("/p/dashboard")
 										? "btn-primary"
 										: "btn-ghost"
@@ -214,7 +214,7 @@ const AppBar = () => {
 							</Link>
 							<Link
 								href={"/p/jobs"}
-								className={`btn btn-block ${
+								className={`btn  ${
 									router.pathname.includes("/p/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -225,7 +225,7 @@ const AppBar = () => {
 							<button
 								disabled
 								// href={"/p/events"}
-								className={`btn btn-block ${
+								className={`btn  ${
 									router.pathname.includes("/p/events")
 										? "btn-primary"
 										: "btn-ghost"
