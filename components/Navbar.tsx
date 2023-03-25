@@ -1,13 +1,16 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import {
 	MdApps,
+	MdDashboard,
 	MdEvent,
 	MdHome,
 	MdMap,
+	MdNotes,
 	MdNotifications,
 	MdOutlineDarkMode,
 	MdPerson,
 	MdPersonAdd,
+	MdPostAdd,
 	MdWork,
 } from "react-icons/md";
 
@@ -54,7 +57,7 @@ const Navbar = () => {
 	return (
 		<>
 			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full h-auto z-50 print:invisible">
-				{_accountType === null && (
+				{!(_accountType && _currentUser) && (
 					<div
 						// ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -227,7 +230,17 @@ const Navbar = () => {
 										: "btn-ghost"
 								}`}
 							>
-								<MdApps className="text-lg" />
+								<MdDashboard className="text-lg" />
+							</Link>
+							<Link
+								href="/p/blog"
+								className={`btn ${
+									router.pathname.includes("/p/blog")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdNotes className="text-lg" />
 							</Link>
 							<Link
 								href="/p/jobs"

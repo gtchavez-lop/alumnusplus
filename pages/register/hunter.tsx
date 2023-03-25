@@ -170,7 +170,7 @@ const RegisterHunterSubPage = () => {
 											onChange={(e) =>
 												setLocalRegData({
 													...localRegData,
-													username: e.target.value,
+													username: e.target.value.trim(),
 												})
 											}
 										/>

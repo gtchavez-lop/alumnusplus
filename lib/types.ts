@@ -650,3 +650,13 @@ export interface TProvJobPost {
   created_at:         string;
   job_skills:         string[];
 }
+
+export interface TProvBlogPost {
+	content: string;
+	createdAt: string | null;
+	id: string;
+	updatedAt: string | null;
+	uploader: IUserProvisioner;
+	upvoters: string[];
+	type: "provblog" | "event";
+}
