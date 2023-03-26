@@ -532,6 +532,7 @@ export interface IUserHunter {
     city: string
     postalCode: string
   }
+  applied_jobs: string[]
   avatar_url: string
   bio: string
   birthdate: string
@@ -649,4 +650,14 @@ export interface TProvJobPost {
   job_type:           string[];
   created_at:         string;
   job_skills:         string[];
+}
+
+export interface TProvBlogPost {
+	content: string;
+	createdAt: string | null;
+	id: string;
+	updatedAt: string | null;
+	uploader: IUserProvisioner;
+	upvoters: string[];
+	type: "provblog" | "event";
 }

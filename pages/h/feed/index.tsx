@@ -1,6 +1,6 @@
 import { AnimLoading, AnimPageTransition } from "@/lib/animations";
 import { FormEvent, useState } from "react";
-import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import { IUserHunter, THunterBlogPost, TProvBlogPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import FeedCard from "@/components/feed/FeedCard";
@@ -8,13 +8,14 @@ import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { MdSearch } from "react-icons/md";
+import ProvFeedCardGrid from "@/components/feed/ProvFeedCardGrid";
+import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
-import { useRive } from "@rive-app/react-canvas";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
@@ -23,14 +24,34 @@ import { uuid } from "uuidv4";
 // 	ssr: false,
 // });
 
+type TTab = {
+	title: string;
+	value: "hunter" | "provisioner";
+};
+
 const FeedPage = () => {
 	const [isMakingPost, setIsMakingPost] = useState(false);
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [feedList_ui] = useAutoAnimate<HTMLDivElement>();
 	const [mainFeed_ui] = useAutoAnimate<HTMLDivElement>();
+	const [tabContent] = useAutoAnimate<HTMLDivElement>();
+	const [feedTab, selectedFeedTab] = useState<"hunter" | "provisioner">(
+		"hunter",
+	);
 	const router = useRouter();
 
-	const fetchFeed = async () => {
+	const feedTabs: TTab[] = [
+		{
+			title: "Hunter",
+			value: "hunter",
+		},
+		{
+			title: "Provisioner",
+			value: "provisioner",
+		},
+	];
+
+	const fetchHunterFeed = async () => {
 		const connections: string[] = _currentUser.connections.concat(
 			_currentUser.id,
 		);
@@ -49,6 +70,24 @@ const FeedPage = () => {
 		}
 
 		return data as THunterBlogPost[];
+	};
+
+	const fetchProvisionerFeed = async () => {
+		const followingList = _currentUser.followedCompanies;
+
+		const { data, error } = await supabase
+			.from("public_provposts")
+			.select("id,content,createdAt,type,upvoters,uploader:uploader(*)")
+			.order("createdAt", { ascending: false })
+			.in("uploader", followingList)
+			.eq("type", "provblog");
+
+		if (error) {
+			console.log("error", error);
+			return [];
+		}
+
+		return data as TProvBlogPost[];
 	};
 
 	const fetchRecommendedUsers = async () => {
@@ -71,11 +110,11 @@ const FeedPage = () => {
 		return data;
 	};
 
-	const [feedList, recommendedUsers] = useQueries({
+	const [feedList, recommendedUsers, provFeedList] = useQueries({
 		queries: [
 			{
 				queryKey: ["mainFeedList"],
-				queryFn: fetchFeed,
+				queryFn: fetchHunterFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
 				onSuccess: () => {
@@ -98,6 +137,15 @@ const FeedPage = () => {
 					toast.error("Something went wrong fetching recommended users");
 				},
 				refetchOnWindowFocus: false,
+			},
+			{
+				queryKey: ["provFeedList"],
+				queryFn: fetchProvisionerFeed,
+				enabled: !!_currentUser,
+				refetchOnWindowFocus: false,
+				onSuccess: () => {
+					console.log("provFeedList success");
+				},
 			},
 		],
 	});
@@ -122,7 +170,6 @@ const FeedPage = () => {
 			type: "blogpost",
 			updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			uploader: _currentUser.id,
-			uploaderID: _currentUser.id,
 			upvoters: [],
 		});
 
@@ -199,27 +246,56 @@ const FeedPage = () => {
 								)}
 							</div>
 
+							{/* feed tab */}
+							<Tabs
+								tabs={feedTabs}
+								activeTab={feedTab}
+								onTabChange={(tab) => {
+									selectedFeedTab(tab as "hunter" | "provisioner");
+								}}
+							/>
 							{/* feed list */}
-							<div className="mt-10">
-								<div className="flex flex-col gap-5" ref={feedList_ui}>
-									{feedList.isLoading && (
-										<div className="py-10 flex flex-col">
-											<FiLoader className="animate-spin duration-500 text-3xl self-center" />
-											<p className="text-center w-full self-center max-w-xs">
-												Loading feed... This may take a while.
-											</p>
-										</div>
-									)}
+							<div className="mt-10 overflow-y-hidden" ref={tabContent}>
+								{feedTab === "hunter" && (
+									<div className="flex flex-col gap-5" ref={feedList_ui}>
+										{feedList.isLoading && (
+											<div className="py-10 flex flex-col">
+												<FiLoader className="animate-spin duration-500 text-3xl self-center" />
+												<p className="text-center w-full self-center max-w-xs">
+													Loading feed... This may take a while.
+												</p>
+											</div>
+										)}
 
-									{feedList.isSuccess &&
-										feedList.data.map((item: THunterBlogPost) => (
-											<FeedCard
-												blogData={item}
-												key={item.id}
-												refetchData={feedList.refetch}
-											/>
-										))}
-								</div>
+										{feedList.isSuccess &&
+											feedList.data.map((item: THunterBlogPost) => (
+												<FeedCard
+													blogData={item}
+													key={item.id}
+													refetchData={feedList.refetch}
+												/>
+											))}
+									</div>
+								)}
+								{feedTab === "provisioner" && (
+									<div className="flex flex-col gap-5" ref={feedList_ui}>
+										{provFeedList.isLoading && (
+											<div className="py-10 flex flex-col">
+												<FiLoader className="animate-spin duration-500 text-3xl self-center" />
+												<p className="text-center w-full self-center max-w-xs">
+													Loading feed... This may take a while.
+												</p>
+											</div>
+										)}
+
+										{provFeedList.isSuccess &&
+											provFeedList.data.map((item) => (
+												<ProvFeedCardGrid item={item} key={item.id} />
+											))}
+									</div>
+								)}
+
+								<div className="divider my-5 lg:my-0 lg:mt-5">End of List</div>
 							</div>
 						</div>
 
@@ -240,7 +316,7 @@ const FeedPage = () => {
 
 									router.push(`/h/search?query=${searchQuery}`);
 								}}
-								className="flex flex-col lg:flex-row lg:items-center gap-3"
+								className="flex flex-row items-center gap-3"
 							>
 								<input
 									type="text"

@@ -90,72 +90,49 @@ const DriftPage = () => {
 
 	return (
 		<>
-			{driftData.isLoading ? (
-				<motion.main
-					variants={AnimPageTransition}
-					initial="initial"
-					animate="animate"
-					exit="exit"
-					className="relative min-h-screen w-full pt-24 pb-36"
-				>
-					<h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
-						Companies near your area
-					</h1>
-
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-						{Array(9)
-							.fill(0)
-							.map((_, index) => (
-								<div
-									key={`company-skeleton-${index}`}
-									className="p-3 bg-base-300 rounded-btn h-[224px]"
+			<motion.main
+				variants={AnimPageTransition}
+				initial="initial"
+				animate="animate"
+				exit="exit"
+				className="relative min-h-screen w-full pt-24 pb-36"
+			>
+				<p className="text-3xl mb-2">Companies near your area</p>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+					{!driftData.isLoading
+						? driftData.data!.map((company, index) => (
+								<Link
+									key={`company-${index}`}
+									href={`/h/drift/company?id=${company.id}`}
+									passHref
+									className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center py-8"
 								>
 									<div className="flex flex-col items-center gap-2 cursor-pointer">
-										<div className="w-[100px] h-[100px] bg-base-100 rounded-full animate-pulse" />
-										<div className="w-[100px] h-[24px] bg-base-100 animate-pulse delay-75" />
-										<div className="w-full rounded-btn h-[48px] mt-4 bg-base-100 animate-pulse delay-150" />
+										<Image
+											alt=""
+											src={
+												company.avatar_url ||
+												`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`
+											}
+											className="mask mask-squircle w-[100px] h-[100px]"
+											width={100}
+											height={100}
+										/>
+										<p>{company.legalName}</p>
 									</div>
-								</div>
-							))}
-					</div>
-				</motion.main>
-			) : (
-				<motion.main
-					variants={AnimPageTransition}
-					initial="initial"
-					animate="animate"
-					exit="exit"
-					className="relative min-h-screen w-full pt-24 pb-36"
-				>
-					<h1 className="text-2xl lg:text-3xl mb-10 font-bold text-center">
-						Companies near your area
-					</h1>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-						{driftData.data!.map((company, index) => (
-							<Link
-								key={`company-${index}`}
-								href={`/h/drift/company?id=${company.id}`}
-								passHref
-								className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
-							>
-								<div className="flex flex-col items-center gap-2 cursor-pointer">
-									<Image
-										alt=""
-										src={
-											company.avatar_url ||
-											`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${company.legalName}`
-										}
-										className="mask mask-squircle w-[100px] h-[100px]"
-										width={100}
-										height={100}
+								</Link>
+						  ))
+						: Array(6)
+								.fill(0)
+								.map((_, index) => (
+									<div
+										key={`companyloader-${index}`}
+										style={{ animationDelay: `${index * 150}ms` }}
+										className="h-[200px] bg-slate-500/50 animate-pulse rounded-btn"
 									/>
-									<p>{company.legalName}</p>
-								</div>
-							</Link>
-						))}
-					</div>
-				</motion.main>
-			)}
+								))}
+				</div>
+			</motion.main>
 		</>
 	);
 };

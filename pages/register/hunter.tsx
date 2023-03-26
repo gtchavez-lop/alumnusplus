@@ -37,6 +37,7 @@ const RegisterHunterSubPage = () => {
 			postalCode: "",
 		},
 		avatar_url: "",
+		applied_jobs: [],
 		bio: "",
 		citizenship: "Filipino",
 		civil_status: "single",
@@ -170,7 +171,7 @@ const RegisterHunterSubPage = () => {
 											onChange={(e) =>
 												setLocalRegData({
 													...localRegData,
-													username: e.target.value,
+													username: e.target.value.trim(),
 												})
 											}
 										/>

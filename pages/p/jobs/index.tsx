@@ -1,6 +1,6 @@
 import { FiLoader, FiPlus } from "react-icons/fi";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdGrid3X3, MdList } from "react-icons/md";
+import { MdGrid3X3, MdGridView, MdList, MdTableView } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -53,9 +53,7 @@ const JobPostings = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36"
 					>
-						<div>
-							<p className="text-3xl mb-2">Active Job Posts</p>
-						</div>
+						<p className="text-3xl mb-2">Active Job Posts</p>
 
 						<div className="flex justify-between items-center ">
 							<Link
@@ -65,18 +63,27 @@ const JobPostings = () => {
 								<span>Add new job</span>
 								<FiPlus />
 							</Link>
-							<button
-								onClick={() => {
-									setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
-								}}
-								className="btn btn-ghost"
-							>
-								{viewMode === "grid" ? (
-									<MdList className="text-lg" />
-								) : (
-									<MdGrid3X3 className="text-lg" />
-								)}
-							</button>
+							{viewMode === "grid" ? (
+								<button
+									onClick={() => {
+										setViewMode("list");
+									}}
+									className="hidden md:inline-flex btn btn-ghost"
+								>
+									<MdTableView className="text-lg" />
+									<span>Change to Table View</span>
+								</button>
+							) : (
+								<button
+									onClick={() => {
+										setViewMode("grid");
+									}}
+									className="btn btn-ghost"
+								>
+									<MdGridView className="text-lg" />
+									<span>Change to Grid View</span>
+								</button>
+							)}
 						</div>
 
 						<div ref={contentView}>
@@ -93,16 +100,21 @@ const JobPostings = () => {
 								</div>
 							)}
 							{viewMode === "list" && (
-								<div className="flex flex-col gap-2">
-									{provJobs.isSuccess &&
-										provJobs.data?.map((job, index) => (
-											<JobCardProv
-												job={job}
-												viewMode="list"
-												key={`jobcard_${index}`}
-											/>
-										))}
-								</div>
+								<>
+									<div className="md:flex flex-col gap-2 hidden">
+										{provJobs.isSuccess &&
+											provJobs.data?.map((job, index) => (
+												<JobCardProv
+													job={job}
+													viewMode="list"
+													key={`jobcard_${index}`}
+												/>
+											))}
+									</div>
+									<p className="alert alert-warning md:hidden">
+										Table View not supported in mobile
+									</p>
+								</>
 							)}
 						</div>
 					</motion.main>
