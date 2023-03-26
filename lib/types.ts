@@ -532,6 +532,7 @@ export interface IUserHunter {
     city: string
     postalCode: string
   }
+  applied_jobs: string[]
   avatar_url: string
   bio: string
   birthdate: string

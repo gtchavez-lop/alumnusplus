@@ -135,7 +135,7 @@ const ProfilePage: NextPage = () => {
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select("*")
-			.eq("uploaderID", _currentUser.id);
+			.eq("uploader", _currentUser.id);
 
 		if (error) {
 			return [];

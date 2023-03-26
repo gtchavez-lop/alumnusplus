@@ -161,6 +161,7 @@ const JobPage = () => {
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
+				<p className="text-3xl mb-2">Job Portal</p>
 				{/* tabs */}
 				<Tabs
 					tabs={tabs}
