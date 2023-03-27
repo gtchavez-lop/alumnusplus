@@ -8,6 +8,7 @@ import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Tabs from "@/components/Tabs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
@@ -51,7 +52,7 @@ const ProvisionerPage: NextPage<{
 	companyData: IUserProvisioner;
 	jobs: TProvJobPost[];
 }> = ({ companyData, jobs }) => {
-	const [tabSelected, setTabSelected] = useState<"about" | "jobs">("about");
+	const [tabSelected, setTabSelected] = useState("about");
 	const [tabContents] = useAutoAnimate();
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFollowed, setIsFollowed] = useState(false);
@@ -193,24 +194,14 @@ const ProvisionerPage: NextPage<{
 							</div>
 							<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
 							{/* tabs */}
-							<div className="tabs tabs-boxed justify-center lg:justify-start gap-2">
-								<div
-									className={`tab tab-lg lg:tab-md ${
-										tabSelected === "about" ? "tab-active" : ""
-									}`}
-									onClick={() => setTabSelected("about")}
-								>
-									About
-								</div>
-								<div
-									className={`tab tab-lg lg:tab-md ${
-										tabSelected === "jobs" ? "tab-active" : ""
-									}`}
-									onClick={() => setTabSelected("jobs")}
-								>
-									Job Posts
-								</div>
-							</div>
+							<Tabs
+								tabs={[
+									{ title: "About", value: "about" },
+									{ title: "All Jobs", value: "all" },
+								]}
+								onTabChange={(tab) => setTabSelected(tab)}
+								activeTab={tabSelected}
+							/>
 							{/* content */}
 							<div className="mt-10 overflow-hidden" ref={tabContents}>
 								{tabSelected === "about" && (
@@ -258,7 +249,7 @@ const ProvisionerPage: NextPage<{
 											<p className="text-lg font-bold text-primary">
 												Founding Year
 											</p>
-											<p>{companyData.foundingYear} people</p>
+											<p>{companyData.foundingYear}</p>
 										</div>
 										<div className="mt-3 shadow-lg p-5 rounded-btn">
 											<p className="text-lg font-bold text-primary">Location</p>

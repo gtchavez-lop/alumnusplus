@@ -4,10 +4,12 @@ import {
 	$accountData,
 	$accountDetails,
 	$accountType,
+	$hasAccount,
 	$themeMode,
 } from "@/lib/globalStates";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdCheckCircleOutline, MdHourglassTop } from "react-icons/md";
+import { Toaster, toast } from "react-hot-toast";
 
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
@@ -15,7 +17,6 @@ import { FiLoader } from "react-icons/fi";
 import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
@@ -62,6 +63,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
 					if (router.pathname === "/") {
 						router.push("/h/feed");
+						$hasAccount.set(true);
 					}
 				}
 			} else if (metadata && metadata.type === "provisioner") {
@@ -91,6 +93,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
 					if (router.pathname === "/") {
 						router.push("/p/dashboard");
+						$hasAccount.set(true);
 					}
 				}
 			}
@@ -100,7 +103,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 	};
 
 	useEffect(() => {
-		// check if user is logged in and redirect based on account type
+		// check for user
 		checkUser();
 
 		// get theme from localStorage

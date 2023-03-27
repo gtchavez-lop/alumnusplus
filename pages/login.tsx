@@ -4,7 +4,7 @@ import {
 	$accountType,
 } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
@@ -26,36 +26,21 @@ const LogInPage = () => {
 		setIsLoggingIn(true);
 		toast.dismiss();
 
-		let inputForms = [e.currentTarget.email, e.currentTarget.password];
+		const form = e.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
 
 		const loginData = {
-			email: e.currentTarget.email.value as string,
-			password: e.currentTarget.password.value as string,
+			email: formData.get("email") as string,
+			password: formData.get("password") as string,
 		};
 
 		// make the missing input field have a class of "input-error"
 		if (!(loginData.email && loginData.password)) {
 			toast.error("Please fill in all fields");
 
-			inputForms.forEach((input) => {
-				if (!input.value) {
-					input.classList.add("input-error");
-				} else {
-					input.classList.remove("input-error");
-				}
-			});
-
+			setIsLoggingIn(false);
 			return;
 		}
-
-		// remove the "input-error" class from all input fields if they are filled
-		inputForms.forEach((input) => {
-			if (!input.value) {
-				input.classList.add("input-error");
-			} else {
-				input.classList.remove("input-error");
-			}
-		});
 
 		const { data: userData, error } = await supabase.auth.signInWithPassword({
 			email: loginData.email,
@@ -64,6 +49,7 @@ const LogInPage = () => {
 
 		if (error) {
 			toast.error(error.message);
+			setIsLoggingIn(false);
 			return;
 		}
 
@@ -84,11 +70,11 @@ const LogInPage = () => {
 		$accountDetails.set(metadata);
 		$accountData.set(accountData);
 
-		toast.success("Welcome back!");
-
 		if (metadata.type === "hunter") {
 			router.push("/h/feed");
-		} else if (metadata.type === "provisioner") {
+		}
+
+		if (metadata.type === "provisioner") {
 			router.push("/p/dashboard");
 		}
 	};
