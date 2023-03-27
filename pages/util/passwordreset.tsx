@@ -66,8 +66,8 @@ const PasswordResetScreen: NextPage = () => {
 						/>
 
 						<p className="my-5 text-center text-info">
-							We will send you a link to access your account. If you don't see
-							the email in your inbox, check your spam folder.
+							We will send you a link to access your account. If you don&apos;t
+							see the email in your inbox, check your spam folder.
 						</p>
 
 						<button className="btn btn-primary w-full mt-5">
