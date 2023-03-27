@@ -13,55 +13,92 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query as { id: string };
-
-	const { data: company, error: company_error } = await supabase
-		.from("user_provisioners")
-		.select("*")
-		.eq("id", id)
-		.single();
-
-	const { data: jobs, error: jobs_error } = await supabase
-		.from("public_jobs")
-		.select("*,uploader:uploader_id(legalName)")
-		.eq("uploader_id", id);
-
-	if (company_error || jobs_error) {
-		console.error(company_error, jobs_error);
-		return {
-			props: {
-				companyData: null,
-				jobs: null,
-			},
-		};
-	}
-
-	return {
-		props: {
-			companyData: company as IUserProvisioner,
-			jobs: jobs as TProvJobPost[],
-		},
+interface Job {
+	id: string;
+	job_title: string;
+	job_location: string;
+	short_description: string;
+	created_at: string;
+	job_type: string[];
+	uploader: {
+		legalName: string;
 	};
-};
+}
 
-const ProvisionerPage: NextPage<{
-	companyData: IUserProvisioner;
-	jobs: TProvJobPost[];
-}> = ({ companyData, jobs }) => {
+const ProvisionerPage: NextPage = () => {
 	const [tabSelected, setTabSelected] = useState("about");
 	const [tabContents] = useAutoAnimate();
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFollowed, setIsFollowed] = useState(false);
 	const router = useRouter();
 
+	const fetchCompanyOpenJobs = async () => {
+		const { id } = router.query as { id: string };
+		const { data: jobs, error: jobs_error } = await supabase
+			.from("public_jobs")
+			.select("*,uploader:uploader_id(legalName)")
+			.eq("uploader_id", id);
+
+		if (jobs_error) {
+			console.error(jobs_error);
+			return [] as Job[];
+		}
+
+		return jobs as Job[];
+	};
+
+	const fetchCompanyData = async () => {
+		const { id } = router.query as { id: string };
+		const { data: company, error: company_error } = await supabase
+			.from("user_provisioners")
+			.select("*")
+			.eq("id", id)
+			.single();
+
+		if (company_error) {
+			console.error(company_error);
+			return {} as IUserProvisioner;
+		}
+
+		return company as IUserProvisioner;
+	};
+
+	const [_companyData, _companyOpenJobs] = useQueries({
+		queries: [
+			{
+				queryKey: ["companyData"],
+				queryFn: fetchCompanyData,
+				enabled: !!router.query.id,
+				refetchOnWindowFocus: false,
+			},
+			{
+				queryKey: ["companyOpenJobs"],
+				queryFn: fetchCompanyOpenJobs,
+				enabled: !!router.query.id,
+				refetchOnWindowFocus: false,
+			},
+		],
+	});
+
+	const checkIfFollowed = () => {
+		if (_companyData.isSuccess && _currentUser) {
+			if (_currentUser.followedCompanies.includes(_companyData.data.id)) {
+				setIsFollowed(true);
+			}
+		}
+	};
+
 	const handleFollowCompany = async () => {
-		toast.loading("Following company...");
-		let h_newList = _currentUser.followedCompanies.concat(companyData.id);
-		let p_newList = [...companyData.followers, _currentUser.id];
+		if (!_companyData.isSuccess) return;
+
+		let h_newList = _currentUser.followedCompanies.concat(
+			_companyData.data?.id,
+		);
+		let p_newList = [..._companyData.data?.followers, _currentUser.id];
 
 		// update hunter
 		const { error: h_error } = await supabase
@@ -73,7 +110,7 @@ const ProvisionerPage: NextPage<{
 		const { error: p_error } = await supabase
 			.from("user_provisioners")
 			.update({ followers: p_newList })
-			.eq("id", companyData.id);
+			.eq("id", _companyData.data?.id);
 
 		if (h_error || p_error) {
 			console.log(h_error, p_error);
@@ -83,15 +120,17 @@ const ProvisionerPage: NextPage<{
 
 		toast.dismiss();
 		toast.success("Followed company");
-		router.reload();
+		setIsFollowed(true);
+		_companyData.refetch();
 	};
 
 	const handleUnfollowCompany = async () => {
-		toast.loading("Unfollowing company...");
+		if (!_companyData.isSuccess) return;
+
 		let h_newList = _currentUser.followedCompanies.filter(
-			(id) => id !== companyData.id,
+			(id) => id !== _companyData.data.id,
 		);
-		let p_newList = companyData.followers.filter(
+		let p_newList = _companyData.data.followers.filter(
 			(id) => id !== _currentUser.id,
 		);
 
@@ -105,7 +144,7 @@ const ProvisionerPage: NextPage<{
 		const { error: p_error } = await supabase
 			.from("user_provisioners")
 			.update({ followers: p_newList })
-			.eq("id", companyData.id);
+			.eq("id", _companyData.data.id);
 
 		if (h_error || p_error) {
 			console.log(h_error, p_error);
@@ -115,15 +154,8 @@ const ProvisionerPage: NextPage<{
 
 		toast.dismiss();
 		toast.success("Unfollowed company");
-		router.reload();
-	};
-
-	const checkIfFollowed = () => {
-		if (companyData && _currentUser) {
-			if (_currentUser.followedCompanies.includes(companyData.id)) {
-				setIsFollowed(true);
-			}
-		}
+		setIsFollowed(false);
+		_companyData.refetch();
 	};
 
 	useEffect(() => {
@@ -132,14 +164,14 @@ const ProvisionerPage: NextPage<{
 
 	return (
 		<>
-			{companyData && (
-				<motion.main
-					variants={AnimPageTransition}
-					initial="initial"
-					animate="animate"
-					exit="exit"
-					className="relative min-h-screen w-full pt-24 pb-36"
-				>
+			<motion.main
+				variants={AnimPageTransition}
+				initial="initial"
+				animate="animate"
+				exit="exit"
+				className="relative min-h-screen w-full pt-24 pb-36"
+			>
+				{!(_companyData.isLoading && _companyOpenJobs.isLoading) && (
 					<div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
 						<div className="col-span-full lg:col-span-3">
 							{/* profile */}
@@ -148,7 +180,9 @@ const ProvisionerPage: NextPage<{
 									<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 									<Image
 										className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
-										src={`https://picsum.photos/seed/${companyData.legalName}/900/500`}
+										src={`https://picsum.photos/seed/${
+											_companyData.data?.legalName ?? Math.random() * 1000
+										}/900/500`}
 										alt="background"
 										width={900}
 										height={500}
@@ -159,8 +193,8 @@ const ProvisionerPage: NextPage<{
 									<Image
 										className="mask mask-squircle bg-primary"
 										src={
-											companyData.avatar_url ||
-											`https://api.dicebear.com/5.x/shapes/png?seed=${companyData.legalName}`
+											_companyData.data?.avatar_url ||
+											`https://api.dicebear.com/5.x/shapes/png?seed=${_companyData.data?.legalName}`
 										}
 										alt="profile"
 										width={100}
@@ -169,10 +203,10 @@ const ProvisionerPage: NextPage<{
 									/>
 									<div>
 										<p className="text-xl leading-tight font-bold">
-											{companyData.legalName}
+											{_companyData.data?.legalName}
 										</p>
 										<p className="text-sm">
-											{companyData.followers.length} followers
+											{_companyData.data?.followers.length} followers
 										</p>
 									</div>
 								</div>
@@ -197,7 +231,7 @@ const ProvisionerPage: NextPage<{
 							<Tabs
 								tabs={[
 									{ title: "About", value: "about" },
-									{ title: "All Jobs", value: "all" },
+									{ title: "All Jobs", value: "jobs" },
 								]}
 								onTabChange={(tab) => setTabSelected(tab)}
 								activeTab={tabSelected}
@@ -216,7 +250,8 @@ const ProvisionerPage: NextPage<{
 											</p>
 											<div>
 												<ReactMarkdown>
-													{companyData.fullDescription}
+													{_companyData.data?.fullDescription ??
+														"No description"}
 												</ReactMarkdown>
 											</div>
 										</div>
@@ -227,42 +262,46 @@ const ProvisionerPage: NextPage<{
 											<div>
 												<p className="flex justify-between">
 													<span>Email</span>
-													<span>{companyData.contactInformation.email}</span>
+													<span>
+														{_companyData.data?.contactInformation.email}
+													</span>
 												</p>
 												<p className="flex justify-between">
 													<span>Phone</span>
-													<span>{companyData.contactInformation.phone}</span>
+													<span>
+														{_companyData.data?.contactInformation.phone}
+													</span>
 												</p>
 											</div>
 										</div>
 										<div className="mt-3 shadow-lg p-5 rounded-btn">
 											<p className="text-lg font-bold text-primary">Industry</p>
-											<p>{companyData.industryType}</p>
+											<p>{_companyData.data?.industryType}</p>
 										</div>
 										<div className="mt-3 shadow-lg p-5 rounded-btn">
 											<p className="text-lg font-bold text-primary">
 												Company Size
 											</p>
-											<p>{companyData.companySize} people</p>
+											<p>{_companyData.data?.companySize} people</p>
 										</div>
 										<div className="mt-3 shadow-lg p-5 rounded-btn">
 											<p className="text-lg font-bold text-primary">
 												Founding Year
 											</p>
-											<p>{companyData.foundingYear}</p>
+											<p>{_companyData.data?.foundingYear}</p>
 										</div>
 										<div className="mt-3 shadow-lg p-5 rounded-btn">
 											<p className="text-lg font-bold text-primary">Location</p>
 											<p>
-												{companyData.address.address},{" "}
-												{companyData.address.city}
+												{_companyData.data?.address.address},{" "}
+												{_companyData.data?.address.city}
 											</p>
 										</div>
 									</div>
 								)}
 								{tabSelected === "jobs" && (
 									<div>
-										{jobs.length === 0 && (
+										{_companyOpenJobs.data?.length === 0 && (
 											<div className="flex justify-center items-center flex-col py-16">
 												<Image
 													alt=""
@@ -279,30 +318,9 @@ const ProvisionerPage: NextPage<{
 											</div>
 										)}
 										<div className="flex flex-col gap-2">
-											{jobs.map((job, index) => (
-												<JobCard
-													job={{
-														...job,
-														uploader: {
-															legalName: companyData.legalName,
-														},
-													}}
-													key={`jobCard_${index}`}
-												/>
+											{_companyOpenJobs.data?.map((job, index) => (
+												<JobCard job={job} key={`jobCard_${index}`} />
 											))}
-
-											{jobs.length === 0 && (
-												<div className="flex justify-center items-center flex-col py-16">
-													<Image
-														alt=""
-														priority
-														src="/file-search.png"
-														width={200}
-														height={200}
-													/>
-													<p>No job posts found for this company</p>
-												</div>
-											)}
 										</div>
 									</div>
 								)}
@@ -349,8 +367,8 @@ const ProvisionerPage: NextPage<{
 							</div>
 						</div>
 					</div>
-				</motion.main>
-			)}
+				)}
+			</motion.main>
 
 			{/* unfollow warning modal */}
 			<input
