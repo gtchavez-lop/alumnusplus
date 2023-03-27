@@ -1,13 +1,16 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import {
 	MdApps,
+	MdDashboard,
 	MdEvent,
 	MdHome,
 	MdMap,
+	MdNotes,
 	MdNotifications,
 	MdOutlineDarkMode,
 	MdPerson,
 	MdPersonAdd,
+	MdPostAdd,
 	MdWork,
 } from "react-icons/md";
 
@@ -54,7 +57,7 @@ const Navbar = () => {
 	return (
 		<>
 			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full h-auto z-50 print:invisible">
-				{_accountType === null && (
+				{!(_accountType && _currentUser) && (
 					<div
 						// ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -140,20 +143,19 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<button
-								// href="/h/events"
+							<Link
+								href="/h/events"
 								className={`btn btn-square ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
-								disabled
 							>
 								<MdEvent className="text-lg" />
-							</button>
+							</Link>
 						</div>
-						<div className="flex gap-1">
-							<div className="dropdown dropdown-end dropdown-hover hidden">
+						<div className="flex gap-2 items-center">
+							{/* <div className="dropdown dropdown-end dropdown-hover hidden">
 								<Link
 									href="/h/notifications"
 									tabIndex={0}
@@ -188,21 +190,29 @@ const Navbar = () => {
 										</Link>
 									</li>
 								</ul>
-							</div>
-							<div className="self-center">
-								<p className="font-semibold opacity-75">
-									{_currentUser.full_name.first}
-								</p>
-							</div>
+							</div> */}
+							<p className="font-semibold opacity-75">
+								{_currentUser.full_name.first} {_currentUser.full_name.last}
+							</p>
 							<Link
 								href="/h/me"
-								className={`btn btn-square ${
+								className={`btn btn-circle ${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
 							>
-								<MdPerson className="text-lg" />
+								{_currentUser.avatar_url ? (
+									<Image
+										alt="avatar"
+										src={_currentUser.avatar_url}
+										width={40}
+										height={40}
+										className="rounded-full"
+									/>
+								) : (
+									<MdPerson className="text-lg" />
+								)}
 							</Link>
 						</div>
 					</div>
@@ -227,7 +237,17 @@ const Navbar = () => {
 										: "btn-ghost"
 								}`}
 							>
-								<MdApps className="text-lg" />
+								<MdDashboard className="text-lg" />
+							</Link>
+							<Link
+								href="/p/blog"
+								className={`btn ${
+									router.pathname.includes("/p/blog")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdNotes className="text-lg" />
 							</Link>
 							<Link
 								href="/p/jobs"

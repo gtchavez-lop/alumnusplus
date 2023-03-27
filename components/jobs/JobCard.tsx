@@ -18,10 +18,6 @@ interface Job {
 	};
 }
 
-interface Uploader {
-	legalName: string;
-}
-
 const JobCard: FC<{ job: Job; isSaved?: boolean }> = ({ job, isSaved }) => {
 	return (
 		<motion.div

@@ -64,7 +64,7 @@ const JobCardProv: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
 				<Link
 					href={`/p/jobs/posting?id=${job.id}`}
 					onClick={() => setIsClicked(true)}
-					className="flex items-end w-full rounded-btn py-3 px-4 bg-base-200 hover:bg-primary/25 transition-all justify-between"
+					className="flex items-end w-full rounded-btn py-3 px-4 bg-base-200 hover:bg-primary/50 transition-all justify-between"
 				>
 					<div>
 						<h1 className="text-xl font-bold">{job.job_title}</h1>
