@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@page { size: auto;  margin: 10mm; }
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 1px;
@@ -58,6 +60,12 @@
       no-animation 
       active:duration-[0ms] 
       hover:-translate-y-[2px];
+  }
+}
+
+@media print {
+  #bp-web-widget-container {
+    display: none; 
   }
 }
 

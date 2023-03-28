@@ -729,7 +729,6 @@ const RegisterHunterSubPage = () => {
 												!(
 													localRegData.address.address &&
 													localRegData.address.city &&
-													localRegData.address.postalCode &&
 													localRegData.email &&
 													localPassword.password
 												)
