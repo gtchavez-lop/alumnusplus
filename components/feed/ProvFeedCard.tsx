@@ -19,7 +19,10 @@ const ProvFeedCard: FC<{ item: BlogEventPostProps }> = ({ item }) => {
 				<div className="flex gap-2 items-center">
 					<Image
 						className="mask mask-squircle"
-						src={item.uploader.avatar_url}
+						src={
+							item.uploader.avatar_url ??
+							`https://api.dicebear.com/5.x/shapes/png?seed=${item.uploader.legalName}`
+						}
 						width={35}
 						height={35}
 						alt="avatar"

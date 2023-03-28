@@ -135,7 +135,7 @@ const ProfilePage: NextPage = () => {
 		const { data, error } = await supabase
 			.from("public_posts")
 			.select("*")
-			.eq("uploaderID", _currentUser.id);
+			.eq("uploader", _currentUser.id);
 
 		if (error) {
 			return [];
@@ -502,7 +502,12 @@ const ProfilePage: NextPage = () => {
 
 											{userActivities.isSuccess &&
 												userActivities.data.length === 0 && (
-													<p className="text-center">No activities yet</p>
+													<div className="col-span-full flex flex-col items-center py-5">
+														<p className="alert alert-info max-w-xs text-center">
+															No Posts yet. Please add posts to your feed and
+															they will appear here
+														</p>
+													</div>
 												)}
 
 											{userActivities.isLoading &&
@@ -519,7 +524,12 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "connections" && (
 										<div className="flex flex-col md:grid grid-cols-2 gap-2">
 											{_currentUser.connections.length === 0 && (
-												<p className="text-center">No connections yet</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														No Connections yet. Please add people to your
+														connections
+													</p>
+												</div>
 											)}
 											{userConnections.data!.map((connection, index) => (
 												<Link
@@ -552,9 +562,12 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "followedCompanies" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.followedCompanies.length === 0 && (
-												<p className="text-center col-span-full">
-													You are not following any companies yet
-												</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														You do not follow any companies yet. Please follow
+														companies to see them here.
+													</p>
+												</div>
 											)}
 
 											{savedCompanies.isSuccess &&
@@ -575,7 +588,12 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "experiences" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.experience.length === 0 && (
-												<p className="text-center">No employment history yet</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														No Experiences yet. Please add experiences to your
+														profile and they will appear here
+													</p>
+												</div>
 											)}
 											{_currentUser.experience.map((exp, i) => (
 												<div
@@ -597,9 +615,12 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "education" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.experience.length === 0 && (
-												<p className="text-center col-span-full">
-													No education history yet
-												</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														No Education yet. Please add education to your
+														profile and they will appear here
+													</p>
+												</div>
 											)}
 											{_currentUser.education.map((edu, i) => (
 												<div
@@ -626,9 +647,12 @@ const ProfilePage: NextPage = () => {
 									{tabSelected === "trainings" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{_currentUser.trainings.length === 0 && (
-												<p className="text-center">
-													No Seminars/Training history yet
-												</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														No Trainings yet. Please add trainings to your
+														profile and they will appear here
+													</p>
+												</div>
 											)}
 											{_currentUser.trainings.map((training, i) => (
 												<div
@@ -683,7 +707,12 @@ const ProfilePage: NextPage = () => {
 												))}
 
 											{savedJobs.isSuccess && savedJobs.data.length === 0 && (
-												<p className="text-center">No saved jobs yet</p>
+												<div className="col-span-full flex flex-col items-center py-5">
+													<p className="alert alert-info max-w-xs text-center">
+														No Saved Jobs yet. Please save jobs to your profile
+														and they will appear here
+													</p>
+												</div>
 											)}
 										</div>
 									)}

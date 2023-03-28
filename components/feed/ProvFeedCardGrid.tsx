@@ -7,8 +7,11 @@ import Link from "next/link";
 import { MdShare } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-hot-toast";
 import { useStore } from "@nanostores/react";
+
+dayjs.extend(relativeTime);
 
 const ProvFeedCardGrid: FC<{ item: TProvBlogPost }> = ({ item }) => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
@@ -25,7 +28,10 @@ const ProvFeedCardGrid: FC<{ item: TProvBlogPost }> = ({ item }) => {
 					}
 				>
 					<Image
-						src={item.uploader.avatar_url}
+						src={
+							item.uploader.avatar_url ??
+							`https://api.dicebear.com/5.x/shapes/png?seed=${item.uploader.legalName}`
+						}
 						alt="avatar"
 						className="object-center object-cover"
 						fill

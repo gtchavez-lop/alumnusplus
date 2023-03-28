@@ -37,7 +37,7 @@ const AppBar = () => {
 	return (
 		<>
 			{_accountType === null && (
-				<div className="fixed py-5 flex justify-between items-center w-full z-50 bg-base-100">
+				<div className="fixed py-5 flex lg:hidden justify-between items-center w-full z-[20] bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
 						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
 						<Link href="/" className="relative w-8 h-8 md:hidden">
@@ -89,7 +89,7 @@ const AppBar = () => {
 					variants={AppBarAnimation}
 					initial="initial"
 					animate="animate"
-					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50 print:invisible"
+					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20] print:invisible"
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
@@ -171,7 +171,7 @@ const AppBar = () => {
 					variants={AppBarAnimation}
 					initial="initial"
 					animate="animate"
-					className="fixed py-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-50"
+					className="fixed py-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20]"
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">

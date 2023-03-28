@@ -212,19 +212,18 @@ const Prov_Dashboard = () => {
 
 									{jobs.isFetched && (
 										<>
-											{jobs.isSuccess &&
-												jobs.data.map(
-													(job, index) =>
-														index < 3 && (
-															<JobCardProv
-																viewMode="list"
-																key={job.id}
-																job={job}
-															/>
-														),
-												)}
+											{jobs.data?.map(
+												(job, index) =>
+													index < 3 && (
+														<JobCardProv
+															viewMode="list"
+															key={job.id}
+															job={job}
+														/>
+													),
+											)}
 
-											{jobs.isSuccess && jobs.data.length < 1 && (
+											{jobs.isSuccess && !jobs.data && (
 												<div className="flex flex-col items-center gap-2">
 													<MdWarning className="text-4xl text-warning" />
 													<p className="text-center">
@@ -236,7 +235,7 @@ const Prov_Dashboard = () => {
 												</div>
 											)}
 
-											{jobs.isSuccess && jobs.data.length > 0 && (
+											{jobs.isSuccess && !jobs.data && (
 												<Link
 													href={"/p/jobs"}
 													className="btn btn-ghost btn-block"

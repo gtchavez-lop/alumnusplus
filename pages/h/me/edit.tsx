@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -37,6 +38,7 @@ type TTabs = {
 		| "employment"
 		| "education"
 		| "training"
+		| "security"
 		| "verification";
 };
 
@@ -73,6 +75,10 @@ const PageTabs: TTabs[] = [
 		title: "Verification",
 		value: "verification",
 	},
+	// {
+	// 	title: "Security",
+	// 	value: "security",
+	// },
 ];
 
 const EditProfilePage: NextPage = () => {
@@ -99,6 +105,7 @@ const EditProfilePage: NextPage = () => {
 		| "education"
 		| "training"
 		| "verification"
+		| "security"
 	>("account");
 	const [tabContentRef] = useAutoAnimate();
 	const [employmentHistoryRef] = useAutoAnimate();
@@ -161,6 +168,35 @@ const EditProfilePage: NextPage = () => {
 		$accountDetails.set(tempUserDetails);
 	};
 
+	const enrollMFA = async () => {
+		const { data, error } = await supabase.auth.mfa.enroll({
+			factorType: "totp",
+		});
+
+		if (error) {
+			toast.error(error.message);
+			return {} as {
+				id: string;
+				type: string;
+				totp: {
+					qr_code: string;
+					secret: string;
+					uri: string;
+				};
+			};
+		}
+
+		return data as {
+			id: string;
+			type: string;
+			totp: {
+				qr_code: string;
+				secret: string;
+				uri: string;
+			};
+		};
+	};
+
 	// detect changes
 	useEffect(() => {
 		setHasChanges(
@@ -168,9 +204,21 @@ const EditProfilePage: NextPage = () => {
 		);
 	}, [tempUserDetails]);
 
+	const [mfaData] = useQueries({
+		queries: [
+			{
+				queryKey: ["mfaData"],
+				queryFn: enrollMFA,
+				enabled: false,
+				refetchOnWindowFocus: false,
+				refetchOnMount: false,
+			},
+		],
+	});
+
 	return (
 		<>
-			{!!tempUserDetails && !!_currentAccountDetails && (
+			{!!_currentAccountDetails && (
 				<motion.main
 					variants={AnimPageTransition}
 					initial="initial"
@@ -262,7 +310,7 @@ const EditProfilePage: NextPage = () => {
 					{/* tab content */}
 					<div
 						ref={tabContentRef}
-						className="mt-5 w-full max-w-2xl mx-auto overflow-hidden"
+						className="mt-5 w-full max-w-2xl mx-auto overflow-hidden p-2"
 					>
 						{tabSelected === "account" && (
 							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
@@ -329,6 +377,15 @@ const EditProfilePage: NextPage = () => {
 										// }}
 									/>
 								</label>
+
+								<Link href="/h/me/resetpassword" className="btn btn-primary">
+									Reset Password
+								</Link>
+
+								{/* <label className="flex flex-col">
+									<span>Password</span>
+									<input className="input input-primary" type="password" />
+								</label> */}
 							</div>
 						)}
 						{tabSelected === "personal" && (
@@ -1253,6 +1310,80 @@ const EditProfilePage: NextPage = () => {
 											</div>
 										</>
 									)}
+								</div>
+							</div>
+						)}
+						{tabSelected === "security" && (
+							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
+								<p className="text-xl font-bold">Security Status</p>
+
+								<div className="flex flex-col">
+									<p className="font-bold text-lg">Multi-Factor Authtication</p>
+
+									<div className="w-wfull h-[200px] relative">
+										<Image
+											src={mfaData.data!.totp!.qr_code}
+											alt={mfaData.data!.totp!.uri}
+											fill
+											className="object-contain"
+										/>
+									</div>
+
+									<p className="">
+										Scan the QR code above using your favorite Authenticator app
+										to enable MFA.
+									</p>
+
+									<p className="">
+										Alternatively, you can use the following code:
+									</p>
+									<input
+										type="text"
+										readOnly
+										className="input input-primary"
+										value={mfaData.data!.totp!.secret}
+									/>
+
+									<p className="mt-5">
+										Enter the code from your Authenticator app below to enable
+										MFA.
+									</p>
+									<form
+										onSubmit={async (e) => {
+											e.preventDefault();
+											const form = new FormData(e.target as HTMLFormElement);
+											const code = form.get("mfa_code") as string;
+
+											const { data, error } =
+												await supabase.auth.mfa.challengeAndVerify({
+													code: code,
+													factorId: mfaData.data!.id,
+												});
+
+											if (error) {
+												toast.error(error.message);
+												return;
+											}
+
+											toast.success("MFA has been enabled.");
+										}}
+										className="flex gap-2"
+									>
+										<input
+											type="text"
+											className="input input-primary flex-1"
+											placeholder="Enter code"
+											name="mfa_code"
+										/>
+										<button type="submit" className="btn btn-primary">
+											Enable MFA
+										</button>
+									</form>
+
+									<p className="mt-10">
+										Once you have enabled MFA, you will be required to enter a
+										verification code every time you log in.
+									</p>
 								</div>
 							</div>
 						)}

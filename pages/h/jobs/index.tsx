@@ -221,7 +221,8 @@ const ApplyPage = () => {
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
-				{/* tabs */}
+				<p className="text-3xl mb-2">Job Portal</p>
+				{/* desktop tabs */}
 				<Tabs
 					tabs={tabs}
 					activeTab={tabSelected}
@@ -229,154 +230,147 @@ const ApplyPage = () => {
 						setTabSelected(e as TTab["value"]);
 					}}
 				/>
+				{/* mobile select */}
+				<select
+					className="select select-primary w-full mb-5 lg:hidden"
+					onChange={(e) => {
+						setTabSelected(e.target.value as TTab["value"]);
+					}}
+				>
+					{tabs.map((tab, index) => (
+						<option key={`tab_${index}`} value={tab.value}>
+							{tab.title}
+						</option>
+					))}
+				</select>
 
 				{/* content */}
 				<div ref={tabContentRef} className="overflow-hidden">
 
 					{/* all jobs */}
 					{tabSelected === "all" && (
-						<>
-
-							<form
-								onSubmit={searchJob}
-								className="flex gap-2 w-full max-w-xl mx-auto mt-2">
-								{/* search for jobs */}
-
-								<input
-									type="text"
-									name="searchQuery"
-									placeholder="Search for jobs "
-									className="flex-1 input input-primary input-bordered"
-
-								/>
-								<button type="submit" className="btn btn-primary">
-									<MdSearch className="text-lg" />
-								</button>
-
-							</form>
-							<motion.div
-								className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-								key={"all_jobs"}
-							>
-
-								{/* {allJobs.isSuccess &&
+						<motion.div
+							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
+							key={"all_jobs"}
+						>
+							{/* {allJobs.isSuccess &&
               allJobs.data.map((job: AllJob, index: number) => (
                 <JobCard job={job} key={`jobcard_${index}`} />
               ))} */}
-								{allJobs.isSuccess && jobResult.length < 1 &&
-									allJobs.data.map((thisJob: Job, index: number) => (
-										<JobCard
-											isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
-											job={thisJob}
-											key={`jobcard_${index}`}
-										/>
-									))}
+							{allJobs.isSuccess && jobResult.length < 1 &&
+								allJobs.data.map((thisJob: Job, index: number) => (
+									<JobCard
+										isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
+										job={thisJob}
+										key={`jobcard_${index}`}
+									/>
+								))}
 
-								{allJobs.isLoading && jobResult.length < 1 &&
-									Array(2)
-										.fill(0)
-										.map((_, index) => (
-											<motion.div
-												key={`jobloader_${index}`}
-												variants={AnimLoading}
-												animate="animate"
-												className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-											/>
-										))}
-								{jobResult.length > 0 &&
-									jobResult.map((thisJob: Job, index: number) => (
-										<JobCard
-											isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
-											job={thisJob}
-											key={`jobcard_${index}`}
+							{allJobs.isLoading && jobResult.length < 1 &&
+								Array(2)
+									.fill(0)
+									.map((_, index) => (
+										<motion.div
+											key={`jobloader_${index}`}
+											variants={AnimLoading}
+											animate="animate"
+											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
-							</motion.div>
+							{jobResult.length > 0 &&
+								jobResult.map((thisJob: Job, index: number) => (
+									<JobCard
+										isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
+										job={thisJob}
+										key={`jobcard_${index}`}
+									/>
+								))}
+						</motion.div>
 
 						</>
 					)}
-					{tabSelected === "recommended" && (
-						<motion.div
-							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
-							key={"recommended_jobs"}
-						>
-							<div className="col-span-full">
-								<div className="alert alert-warning">
-									This feature is still in development. We only show you jobs
-									based on your primary skill.
-								</div>
+				{tabSelected === "recommended" && (
+					<motion.div
+						className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
+						key={"recommended_jobs"}
+					>
+						<div className="col-span-full">
+							<div className="alert alert-warning">
+								This feature is still in development. We only show you jobs
+								based on your primary skill.
 							</div>
-							{recommendedJobs.isSuccess &&
-								recommendedJobs.data.map((job, index) => (
-									<JobCard
-										isSaved={_userDetails.saved_jobs.includes(job.id)}
-										job={job}
-										key={`recommendedjob_${index}`}
+						</div>
+						{recommendedJobs.isSuccess &&
+							recommendedJobs.data.map((job, index) => (
+								<JobCard
+									isSaved={_userDetails.saved_jobs.includes(job.id)}
+									job={job}
+									key={`recommendedjob_${index}`}
+								/>
+							))}
+						{recommendedJobs.isLoading &&
+							Array(2)
+								.fill(0)
+								.map((_, index) => (
+									<motion.div
+										key={`jobloader_${index}`}
+										variants={AnimLoading}
+										animate="animate"
+										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 									/>
 								))}
-							{recommendedJobs.isLoading &&
-								Array(2)
-									.fill(0)
-									.map((_, index) => (
-										<motion.div
-											key={`jobloader_${index}`}
-											variants={AnimLoading}
-											animate="animate"
-											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-										/>
-									))}
-						</motion.div>
-					)}
-					{tabSelected === "saved" && (
-						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
-							{savedJobs.isSuccess &&
-								savedJobs.data.map((job, index) => (
-									<JobCard job={job} key={`savedjob_${index}`} />
+					</motion.div>
+				)}
+				{tabSelected === "saved" && (
+					<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
+						{savedJobs.isSuccess &&
+							savedJobs.data.map((job, index) => (
+								<JobCard job={job} key={`savedjob_${index}`} />
+							))}
+						{savedJobs.isLoading &&
+							Array(2)
+								.fill(0)
+								.map((_, index) => (
+									<motion.div
+										key={`jobloader_${index}`}
+										variants={AnimLoading}
+										animate="animate"
+										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+									/>
 								))}
-							{savedJobs.isLoading &&
-								Array(2)
-									.fill(0)
-									.map((_, index) => (
-										<motion.div
-											key={`jobloader_${index}`}
-											variants={AnimLoading}
-											animate="animate"
-											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-										/>
-									))}
-						</motion.div>
+					</motion.div>
 
-					)}
-					{tabSelected === "applied" && (
-						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5">
-							{/* <p className="alert alert-warning">
-								This feature is still in development. We are working on it.
-							</p> */}
-							{appliedJobs.isSuccess &&
-								appliedJobs.data.map((job, index) => (
-									<JobCard job={job} key={`appliedjob_${index}`} />
+				)}
+				{tabSelected === "applied" && (
+					<motion.div className=" mt-10">
+						<p className="alert alert-warning">
+							This feature is still in development. We are working on it.
+						</p> */}
+						{appliedJobs.isSuccess &&
+							appliedJobs.data.map((job, index) => (
+								<JobCard job={job} key={`appliedjob_${index}`} />
+							))}
+						{appliedJobs.isLoading &&
+							Array(2)
+								.fill(0)
+								.map((_, index) => (
+									<motion.div
+										key={`jobloader_${index}`}
+										variants={AnimLoading}
+										animate="animate"
+										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+									/>
 								))}
-							{appliedJobs.isLoading &&
-								Array(2)
-									.fill(0)
-									.map((_, index) => (
-										<motion.div
-											key={`jobloader_${index}`}
-											variants={AnimLoading}
-											animate="animate"
-											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-										/>
-									))}
-						</motion.div>
-					)}
-					{tabSelected === "cv" && (
-						<motion.div className=" mt-10">
-							<CvBuilder />
-						</motion.div>
-					)}
+					</motion.div>
+				)}
+				{tabSelected === "cv" && (
+					<motion.div className=" mt-10">
+						<CvBuilder />
+					</motion.div>
+				)}
 
-				</div>
-			</motion.main>
+			</div>
+		</motion.main>
 		</>
 	);
 };
