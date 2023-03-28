@@ -36,6 +36,7 @@ const RegisterHunterSubPage = () => {
 			city: "",
 			postalCode: "",
 		},
+		applied_jobs: [],
 		avatar_url: "",
 		bio: "",
 		citizenship: "Filipino",
@@ -200,9 +201,8 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -211,7 +211,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-																e.currentTarget.value,
+															e.currentTarget.value,
 														);
 													}}
 												/>
@@ -220,9 +220,8 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -231,7 +230,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-																e.currentTarget.value,
+															e.currentTarget.value,
 														);
 													}}
 												/>
@@ -259,9 +258,8 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -278,9 +276,8 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
