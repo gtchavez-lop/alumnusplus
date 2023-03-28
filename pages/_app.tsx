@@ -17,6 +17,7 @@ import { FiLoader } from "react-icons/fi";
 import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Script from "next/script";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
@@ -135,7 +136,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					<Navbar />
 
 					<div className="flex justify-center bg-base-100 overflow-x-hidden">
-						<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 lg:pt-0 ">
+						<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
 							<AnimatePresence mode="wait">
 								<Component
 									{...pageProps}
@@ -175,6 +176,12 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					},
 				}}
 				position="bottom-right"
+			/>
+
+			<Script src="https://cdn.botpress.cloud/webchat/v0/inject.js" />
+			<Script
+				src="https://mediafiles.botpress.cloud/9617c997-0110-42fe-80ab-e8ec407e2908/webchat/config.js"
+				defer
 			/>
 		</>
 	);

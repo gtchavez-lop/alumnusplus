@@ -56,7 +56,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full h-auto z-50 print:invisible">
+			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full z-[20] h-auto print:invisible">
 				{!(_accountType && _currentUser) && (
 					<div
 						// ref={navbarContainer}

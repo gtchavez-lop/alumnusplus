@@ -162,7 +162,7 @@ const JobPage = () => {
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
 				<p className="text-3xl mb-2">Job Portal</p>
-				{/* tabs */}
+				{/* desktop tabs */}
 				<Tabs
 					tabs={tabs}
 					activeTab={tabSelected}
@@ -170,13 +170,26 @@ const JobPage = () => {
 						setTabSelected(e as TTab["value"]);
 					}}
 				/>
+				{/* mobile select */}
+				<select
+					className="select select-primary w-full mb-5 lg:hidden"
+					onChange={(e) => {
+						setTabSelected(e.target.value as TTab["value"]);
+					}}
+				>
+					{tabs.map((tab, index) => (
+						<option key={`tab_${index}`} value={tab.value}>
+							{tab.title}
+						</option>
+					))}
+				</select>
 
 				{/* content */}
 				<div ref={tabContentRef} className="overflow-hidden">
 					{/* all jobs */}
 					{tabSelected === "all" && (
 						<motion.div
-							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
 							key={"all_jobs"}
 						>
 							{/* {allJobs.isSuccess &&
@@ -207,7 +220,7 @@ const JobPage = () => {
 					)}
 					{tabSelected === "recommended" && (
 						<motion.div
-							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-10"
+							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
 							key={"recommended_jobs"}
 						>
 							<div className="col-span-full">
@@ -257,7 +270,7 @@ const JobPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "applied" && (
-						<motion.div className=" mt-10">
+						<motion.div>
 							<p className="alert alert-warning">
 								This feature is still in development. We are working on it.
 							</p>

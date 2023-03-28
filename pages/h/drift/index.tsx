@@ -130,11 +130,24 @@ const DriftPage: NextPage = () => {
 						: currentLocation.data?.city || "Caloocan City"}
 				</p>
 
+				{/* desktop tabs */}
 				<Tabs
 					tabs={_tabs}
 					activeTab={activeTab}
 					onTabChange={(e) => setActiveTab(e as "all" | "nearby")}
 				/>
+				{/* mobile select */}
+				<select
+					className="select select-primary w-full mb-5 lg:hidden"
+					value={activeTab}
+					onChange={(e) => setActiveTab(e.target.value as "all" | "nearby")}
+				>
+					{_tabs.map((tab, index) => (
+						<option key={`tab-${index}`} value={tab.value}>
+							{tab.title}
+						</option>
+					))}
+				</select>
 
 				<div
 					ref={tabContentRef}
