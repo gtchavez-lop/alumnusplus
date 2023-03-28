@@ -18,6 +18,8 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import Link from "next/link";
+import { link } from "fs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.query;
@@ -51,6 +53,7 @@ interface LocalProvJobPost extends TProvJobPost {
 const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFavorite, setIsFavorite] = useState(false);
+	const [isApplied, setIsApplied] = useState(false);
 
 	const handleFavorite = async () => {
 		if (isFavorite) {
@@ -98,6 +101,10 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 		if (_currentUser && jobData) {
 			const isFav = _currentUser.saved_jobs.includes(jobData.id);
 			setIsFavorite(isFav);
+			const isApply = _currentUser.applied_jobs?.includes(jobData.id);
+			setIsApplied(isApply);
+
+
 		}
 	}, [_currentUser, jobData, isFavorite]);
 
@@ -112,6 +119,7 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 					className="relative min-h-screen w-full flex flex-col gap-10 py-24"
 				>
 					<div>
+
 						<h1 className="text-3xl font-bold">{jobData.job_title}</h1>
 						<p className="text-lg">
 							Posted at {dayjs(jobData.created_at).format("MMMM DD YYYY")}
@@ -121,10 +129,21 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 
 						{/* apply button */}
 						<div className="flex gap-2 mt-5 justify-end">
-							<button className="btn btn-primary gap-2">
-								<MdCheck className="text-lg" />
+							{isApplied ? (
+								<button
+									className="btn btn-primary gap-2"
+									disabled
+								>
+									<MdCheck className="text-lg" />
+									Applied
+								</button>
+
+							) : <Link
+								href={`/h/jobs/apply?id=${jobData.id}`}
+								className="btn btn-primary">
 								Apply Now
-							</button>
+							</Link>}
+
 							<button onClick={handleFavorite} className="btn btn-ghost gap-2">
 								<MdFavorite
 									className={`text-lg ${isFavorite && "text-red-500"}`}
