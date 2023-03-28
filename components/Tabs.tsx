@@ -30,17 +30,23 @@ const Tabs: FC<TabComponent> = ({ tabs, activeTab, onTabChange }) => {
 					}}
 					className="flex items-center justify-center gap-2 relative px-3 py-1 cursor-pointer group"
 				>
-					<span className="z-10">{tab.title}</span>
+					<span
+						className={`z-10 transition-all ${
+							tabSelected === tab.value && "text-primary-content"
+						}`}
+					>
+						{tab.title}
+					</span>
 					{tabSelected === tab.value && (
 						<motion.span
 							layoutId="underline"
-							className="z-[5] absolute w-full h-full inset-0 bg-primary rounded-btn"
+							className="z-[5] absolute w-full h-full inset-0 bg-primary rounded-md"
 						/>
 					)}
 					{hoveredTab === tab.value && (
 						<motion.span
 							layoutId="underline_hover"
-							className="z-0 absolute w-full opacity-0 transition-opacity group-hover:opacity-100 h-full inset-0 bg-primary/20 rounded-btn"
+							className="z-0 absolute w-full opacity-0 transition-opacity group-hover:opacity-100 h-full inset-0 bg-primary/20 rounded-md"
 						/>
 					)}
 				</li>

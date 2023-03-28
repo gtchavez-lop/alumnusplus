@@ -28,7 +28,10 @@ const ProvFeedCardGrid: FC<{ item: TProvBlogPost }> = ({ item }) => {
 					}
 				>
 					<Image
-						src={item.uploader.avatar_url}
+						src={
+							item.uploader.avatar_url ??
+							`https://api.dicebear.com/5.x/shapes/png?seed=${item.uploader.legalName}`
+						}
 						alt="avatar"
 						className="object-center object-cover"
 						fill
