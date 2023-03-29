@@ -253,7 +253,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 
 										<Link
 											href="/h/me/resetpassword"
-											className="btn btn-primary"
+											className="btn btn-primary mt-1"
 										>
 											Reset Password
 										</Link>
@@ -321,9 +321,9 @@ const ProvisionerProfileEditPage: NextPage = () => {
 													...tempUserDetails,
 													industryType: e.target.value,
 												});
-												let res = f_industryType.search(e.target.value);
-												let mappedRes = res.map((r) => r.item);
-												let limited = mappedRes.slice(0, 5);
+												const res = f_industryType.search(e.target.value);
+												const mappedRes = res.map((r) => r.item);
+												const limited = mappedRes.slice(0, 5);
 												setIndustryTypeSearchResults(limited);
 											}}
 										/>
