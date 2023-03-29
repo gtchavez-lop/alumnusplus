@@ -1,12 +1,20 @@
+import { IUserHunter, IUserProvisioner } from "@/lib/types";
+
+import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+import { useStore } from "@nanostores/react";
 
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 export default function FeaturesPage() {
+	const _accountDetails = useStore($accountDetails) as
+		| IUserHunter
+		| IUserProvisioner;
+
 	return (
 		<>
 			<motion.main
@@ -30,13 +38,33 @@ export default function FeaturesPage() {
 							</p>
 						</div>
 
-						<Link
-							href="/login"
-							className="mt-8 btn btn-primary sm:mt-0 lg:mt-8"
-						>
-							Get started today
-							<FiArrowRight className="ml-4" />
-						</Link>
+						{_accountDetails && _accountDetails.type === "hunter" && (
+							<Link
+								href="/h/feed"
+								className="mt-8 btn btn-primary sm:mt-0 lg:mt-8"
+							>
+								Get started today
+								<FiArrowRight className="ml-4" />
+							</Link>
+						)}
+						{_accountDetails && _accountDetails.type === "provisioner" && (
+							<Link
+								href="/p/dashboard"
+								className="mt-8 btn btn-primary sm:mt-0 lg:mt-8"
+							>
+								Get started today
+								<FiArrowRight className="ml-4" />
+							</Link>
+						)}
+						{!_accountDetails && (
+							<Link
+								href="/login"
+								className="mt-8 btn btn-primary sm:mt-0 lg:mt-8"
+							>
+								Get started today
+								<FiArrowRight className="ml-4" />
+							</Link>
+						)}
 					</div>
 
 					<div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">

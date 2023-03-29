@@ -131,7 +131,6 @@ const EditProfilePage: NextPage = () => {
 		if (
 			tempUserDetails.address.address.length < 5 ||
 			tempUserDetails.address.city.length < 5 ||
-			!tempUserDetails.address.postalCode ||
 			tempUserDetails.bio.length < 1 ||
 			!tempUserDetails.birthdate ||
 			tempUserDetails.birthplace.length < 5 ||
@@ -369,23 +368,12 @@ const EditProfilePage: NextPage = () => {
 										value={tempUserDetails.username}
 										type="text"
 										disabled
-										// onChange={(e) => {
-										// 	setTempUserDetails({
-										// 		...tempUserDetails,
-										// 		username: e.target.value,
-										// 	});
-										// }}
 									/>
 								</label>
 
 								<Link href="/h/me/resetpassword" className="btn btn-primary">
 									Reset Password
 								</Link>
-
-								{/* <label className="flex flex-col">
-									<span>Password</span>
-									<input className="input input-primary" type="password" />
-								</label> */}
 							</div>
 						)}
 						{tabSelected === "personal" && (
@@ -540,14 +528,14 @@ const EditProfilePage: NextPage = () => {
 										value={tempUserDetails.address.city}
 										type="text"
 										onChange={(e) => {
-											let res = f_PhCities.search(e.target.value);
-											let filtered = res.map((item) => {
+											const res = f_PhCities.search(e.target.value);
+											const filtered = res.map((item) => {
 												return {
 													city: item.item.city,
 													admin_name: item.item.admin_name,
 												};
 											});
-											let limited = filtered.slice(0, 5);
+											const limited = filtered.slice(0, 5);
 
 											setCitySearchResults(limited);
 											setTempUserDetails({
@@ -583,14 +571,6 @@ const EditProfilePage: NextPage = () => {
 										</div>
 									)}
 								</label>
-								<label className="flex flex-col">
-									<span>Postal Code</span>
-									<input
-										className="input input-primary"
-										value={tempUserDetails.address.postalCode}
-										type="number"
-									/>
-								</label>
 							</div>
 						)}
 						{tabSelected === "skillset" && (
@@ -609,9 +589,9 @@ const EditProfilePage: NextPage = () => {
 												skill_primary: e.target.value,
 											});
 
-											let res = f_Skills.search(e.target.value);
-											let skills = res.map((skill) => skill.item);
-											let limited = skills.slice(0, 5);
+											const res = f_Skills.search(e.target.value);
+											const skills = res.map((skill) => skill.item);
+											const limited = skills.slice(0, 5);
 
 											setPrimarySkillSearchResults(limited);
 										}}
@@ -643,7 +623,7 @@ const EditProfilePage: NextPage = () => {
 											<li
 												className="badge items-center cursor-pointer "
 												onClick={() => {
-													let newSkills =
+													const newSkills =
 														tempUserDetails.skill_secondary.filter(
 															(s) => s !== skill,
 														);
@@ -664,16 +644,16 @@ const EditProfilePage: NextPage = () => {
 												type="text"
 												placeholder="Add a skill"
 												onChange={(e) => {
-													let res = f_Skills.search(e.target.value);
-													let skills = res.map((skill) => skill.item);
+													const res = f_Skills.search(e.target.value);
+													const skills = res.map((skill) => skill.item);
 													// filter out existing skills and primary skill
-													let filtered = skills.filter(
+													const filtered = skills.filter(
 														(skill) =>
 															!tempUserDetails.skill_secondary.includes(
 																skill,
 															) && skill !== tempUserDetails.skill_primary,
 													);
-													let limited = filtered.slice(0, 5);
+													const limited = filtered.slice(0, 5);
 
 													setSecondarySkillSearchResults(limited);
 												}}
@@ -687,9 +667,10 @@ const EditProfilePage: NextPage = () => {
 													className="btn btn-ghost btn-block justify-start"
 													key={`secondaryskill_${index}`}
 													onClick={() => {
-														let skillSecondary_input = document.getElementById(
-															"skillSecondary_input",
-														) as HTMLInputElement;
+														const skillSecondary_input =
+															document.getElementById(
+																"skillSecondary_input",
+															) as HTMLInputElement;
 														setTempUserDetails({
 															...tempUserDetails,
 															skill_secondary: [
@@ -855,7 +836,6 @@ const EditProfilePage: NextPage = () => {
 												data.jobPosition &&
 												data.location &&
 												data.startDate &&
-												data.endDate &&
 												data.description
 											)
 										) {
@@ -940,6 +920,9 @@ const EditProfilePage: NextPage = () => {
 											type="date"
 											max={dayjs().format("YYYY-MM-DD")}
 										/>
+										<span className="text-base-content/50 text-sm text-right">
+											Only specify if your term in the company has ended
+										</span>
 									</label>
 									<label className="flex items-center mt-2 gap-2">
 										<input
@@ -1310,80 +1293,6 @@ const EditProfilePage: NextPage = () => {
 											</div>
 										</>
 									)}
-								</div>
-							</div>
-						)}
-						{tabSelected === "security" && (
-							<div className="flex flex-col gap-2 rounded-btn h-max w-full">
-								<p className="text-xl font-bold">Security Status</p>
-
-								<div className="flex flex-col">
-									<p className="font-bold text-lg">Multi-Factor Authtication</p>
-
-									<div className="w-wfull h-[200px] relative">
-										<Image
-											src={mfaData.data!.totp!.qr_code}
-											alt={mfaData.data!.totp!.uri}
-											fill
-											className="object-contain"
-										/>
-									</div>
-
-									<p className="">
-										Scan the QR code above using your favorite Authenticator app
-										to enable MFA.
-									</p>
-
-									<p className="">
-										Alternatively, you can use the following code:
-									</p>
-									<input
-										type="text"
-										readOnly
-										className="input input-primary"
-										value={mfaData.data!.totp!.secret}
-									/>
-
-									<p className="mt-5">
-										Enter the code from your Authenticator app below to enable
-										MFA.
-									</p>
-									<form
-										onSubmit={async (e) => {
-											e.preventDefault();
-											const form = new FormData(e.target as HTMLFormElement);
-											const code = form.get("mfa_code") as string;
-
-											const { data, error } =
-												await supabase.auth.mfa.challengeAndVerify({
-													code: code,
-													factorId: mfaData.data!.id,
-												});
-
-											if (error) {
-												toast.error(error.message);
-												return;
-											}
-
-											toast.success("MFA has been enabled.");
-										}}
-										className="flex gap-2"
-									>
-										<input
-											type="text"
-											className="input input-primary flex-1"
-											placeholder="Enter code"
-											name="mfa_code"
-										/>
-										<button type="submit" className="btn btn-primary">
-											Enable MFA
-										</button>
-									</form>
-
-									<p className="mt-10">
-										Once you have enabled MFA, you will be required to enter a
-										verification code every time you log in.
-									</p>
 								</div>
 							</div>
 						)}

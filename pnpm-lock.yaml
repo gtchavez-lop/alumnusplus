@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@formkit/auto-animate': 1.0.0-beta.6
+  '@google-pay/button-react': ^3.0.6
   '@hcaptcha/react-hcaptcha': ^1.4.4
   '@headlessui/react': ^1.7.11
   '@nanostores/react': ^0.4.1
@@ -45,6 +46,7 @@ specifiers:
 
 dependencies:
   '@formkit/auto-animate': 1.0.0-beta.6
+  '@google-pay/button-react': 3.0.6_3xleytyzprlgycb2ded54tx72i
   '@hcaptcha/react-hcaptcha': 1.4.4_biqbaboplfbrettd7655fr4n2y
   '@headlessui/react': 1.7.11_biqbaboplfbrettd7655fr4n2y
   '@nanostores/react': 0.4.1_nkfnbc2tpc77iht7asm3uqwau4
@@ -240,6 +242,22 @@ packages:
 
   /@formkit/auto-animate/1.0.0-beta.6:
     resolution: {integrity: sha512-PVDhLAlr+B4Xb7e+1wozBUWmXa6BFU8xUPR/W/E+TsQhPS1qkAdAsJ25keEnFrcePSnXHrOsh3tiFbEToOzV9w==}
+    dev: false
+
+  /@google-pay/button-react/3.0.6_3xleytyzprlgycb2ded54tx72i:
+    resolution: {integrity: sha512-PedCFqRdPVqM+RCGrIk5Uy7hoUAaedzBOKerp5XfWGoeKESFCp2P0qPymCigUiTt8TJ9EKRNlMmpb38SmEF7LA==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      '@types/react': '>=16.0.0'
+      '@types/react-dom': '>=16.0.0'
+      react: '>=16.3.0'
+      react-dom: '>=16.3.0'
+    dependencies:
+      '@types/googlepay': 0.7.0
+      '@types/react': 18.0.28
+      '@types/react-dom': 18.0.11
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@hcaptcha/react-hcaptcha/1.4.4_biqbaboplfbrettd7655fr4n2y:
@@ -839,6 +857,10 @@ packages:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
       '@types/ms': 0.7.31
+    dev: false
+
+  /@types/googlepay/0.7.0:
+    resolution: {integrity: sha512-jC7ViexJeV8LlTKLiUBfNs5GICbm0PYsm5Y30JCEBkreY0bMNA+F4KnTEz+WtqBTRldTAxKBKqRstlOUFpW+dA==}
     dev: false
 
   /@types/hast/2.3.4:

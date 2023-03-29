@@ -230,12 +230,12 @@ const CreateNewJobPage = () => {
 							setJobSkillSearchResults([]);
 							e.preventDefault();
 
-							let res = _SkillList.search(jobSkillQuery);
-							let skills = res.map((item) => item.item);
-							let filtered = skills.filter((skill) => {
+							const res = _SkillList.search(jobSkillQuery);
+							const skills = res.map((item) => item.item);
+							const filtered = skills.filter((skill) => {
 								return !addJobSchema.job_skills.includes(skill);
 							});
-							let limited = filtered.slice(0, 5);
+							const limited = filtered.slice(0, 5);
 							setJobSkillSearchResults(limited);
 						}}
 					/>
