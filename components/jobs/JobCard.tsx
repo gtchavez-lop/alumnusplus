@@ -20,47 +20,49 @@ interface Job {
 
 const JobCard: FC<{ job: Job; isSaved?: boolean }> = ({ job, isSaved }) => {
 	return (
-		<motion.div
-			animate={{
-				opacity: [0, 1],
-				transition: { duration: 0.2, ease: "circOut" },
-			}}
-		>
-			<Link
-				href={`/h/jobs/posting?id=${job.id}`}
-				className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-200 hover:bg-primary/30 transition-all"
+		job && (
+			<motion.div
+				animate={{
+					opacity: [0, 1],
+					transition: { duration: 0.2, ease: "circOut" },
+				}}
 			>
-				<div className="flex items-start">
-					<div>
-						<h1 className="text-xl font-bold">{job.job_title}</h1>
-						<p className="text-primary">{job.uploader.legalName}</p>
-					</div>
-					<div className="ml-auto">
-						{isSaved ? <MdFavorite className="text-red-500" /> : null}
-					</div>
-				</div>
-
-				<p className="mt-4 text-sm">
-					{job.job_location} |{" "}
-					{
-						job.job_type.map(
-							(type) => type.charAt(0).toUpperCase() + type.slice(1),
-						)[0]
-					}
-				</p>
-
-				<ReactMarkdown
-					rehypePlugins={[rehypeRaw]}
-					className="mt-4 h-[50px] overflow-hidden prose prose-sm"
+				<Link
+					href={`/h/jobs/posting?id=${job.id}`}
+					className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-200 hover:bg-primary/30 transition-all"
 				>
-					{job.short_description}
-				</ReactMarkdown>
+					<div className="flex items-start">
+						<div>
+							<h1 className="text-xl font-bold">{job.job_title}</h1>
+							<p className="text-primary">{job.uploader.legalName}</p>
+						</div>
+						<div className="ml-auto">
+							{isSaved ? <MdFavorite className="text-red-500" /> : null}
+						</div>
+					</div>
 
-				<p className="text-sm mt-5 opacity-50">
-					{dayjs(job.created_at).format("DD MMM YYYY")}
-				</p>
-			</Link>
-		</motion.div>
+					<p className="mt-4 text-sm">
+						{job.job_location} |{" "}
+						{
+							job.job_type.map(
+								(type) => type.charAt(0).toUpperCase() + type.slice(1),
+							)[0]
+						}
+					</p>
+
+					<ReactMarkdown
+						rehypePlugins={[rehypeRaw]}
+						className="mt-4 h-[50px] overflow-hidden prose prose-sm"
+					>
+						{job.short_description}
+					</ReactMarkdown>
+
+					<p className="text-sm mt-5 opacity-50">
+						{dayjs(job.created_at).format("DD MMM YYYY")}
+					</p>
+				</Link>
+			</motion.div>
+		)
 	);
 };
 

@@ -4,24 +4,25 @@ import {
 	AnimTabTransition,
 } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { MdOutlineSignalCellularNoSim, MdSearch, MdWarning } from "react-icons/md";
+import { FormEvent, useState } from "react";
+import { IUserHunter, TProvJobPost } from "@/lib/types";
+import {
+	MdOutlineSignalCellularNoSim,
+	MdSearch,
+	MdWarning,
+} from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
-import { IUserHunter, TProvJobPost } from "@/lib/types";
 import Tabs from "@/components/Tabs";
 import dynamic from "next/dynamic";
+import { empty } from "uuidv4";
 import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
-import { FormEvent, useState } from "react";
-import { useStore } from "@nanostores/react";
-import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { empty } from "uuidv4";
-
-
-
+import { useStore } from "@nanostores/react";
 
 const JobCard = dynamic(() => import("@/components/jobs/JobCard"), {
 	ssr: false,
@@ -34,8 +35,7 @@ interface Job {
 	short_description: string;
 	created_at: string;
 	job_type: string[];
-	uploader:
-	{
+	uploader: {
 		legalName: string;
 	};
 }
@@ -72,6 +72,8 @@ const ApplyPage = () => {
 	const [tabSelected, setTabSelected] = useState("all");
 	const _userDetails = useStore($accountDetails) as IUserHunter;
 	const [tabContentRef] = useAutoAnimate();
+	const [jobResult, setJobResult] = useState<Job[]>([]);
+	const [isSearching, setIsSearching] = useState(false);
 	const router = useRouter();
 
 	const fetchAllJobs = async () => {
@@ -104,8 +106,6 @@ const ApplyPage = () => {
 
 		return data as unknown as Promise<Job[]>;
 	};
-
-
 
 	const fetchSavedJobs = async () => {
 		const savedjobs = _userDetails.saved_jobs;
@@ -179,23 +179,27 @@ const ApplyPage = () => {
 		],
 	});
 
-	const [jobResult, setJobResult] = useState<Job[]>([]);
-
 	const searchJob = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const form = e.currentTarget as HTMLFormElement;
 		const searchQuery = form.searchQuery as HTMLInputElement;
 		const pattern = `%${searchQuery.value}%`;
 
-		const { data, error } = await supabase.rpc("search_job", {
-			searchquery: pattern,
-		});
+		setIsSearching(true);
+
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.select("*,uploader:uploader_id(legalName)")
+			.ilike("job_title", pattern);
+
 		if (error) {
 			console.log(error);
 			setJobResult([]);
 		}
-		setJobResult(data);
-	}
+
+		setIsSearching(false);
+		setJobResult(data as Job[]);
+	};
 
 	//   const user_secondarySkills = authState.user_metadata.secondarySkills;
 
@@ -246,27 +250,96 @@ const ApplyPage = () => {
 
 				{/* content */}
 				<div ref={tabContentRef} className="overflow-hidden">
-
 					{/* all jobs */}
 					{tabSelected === "all" && (
+						<>
+							<form
+								onSubmit={searchJob}
+								className="input-group w-full max-w-md mb-5"
+							>
+								<input
+									name="searchQuery"
+									type="text"
+									className="input input-primary w-full"
+									placeholder="Search for Jobs"
+									onInput={(e) => {
+										if (e.currentTarget.value.length < 1) {
+											setJobResult([]);
+										}
+									}}
+								/>
+								<button type="submit" className="btn btn-primary">
+									<MdSearch />
+								</button>
+							</form>
+
+							<motion.div
+								className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
+								key={"all_jobs"}
+							>
+								{isSearching && (
+									<div className="col-span-full text-center flex justify-center my-5">
+										<p>Searching Jobs</p>
+									</div>
+								)}
+
+								{!isSearching &&
+									allJobs.isLoading &&
+									jobResult.length < 1 &&
+									Array(2)
+										.fill(0)
+										.map((_, index) => (
+											<motion.div
+												key={`jobloader_${index}`}
+												variants={AnimLoading}
+												animate="animate"
+												className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+											/>
+										))}
+
+								{!isSearching &&
+									jobResult.length > 0 &&
+									jobResult.map((item, index) => (
+										<JobCard
+											key={item.id}
+											job={item}
+											isSaved={_userDetails.saved_jobs.includes(item.id)}
+										/>
+									))}
+
+								{!isSearching &&
+									jobResult.length < 1 &&
+									allJobs.isSuccess &&
+									allJobs.data.map((item, index) => (
+										<JobCard
+											key={item.id}
+											job={item}
+											isSaved={_userDetails.saved_jobs.includes(item.id)}
+										/>
+									))}
+							</motion.div>
+						</>
+					)}
+					{tabSelected === "recommended" && (
 						<motion.div
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
-							key={"all_jobs"}
+							key={"recommended_jobs"}
 						>
-							{/* {allJobs.isSuccess &&
-              allJobs.data.map((job: AllJob, index: number) => (
-                <JobCard job={job} key={`jobcard_${index}`} />
-              ))} */}
-							{allJobs.isSuccess && jobResult.length < 1 &&
-								allJobs.data.map((thisJob: Job, index: number) => (
+							<div className="col-span-full">
+								<div className="alert alert-warning">
+									This feature is still in development. We only show you jobs
+									based on your primary skill.
+								</div>
+							</div>
+							{recommendedJobs.isSuccess &&
+								recommendedJobs.data.map((job, index) => (
 									<JobCard
-										isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
-										job={thisJob}
-										key={`jobcard_${index}`}
+										isSaved={_userDetails.saved_jobs.includes(job.id)}
+										job={job}
+										key={`recommendedjob_${index}`}
 									/>
 								))}
-
-							{allJobs.isLoading && jobResult.length < 1 &&
+							{recommendedJobs.isLoading &&
 								Array(2)
 									.fill(0)
 									.map((_, index) => (
@@ -277,100 +350,56 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
-							{jobResult.length > 0 &&
-								jobResult.map((thisJob: Job, index: number) => (
-									<JobCard
-										isSaved={_userDetails.saved_jobs.includes(thisJob.id)}
-										job={thisJob}
-										key={`jobcard_${index}`}
-									/>
-								))}
 						</motion.div>
-
-						</>
 					)}
-				{tabSelected === "recommended" && (
-					<motion.div
-						className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
-						key={"recommended_jobs"}
-					>
-						<div className="col-span-full">
-							<div className="alert alert-warning">
-								This feature is still in development. We only show you jobs
-								based on your primary skill.
-							</div>
-						</div>
-						{recommendedJobs.isSuccess &&
-							recommendedJobs.data.map((job, index) => (
-								<JobCard
-									isSaved={_userDetails.saved_jobs.includes(job.id)}
-									job={job}
-									key={`recommendedjob_${index}`}
-								/>
-							))}
-						{recommendedJobs.isLoading &&
-							Array(2)
-								.fill(0)
-								.map((_, index) => (
-									<motion.div
-										key={`jobloader_${index}`}
-										variants={AnimLoading}
-										animate="animate"
-										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-									/>
+					{tabSelected === "saved" && (
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
+							{savedJobs.isSuccess &&
+								savedJobs.data.map((job, index) => (
+									<JobCard job={job} key={`savedjob_${index}`} />
 								))}
-					</motion.div>
-				)}
-				{tabSelected === "saved" && (
-					<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
-						{savedJobs.isSuccess &&
-							savedJobs.data.map((job, index) => (
-								<JobCard job={job} key={`savedjob_${index}`} />
-							))}
-						{savedJobs.isLoading &&
-							Array(2)
-								.fill(0)
-								.map((_, index) => (
-									<motion.div
-										key={`jobloader_${index}`}
-										variants={AnimLoading}
-										animate="animate"
-										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-									/>
+							{savedJobs.isLoading &&
+								Array(2)
+									.fill(0)
+									.map((_, index) => (
+										<motion.div
+											key={`jobloader_${index}`}
+											variants={AnimLoading}
+											animate="animate"
+											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+										/>
+									))}
+						</motion.div>
+					)}
+					{tabSelected === "applied" && (
+						<motion.div className=" mt-10">
+							<p className="alert alert-warning">
+								This feature is still in development. We are working on it.
+							</p>
+							{appliedJobs.isSuccess &&
+								appliedJobs.data.map((job, index) => (
+									<JobCard job={job} key={`appliedjob_${index}`} />
 								))}
-					</motion.div>
-
-				)}
-				{tabSelected === "applied" && (
-					<motion.div className=" mt-10">
-						<p className="alert alert-warning">
-							This feature is still in development. We are working on it.
-						</p> */}
-						{appliedJobs.isSuccess &&
-							appliedJobs.data.map((job, index) => (
-								<JobCard job={job} key={`appliedjob_${index}`} />
-							))}
-						{appliedJobs.isLoading &&
-							Array(2)
-								.fill(0)
-								.map((_, index) => (
-									<motion.div
-										key={`jobloader_${index}`}
-										variants={AnimLoading}
-										animate="animate"
-										className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
-									/>
-								))}
-					</motion.div>
-				)}
-				{tabSelected === "cv" && (
-					<motion.div className=" mt-10">
-						<CvBuilder />
-					</motion.div>
-				)}
-
-			</div>
-		</motion.main>
+							{appliedJobs.isLoading &&
+								Array(2)
+									.fill(0)
+									.map((_, index) => (
+										<motion.div
+											key={`jobloader_${index}`}
+											variants={AnimLoading}
+											animate="animate"
+											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+										/>
+									))}
+						</motion.div>
+					)}
+					{tabSelected === "cv" && (
+						<motion.div className=" mt-10">
+							<CvBuilder />
+						</motion.div>
+					)}
+				</div>
+			</motion.main>
 		</>
 	);
 };
