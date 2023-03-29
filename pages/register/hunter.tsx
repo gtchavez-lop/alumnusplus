@@ -38,8 +38,8 @@ const RegisterHunterSubPage = () => {
 			city: "",
 			postalCode: "",
 		},
-		avatar_url: "",
 		applied_jobs: [],
+		avatar_url: "",
 		bio: "",
 		citizenship: "Filipino",
 		civil_status: "single",
@@ -184,7 +184,7 @@ const RegisterHunterSubPage = () => {
 											value={localRegData.username}
 											className="input input-primary"
 											onChange={(e) => {
-												let formatted = e.target.value
+												const formatted = e.target.value
 													.trim()
 													.replace(/[^a-zA-Z0-9_-]/g, "")
 													.slice(0, 20);
@@ -221,7 +221,7 @@ const RegisterHunterSubPage = () => {
 											className="input input-primary"
 											onChange={(e) => {
 												// check if email is valid and trim spaces
-												let formatted = e.target.value
+												const formatted = e.target.value
 													.replace(/[^a-zA-Z0-9@._-]/g, "")
 													.trim();
 
@@ -678,7 +678,7 @@ const RegisterHunterSubPage = () => {
 
 												if (e.currentTarget.value.length > 2) {
 													const res = PhCities.search(e.currentTarget.value);
-													let cities = res.map((city) => ({
+													const cities = res.map((city) => ({
 														city: city.item.city,
 														admin_name: city.item.admin_name,
 													}));
@@ -760,9 +760,9 @@ const RegisterHunterSubPage = () => {
 													...localRegData,
 													skill_primary: e.currentTarget.value,
 												});
-												let res = Skillset.search(e.currentTarget.value);
-												let skills = res.map((skill) => skill.item);
-												let limited = skills.slice(0, 5);
+												const res = Skillset.search(e.currentTarget.value);
+												const skills = res.map((skill) => skill.item);
+												const limited = skills.slice(0, 5);
 
 												setSkillsetPrimarySearchResults(limited);
 											}}
@@ -799,14 +799,14 @@ const RegisterHunterSubPage = () => {
 											value={skillsetSecondaryInput}
 											onChange={(e) => {
 												setSkillsetSecondaryInput(e.currentTarget.value);
-												let res = Skillset.search(e.currentTarget.value);
-												let skills = res.map((skill) => skill.item);
-												let filtered = skills.filter(
+												const res = Skillset.search(e.currentTarget.value);
+												const skills = res.map((skill) => skill.item);
+												const filtered = skills.filter(
 													(skill) =>
 														skill !== localRegData.skill_primary &&
 														!localRegData.skill_secondary.includes(skill),
 												);
-												let limited = filtered.slice(0, 5);
+												const limited = filtered.slice(0, 5);
 
 												setSkillsetSecondarySearchResults(limited);
 											}}
@@ -848,7 +848,7 @@ const RegisterHunterSubPage = () => {
 														key={`skill-${index}`}
 														className="badge badge-accent cursor-pointer"
 														onClick={() => {
-															let newSkills =
+															const newSkills =
 																localRegData.skill_secondary.filter(
 																	(s) => s !== skill,
 																);
