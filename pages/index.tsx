@@ -19,14 +19,25 @@ const Footer = dynamic(() => import("@/components/Footer"), {
 
 const jobList = [
 	"Web Developer",
-	"Software Engineer",
-	"Frontend Developer",
-	"Backend Developer",
-	"Fullstack Developer",
-	"Mobile Developer",
-	"UI/UX Designer",
 	"Graphic Designer",
-	"Product Designer",
+	"Copywriter",
+	"Social Media Manager",
+	"Video Editor",
+	"Content Writer",
+	"Mobile App Developer",
+	"SEO Specialist",
+	"Photographer",
+	"UI/UX Designer",
+	"Illustrator",
+	"Animator",
+	"Data Analyst",
+	"Virtual Assistant",
+	"Marketing Consultant",
+	"Project Manager",
+	"Transcriptionist",
+	"Voice Actor",
+	"Online Tutor",
+	"Customer Service Representative",
 ];
 const landingWords = ["Provide.", "Hunt.", "Connect."];
 
@@ -151,7 +162,7 @@ const Home = () => {
 					/>
 				</div> */}
 				<p className="text-3xl flex flex-col justify-center w-full text-center mt-5 z-10">
-					<span>Job hunting for</span>
+					<span>Job hunting as</span>
 					<AnimatePresence mode="wait">
 						<motion.span
 							initial={{ opacity: 0, x: 10 }}

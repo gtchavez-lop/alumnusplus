@@ -20,7 +20,7 @@ const SearchPage = () => {
 		const { query } = router.query as { query: string };
 		const pattern = `%${query}%`;
 
-		const { data, error } = await supabase.rpc("search_hunters", {
+		const { data, error } = await supabase.rpc("search_hunters(", {
 			searchquery: pattern,
 		});
 

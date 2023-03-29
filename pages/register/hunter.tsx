@@ -18,6 +18,8 @@ import _Skillset from "@/lib/skills.json";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -36,7 +38,9 @@ const RegisterHunterSubPage = () => {
 			city: "",
 			postalCode: "",
 		},
+		applied_jobs: [],
 		avatar_url: "",
+		applied_jobs: [],
 		bio: "",
 		citizenship: "Filipino",
 		civil_status: "single",
@@ -87,6 +91,7 @@ const RegisterHunterSubPage = () => {
 		useState<string>("");
 	const [skillsetSecondarySearchResults, setSkillsetSecondarySearchResults] =
 		useState<string[]>([]);
+	const [formInputRef] = useAutoAnimate();
 
 	const PhCities = new Fuse(_PHCities, {
 		keys: ["city", "admin_name"],
@@ -101,6 +106,19 @@ const RegisterHunterSubPage = () => {
 		keys: ["nationality"],
 		threshold: 0.3,
 	});
+
+	const fetchComonData = async () => {
+		const { data, error } = await supabase
+			.from("user_hunters")
+			.select("username,email,phone");
+
+		if (error) {
+			console.log(error);
+			return;
+		}
+
+		return data;
+	};
 
 	const handleSignUp = async () => {
 		const { error } = await supabase.auth.signUp({
@@ -126,6 +144,11 @@ const RegisterHunterSubPage = () => {
 		router.push("/login");
 	};
 
+	const usernameList = useQuery({
+		queryKey: ["usernames"],
+		queryFn: fetchComonData,
+	});
+
 	return (
 		<>
 			<motion.main
@@ -144,19 +167,13 @@ const RegisterHunterSubPage = () => {
 					</p>
 				</div>
 
-				<div className="w-full bg-base-200 p-5 rounded-btn max-w-xl mx-auto mt-10">
-					<AnimatePresence mode="wait">
+				{!(usernameList.isLoading || usernameList.isError) && (
+					<div
+						ref={formInputRef}
+						className="w-full bg-base-200 p-5 rounded-btn max-w-xl mx-auto mt-10"
+					>
 						{formPage === 1 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
+							<motion.div>
 								<h2 className="text-2xl font-bold">Account Information</h2>
 
 								<div className="mt-5 flex flex-col gap-3">
@@ -167,12 +184,32 @@ const RegisterHunterSubPage = () => {
 											id="username"
 											value={localRegData.username}
 											className="input input-primary"
-											onChange={(e) =>
+											onChange={(e) => {
+												let formatted = e.target.value
+													.trim()
+													.replace(/[^a-zA-Z0-9_-]/g, "")
+													.slice(0, 20);
+
+												if (usernameList.data) {
+													const isUsernameTaken = usernameList.data.some(
+														(user: { username: string }) =>
+															user.username === formatted,
+													);
+
+													if (isUsernameTaken) {
+														e.currentTarget.classList.add("input-error");
+														toast.error("Username is already taken.");
+														return;
+													} else {
+														e.currentTarget.classList.remove("input-error");
+													}
+												}
+
 												setLocalRegData({
 													...localRegData,
-													username: e.target.value,
-												})
-											}
+													username: formatted,
+												});
+											}}
 										/>
 									</label>
 
@@ -183,12 +220,33 @@ const RegisterHunterSubPage = () => {
 											id="email"
 											value={localRegData.email}
 											className="input input-primary"
-											onChange={(e) =>
+											onChange={(e) => {
+												// check if email is valid and trim spaces
+												let formatted = e.target.value
+													.replace(/[^a-zA-Z0-9@._-]/g, "")
+													.trim();
+
+												// check if email is already taken
+												if (usernameList.data) {
+													const isEmailTaken = usernameList.data.some(
+														(user: { email: string }) =>
+															user.email === formatted,
+													);
+
+													if (isEmailTaken) {
+														e.currentTarget.classList.add("input-error");
+														toast.error("Email is already taken.");
+														return;
+													} else {
+														e.currentTarget.classList.remove("input-error");
+													}
+												}
+
 												setLocalRegData({
 													...localRegData,
-													email: e.target.value,
-												})
-											}
+													email: formatted,
+												});
+											}}
 										/>
 									</label>
 
@@ -200,9 +258,8 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -211,7 +268,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-																e.currentTarget.value,
+															e.currentTarget.value,
 														);
 													}}
 												/>
@@ -220,9 +277,8 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -231,7 +287,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-																e.currentTarget.value,
+															e.currentTarget.value,
 														);
 													}}
 												/>
@@ -259,9 +315,8 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -278,9 +333,8 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
+													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
+														}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -314,20 +368,13 @@ const RegisterHunterSubPage = () => {
 										</button>
 									</div>
 								</div>
+
+								{usernameList.isLoading && <p>Common Data loading...</p>}
 							</motion.div>
 						)}
 
 						{formPage === 2 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
+							<motion.div>
 								<h2 className="text-2xl font-bold">Personal Information</h2>
 
 								<div className="mt-5 flex flex-col gap-3">
@@ -519,6 +566,25 @@ const RegisterHunterSubPage = () => {
 									</label>
 
 									<label className="flex flex-col">
+										<span>Contact Number</span>
+										<span className="w-full flex gap-2 items-center">
+											<span>+63</span>
+											<input
+												type="text"
+												id="contact_number"
+												value={localRegData.phone}
+												className="input input-primary flex-1"
+												onChange={(e) =>
+													setLocalRegData({
+														...localRegData,
+														phone: e.target.value,
+													})
+												}
+											/>
+										</span>
+									</label>
+
+									<label className="flex flex-col">
 										<span>Bio</span>
 										<textarea
 											id="bio"
@@ -568,17 +634,8 @@ const RegisterHunterSubPage = () => {
 						)}
 
 						{formPage === 3 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
-								<h2 className="text-2xl font-bold">Contact Information</h2>
+							<motion.div>
+								<h2 className="text-2xl font-bold">Residence Information</h2>
 
 								<div className="mt-5 flex flex-col gap-3">
 									<label className="flex flex-col">
@@ -655,25 +712,6 @@ const RegisterHunterSubPage = () => {
 										</AnimatePresence>
 									</label>
 
-									<label className="flex flex-col">
-										<span>Postal Code</span>
-										<input
-											type="number"
-											id="postal_code"
-											value={localRegData.address.postalCode}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													address: {
-														...localRegData.address,
-														postalCode: e.target.value,
-													},
-												})
-											}
-										/>
-									</label>
-
 									<div className="flex justify-between mt-10">
 										<button
 											className="btn btn-ghost gap-2"
@@ -688,7 +726,6 @@ const RegisterHunterSubPage = () => {
 												!(
 													localRegData.address.address &&
 													localRegData.address.city &&
-													localRegData.address.postalCode &&
 													localRegData.email &&
 													localPassword.password
 												)
@@ -704,16 +741,7 @@ const RegisterHunterSubPage = () => {
 						)}
 
 						{formPage === 4 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
+							<motion.div>
 								<h2 className="text-2xl font-bold">Skill Profiling</h2>
 
 								<div className="mt-5 flex flex-col gap-3">
@@ -862,16 +890,7 @@ const RegisterHunterSubPage = () => {
 						)}
 
 						{formPage === 5 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
+							<motion.div>
 								<h2 className="text-2xl font-bold">Information Review</h2>
 
 								<div className="mt-5 flex flex-col gap-3">
@@ -927,12 +946,21 @@ const RegisterHunterSubPage = () => {
 													{localRegData.gender}
 												</span>
 											</p>
+
+											<p className="flex flex-col">
+												<span className="text-sm font-bold leading-none text-accent">
+													Mobile Phone Number
+												</span>
+												<span className="leading-none capitalize">
+													{localRegData.phone}
+												</span>
+											</p>
 										</div>
 									</div>
 
 									<div className="flex flex-col gap-2">
 										<span className="text-lg font-bold">
-											Contact Information
+											Residence Information
 										</span>
 
 										<div className="flex flex-col gap-3 ml-3">
@@ -951,15 +979,6 @@ const RegisterHunterSubPage = () => {
 												</span>
 												<span className="leading-none">
 													{localRegData.address.city}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Postal Code
-												</span>
-												<span className="leading-none">
-													{localRegData.address.postalCode}
 												</span>
 											</p>
 										</div>
@@ -1013,24 +1032,15 @@ const RegisterHunterSubPage = () => {
 						)}
 
 						{formPage === 6 && (
-							<motion.div
-								key={`page-${formPage}`}
-								initial={{ opacity: 0, x: 20 }}
-								animate={{
-									opacity: 1,
-									x: 0,
-									transition: { easings: "circOut" },
-								}}
-								exit={{ opacity: 0, x: -20, transition: { easings: "circIn" } }}
-							>
+							<motion.div>
 								<h2 className="text-2xl font-bold flex gap-2 items-center">
 									Signing Up
 									<FiLoader className=" animate-spin" />
 								</h2>
 							</motion.div>
 						)}
-					</AnimatePresence>
-				</div>
+					</div>
+				)}
 			</motion.main>
 		</>
 	);

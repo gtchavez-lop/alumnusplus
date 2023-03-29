@@ -17,6 +17,7 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import Link from "next/link";
 
 type TTab = {
 	title: string;
@@ -193,7 +194,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 								<p className="text-xl font-bold">Account Details</p>
 
 								<div className="mt-5">
-									<label className="flex flex-col gap-3">
+									<label className="flex flex-col gap-2">
 										<span>Profile Picture</span>
 										<Image
 											src={
@@ -239,6 +240,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 											// disabled
 										/>
 									</label>
+
 									<label className="flex flex-col">
 										<span>Email</span>
 										<input
@@ -248,10 +250,18 @@ const ProvisionerProfileEditPage: NextPage = () => {
 											readOnly
 											disabled
 										/>
+
+										<Link
+											href="/h/me/resetpassword"
+											className="btn btn-primary"
+										>
+											Reset Password
+										</Link>
 									</label>
 								</div>
 							</div>
 						)}
+
 						{tabSelected === "company" && (
 							<div>
 								<p className="text-xl font-bold">Company Details</p>

@@ -99,17 +99,15 @@ const ProvisionerPage: NextPage = () => {
 							{/* tabs */}
 							<div className="grid grid-cols-2 gap-2">
 								<div
-									className={`btn btn-block ${
-										tabSelected === "about" ? "btn-primary" : "btn-ghost"
-									}`}
+									className={`btn btn-block ${tabSelected === "about" ? "btn-primary" : "btn-ghost"
+										}`}
 									onClick={() => setTabSelected("about")}
 								>
 									About
 								</div>
 								<div
-									className={`btn btn-block ${
-										tabSelected === "jobs" ? "btn-primary" : "btn-ghost"
-									}`}
+									className={`btn btn-block ${tabSelected === "jobs" ? "btn-primary" : "btn-ghost"
+										}`}
 									onClick={() => setTabSelected("jobs")}
 								>
 									Job Posts
@@ -171,7 +169,7 @@ const ProvisionerPage: NextPage = () => {
 												<p className="text-lg font-bold text-primary">
 													Founding Year
 												</p>
-												<p>{companyData.foundingYear} people</p>
+												<p>{companyData.foundingYear}</p>
 											</div>
 											<div className="mt-3 shadow-lg p-5 rounded-btn">
 												<p className="text-lg font-bold text-primary">

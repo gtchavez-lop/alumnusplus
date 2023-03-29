@@ -7,6 +7,7 @@ import Carlo2 from "@/components/resume_template/carlo2";
 import { FC } from "react";
 import Gab1 from "@/components/resume_template/gab1";
 import Gab2 from "@/components/resume_template/gab2";
+import Head from "next/head";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import { NextPage } from "next";
@@ -129,17 +130,6 @@ const DefaultTemplate: FC = () => {
 					)}
 				</div>
 			</div>
-
-			{/* print button */}
-			{/* <div className=" fixed bottom-0 right-0 mb-5 mr-5 print:hidden">
-				<button
-					onClick={() => window.print()}
-					className="hidden lg:inline-flex btn btn-primary btn-lg gap-2 btn-block"
-				>
-					<MdPrint />
-					Print
-				</button>
-			</div> */}
 		</>
 	);
 };
@@ -158,13 +148,27 @@ const GeneratedCV: NextPage = () => {
 			exit="exit"
 			className="relative min-h-screen w-full pt-24 print:pt-0 pb-36 print:pb-0"
 		>
+			<Head>
+				<title>{`Generated CV - ${_currentUser?.full_name.first} ${_currentUser?.full_name.last}`}</title>
+			</Head>
+
 			{/* show warning if on mobile */}
-			<div className="absolute alert alert-warning shadow-lg lg:hidden print:invisible">
+			<div className="alert alert-info shadow-lg lg:hidden print:hidden">
 				<div>
-					<MdWarning className="inline-block mr-2" />
-					<span>This feature is for desktop only</span>
+					<span>
+						You can only view this in desktop. But you can download this
+						template by pressing the button below
+					</span>
 				</div>
 			</div>
+
+			{/* download button on mobile only */}
+			<button
+				onClick={() => window.print()}
+				className="btn btn-primary inline-flex print:hidden lg:hidden btn-block  mt-5"
+			>
+				Print and Download File
+			</button>
 
 			{/* mobile restrict */}
 			{!!_currentUser && template && (
@@ -183,7 +187,7 @@ const GeneratedCV: NextPage = () => {
 					<button
 						onClick={() => {
 							window.document.title = `${_currentUser.username} - CV`;
-							window.print()
+							window.print();
 						}}
 						className="btn btn-primary btn-lg gap-2"
 					>

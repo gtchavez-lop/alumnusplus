@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@formkit/auto-animate': 1.0.0-beta.6
+  '@hcaptcha/react-hcaptcha': ^1.4.4
   '@headlessui/react': ^1.7.11
   '@nanostores/react': ^0.4.1
   '@next/bundle-analyzer': ^13.2.4
@@ -44,6 +45,7 @@ specifiers:
 
 dependencies:
   '@formkit/auto-animate': 1.0.0-beta.6
+  '@hcaptcha/react-hcaptcha': 1.4.4_biqbaboplfbrettd7655fr4n2y
   '@headlessui/react': 1.7.11_biqbaboplfbrettd7655fr4n2y
   '@nanostores/react': 0.4.1_nkfnbc2tpc77iht7asm3uqwau4
   '@next/font': 13.1.6
@@ -238,6 +240,17 @@ packages:
 
   /@formkit/auto-animate/1.0.0-beta.6:
     resolution: {integrity: sha512-PVDhLAlr+B4Xb7e+1wozBUWmXa6BFU8xUPR/W/E+TsQhPS1qkAdAsJ25keEnFrcePSnXHrOsh3tiFbEToOzV9w==}
+    dev: false
+
+  /@hcaptcha/react-hcaptcha/1.4.4_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-Aen217LDnf5ywbPSwBG5CsoqBLIHIAS9lhj3zQjXJuO13doQ6/ubkCWNuY8jmwYLefoFt3V3MrZmCdKDaFoTuQ==}
+    peerDependencies:
+      react: '>= 16.3.0'
+      react-dom: '>= 16.3.0'
+    dependencies:
+      '@babel/runtime': 7.20.13
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@headlessui/react/1.7.11_biqbaboplfbrettd7655fr4n2y:
