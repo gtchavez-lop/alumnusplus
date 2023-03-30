@@ -3,6 +3,7 @@ import {
 	MdEvent,
 	MdHome,
 	MdMap,
+	MdNotes,
 	MdNotifications,
 	MdOutlineDarkMode,
 	MdOutlineEvent,
@@ -52,13 +53,12 @@ const AppBar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							<Link href="/register" className='btn btn-primary btn-sm gap-2'>
+							{/* <Link href="/register" className='btn btn-primary btn-sm gap-2'>
 								<MdPersonAdd className="text-lg" />
-								{/* <span>Sign Up</span> */}
-							</Link>
+							</Link> */}
 							<Link href="/login" className='btn btn-ghost btn-sm gap-2'>
 								<MdPerson className="text-lg" />
-								{/* <span>Log In</span> */}
+								<span>Log In</span>
 							</Link>
 							<div
 								onClick={() => {
@@ -179,7 +179,7 @@ const AppBar = () => {
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
-								<Link
+								{/* <Link
 									href={"/p/notifications"}
 									className={`btn btn-sm ${
 										router.pathname.includes("/p/notifications")
@@ -188,7 +188,7 @@ const AppBar = () => {
 									}`}
 								>
 									<MdOutlineNotifications className="text-lg" />
-								</Link>
+								</Link> */}
 								<Link
 									href={"/p/me"}
 									className={`btn btn-sm ${
@@ -201,7 +201,7 @@ const AppBar = () => {
 								</Link>
 							</div>
 						</div>
-						<div className="grid grid-cols-3 gap-3 py-5 w-full">
+						<div className="grid grid-cols-4 gap-3 py-5 w-full">
 							<Link
 								href={"/p/dashboard"}
 								className={`btn btn-sm  ${
@@ -211,6 +211,16 @@ const AppBar = () => {
 								}`}
 							>
 								<MdHome className="text-lg" />
+							</Link>
+							<Link
+								href={"/p/blog"}
+								className={`btn btn-sm  ${
+									router.pathname.includes("/p/blog")
+										? "btn-primary"
+										: "btn-ghost"
+								}`}
+							>
+								<MdNotes className="text-lg" />
 							</Link>
 							<Link
 								href={"/p/jobs"}

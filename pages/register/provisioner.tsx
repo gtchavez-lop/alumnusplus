@@ -477,7 +477,7 @@ const ProvisionerPage: NextPage = () => {
 
 											if (e.currentTarget.value.length > 2) {
 												const res = PhCities.search(e.currentTarget.value);
-												let cities = res.map((city) => ({
+												const cities = res.map((city) => ({
 													city: city.item.city,
 													admin_name: city.item.admin_name,
 												}));

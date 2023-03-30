@@ -36,6 +36,16 @@ const templates = [
 		value: "gabbie2",
 		image: "/cvtemplate/preview_gab2.png",
 	},
+	{
+		name: "Novie 1",
+		value: "novie1",
+		image: "/cvtemplate/preview_gab2.png",
+	},
+	{
+		name: "Novie 2",
+		value: "novie2",
+		image: "/cvtemplate/preview_gab2.png",
+	},
 ];
 
 const CvBuilder: FC = () => {
@@ -44,9 +54,6 @@ const CvBuilder: FC = () => {
 		useState<IUserHunter>(_currentUser);
 	const router = useRouter();
 	const [selectedTemplate, setSelectedTemplate] = useState<string>("default");
-	const [templateSelectorRef] = useAutoAnimate<HTMLDivElement>({
-		duration: 0.5,
-	});
 
 	const generateCV = async () => {
 		toast.loading("Generating CV...");
