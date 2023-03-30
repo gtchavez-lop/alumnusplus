@@ -534,6 +534,7 @@ export interface IUserHunter {
   }
   applied_jobs: string[]
   avatar_url: string
+  banner_url: string
   bio: string
   birthdate: string
   birthplace: string
@@ -637,6 +638,7 @@ export type THunterBlogPost = {
   updatedAt: string | null
   uploader: IUserHunter
   upvoters: string[]
+  draft: boolean
 }
 
 export interface TProvJobPost {
@@ -650,6 +652,7 @@ export interface TProvJobPost {
   job_type:           string[];
   created_at:         string;
   job_skills:         string[];
+  draft:              boolean;
 }
 
 export interface TProvBlogPost {
@@ -660,4 +663,5 @@ export interface TProvBlogPost {
 	uploader: IUserProvisioner;
 	upvoters: string[];
 	type: "provblog" | "event";
+  draft: boolean;
 }

@@ -29,6 +29,7 @@ interface BlogEventPostProps {
 	uploader: IUserProvisioner;
 	upvoters: string[];
 	type: "provblog" | "event";
+	draft: boolean;
 }
 
 const BlogPage: NextPage = () => {

@@ -24,6 +24,7 @@ import { tanstackClient } from "@/lib/tanstack";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
@@ -35,7 +36,9 @@ export default function App({ Component, pageProps, router }: AppProps) {
 		const { data } = await supabase.auth.getUser();
 
 		if (data.user) {
-			let metadata = data.user?.user_metadata as IUserHunter | IUserProvisioner;
+			const metadata = data.user?.user_metadata as
+				| IUserHunter
+				| IUserProvisioner;
 
 			if (metadata && metadata.type === "hunter") {
 				$accountType.set("hunter");
@@ -144,6 +147,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 									key={router.pathname}
 								/>
 							</AnimatePresence>
+							<Footer />
 						</div>
 					</div>
 
