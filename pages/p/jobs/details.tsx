@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.query;
@@ -76,53 +77,29 @@ const JobPostingPage: NextPage<{
 					<div className="col-span-full lg:col-span-3">
 						<h3 className="text-2xl font-bold">Overview</h3>
 
-						<div className="mt-10 flex flex-col gap-5">
-							<p className="flex flex-col ">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Job Title
-								</span>
-								<span>{jobData.data?.job_title}</span>
+						<div className="mt-5">
+							<h1 className="text-xl font-bold">{jobData.data.job_title}</h1>
+
+							<p className="text-sm">
+								{jobData.data.job_location} |{" "}
+								{
+									jobData.data.job_type.map(
+										(type) => type.charAt(0).toUpperCase() + type.slice(1),
+									)[0]
+								}
 							</p>
-							<p className="flex flex-col">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Job Type
-								</span>
-								<span>{jobData.data?.job_type}</span>
+						</div>
+						<div className="text-right flex flex-col justify-end">
+							<p>
+								{
+									jobData.data.job_skills.map(
+										(type) => type.charAt(0).toUpperCase() + type.slice(1),
+									)[0]
+								}
 							</p>
-							<p className="flex flex-col">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Job Location
-								</span>
-								<span>{jobData.data?.job_location}</span>
+							<p className="text-sm opacity-50">
+								Posted on {dayjs(jobData.data.created_at).format("MMMM D, YYYY")}
 							</p>
-							<p className="flex flex-col">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Short Description
-								</span>
-								<span>{jobData.data?.short_description}</span>
-							</p>
-							<div className="flex flex-col">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Skill Requirements
-								</span>
-								<ul className="list-disc pl-5">
-									{jobData.data?.job_skills.map((skill, index) => (
-										<li key={`qualification_${index}`}>{skill}</li>
-									))}
-								</ul>
-							</div>
-							<div className="flex flex-col">
-								<span className="text-lg font-bold opacity-75 text-primary">
-									Qualifications
-								</span>
-								<ul className="list-disc pl-5">
-									{jobData.data?.job_qualifications.map(
-										(qualification, index) => (
-											<li key={`qualification_${index}`}>{qualification}</li>
-										),
-									)}
-								</ul>
-							</div>
 						</div>
 					</div>
 					{/* full description */}
