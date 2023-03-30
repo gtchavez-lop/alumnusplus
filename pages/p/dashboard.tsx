@@ -15,6 +15,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
+import JobCardDashboard from "@/components/jobs/JobProvDashboard";
 
 dayjs.extend(relativeTime);
 
@@ -94,36 +95,7 @@ const Prov_Dashboard = () => {
 					className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 				>
 					<div className="grid grid-cols-5 gap-5">
-						<div className="col-span-full lg:hidden">
-							<div className="flex flex-col items-center">
-								{!_currentUser && (
-									<>
-										<div className="w-24 h-24 mask mask-squircle bg-slate-500/50 animate-pulse " />
-										<p className="bg-slate-500/50 rounded-btn animate-pulse text-transparent">
-											placeholder
-										</p>
-									</>
-								)}
-								{!!_currentUser && (
-									<>
-										<Image
-											alt="avatar"
-											src={
-												_currentUser.avatar_url ??
-												`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`
-											}
-											className="w-24 h-24 mask mask-squircle"
-											width={96}
-											height={96}
-										/>
-										<p>{_currentUser.legalName}</p>
-									</>
-								)}
-								<Link href={"/p/me"} className="btn btn-link">
-									Go to my profile
-								</Link>
-							</div>
-						</div>
+
 						<div className="col-span-full lg:col-span-3 flex flex-col gap-5">
 							{/* stats */}
 							{jobs.isSuccess && (
@@ -132,9 +104,28 @@ const Prov_Dashboard = () => {
 									<div className="stats stats-vertical md:stats-horizontal bg-base-200 w-full">
 										<div className="stat">
 											<div className="stat-figure text-secondary">
+												<FiBriefcase className="text-2xl" />
+											</div>
+											<div className="stat-title">Job Posts</div>
+											<div
+												className={`stat-value ${jobs.isLoading ||
+													(!jobs.isSuccess &&
+														"bg-slate-500/50 rounded-btn animate-pulse text-transparent")
+													}`}
+											>
+												{jobs.isSuccess && jobs.data
+													? jobs.data.length > 0
+														? jobs.data.length
+														: 0
+													: "0"}
+											</div>
+											<div className="stat-desc">Current count</div>
+										</div>
+										<div className="stat">
+											<div className="stat-figure text-secondary">
 												<FiUser className="text-2xl" />
 											</div>
-											<div className="stat-title">Blog Posts</div>
+											<div className="stat-title">Applicants</div>
 											{activities.isLoading ? (
 												<div className="stat-value bg-slate-500/50 rounded-btn animate-pulse text-transparent">
 													240
@@ -144,28 +135,7 @@ const Prov_Dashboard = () => {
 													{activities.data?.length}
 												</div>
 											)}
-											<div className="stat-desc">Since start of profile</div>
-										</div>
-
-										<div className="stat">
-											<div className="stat-figure text-secondary">
-												<FiBriefcase className="text-2xl" />
-											</div>
-											<div className="stat-title">Job Posts</div>
-											<div
-												className={`stat-value ${
-													jobs.isLoading ||
-													(!jobs.isSuccess &&
-														"bg-slate-500/50 rounded-btn animate-pulse text-transparent")
-												}`}
-											>
-												{jobs.isSuccess && jobs.data
-													? jobs.data.length > 0
-														? jobs.data.length
-														: 0
-													: "0"}
-											</div>
-											<div className="stat-desc">Current count</div>
+											<div className="stat-desc">Current Count</div>
 										</div>
 
 										<div className="stat">
@@ -186,7 +156,7 @@ const Prov_Dashboard = () => {
 							)}
 
 							{/* posted Jobs */}
-							<div className="flex flex-col gap-3">
+							<div className="flex flex-col gap-3 mt-5">
 								<h2 className="text-2xl font-bold">Job Postings</h2>
 								<div className="flex flex-col gap-2">
 									{jobs.isLoading && (
@@ -215,7 +185,8 @@ const Prov_Dashboard = () => {
 											{jobs.data?.map(
 												(job, index) =>
 													index < 3 && (
-														<JobCardProv
+
+														<JobCardDashboard
 															viewMode="list"
 															key={job.id}
 															job={job}
@@ -248,7 +219,14 @@ const Prov_Dashboard = () => {
 								</div>
 							</div>
 
-							<div className="flex flex-col gap-3">
+
+						</div>
+
+						{/* right side */}
+						<div className="col-span-2 hidden lg:flex flex-col gap-5">
+
+
+							<div className="flex flex-col gap-4">
 								<h2 className="text-2xl font-bold">Recent Activities</h2>
 								<div className="flex flex-col gap-2">
 									{activities.isLoading &&
@@ -277,56 +255,6 @@ const Prov_Dashboard = () => {
 													<ProvFeedCard key={activity.id} item={activity} />
 												),
 										)}
-
-									<div className="btn btn-primary btn-ghost btn-block ">
-										See all
-									</div>
-								</div>
-							</div>
-						</div>
-
-						{/* right side */}
-						<div className="col-span-2 hidden lg:flex flex-col gap-5">
-							<div className="flex flex-col items-center">
-								{!_currentUser && (
-									<>
-										<div className="w-24 h-24 mask mask-squircle bg-slate-500/50 animate-pulse " />
-										<p className="bg-slate-500/50 rounded-btn animate-pulse text-transparent">
-											placeholder
-										</p>
-									</>
-								)}
-								{!!_currentUser && (
-									<>
-										<Image
-											alt="avatar"
-											src={
-												_currentUser.avatar_url ??
-												`https://api.dicebear.com/5.x/shapes/png?seed=${_currentUser.legalName}`
-											}
-											className="w-24 h-24 mask mask-squircle"
-											width={96}
-											height={96}
-										/>
-										<p>{_currentUser.legalName}</p>
-									</>
-								)}
-								<Link href={"/p/me"} className="btn btn-link">
-									Go to my profile
-								</Link>
-							</div>
-
-							<div className="flex flex-col gap-4">
-								<h2 className="text-2xl font-bold">Reminders</h2>
-								<div className="flex flex-col gap-2">
-									{Array(5)
-										.fill("")
-										.map((_, i) => (
-											<div
-												key={`loading2_${i}`}
-												className="w-full h-[48px] bg-slate-500/50 rounded-btn animate-pulse"
-											/>
-										))}
 								</div>
 							</div>
 						</div>

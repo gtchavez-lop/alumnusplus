@@ -19,6 +19,7 @@ import { uuid } from "uuidv4";
 const CreateNewJobPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
 	const router = useRouter();
+
 	const [jobSkillQuery, setJobSkillQuery] = useState("");
 	const [jobSkillSearchResults, setJobSkillSearchResults] = useState<string[]>(
 		[],

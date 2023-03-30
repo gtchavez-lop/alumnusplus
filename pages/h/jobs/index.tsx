@@ -23,6 +23,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 const JobCard = dynamic(() => import("@/components/jobs/JobCard"), {
 	ssr: false,
@@ -304,6 +305,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 
@@ -315,6 +317,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 							</motion.div>
@@ -335,6 +338,7 @@ const ApplyPage = () => {
 								recommendedJobs.data.map((job, index) => (
 									<JobCard
 										isSaved={_userDetails.saved_jobs.includes(job.id)}
+										isApplied={_userDetails.applied_jobs.includes(job.id)}
 										job={job}
 										key={`recommendedjob_${index}`}
 									/>
@@ -353,7 +357,7 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "saved" && (
-						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5 w-full">
 							{savedJobs.isSuccess &&
 								savedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`savedjob_${index}`} />
@@ -372,10 +376,8 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "applied" && (
-						<motion.div className=" mt-10">
-							<p className="alert alert-warning">
-								This feature is still in development. We are working on it.
-							</p>
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5">
+
 							{appliedJobs.isSuccess &&
 								appliedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`appliedjob_${index}`} />
@@ -391,6 +393,7 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
+
 						</motion.div>
 					)}
 					{tabSelected === "cv" && (

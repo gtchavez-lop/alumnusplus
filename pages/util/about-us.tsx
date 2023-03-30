@@ -85,10 +85,9 @@ const AboutPage: NextPage = () => {
 						<p className="font-normal text-base leading-6 text-base-content ">
 							Come on in and discover what opportunities await you at Wicket—a
 							progressive web career platform for Hunters and Provisioners (in
-							Manila/ or ibang chika idk). By establishing a platform where job
-							providers and job seekers can interact with each other, Wicket
-							aims to help the steady increase of the employment rate in the
-							Philippines.
+							Metro Manila). By establishing a platform where job providers and
+							job seekers can interact with each other, Wicket aims to help the
+							steady increase of the employment rate in the Philippines.
 						</p>
 					</div>
 					<div className="w-full lg:w-8/12 relative">
