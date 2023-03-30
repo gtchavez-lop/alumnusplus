@@ -654,7 +654,6 @@ export interface TProvJobPost {
   created_at:         string;
   job_skills:         string[];
   draft:              boolean;
-  applicants: string[];
 }
 
 export interface TProvBlogPost {
