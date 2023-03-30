@@ -136,7 +136,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 	const handleComment = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		let commentContent = e.currentTarget[0] as HTMLTextAreaElement;
+		const commentContent = e.currentTarget[0] as HTMLTextAreaElement;
 
 		// disable the form
 		e.currentTarget.disabled = true;

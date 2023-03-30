@@ -18,6 +18,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import { toast } from "react-hot-toast";
 
 type TTabs = {
 	title: string;
@@ -188,7 +189,13 @@ const ProvProfilePage: NextPage = () => {
 										<Link href="/p/me/edit" className="btn btn-primary">
 											Edit
 										</Link>
-										<div className="btn btn-primary">Share Page</div>
+
+										<button className="btn btn-primary"
+											onClick={() => {
+												navigator.clipboard.writeText(window.location.href);
+												toast.success("Link copied to clipboard!");
+											}}
+										>Share Page</button>
 										<Link href="/p/me/hunter-view" className="btn">
 											View as Hunter
 										</Link>
@@ -378,7 +385,11 @@ const ProvProfilePage: NextPage = () => {
 															/>
 															<div>
 																<p className="leading-none text-lg font-bold">
+<<<<<<< HEAD
 																	{item.full_name?.first} {item.full_name?.last}
+=======
+																	{item.full_name.first} {item.full_name.last}
+>>>>>>> 2d9a54266160924ab347fb485003568ac415f1ff
 																</p>
 																<p className="leading-none opacity-75">
 																	@{item.username}
