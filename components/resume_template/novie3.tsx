@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { useStore } from "@nanostores/react";
 import { FC } from "react";
 
-const novs3: FC = () => {
+const Novs3: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 
 	return (
@@ -196,4 +196,4 @@ const novs3: FC = () => {
 	);
 };
 
-export default novs3;
+export default Novs3;
