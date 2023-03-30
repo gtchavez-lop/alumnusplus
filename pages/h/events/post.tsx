@@ -1,7 +1,12 @@
 import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
 import { FormEvent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
-import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import {
+	IUserHunter,
+	IUserProvisioner,
+	THunterBlogPost,
+	TProvBlogPost,
+} from "@/lib/types";
 import {
 	MdCheckCircle,
 	MdComment,
@@ -28,43 +33,52 @@ import relative from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
 dayjs.extend(relative);
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query;
+interface BlogEventPostProps {
+	content: string;
+	createdAt: string | null;
+	id: string;
+	updatedAt: string | null;
+	uploader: IUserProvisioner;
+	upvoters: string[];
+	type: "provblog" | "event";
+}
 
-	const { data: blogData, error } = await supabase
-		.from("public_posts")
-		.select(
-			"id,content,comments,createdAt,updatedAt,uploader(id,full_name,username,avatar_url,is_verified),upvoters",
-		)
-		.eq("id", id)
-		.single();
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+// 	const { id } = context.query;
 
-	if (error) {
-		console.log(error);
-	}
+// 	const { data: _blogData.data, error } = await supabase
+// 		.from("public_provposts")
+// 		.select("*,uploader(*)")
+// 		.eq("id", id)
+// 		.single();
 
-	if (error) {
-		return {
-			props: {
-				blogData: null,
-			},
-		};
-	}
+// 	if (error) {
+// 		console.log(error);
+// 	}
 
-	return {
-		props: {
-			blogData,
-		},
-	};
-};
+// 	if (error) {
+// 		return {
+// 			props: {
+// 				_blogData.data: null,
+// 			},
+// 		};
+// 	}
 
-const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
+// 	return {
+// 		props: {
+// 			_blogData.data,
+// 		},
+// 	};
+// };
+
+const ProvPostPage: NextPage = () => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [isCommenting, setIsCommenting] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
@@ -72,96 +86,24 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 	const [isCommentingRef] = useAutoAnimate();
 	const [isEditingRef] = useAutoAnimate();
 	const router = useRouter();
-	const [tempData, setTempData] = useState(blogData);
+	const { id: selectedID } = router.query;
+	const [tempData, setTempData] = useState<BlogEventPostProps>();
 
-	// methods
-	const checkIfLiked = async (upvoterArrays: string[]) => {
-		const localIsLiked = upvoterArrays.includes(currentUser.id);
-		setIsLiked(localIsLiked);
-	};
+	const fetchBlogData = async () => {
+		if (!router.query.id) return;
 
-	const upvoteHandler = async () => {
-		toast.loading("Processing...");
-
-		// fetch current upvoters
-		const { data: currentData, error: currentDataError } = await supabase
-			.from("public_posts")
-			.select("upvoters")
-			.eq("id", blogData?.id)
+		const { data, error } = await supabase
+			.from("public_provposts")
+			.select("*,uploader(*)")
+			.eq("id", router.query.id)
 			.single();
 
-		if (currentDataError) {
-			console.log(currentDataError);
-			return;
-		}
-
-		const localIsLiked = currentData.upvoters.includes(currentUser.id);
-
-		// if user already liked the post, remove the upvote
-		if (localIsLiked) {
-			const newUpvoters = currentData.upvoters.filter(
-				(id: string) => id !== currentUser.id,
-			);
-
-			const { error: removeUpvoteError } = await supabase
-				.from("public_posts")
-				.update({
-					upvoters: newUpvoters,
-				})
-				.eq("id", blogData?.id);
-
-			if (removeUpvoteError) {
-				console.log(removeUpvoteError);
-				return;
-			}
-
-			setIsLiked(false);
-			blogData.upvoters = newUpvoters;
-			toast.dismiss();
-			return;
-		}
-
-		// if user hasn't liked the post, add the upvote
-		const newUpvoters = [...currentData.upvoters, currentUser.id];
-
-		const { error: addUpvoteError } = await supabase
-			.from("public_posts")
-			.update({
-				upvoters: newUpvoters,
-			})
-			.eq("id", blogData?.id);
-
-		if (addUpvoteError) {
-			console.log(addUpvoteError);
-			return;
-		}
-
-		setIsLiked(true);
-		toast.dismiss();
-		blogData.upvoters = newUpvoters;
-	};
-
-	const handleDeleteComment = async (commentId: string) => {
-		toast.loading("Processing...");
-
-		const newComments = blogData.comments.filter(
-			(comment) => comment.id !== commentId,
-		);
-
-		const { error } = await supabase
-			.from("public_posts")
-			.update({
-				comments: newComments,
-			})
-			.eq("id", blogData.id);
-
 		if (error) {
-			toast.error("Something went wrong");
-			return;
+			console.log(error);
+			return {} as BlogEventPostProps;
 		}
 
-		toast.dismiss();
-		router.reload();
+		return data as BlogEventPostProps;
 	};
 
 	const handleDeleteBlog = async (targetBlogId: string) => {
@@ -185,9 +127,9 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 		toast.loading("Processing...");
 
 		const { error } = await supabase
-			.from("public_posts")
+			.from("public_provposts")
 			.update({
-				content: tempData.content,
+				content: tempData?.content,
 			})
 			.eq("id", targetBlogId);
 
@@ -200,127 +142,21 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 		router.reload();
 	};
 
-	const changeCommentVisibility = async (targetCommentID: string) => {
-		const { data: latestData, error: latestDataError } = await supabase
-			.from("public_posts")
-			.select("comments")
-			.eq("id", blogData.id)
-			.single();
-
-		if (latestDataError || !latestData) {
-			console.log(latestDataError);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		type IComment = {
-			id: string;
-			content: string;
-			createdAt: string;
-			commenter: {
-				id: string;
-				username: string;
-				full_name: string;
-			};
-			visible: boolean;
-		};
-
-		const newComments = latestData.comments.map((comment: IComment) => {
-			if (comment.id === targetCommentID) {
-				comment.visible = !comment.visible;
-			}
-
-			return comment;
-		});
-
-		const { error } = await supabase
-			.from("public_posts")
-			.update({
-				comments: newComments,
-			})
-			.eq("id", blogData.id);
-
-		if (error) {
-			console.log(error);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		toast.success("Comment visibility changed!");
-		router.reload();
-	};
-
-	const handleComment = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		const commentContent = document.getElementById(
-			"commentContent",
-		) as HTMLTextAreaElement;
-
-		// disable the form
-		e.currentTarget.disabled = true;
-
-		if (commentContent.value.length === 0) {
-			toast.error("Comment cannot be empty!");
-			return;
-		}
-
-		// fetch latest data
-		const { data: latestData, error: latestDataError } = await supabase
-			.from("public_posts")
-			.select("comments")
-			.eq("id", blogData.id)
-			.single();
-
-		if (latestDataError || !latestData) {
-			console.log(latestDataError);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		const newComment = {
-			id: uuid(),
-			content: commentContent.value,
-			createdAt: dayjs().format(),
-			commenter: {
-				id: currentUser.id,
-				username: currentUser.username,
-				full_name: currentUser.full_name,
-				avatar_url: currentUser.avatar_url,
-				is_verified: currentUser.is_verified,
-			},
-			visible: true,
-		};
-
-		const newComments = [...latestData.comments, newComment];
-
-		const { error } = await supabase
-			.from("public_posts")
-			.update({
-				comments: newComments,
-			})
-			.eq("id", blogData.id);
-
-		if (error) {
-			console.log(error);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		commentContent.value = "";
-		toast.success("Comment posted!");
-		blogData.comments = newComments;
-		setIsCommenting(false);
-	};
-
-	useEffect(() => {
-		if ((!!blogData as boolean) && (!!currentUser as boolean)) {
-			checkIfLiked(blogData.upvoters);
-		}
+	const _blogData = useQuery({
+		queryKey: ["h_provblogData"],
+		queryFn: fetchBlogData,
+		enabled: !!selectedID,
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+		onSuccess: (data) => {
+			console.log(data);
+			setTempData(data);
+		},
 	});
 
 	return (
 		<>
-			{!!blogData && !!currentUser && (
+			{_blogData.isSuccess && !!tempData && !!currentUser && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -332,7 +168,10 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 						{/* header */}
 						<div className="flex items-center gap-4 0">
 							<Image
-								src={blogData.uploader.avatar_url}
+								src={
+									_blogData.data?.uploader?.avatar_url ||
+									`https://api.dicebear.com/6.x/shapes/png?seed=${_blogData.data?.uploader.id}`
+								}
 								alt="avatar"
 								width={40}
 								height={40}
@@ -340,24 +179,16 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 							/>
 							<div className="flex flex-col">
 								<Link
-									href={
-										currentUser.id === blogData.uploader.id
-											? "/me"
-											: `/h?user=${blogData.uploader.username}`
-									}
+									href={`/h/drift/company?id=${_blogData.data?.uploader.id}`}
 									className="font-semibold hover:underline underline-offset-2 leading-tight flex items-center"
 								>
-									{blogData.uploader.full_name.first}{" "}
-									{blogData.uploader.full_name.last}
-									{blogData.uploader.is_verified && (
-										<MdCheckCircle className="text-primary ml-1" />
-									)}
+									{_blogData.data?.uploader.legalName}
 								</Link>
 								<p className="leading-none">
-									{dayjs(blogData.createdAt).fromNow()}
+									{dayjs(_blogData.data?.createdAt).fromNow()}
 								</p>
 							</div>
-							{currentUser.id === blogData.uploader.id && (
+							{currentUser.id === _blogData.data?.uploader.id && (
 								<div className="ml-auto">
 									{/* mobile dropdown */}
 									<div className="dropdown dropdown-end dropdown-bottom lg:hidden">
@@ -421,7 +252,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										onChange={(e) =>
 											setTempData({
 												...tempData,
-												content: e.target.value,
+												content: e.target.value as string,
 											})
 										}
 										rows={30}
@@ -433,26 +264,12 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 							<div className="col-span-2" ref={isCommentingRef}>
 								{/* upvote and comment toggler */}
 								<div className="flex items-center gap-1">
-									<button
-										onClick={upvoteHandler}
-										className="btn btn-ghost gap-2 text-xl"
-									>
-										{isLiked ? (
-											<MdFavorite className="text-red-500" />
-										) : (
-											<MdFavoriteBorder />
-										)}
-										{blogData.upvoters.length}
-									</button>
-									<button
-										onClick={() => {
-											setIsCommenting(!isCommenting);
-										}}
-										className="btn btn-ghost gap-2 text-xl"
-									>
-										<MdComment />
-										{blogData.comments.length}
-									</button>
+									<p>
+										Upvotes:{" "}
+										<span className="text-primary font-bold">
+											{_blogData.data?.upvoters.length}
+										</span>
+									</p>
 									<button
 										onClick={() => {
 											navigator.clipboard.writeText(window.location.href);
@@ -463,170 +280,13 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										<MdShare />
 									</button>
 								</div>
-								{/* comment input */}
-								{isCommenting && (
-									<form
-										onSubmit={(e) => handleComment(e)}
-										className="mt-5 flex flex-col gap-2"
-									>
-										<div className="flex items-center gap-3">
-											<Image
-												src={currentUser.avatar_url}
-												alt="avatar"
-												width={40}
-												height={40}
-												className="mask mask-squircle"
-											/>
-											<div>
-												<p className="font-semibold leading-tight flex items-center">
-													{currentUser.full_name.first}{" "}
-													{currentUser.full_name.last}
-													{currentUser.is_verified && (
-														<MdCheckCircle className="text-primary text-sm ml-1" />
-													)}
-												</p>
-												<p className="text-sm leading-tight">
-													@{currentUser.username}
-												</p>
-											</div>
-										</div>
-										<textarea
-											name="commentContent"
-											id="commentContent"
-											rows={5}
-											className="textarea textarea-primary w-full"
-										/>
-										<button type="submit" className="btn btn-primary btn-block">
-											Comment
-										</button>
-									</form>
-								)}
-								{/* comment section */}
-								{blogData.comments.length > 0 ? (
-									<div className="mt-5 flex flex-col gap-1">
-										{blogData.comments.map((comment, index: number) => (
-											<div
-												className=" rounded-btn flex flex-col gap-2"
-												key={`comment_${index}`}
-											>
-												<div className="flex gap-2">
-													<Link
-														href={
-															currentUser.id === comment.commenter.id
-																? "/h/me"
-																: `/h/${comment.commenter.username}`
-														}
-													>
-														<Image
-															src={comment.commenter.avatar_url}
-															alt="avatar"
-															className="mask mask-squircle bg-primary"
-															width={36}
-															height={36}
-														/>
-													</Link>
-													<div className="flex flex-col w-full rounded-btn p-3 bg-base-300">
-														<Link
-															href={
-																currentUser.id === comment.commenter.id
-																	? "/h/me"
-																	: `/h/${comment.commenter.username}`
-															}
-															className="font-bold text-sm leading-none hover:underline w-full flex items-center"
-														>
-															{comment.commenter.full_name.first}{" "}
-															{comment.commenter.full_name.last}
-															{comment.commenter.is_verified && (
-																<MdCheckCircle className="text-primary ml-1" />
-															)}
-														</Link>
-														<ReactMarkdown
-															// components={markdownRenderer}
-															rehypePlugins={[rehypeRaw]}
-															className="prose pb-0 break-all"
-														>
-															{comment.content}
-														</ReactMarkdown>
-													</div>
-												</div>
-												<div className="flex items-center">
-													{!comment.visible ? <MdVisibilityOff /> : null}
-													<div className="flex gap-3 ml-auto">
-														{blogData.uploader.id === currentUser.id && (
-															<>
-																<label
-																	htmlFor="deleteCommentModal"
-																	className="hover:underline hover:text-error cursor-pointer"
-																>
-																	Delete
-																</label>
-																<div
-																	onClick={() => {
-																		changeCommentVisibility(comment.id);
-																	}}
-																	className="hover:underline cursor-pointer"
-																>
-																	{comment.visible ? (
-																		<>Hide Comment</>
-																	) : (
-																		<>Show Comment</>
-																	)}
-																</div>
-															</>
-														)}
-													</div>
-
-													{/* delete comment modal */}
-													<input
-														type="checkbox"
-														id="deleteCommentModal"
-														className="modal-toggle"
-													/>
-													<div className="modal">
-														<div className="modal-box">
-															<h2 className="text-lg font-bold">
-																Confirm Delete Comment
-															</h2>
-															<p>
-																Are you sure you want to delete this comment?
-																This action can&apos;t be undone.
-															</p>
-
-															<div className="flex gap-2 mt-5 justify-end">
-																<label
-																	htmlFor="deleteCommentModal"
-																	className="btn btn-ghost"
-																>
-																	Cancel
-																</label>
-																<label
-																	htmlFor="deleteCommentModal"
-																	className="btn btn-error"
-																	onClick={() => {
-																		handleDeleteComment(comment.id);
-																	}}
-																>
-																	Delete
-																</label>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										))}
-									</div>
-								) : (
-									<div className="mt-5 lg:p-5 flex flex-col gap-5">
-										<p className="opacity-50 text-center">No comments yet!</p>
-									</div>
-								)}
 							</div>
 						</div>
 					</motion.main>
 				</>
 			)}
 
-			{/* {!!blogData && !!currentUser && (
+			{/* {!!_blogData.data && !!currentUser && (
 				<>
 					<motion.main
 						variants={AnimPageTransition}
@@ -639,13 +299,13 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 							<div className="flex items-center gap-3 lg:bg-base-200 lg:p-5 lg:rounded-btn">
 								<Link
 									href={
-										currentUser.id === blogData.uploader.id
+										currentUser.id === _blogData.data.uploader.id
 											? "/me"
-											: `/h/${blogData.uploader.username}`
+											: `/h/${_blogData.data.uploader.username}`
 									}
 								>
 									<Image
-										src={blogData.uploader.avatar_url}
+										src={_blogData.data.uploader.avatar_url}
 										alt="avatar"
 										className="w-10 h-10 mask mask-squircle"
 										width={40}
@@ -655,21 +315,21 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 								<div className="flex flex-col gap-1">
 									<Link
 										href={
-											currentUser.id === blogData.uploader.id
+											currentUser.id === _blogData.data.uploader.id
 												? "/me"
-												: `/h/${blogData.uploader.username}`
+												: `/h/${_blogData.data.uploader.username}`
 										}
 									>
 										<p className=" font-semibold leading-none hover:underline underline-offset-4">
-											{blogData.uploader.full_name.first}{" "}
-											{blogData.uploader.full_name.last}
+											{_blogData.data.uploader.full_name.first}{" "}
+											{_blogData.data.uploader.full_name.last}
 										</p>
 									</Link>
 									<p className="text-gray-500 text-sm leading-none">
-										{dayjs(blogData.createdAt).format("MMMM D, YYYY")}
+										{dayjs(_blogData.data.createdAt).format("MMMM D, YYYY")}
 									</p>
 								</div>
-								{currentUser.id === blogData.uploader.id && (
+								{currentUser.id === _blogData.data.uploader.id && (
 									<div className="flex items-center gap-2 ml-auto">
 										<button
 											onClick={() => setIsEditing(!isEditing)}
@@ -715,14 +375,14 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 										}`}
 									>
 										<FiArrowUp />
-										<span>{blogData.upvoters.length ?? 0}</span>
+										<span>{_blogData.data.upvoters.length ?? 0}</span>
 									</button>
 									<button
 										onClick={() => setIsCommenting(!isCommenting)}
 										className="btn btn-ghost gap-2 items-center"
 									>
 										<FiMessageSquare />
-										<span>{blogData.comments.length ?? 0}</span>
+										<span>{_blogData.data.comments.length ?? 0}</span>
 									</button>
 								</div>
 								<div className="flex items-center gap-3">
@@ -772,7 +432,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 													await supabase
 														.from("public_posts")
 														.select("comments")
-														.eq("id", blogData.id)
+														.eq("id", _blogData.data.id)
 														.single();
 
 												if (latestDataError || !latestData) {
@@ -803,7 +463,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 													.update({
 														comments: newComments,
 													})
-													.eq("id", blogData.id);
+													.eq("id", _blogData.data.id);
 
 												if (error) {
 													console.log(error);
@@ -813,7 +473,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 												commentContent.value = "";
 												toast.success("Comment posted!");
-												blogData.comments = newComments;
+												_blogData.data.comments = newComments;
 												setIsCommenting(false);
 											}}
 											className="mt-5"
@@ -849,9 +509,9 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 							<div className="divider" />
 
-							{blogData.comments.length > 0 ? (
+							{_blogData.data.comments.length > 0 ? (
 								<div className="mt-10 flex flex-col gap-5">
-									{blogData.comments.map((comment, index: number) => (
+									{_blogData.data.comments.map((comment, index: number) => (
 										<div
 											className="p-5 rounded-btn flex gap-2"
 											key={`comment_${index}`}
@@ -897,7 +557,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 													{comment.content}
 												</ReactMarkdown>
 											</div>
-											{currentUser.id === blogData.uploader.id && (
+											{currentUser.id === _blogData.data.uploader.id && (
 												<>
 													<div className="dropdown dropdown-bottom dropdown-end">
 														<label tabIndex={0} className="btn btn-ghost">
@@ -986,7 +646,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 					</motion.main>
 
 					<AnimatePresence mode="wait">
-						{JSON.stringify(tempData) !== JSON.stringify(blogData) && (
+						{JSON.stringify(tempData) !== JSON.stringify(_blogData.data) && (
 							<motion.div
 								initial={{ y: 100, opacity: 0 }}
 								animate={{
@@ -1006,7 +666,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 									</button>
 									<button
 										onClick={() => {
-											setTempData(blogData);
+											setTempData(_blogData.data);
 											setIsEditing(false);
 										}}
 										className="btn btn-ghost"
@@ -1021,7 +681,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 			)} */}
 
 			<AnimatePresence mode="wait">
-				{JSON.stringify(tempData) !== JSON.stringify(blogData) && (
+				{JSON.stringify(tempData) !== JSON.stringify(_blogData.data) && (
 					<motion.div
 						initial={{ y: 100, opacity: 0 }}
 						animate={{
@@ -1034,14 +694,14 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 					>
 						<div className="flex justify-end gap-2 w-full max-w-5xl">
 							<button
-								onClick={() => handleUpdateBlog(tempData.id)}
+								onClick={() => handleUpdateBlog(tempData?.id || "")}
 								className="btn btn-primary"
 							>
 								Save Changes
 							</button>
 							<button
 								onClick={() => {
-									setTempData(blogData);
+									setTempData(_blogData.data);
 									setIsEditing(false);
 								}}
 								className="btn btn-ghost"
@@ -1067,7 +727,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 							Cancel
 						</label>
 						<button
-							onClick={() => handleDeleteBlog(blogData.id)}
+							onClick={() => handleDeleteBlog(_blogData.data?.id || "")}
 							className="btn btn-error"
 						>
 							Delete
@@ -1079,4 +739,4 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 	);
 };
 
-export default BlogPage;
+export default ProvPostPage;

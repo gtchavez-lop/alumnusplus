@@ -3,8 +3,37 @@ import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import { AnimPageTransition } from "@/lib/animations";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
+import { FormEvent, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const ContactPage = () => {
+	const form = useRef<HTMLFormElement>(null);
+
+	const sendEmail = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		const form = e.target as HTMLFormElement;
+
+		emailjs
+			.sendForm(
+				"service_tl8oyb8",
+				"template_cnwhbkn",
+				form,
+				"TJt6Hz9Y176DgEzZZ",
+			)
+			.then(
+				(result) => {
+					console.log(result.text);
+				},
+				(error) => {
+					console.log(error.text);
+				},
+			);
+		form.reset();
+		toast.success("Your Inquiry has been Sent");
+	};
+
 	return (
 		<>
 			<motion.div
@@ -39,18 +68,14 @@ const ContactPage = () => {
 					</div>
 
 					<div className="bg-base-200 rounded-btn shadow-lg p-5 px-0 lg:px-5 max-w-xl">
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-							}}
-							className="flex flex-col space-y-4"
-						>
+						<form onSubmit={sendEmail} className="flex flex-col space-y-4">
 							<div className="flex flex-col">
 								<label className="text-sm  ml-4">Name</label>
 								<input
 									type="text"
 									placeholder="John Doe"
 									className="input input-primary input-bordered"
+									name="user_name"
 								/>
 							</div>
 
@@ -60,6 +85,7 @@ const ContactPage = () => {
 									type="email"
 									placeholder="johndoe@mail.com"
 									className="input input-primary input-bordered"
+									name="user_mail"
 								/>
 							</div>
 
@@ -69,11 +95,12 @@ const ContactPage = () => {
 									placeholder="Your Message"
 									rows={4}
 									className="textarea textarea-primary textarea-bordered"
+									name="user_msg"
 								/>
 							</div>
 
 							<button className="btn btn-primary btn-block">
-								Send Messagev
+								Send Message
 							</button>
 						</form>
 					</div>

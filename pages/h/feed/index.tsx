@@ -52,6 +52,8 @@ const FeedPage = () => {
 	];
 
 	const fetchHunterFeed = async () => {
+		if (!_currentUser) return [];
+
 		const connections: string[] = _currentUser.connections.concat(
 			_currentUser.id,
 		);
@@ -73,6 +75,8 @@ const FeedPage = () => {
 	};
 
 	const fetchProvisionerFeed = async () => {
+		if (!_currentUser) return [];
+
 		const followingList = _currentUser.followedCompanies;
 
 		const { data, error } = await supabase
@@ -91,6 +95,8 @@ const FeedPage = () => {
 	};
 
 	const fetchRecommendedUsers = async () => {
+		if (!_currentUser) return [];
+
 		const localConnection = [_currentUser.connections, _currentUser.id];
 		const convertedMapToString = localConnection.map((item) => {
 			return item.toString();
@@ -117,9 +123,7 @@ const FeedPage = () => {
 				queryFn: fetchHunterFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
-				onSuccess: () => {
-					console.log("feedList success");
-				},
+				refetchOnMount: true,
 				onError: () => {
 					console.log("feedList error");
 					toast.error("Something went wrong fetching your feed");
@@ -129,9 +133,7 @@ const FeedPage = () => {
 				queryKey: ["recommendedUsers"],
 				queryFn: fetchRecommendedUsers,
 				enabled: !!_currentUser,
-				onSuccess: () => {
-					console.log("recommendedUsers success");
-				},
+				refetchOnMount: true,
 				onError: () => {
 					console.log("recommendedUsers error");
 					toast.error("Something went wrong fetching recommended users");
@@ -143,9 +145,7 @@ const FeedPage = () => {
 				queryFn: fetchProvisionerFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
-				onSuccess: () => {
-					console.log("provFeedList success");
-				},
+				refetchOnMount: true,
 			},
 		],
 	});
@@ -349,7 +349,7 @@ const FeedPage = () => {
 
 								<div className="flex flex-col gap-2">
 									{recommendedUsers.isSuccess &&
-										recommendedUsers.data.length < 1 ? (
+									recommendedUsers.data.length < 1 ? (
 										<p>
 											We can&apos;t find any recommended connections for you at
 											this moment.

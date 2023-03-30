@@ -23,6 +23,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 const JobCard = dynamic(() => import("@/components/jobs/JobCard"), {
 	ssr: false,
