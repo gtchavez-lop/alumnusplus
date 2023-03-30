@@ -356,7 +356,7 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "saved" && (
-						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5 w-full">
 							{savedJobs.isSuccess &&
 								savedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`savedjob_${index}`} />
@@ -375,10 +375,8 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "applied" && (
-						<motion.div className=" mt-10">
-							<p className="alert alert-warning">
-								This feature is still in development. We are working on it.
-							</p>
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5">
+
 							{appliedJobs.isSuccess &&
 								appliedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`appliedjob_${index}`} />
@@ -394,6 +392,7 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
+
 						</motion.div>
 					)}
 					{tabSelected === "cv" && (

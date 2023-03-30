@@ -73,7 +73,7 @@ const JobPostingPage: NextPage<{
 					className="relative min-h-screen w-full grid grid-cols-5 gap-10 py-24"
 				>
 					{/* overview */}
-					<div className="col-span-full lg:col-span-2">
+					<div className="col-span-full lg:col-span-3">
 						<h3 className="text-2xl font-bold">Overview</h3>
 
 						<div className="mt-10 flex flex-col gap-5">
@@ -126,7 +126,7 @@ const JobPostingPage: NextPage<{
 						</div>
 					</div>
 					{/* full description */}
-					<div className="col-span-full lg:col-span-3">
+					<div className="col-span-full lg:col-span-">
 						<h3 className="text-2xl font-bold">Full Description</h3>
 
 						<ReactMarkdown className="prose mt-10">
