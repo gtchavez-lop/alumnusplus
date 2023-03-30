@@ -40,6 +40,7 @@ const RegisterHunterSubPage: FC = () => {
 		},
 		applied_jobs: [],
 		avatar_url: "",
+		banner_url: "",
 		bio: "",
 		citizenship: "Filipino",
 		civil_status: "single",

@@ -300,6 +300,7 @@ const JobPostingPage: NextPage<{
 										<div className="flex flex-wrap gap-2 bg-base-200 p-2 rounded-btn">
 											{tempData.job_skills.map((skill, index) => (
 												<div
+													key={`skill_${index}`}
 													onClick={() => {
 														setTempData({
 															...tempData,
@@ -361,6 +362,7 @@ const JobPostingPage: NextPage<{
 											<div className="flex flex-wrap gap-2 bg-base-200 p-2 rounded-btn">
 												{skillsetRequirementSearchResult.map((skill, index) => (
 													<div
+														key={`skill_${index}`}
 														onClick={() => {
 															setTempData({
 																...tempData,
@@ -417,6 +419,7 @@ const JobPostingPage: NextPage<{
 												{tempData.job_qualifications.map(
 													(qualification, index) => (
 														<div
+															key={`qualification_${index}`}
 															onClick={() => {
 																setTempData({
 																	...tempData,
