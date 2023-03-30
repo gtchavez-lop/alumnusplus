@@ -531,7 +531,7 @@ const ProfilePage: NextPage = () => {
 													</p>
 												</div>
 											)}
-											{userConnections.data!.map((connection, index) => (
+											{userConnections.data?.map((connection, index) => (
 												<Link
 													href={`/h?user=${connection.username}`}
 													key={`connection_${index}`}

@@ -35,7 +35,9 @@ export default function App({ Component, pageProps, router }: AppProps) {
 		const { data } = await supabase.auth.getUser();
 
 		if (data.user) {
-			let metadata = data.user?.user_metadata as IUserHunter | IUserProvisioner;
+			const metadata = data.user?.user_metadata as
+				| IUserHunter
+				| IUserProvisioner;
 
 			if (metadata && metadata.type === "hunter") {
 				$accountType.set("hunter");
