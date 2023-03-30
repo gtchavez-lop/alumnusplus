@@ -17,6 +17,7 @@
     "@headlessui/react": "^1.7.11",
     "@nanostores/react": "^0.4.1",
     "@next/font": "13.1.6",
+    "@react-pdf/renderer": "^3.1.9",
     "@supabase/auth-helpers-nextjs": "^0.5.4",
     "@supabase/supabase-js": "^2.8.0",
     "@tailwindcss/typography": "^0.5.9",
