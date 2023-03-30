@@ -4,8 +4,8 @@ import Link from "next/link";
 const Footer = () => {
 	return (
 		<>
-			<div className="h-[2px] w-96 bg-primary my-5 mx-auto rounded-lg" />
-			<footer className="footer p-10 text-base-content">
+			<div className="h-[2px] w-96 bg-primary my-5 mx-auto rounded-lg print:hidden" />
+			<footer className="footer p-10 text-base-content print:hidden">
 				<div className="flex flex-col md:flex-row md:items-center">
 					<Image
 						src="/logo/wicket-new-adaptive.png"

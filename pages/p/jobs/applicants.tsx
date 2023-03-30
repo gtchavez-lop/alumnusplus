@@ -1,55 +1,22 @@
 import { GetServerSideProps, NextPage } from "next";
+import { IUserProvisioner, TProvJobPost } from "@/lib/types";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
+import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
+import JobApplicantCard from "@/components/jobs/JobApplicantCard";
+import Link from "next/link";
+import { MdWarning } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { $accountDetails } from "@/lib/globalStates";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import dayjs from "dayjs";
-import JobApplicantCard from "@/components/jobs/JobApplicantCard";
-import { MdWarning } from "react-icons/md";
-import Link from "next/link";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query;
-
-	const { data, error } = await supabase
-		.from("public_jobs")
-		.select("*")
-		.eq("id", id)
-		.single();
-
-	if (error) {
-		console.error(error);
-		return {
-			props: {
-				jobData: {
-					isLoading: false,
-					isFetched: true,
-					data: {} as unknown as TProvJobPost,
-				},
-			},
-		};
-	}
-
-	return {
-		props: {
-			jobData: {
-				isLoading: false,
-				isFetched: true,
-				data: data as TProvJobPost,
-			},
-		},
-	};
-};
-
-const JobDetailsPage: NextPage<{
+const JobPostingPage: NextPage<{
 	jobData: {
 		isLoading: boolean;
 		isFetched: boolean;
@@ -57,20 +24,21 @@ const JobDetailsPage: NextPage<{
 	};
 }> = ({ jobData }) => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
+
 	const fetchApplicants = async () => {
 		const { data, error } = await supabase
-			.from("user_hunters")
-			.select("*")
-			.in("id", jobData.data.applicants)
+			.from("public_jobs")
+			.select("*,uploader:uploader_id(legalName)")
+			// .order("createdAt", { ascending: false })
+			.eq("uploader_id", _currentUser.id);
 
 		if (error) {
 			console.log(error);
-			return [];
-
 		}
 
-		return data as IUserHunter[];
+		return data as TProvJobPost[];
 	};
+
 	const [applicants] = useQueries({
 		queries: [
 			{
@@ -80,10 +48,8 @@ const JobDetailsPage: NextPage<{
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
 			},
-
 		],
 	});
-
 	return (
 		<>
 			{!jobData && (
@@ -108,10 +74,12 @@ const JobDetailsPage: NextPage<{
 				>
 					{/* overview */}
 					<div className="col-span-full lg:col-span-3">
-						<h3 className="text-2xl font-bold">Overview</h3>
+						<h3 className="text-2xl font-bold">Applicant</h3>
 
 						<div className="mt-5  border-b-2">
-							<h1 className="text-xl font-bold text-primary">{jobData.data.job_title}</h1>
+							<h1 className="text-xl font-bold text-primary">
+								{jobData.data.job_title}
+							</h1>
 
 							<p className="text-sm">
 								{jobData.data.job_location} |{" "}
@@ -122,19 +90,22 @@ const JobDetailsPage: NextPage<{
 								}
 							</p>
 							<p className="text-sm opacity-50">
-								Posted on {dayjs(jobData.data.created_at).format("MMMM D, YYYY")}
+								Posted on{" "}
+								{dayjs(jobData.data.created_at).format("MMMM D, YYYY")}
 							</p>
 						</div>
 						{/* full description */}
 						<div className="col-span-full lg:col-span-3 text-justify">
-							<p className="flex flex-col mt-4">
+							<p className="flex flex-col">
 								<span className="text-lg font-bold opacity-75 text-primary">
 									Short Description
 								</span>
 								<span className=" mb-5">{jobData.data?.short_description}</span>
 							</p>
-							<h3 className="text-lg font-bold opacity-75 text-primary">Full Description</h3>
-							<p className="flex flex-col  mb-5">
+							<h3 className="text-lg font-bold opacity-75 text-primary">
+								Full Description
+							</h3>
+							<p className="flex flex-col mb-3  mb-5">
 								{jobData.data?.full_description}
 							</p>
 							<div className="flex flex-col">
@@ -160,16 +131,11 @@ const JobDetailsPage: NextPage<{
 								</ul>
 							</div>
 						</div>
-
 					</div>
-
-
 					{/* right side applicants*/}
 					<div className="col-span-full lg:col-span-2">
 						<h3 className="text-2xl font-bold">Applicants</h3>
-						<div className="flec flex-col gap-2">
-						</div>
-						{/* <div className="flex flex-col gap-2">
+						<div className="flex flex-col gap-2">
 							{applicants.isLoading && (
 								<>
 									{Array(2)
@@ -183,9 +149,7 @@ const JobDetailsPage: NextPage<{
 												<h1 className="text-xl font-bold">placeholder</h1>
 												<p className="text-sm">placeholder</p>
 												<div className="mt-4 h-[50px]">placeholder</div>
-												<p className="text-sm mt-5 opacity-50">
-													placeholder
-												</p>
+												<p className="text-sm mt-5 opacity-50">placeholder</p>
 											</div>
 										))}
 								</>
@@ -196,7 +160,6 @@ const JobDetailsPage: NextPage<{
 									{applicants.data?.map(
 										(applicants, index) =>
 											index < 3 && (
-
 												<JobApplicantCard
 													viewMode="list"
 													key={applicants.id}
@@ -211,7 +174,7 @@ const JobDetailsPage: NextPage<{
 											<p className="text-center">
 												There are no applications yet. <br />
 												<Link href="/p/jobs/new" className="btn btn-link">
-													Subscribe to Wicket to Prioritize your Job Posts
+													Subscribe to Wicket to Prioritisation
 												</Link>
 											</p>
 										</div>
@@ -222,18 +185,17 @@ const JobDetailsPage: NextPage<{
 											href={"/p/jobs/applicant"}
 											className="btn btn-ghost btn-block"
 										>
-											See all Applicants
+											See all Jobs
 										</Link>
 									)}
 								</>
 							)}
-						</div> */}
+						</div>
 					</div>
-
 				</motion.main>
 			)}
 		</>
 	);
 };
 
-export default JobDetailsPage;
+export default JobPostingPage;

@@ -215,9 +215,14 @@ const DriftPage: NextPage = () => {
 										e.preventDefault();
 
 										const searchResults = allCompanies.data?.filter((item) => {
-											return item.legalName
-												.toLowerCase()
-												.includes(query.toLowerCase());
+											return (
+												item.legalName
+													.toLowerCase()
+													.includes(query.toLowerCase()) ||
+												item.address?.city
+													.toLowerCase()
+													.includes(query.toLowerCase())
+											);
 										}) as IUserProvisioner[];
 
 										setSearchResults(searchResults);

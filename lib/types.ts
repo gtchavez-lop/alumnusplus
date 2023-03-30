@@ -578,9 +578,9 @@ export interface IUserHunter {
 
 export interface IUserProvisioner {
   address: {
-    address: string | null
-    city: string | null
-    postalCode: string | null
+    address: string
+    city: string
+    postalCode: string
   }
   alternativeNames: string[]
   avatar_url: string
@@ -654,6 +654,7 @@ export interface TProvJobPost {
   created_at:         string;
   job_skills:         string[];
   draft:              boolean;
+  applicants: string[];
 }
 
 export interface TProvBlogPost {

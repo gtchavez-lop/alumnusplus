@@ -51,34 +51,6 @@ interface BlogEventPostProps {
 	draft: boolean;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query;
-
-	const { data: blogData, error } = await supabase
-		.from("public_provposts")
-		.select("*,uploader(*)")
-		.eq("id", id)
-		.single();
-
-	if (error) {
-		console.log(error);
-	}
-
-	if (error) {
-		return {
-			props: {
-				blogData: null,
-			},
-		};
-	}
-
-	return {
-		props: {
-			blogData,
-		},
-	};
-};
-
 const ProvBlogPostPage: NextPage = () => {
 	const currentUser = useStore($accountDetails) as IUserHunter;
 	const [isEditing, setIsEditing] = useState(false);
@@ -105,10 +77,11 @@ const ProvBlogPostPage: NextPage = () => {
 	};
 
 	const _blogData = useQuery({
-		queryKey: ["prov_blogpost"],
+		queryKey: ["prov_blog_post"],
 		queryFn: fetchBlogData,
 		refetchOnWindowFocus: false,
 		refetchOnMount: true,
+		enabled: !!router.query.id,
 		onSuccess: (data) => {
 			setTempData(data);
 		},
@@ -173,7 +146,10 @@ const ProvBlogPostPage: NextPage = () => {
 						{/* header */}
 						<div className="flex items-center gap-4 0">
 							<Image
-								src={_blogData.data.uploader.avatar_url}
+								src={
+									_blogData.data.uploader.avatar_url ??
+									`https://api.dicebear.com/6.x/shapes/png?seed=${_blogData.data.uploader.legalName}`
+								}
 								alt="avatar"
 								width={40}
 								height={40}
