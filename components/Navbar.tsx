@@ -146,12 +146,14 @@ const Navbar = () => {
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
 					>
-						<Image
-							alt="logo"
-							src="/logo/wicket-new-adaptive.png"
-							width={40}
-							height={40}
-						/>
+						<Link href="/h/feed">
+							<Image
+								alt="logo"
+								src="/logo/wicket-new-adaptive.png"
+								width={40}
+								height={40}
+							/>
+						</Link>
 						<div className="flex gap-1">
 							<div className="tooltip tooltip-bottom" data-tip="Home">
 								<Link
@@ -267,12 +269,14 @@ const Navbar = () => {
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
 					>
-						<Image
-							alt="logo"
-							src="/logo/wicket-new-adaptive.png"
-							width={40}
-							height={40}
-						/>
+						<Link href="/p/dashboard">
+							<Image
+								alt="logo"
+								src="/logo/wicket-new-adaptive.png"
+								width={40}
+								height={40}
+							/>
+						</Link>
 						<div className="flex gap-1 items-center">
 							{_currentProvisioner.is_live && (
 								<p className="text-success font-bold mr-5 animate-bounce">
