@@ -37,9 +37,7 @@ const ProvFeedCard: FC<{ item: BlogEventPostProps }> = ({ item }) => {
 						</p>
 					</div>
 				</div>
-				<div className="flex items-center gap-2">
-					<p>Upvotes: {item.upvoters.length}</p>
-				</div>
+
 			</div>
 		</>
 	);
