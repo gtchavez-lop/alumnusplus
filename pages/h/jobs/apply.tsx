@@ -77,13 +77,20 @@ const ApplyPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 		}
 		else {
 			const newAppliedList = _currentUser.applied_jobs.concat(jobData.id);
-			const { error } = await supabase
+			const { error: userHunterAppliedJobError } = await supabase
 				.from("user_hunters")
 				.update({ applied_jobs: newAppliedList })
 				.eq("id", _currentUser.id);
-			if (error) {
-				console.log(error);
-				toast.error(error.message);
+
+			const { error: appliedJobError } = await supabase
+				.from("public_jobs")
+				.update({ applicants: newAppliedList })
+				.eq("id", jobData.id);
+
+
+			if (userHunterAppliedJobError || appliedJobError) {
+				console.log(userHunterAppliedJobError, appliedJobError);
+				toast.error("Something went wrong, please try again later");
 				return;
 			} else {
 				toast.success("Added to Applied Jobs");
@@ -94,15 +101,12 @@ const ApplyPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 				});
 			}
 		}
-
 	};
 
 	useEffect(() => {
 		if (_currentUser && jobData) {
 			const isApply = _currentUser.applied_jobs?.includes(jobData.id);
 			setIsApplied(isApply);
-
-
 		}
 	}, [_currentUser, jobData, isApplied]);
 
@@ -138,18 +142,32 @@ const ApplyPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 								<div className="flex flex-col gap-5 ">
 									{/* apply button */}
 									<div className="flex gap-2 justify-end ">
-										<button onClick={handleApply} className="btn btn-primary gap-2">
-											{isApplied ? "Applied" : "Sumbit Application"}
+										{isApplied ? (
+											<button
+												className="btn btn-primary gap-2"
+												disabled
+											>
+												<MdCheck className="text-lg" />
+												Applied
+											</button>
+
+										) : <button
+											className="btn btn-primary">
+											Sumbit Application
+											<MdSend className="text-lg" />
+										</button>}
+										{/* <button onClick={handleApply} className="btn btn-primary gap-2">
+											{isApplied ? (<><MdCheck /> Applied</>) : "Sumbit Application"}
 											<MdSend className={"text-lg"} />
-										</button>
+										</button> */}
 									</div>
 									<div className="flex gap-2 rounded-btn">
-										<div>
-											<img src={_currentUser.avatar_url} alt=""
-												className="w-15 h-15 bg-primary mask mask-square rounded-md object-cover object-center "
-												width={128}
-												height={128} />
-										</div>
+
+										<img src={_currentUser.avatar_url} alt=""
+											className="w-15 h-15 bg-primary mask mask-square rounded-md object-cover object-center "
+											width={128}
+											height={128} />
+
 										<div>
 											<p className="font-bold text-xl mt-7">
 												{_currentUser.full_name.first} {_currentUser.full_name.last}
