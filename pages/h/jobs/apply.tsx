@@ -6,6 +6,7 @@ import {
 	MdCheckBox,
 	MdFavorite,
 	MdOutlineFavorite,
+	MdSend,
 } from "react-icons/md";
 import { motion, useScroll } from "framer-motion";
 
@@ -138,8 +139,8 @@ const ApplyPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 									{/* apply button */}
 									<div className="flex gap-2 justify-end ">
 										<button onClick={handleApply} className="btn btn-primary gap-2">
-											<MdCheck className={"text-lg"} />
 											{isApplied ? "Applied" : "Sumbit Application"}
+											<MdSend className={"text-lg"} />
 										</button>
 									</div>
 									<div className="flex gap-2 rounded-btn">
