@@ -6,7 +6,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
-import { MdWarning } from "react-icons/md";
+import { MdArrowBack, MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
@@ -130,8 +130,16 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<p className="text-4xl font-bold">Edit Your Profile</p>
+					<div className="flex items-center gap-2 mb-10">
+						<button
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
+						>
+							<MdArrowBack className="text-2xl" />
+						</button>
 
+						<p className="text-4xl font-bold">Edit Your Profile</p>
+					</div>
 					<AnimatePresence mode="wait">
 						{JSON.stringify(_currentUser) !==
 							JSON.stringify(tempUserDetails) && (

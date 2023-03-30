@@ -225,15 +225,14 @@ const EditProfilePage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<div className="flex flex-col lg:flex-row lg:items-center gap-2">
+					<div className="flex items-center gap-2 mb-10">
 						<button
-							onClick={() => {
-								router.push("/h/me");
-							}}
-							className="btn btn-ghost btn-square text-lg"
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
 						>
-							<MdArrowBack />
+							<MdArrowBack className="text-2xl" />
 						</button>
+
 						<h1 className="text-4xl font-bold">Edit Your Profile</h1>
 					</div>
 

@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
 import {
+	MdArrowBack,
 	MdCheck,
 	MdCheckBox,
 	MdFavorite,
@@ -54,6 +55,7 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const [isFavorite, setIsFavorite] = useState(false);
 	const [isApplied, setIsApplied] = useState(false);
+	const router = useRouter();
 
 	const handleFavorite = async () => {
 		if (isFavorite) {
@@ -103,8 +105,6 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 			setIsFavorite(isFav);
 			const isApply = _currentUser.applied_jobs?.includes(jobData.id);
 			setIsApplied(isApply);
-
-
 		}
 	}, [_currentUser, jobData, isFavorite]);
 
@@ -118,8 +118,17 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 					exit="exit"
 					className="relative min-h-screen w-full flex flex-col gap-10 py-24"
 				>
-					<div>
+					<div className="flex items-center gap-2">
+						<button
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
+						>
+							<MdArrowBack className="text-2xl" />
+						</button>
+						<p>Go Back</p>
+					</div>
 
+					<div>
 						<h1 className="text-3xl font-bold">{jobData.job_title}</h1>
 						<p className="text-lg">
 							Posted at {dayjs(jobData.created_at).format("MMMM DD YYYY")}
@@ -130,19 +139,18 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 						{/* apply button */}
 						<div className="flex gap-2 mt-5 justify-end">
 							{isApplied ? (
-								<button
-									className="btn btn-primary gap-2"
-									disabled
-								>
+								<button className="btn btn-primary gap-2" disabled>
 									<MdCheck className="text-lg" />
 									Applied
 								</button>
-
-							) : <Link
-								href={`/h/jobs/apply?id=${jobData.id}`}
-								className="btn btn-primary">
-								Apply Now
-							</Link>}
+							) : (
+								<Link
+									href={`/h/jobs/apply?id=${jobData.id}`}
+									className="btn btn-primary"
+								>
+									Apply Now
+								</Link>
+							)}
 
 							<button onClick={handleFavorite} className="btn btn-ghost gap-2">
 								<MdFavorite

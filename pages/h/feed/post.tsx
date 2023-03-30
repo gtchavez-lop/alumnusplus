@@ -254,7 +254,7 @@ const BlogPage: NextPage<{ blogData: THunterBlogPost }> = ({ blogData }) => {
 
 	const handleComment = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		let commentContent = document.getElementById(
+		const commentContent = document.getElementById(
 			"commentContent",
 		) as HTMLTextAreaElement;
 

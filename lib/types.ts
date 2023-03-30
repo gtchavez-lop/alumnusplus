@@ -534,6 +534,7 @@ export interface IUserHunter {
   }
   applied_jobs: string[]
   avatar_url: string
+  banner_url: string
   bio: string
   birthdate: string
   birthplace: string

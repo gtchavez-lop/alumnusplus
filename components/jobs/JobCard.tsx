@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Link from "next/link";
-import { MdFavorite } from "react-icons/md";
+import { MdAirplay, MdApproval, MdFavorite, MdHomeWork, MdOutlineWork, MdSend, MdWork, MdWorkOff, MdWorkOutline, MdWorkspaces } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -18,7 +18,7 @@ interface Job {
 	};
 }
 
-const JobCard: FC<{ job: Job; isSaved?: boolean }> = ({ job, isSaved }) => {
+const JobCard: FC<{ job: Job; isSaved?: boolean, isApplied?: boolean }> = ({ job, isSaved, isApplied }) => {
 	return (
 		job && (
 			<motion.div
@@ -31,14 +31,25 @@ const JobCard: FC<{ job: Job; isSaved?: boolean }> = ({ job, isSaved }) => {
 					href={`/h/jobs/posting?id=${job.id}`}
 					className="flex flex-col w-full min-h-[200px] rounded-btn p-5 bg-base-200 hover:bg-primary/30 transition-all"
 				>
+
+
 					<div className="flex items-start">
 						<div>
 							<h1 className="text-xl font-bold">{job.job_title}</h1>
 							<p className="text-primary">{job.uploader.legalName}</p>
 						</div>
-						<div className="ml-auto">
-							{isSaved ? <MdFavorite className="text-red-500" /> : null}
+						<div className="italic text-gray-600 ml-auto flex items-center gap-5">
+							<div className="flex items-center justify-between gap-1">
+								{isApplied ? <>Applied<MdWork /> </> : null}
+							</div>
+
+							<div className="ml-auto">
+								{isSaved ? <MdFavorite className="text-red-500" /> : null}
+							</div>
+
 						</div>
+
+
 					</div>
 
 					<p className="mt-4 text-sm">

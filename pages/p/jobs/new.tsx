@@ -1,4 +1,4 @@
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiPlus, FiSkipBack, FiX } from "react-icons/fi";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
+import { MdArrowBack } from "react-icons/md";
 
 const CreateNewJobPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
@@ -87,8 +88,16 @@ const CreateNewJobPage = () => {
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
-				<p className="text-2xl font-bold mb-10">Add new Post</p>
+				<div className="flex items-center gap-2 mb-10">
+					<button
+						className="btn btn-square btn-primary btn-ghost"
+						onClick={() => router.back()}
+					>
+						<MdArrowBack className="text-lg" />
+					</button>
 
+					<p className="text-2xl font-bold">Add new Post</p>
+				</div>
 				{/* job title */}
 				<label className="flex flex-col mb-5">
 					<span className="text-lg text-primary font-bold">Job Title</span>
