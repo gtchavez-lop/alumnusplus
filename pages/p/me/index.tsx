@@ -49,6 +49,7 @@ const ProvProfilePage: NextPage = () => {
 	>("about");
 	const [tabContent] = useAutoAnimate();
 	const [isSigningOut, setIsSigningOut] = useState(false);
+	const [isMetaverseLive, setIsMetaverseLive] = useState(false);
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -130,13 +131,20 @@ const ProvProfilePage: NextPage = () => {
 		],
 	});
 
+	const handleLiveInMetaverse = async () => {
+		console.log("live in metaverse");
+	};
+
 	useEffect(() => {
 		const localTheme = getTheme();
 		if (localTheme) {
 			$themeMode.set(localTheme as "light" | "dark");
 			document.body.setAttribute("data-theme", localTheme);
 		}
-	}, []);
+
+		// check if live in metaverse
+		setIsMetaverseLive(!!_currentUser && _currentUser.is_live ? true : false);
+	});
 
 	return (
 		<>
@@ -186,17 +194,33 @@ const ProvProfilePage: NextPage = () => {
 										</div>
 									</div>
 									<div className="z-10 flex justify-end items-center gap-2 mt-5">
-										<Link href="/p/me/edit" className="btn btn-primary">
+										<button
+											onClick={handleLiveInMetaverse}
+											className="btn btn-sm lg:btn-md btn-ghost mr-auto"
+										>
+											{isMetaverseLive
+												? "Stop Live in Metaverse"
+												: "Live in Metaverse"}
+										</button>
+										<Link
+											href="/p/me/edit"
+											className="btn btn-sm lg:btn-md btn-primary"
+										>
 											Edit
 										</Link>
-
-										<button className="btn btn-primary"
+										<button
+											className="btn btn-sm lg:btn-md btn-primary"
 											onClick={() => {
 												navigator.clipboard.writeText(window.location.href);
 												toast.success("Link copied to clipboard!");
 											}}
-										>Share Page</button>
-										<Link href="/p/me/hunter-view" className="btn">
+										>
+											Share Page
+										</button>
+										<Link
+											href="/p/me/hunter-view"
+											className="btn btn-sm lg:btn-md"
+										>
 											View as Hunter
 										</Link>
 									</div>

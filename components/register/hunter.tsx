@@ -32,55 +32,7 @@ const RegisterHunterSubPage: FC = () => {
 	});
 	const [passwordMatched, setPasswordMatched] = useState<boolean>(true);
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
-	const [localRegData, setLocalRegData] = useState<IUserHunter>({
-		address: {
-			address: "",
-			city: "",
-			postalCode: "",
-		},
-		applied_jobs: [],
-		avatar_url: "",
-		banner_url: "",
-		bio: "",
-		citizenship: "Filipino",
-		civil_status: "single",
-		cover_letter: "",
-		email: "",
-		experience: [],
-		birthdate: "",
-		birthplace: "",
-		connections: [],
-		created_at: "",
-		education: [],
-		full_name: {
-			first: "",
-			last: "",
-			middle: "",
-		},
-		followedCompanies: [],
-		gender: "male",
-		id: "",
-		id_number: "",
-		id_type: "other",
-		is_verified: false,
-		phone: "",
-		saved_jobs: [],
-		skill_primary: "",
-		skill_secondary: [],
-		social_media_links: {
-			facebook: "",
-			instagram: "",
-			linkedin: "",
-			github: "",
-			twitter: "",
-			youtube: "",
-		},
-		subscription_type: "junior",
-		type: "hunter",
-		trainings: [],
-		updated_at: "",
-		username: "",
-	});
+	const [localRegData, setLocalRegData] = useState({} as IUserHunter);
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);
@@ -193,7 +145,6 @@ const RegisterHunterSubPage: FC = () => {
 													if (isUsernameTaken) {
 														e.currentTarget.classList.add("input-error");
 														toast.error("Username is already taken.");
-														return;
 													} else {
 														e.currentTarget.classList.remove("input-error");
 													}
@@ -230,7 +181,6 @@ const RegisterHunterSubPage: FC = () => {
 													if (isEmailTaken) {
 														e.currentTarget.classList.add("input-error");
 														toast.error("Email is already taken.");
-														return;
 													} else {
 														e.currentTarget.classList.remove("input-error");
 													}
@@ -583,7 +533,7 @@ const RegisterHunterSubPage: FC = () => {
 									</label>
 
 									<label className="flex flex-col">
-										<span>Bio</span>
+										<span>Bio (You can add your bio later)</span>
 										<textarea
 											id="bio"
 											value={localRegData.bio}
@@ -616,7 +566,6 @@ const RegisterHunterSubPage: FC = () => {
 													localRegData.birthdate &&
 													localRegData.birthplace &&
 													localRegData.gender &&
-													localRegData.bio &&
 													localRegData.email &&
 													localPassword.password
 												)
