@@ -38,6 +38,7 @@ import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;

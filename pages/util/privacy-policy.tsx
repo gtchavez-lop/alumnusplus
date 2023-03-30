@@ -196,7 +196,7 @@ export default function PrivacyPolicyPage() {
 						<li>Mailing Addresses</li>
 						<li>Job Titles</li>
 						<li>Usernames</li>
-						<li>Passwordss</li>
+						<li>Passwords</li>
 						<li>Contact or Authentication Data</li>
 						<li>Debit/Credit Card Numbers</li>
 						<li>Names</li>
@@ -270,7 +270,7 @@ export default function PrivacyPolicyPage() {
 							<b>Push Notifications.</b> We may request to send you push
 							notifications regarding your account or certain features of the
 							application/s. If you wish to opt-out from receiving these types
-							of communications, you may tum them off in your device&apos;s
+							of communications, you may turn them off in your device&apos;s
 							settings.
 						</li>
 					</ul>

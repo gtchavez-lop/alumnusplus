@@ -14,11 +14,11 @@ import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Tabs from "@/components/Tabs";
 import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import { toast } from "react-hot-toast";
 
 type TTabs = {
 	title: string;
@@ -235,8 +235,9 @@ const ProvProfilePage: NextPage = () => {
 													item.value as "about" | "jobs" | "followers",
 												);
 											}}
-											className={`tab ${tabSelected === item.value && "tab-active"
-												}`}
+											className={`tab ${
+												tabSelected === item.value && "tab-active"
+											}`}
 										>
 											{item.name}
 										</li>
@@ -385,11 +386,7 @@ const ProvProfilePage: NextPage = () => {
 															/>
 															<div>
 																<p className="leading-none text-lg font-bold">
-<<<<<<< HEAD
-																	{item.full_name?.first} {item.full_name?.last}
-=======
 																	{item.full_name.first} {item.full_name.last}
->>>>>>> 2d9a54266160924ab347fb485003568ac415f1ff
 																</p>
 																<p className="leading-none opacity-75">
 																	@{item.username}

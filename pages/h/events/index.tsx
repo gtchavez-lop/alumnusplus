@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 dayjs.extend(relativeTime);
 
