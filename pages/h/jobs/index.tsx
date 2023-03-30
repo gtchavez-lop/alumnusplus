@@ -14,6 +14,7 @@ import {
 
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
+import Footer from "@/components/Footer";
 import Tabs from "@/components/Tabs";
 import dynamic from "next/dynamic";
 import { empty } from "uuidv4";
@@ -23,7 +24,6 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import Footer from "@/components/Footer";
 
 const JobCard = dynamic(() => import("@/components/jobs/JobCard"), {
 	ssr: false,
@@ -80,7 +80,8 @@ const ApplyPage = () => {
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select("*,uploader:uploader_id(legalName)");
+			.select("*,uploader:uploader_id(legalName)")
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -98,7 +99,8 @@ const ApplyPage = () => {
 			.select(
 				"job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.contains("job_skills:text[]", [_userDetails.skill_primary]);
+			.contains("job_skills:text[]", [_userDetails.skill_primary])
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -116,7 +118,8 @@ const ApplyPage = () => {
 			.select(
 				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.in("id", savedjobs);
+			.in("id", savedjobs)
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -134,7 +137,8 @@ const ApplyPage = () => {
 			.select(
 				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.in("id", appliedjobs);
+			.in("id", appliedjobs)
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -377,7 +381,6 @@ const ApplyPage = () => {
 					)}
 					{tabSelected === "applied" && (
 						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5">
-
 							{appliedJobs.isSuccess &&
 								appliedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`appliedjob_${index}`} />
@@ -393,7 +396,6 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
-
 						</motion.div>
 					)}
 					{tabSelected === "cv" && (

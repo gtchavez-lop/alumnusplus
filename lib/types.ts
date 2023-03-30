@@ -596,6 +596,7 @@ export interface IUserProvisioner {
   fullDescription: string
   id: string
   industryType: string
+  is_live: boolean
   jobPostings: []
   legalName: string
   shortDescription: string

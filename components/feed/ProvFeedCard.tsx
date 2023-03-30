@@ -30,14 +30,13 @@ const ProvFeedCard: FC<{ item: BlogEventPostProps }> = ({ item }) => {
 					<div className="flex flex-col">
 						<p className="leading-none">
 							<span className="text-primary">{item.uploader.legalName}</span>{" "}
-							posted
+							posted a {item.type === "provblog" ? "blog" : "event"} post
 						</p>
 						<p className="leading-none text-sm opacity-75">
 							{dayjs(item.createdAt).format("MMMM DD, YYYY H:MMA")}
 						</p>
 					</div>
 				</div>
-
 			</div>
 		</>
 	);

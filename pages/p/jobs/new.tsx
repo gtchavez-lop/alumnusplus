@@ -63,6 +63,46 @@ const CreateNewJobPage = () => {
 			.insert<TProvJobPost[]>([
 				{
 					...addJobSchema,
+					draft: false,
+					uploader_id: _currentUser.id,
+				},
+			]);
+
+		toast.dismiss();
+		if (error) {
+			toast.error(error.message);
+			return;
+		}
+
+		if (!error) {
+			toast.success("Job posted successfully");
+			router.push("/p/jobs");
+		}
+	};
+
+	const submitJobAsDraftHandler = async () => {
+		// check if the user has filled out all the fields
+		if (
+			addJobSchema.job_title === "" ||
+			addJobSchema.full_description === "" ||
+			addJobSchema.short_description === "" ||
+			addJobSchema.job_qualifications.length === 0 ||
+			addJobSchema.job_location === "" ||
+			addJobSchema.job_type.length === 0 ||
+			addJobSchema.job_skills.length === 0
+		) {
+			toast.error("Please fill out all the fields");
+			return;
+		}
+
+		toast.loading("Posting job...");
+
+		const { error } = await supabase
+			.from("public_jobs")
+			.insert<TProvJobPost[]>([
+				{
+					...addJobSchema,
+					draft: true,
 					uploader_id: _currentUser.id,
 				},
 			]);
@@ -359,6 +399,21 @@ const CreateNewJobPage = () => {
 					<Link href="/p/jobs" className="btn btn-ghost">
 						Cancel
 					</Link>
+					<button
+						disabled={
+							!(
+								addJobSchema.job_title.length > 0 &&
+								addJobSchema.job_type.length > 0 &&
+								addJobSchema.job_skills.length > 0 &&
+								addJobSchema.short_description.length > 0 &&
+								addJobSchema.full_description.length > 0
+							)
+						}
+						onClick={submitJobAsDraftHandler}
+						className="btn btn-ghost"
+					>
+						Submit as draft
+					</button>
 					<button
 						disabled={
 							!(
