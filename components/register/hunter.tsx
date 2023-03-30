@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { FC, useState } from "react";
 import {
 	MdArrowBack,
 	MdArrowForward,
@@ -21,10 +22,8 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import Footer from "@/components/Footer";
 
-const RegisterHunterSubPage = () => {
+const RegisterHunterSubPage: FC = () => {
 	const router = useRouter();
 	const [formPage, setFormPage] = useState(1);
 	const [localPassword, setLocalPassword] = useState({
@@ -41,7 +40,6 @@ const RegisterHunterSubPage = () => {
 		},
 		applied_jobs: [],
 		avatar_url: "",
-		banner_url: "",
 		bio: "",
 		citizenship: "Filipino",
 		civil_status: "single",
@@ -152,13 +150,7 @@ const RegisterHunterSubPage = () => {
 
 	return (
 		<>
-			<motion.main
-				variants={AnimPageTransition}
-				initial="initial"
-				animate="animate"
-				exit="exit"
-				className="relative min-h-screen w-full pt-16 lg:pt-24 pb-36"
-			>
+			<div>
 				<div className="flex flex-col items-center py-5">
 					<h1 className="text-3xl font-bold text-secondary text-center w-full">
 						Register as a Hunter (Job Seeker)
@@ -259,8 +251,9 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
-														}`}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -269,7 +262,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-															e.currentTarget.value,
+																e.currentTarget.value,
 														);
 													}}
 												/>
@@ -278,8 +271,9 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="password"
 													value={localPassword.password}
-													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
-														}`}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -288,7 +282,7 @@ const RegisterHunterSubPage = () => {
 
 														setPasswordMatched(
 															localPassword.confirmPassword ===
-															e.currentTarget.value,
+																e.currentTarget.value,
 														);
 													}}
 												/>
@@ -316,8 +310,9 @@ const RegisterHunterSubPage = () => {
 													type="password"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
-														}`}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -334,8 +329,9 @@ const RegisterHunterSubPage = () => {
 													type="text"
 													id="confirmPassword"
 													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${!passwordMatched && "input-error"
-														}`}
+													className={`input input-primary flex-1 ${
+														!passwordMatched && "input-error"
+													}`}
 													onChange={(e) => {
 														setLocalPassword({
 															...localPassword,
@@ -1042,7 +1038,7 @@ const RegisterHunterSubPage = () => {
 						)}
 					</div>
 				)}
-			</motion.main>
+			</div>
 		</>
 	);
 };

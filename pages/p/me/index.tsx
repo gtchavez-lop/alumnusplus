@@ -9,31 +9,33 @@ import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
 import JobCardProv from "@/components/jobs/JobProvCard";
 import Link from "next/link";
+import Modal from "@/components/Modal";
 import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Tabs from "@/components/Tabs";
 import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import { toast } from "react-hot-toast";
 
 type TTabs = {
-	name: string;
+	title: string;
 	value: string;
 };
 
 const tabs: TTabs[] = [
 	{
-		name: "About",
+		title: "About",
 		value: "about",
 	},
 	{
-		name: "Job Posts",
+		title: "Job Posts",
 		value: "jobs",
 	},
 	{
-		name: "Followers",
+		title: "Followers",
 		value: "followers",
 	},
 ];
@@ -46,6 +48,7 @@ const ProvProfilePage: NextPage = () => {
 		"about" | "jobs" | "followers"
 	>("about");
 	const [tabContent] = useAutoAnimate();
+	const [isSigningOut, setIsSigningOut] = useState(false);
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -202,8 +205,31 @@ const ProvProfilePage: NextPage = () => {
 									</div>
 								</div>
 								<div className="divider bg-base-content h-[5px] rounded-full opacity-20 my-10" />
-								{/* tabs */}
-								<ul className="tabs tabs-boxed">
+								{/* mobile select */}
+								<select
+									className="select select-bordered select-primary w-full lg:hidden"
+									onChange={(e) => {
+										setTabSelected(
+											e.target.value as "about" | "jobs" | "followers",
+										);
+									}}
+								>
+									{tabs.map((item, index) => (
+										<option key={`tab-${index}`} value={item.value}>
+											{item.title}
+										</option>
+									))}
+								</select>
+								{/* desktop tabs */}
+								<Tabs
+									tabs={tabs}
+									activeTab={tabSelected}
+									onTabChange={(e: string) => {
+										setTabSelected(e as "about" | "jobs" | "followers");
+									}}
+								/>
+
+								{/* <ul className="tabs tabs-boxed">
 									{tabs.map((item, index) => (
 										<li
 											key={`tab-${index}`}
@@ -219,7 +245,7 @@ const ProvProfilePage: NextPage = () => {
 											{item.name}
 										</li>
 									))}
-								</ul>
+								</ul> */}
 
 								{/* content */}
 								<div className="mt-10 overflow-hidden" ref={tabContent}>
@@ -423,19 +449,39 @@ const ProvProfilePage: NextPage = () => {
 
 									<label className="mt-7">
 										<span>End your session</span>
-										<label
-											htmlFor="signOutModal"
+										<button
+											onClick={() => setIsSigningOut(true)}
 											className="btn btn-error btn-block"
 										>
 											Sign Out
-										</label>
+										</button>
 									</label>
 								</div>
 							</div>
 						</div>
 					</motion.main>
 
-					<>
+					{isSigningOut && (
+						<Modal isVisible={isSigningOut} setIsVisible={setIsSigningOut}>
+							<p className="text-lg font-bold">
+								Do you want to end your session and sign out?
+							</p>
+
+							<div className="flex items-center gap-2 justify-end">
+								<button onClick={handleSignOut} className="btn btn-ghost">
+									Yes
+								</button>
+								<button
+									onClick={() => setIsSigningOut(false)}
+									className="btn btn-primary"
+								>
+									No
+								</button>
+							</div>
+						</Modal>
+					)}
+
+					{/* <>
 						<input type='checkbox' id="signOutModal" className="modal-toggle" />
 						<label htmlFor="signOutModal" className="modal">
 							<label htmlFor="" className="modal-box relative">
@@ -460,7 +506,7 @@ const ProvProfilePage: NextPage = () => {
 								</div>
 							</label>
 						</label>
-					</>
+					</> */}
 				</>
 			)}
 		</>
