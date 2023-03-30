@@ -36,6 +36,7 @@ const RegisterProvisionerSubPage: FC = () => {
 			email: "",
 			phone: "",
 		},
+		is_live: false,
 		foundingYear: 0,
 		fullDescription: "",
 		followers: [],

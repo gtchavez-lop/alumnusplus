@@ -20,10 +20,6 @@ import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
 
-// const FeedCard = dynamic(() => import("@/components/feed/FeedCard"), {
-// 	ssr: false,
-// });
-
 type TTab = {
 	title: string;
 	value: "hunter" | "provisioner";
@@ -64,7 +60,8 @@ const FeedPage = () => {
 				"id,content,comments,createdAt,updatedAt,uploader(id,email,full_name,username,avatar_url,is_verified),upvoters",
 			)
 			.order("createdAt", { ascending: false })
-			.in("uploader", connections);
+			.in("uploader", connections)
+			.eq("draft", false);
 
 		if (error) {
 			console.log("error", error);
@@ -154,6 +151,7 @@ const FeedPage = () => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const content = formData.get("content");
+		const isDraft = formData.get("isDraft") as unknown as HTMLInputElement;
 
 		if (!content) {
 			toast.error("Content is required");
@@ -171,6 +169,7 @@ const FeedPage = () => {
 			updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			uploader: _currentUser.id,
 			upvoters: [],
+			draft: isDraft.checked || true,
 		});
 
 		toast.dismiss();
@@ -180,6 +179,9 @@ const FeedPage = () => {
 		}
 
 		toast.success("Posted!");
+		if (isDraft.checked) {
+			toast("This post is a draft. You can edit it in your profile");
+		}
 
 		feedList.refetch();
 		setIsMakingPost(false);
@@ -229,7 +231,15 @@ const FeedPage = () => {
 											name="content"
 											className="textarea textarea-primary w-full"
 										/>
-										<p className="text-xs opacity-75">Markdown</p>
+										<p className="text-xs opacity-75 text-right">Markdown</p>
+										<label className="mt-3 flex items-center gap-2">
+											<input
+												type="checkbox"
+												name="isDraft"
+												className="toggle toggle-primary"
+											/>
+											<span>Save as Draft</span>
+										</label>
 										<div className="flex justify-end gap-2">
 											<button
 												type="reset"
@@ -268,13 +278,17 @@ const FeedPage = () => {
 										)}
 
 										{feedList.isSuccess &&
-											feedList.data.map((item: THunterBlogPost) => (
-												<FeedCard
-													blogData={item}
-													key={item.id}
-													refetchData={feedList.refetch}
-												/>
-											))}
+											feedList.data.map((item: THunterBlogPost) => {
+												if (!item.draft) {
+													return (
+														<FeedCard
+															blogData={item}
+															key={item.id}
+															refetchData={feedList.refetch}
+														/>
+													);
+												}
+											})}
 									</div>
 								)}
 								{feedTab === "provisioner" && (

@@ -50,7 +50,8 @@ const ProvFeedCardGrid: FC<{ item: TProvBlogPost }> = ({ item }) => {
 							{item.uploader.legalName}
 						</Link>
 						<span className=" opacity-50 ml-1">
-							posted {item.type === "event" ? "an event" : "a blog"}
+							posted {item.type === "event" ? "an event" : "a blog"}{" "}
+							{item.draft && "(DRAFT)"}
 						</span>
 					</p>
 					<p className="text-sm flex gap-2 leading-none">
