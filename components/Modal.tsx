@@ -44,6 +44,7 @@ const Modal: FC<Props> = (props) => (
 					{props.children}
 				</motion.div>
 			</div>
+			{/* desktop */}
 			<div className="hidden lg:block">
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -52,7 +53,7 @@ const Modal: FC<Props> = (props) => (
 						scale: 1,
 						transition: { duration: 0.2, easings: "circOut", delay: 0.1 },
 					}}
-					className="flex flex-col gap-10 bg-base-200 w-screen max-w-xl py-6 px-7 rounded-btn rounded-b-none"
+					className="flex flex-col gap-10 bg-base-200 w-screen max-w-xl py-6 px-7 rounded-btn"
 				>
 					{/* slot */}
 					{props.children}

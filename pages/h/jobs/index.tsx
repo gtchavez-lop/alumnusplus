@@ -305,6 +305,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 
@@ -316,6 +317,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 							</motion.div>
@@ -336,6 +338,7 @@ const ApplyPage = () => {
 								recommendedJobs.data.map((job, index) => (
 									<JobCard
 										isSaved={_userDetails.saved_jobs.includes(job.id)}
+										isApplied={_userDetails.applied_jobs.includes(job.id)}
 										job={job}
 										key={`recommendedjob_${index}`}
 									/>

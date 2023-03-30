@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { FC, useState } from "react";
 import {
 	MdArrowBack,
 	MdArrowForward,
@@ -21,10 +22,8 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import Footer from "@/components/Footer";
 
-const RegisterHunterSubPage = () => {
+const RegisterHunterSubPage: FC = () => {
 	const router = useRouter();
 	const [formPage, setFormPage] = useState(1);
 	const [localPassword, setLocalPassword] = useState({
@@ -151,13 +150,7 @@ const RegisterHunterSubPage = () => {
 
 	return (
 		<>
-			<motion.main
-				variants={AnimPageTransition}
-				initial="initial"
-				animate="animate"
-				exit="exit"
-				className="relative min-h-screen w-full pt-16 lg:pt-24 pb-36"
-			>
+			<div>
 				<div className="flex flex-col items-center py-5">
 					<h1 className="text-3xl font-bold text-secondary text-center w-full">
 						Register as a Hunter (Job Seeker)
@@ -1045,7 +1038,7 @@ const RegisterHunterSubPage = () => {
 						)}
 					</div>
 				)}
-			</motion.main>
+			</div>
 		</>
 	);
 };

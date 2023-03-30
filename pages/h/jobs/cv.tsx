@@ -1,10 +1,11 @@
+import { FC, useRef } from "react";
 import { MdEmail, MdPhone, MdPrint, MdWarning } from "react-icons/md";
+import ReactPDF, { Document, Page } from "@react-pdf/renderer";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Carlo1 from "@/components/resume_template/carlo1";
 import Carlo2 from "@/components/resume_template/carlo2";
-import { FC } from "react";
 import Gab1 from "@/components/resume_template/gab1";
 import Gab2 from "@/components/resume_template/gab2";
 import Head from "next/head";
@@ -173,23 +174,28 @@ const GeneratedCV: NextPage = () => {
 			</button>
 
 			{/* mobile restrict */}
-			{!!_currentUser && template && (
-				<div className="hidden lg:block print:block">
-					{template === "default" && <DefaultTemplate />}
-					{template === "carlo1" && <Carlo1 />}
-					{template === "carlo2" && <Carlo2 />}
-					{template === "gabbie1" && <Gab1 />}
-					{template === "gabbie2" && <Gab2 />}
-					{template === "novie1" && <Novie1 />}
-					{template === "novie2" && <Novie2 />}
-				</div>
-			)}
+			<Document>
+				<Page size={"LETTER"}>
+					{!!_currentUser && template && (
+						<div className="hidden lg:block print:block">
+							{template === "default" && <DefaultTemplate />}
+							{template === "carlo1" && <Carlo1 />}
+							{template === "carlo2" && <Carlo2 />}
+							{template === "gabbie1" && <Gab1 />}
+							{template === "gabbie2" && <Gab2 />}
+							{template === "novie1" && <Novie1 />}
+							{template === "novie2" && <Novie2 />}
+						</div>
+					)}
+				</Page>
+			</Document>
 
 			{/* print button */}
 			<div className="hidden lg:flex fixed bottom-0 left-0 w-full p-5 justify-center print:hidden opacity-25 hover:opacity-100 transition-all">
 				<div className="flex justify-end w-full max-w-5xl">
 					<button
 						onClick={() => {
+							// renderPDF();
 							window.document.title = `${_currentUser.username} - CV`;
 							window.print();
 						}}
