@@ -35,6 +35,7 @@ const CreateNewJobPage = () => {
 		job_type: [],
 		short_description: "",
 		uploader_id: "",
+		draft: false,
 	});
 	const _SkillList = new Fuse(Skills, {
 		threshold: 0.3,
