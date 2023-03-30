@@ -576,7 +576,6 @@ export interface IUserHunter {
 }
 
 export interface IUserProvisioner {
-  username: string | number | readonly string[] | undefined
   address: {
     address: string | null
     city: string | null

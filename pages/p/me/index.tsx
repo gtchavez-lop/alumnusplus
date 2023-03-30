@@ -202,8 +202,9 @@ const ProvProfilePage: NextPage = () => {
 													item.value as "about" | "jobs" | "followers",
 												);
 											}}
-											className={`tab ${tabSelected === item.value && "tab-active"
-												}`}
+											className={`tab ${
+												tabSelected === item.value && "tab-active"
+											}`}
 										>
 											{item.name}
 										</li>
@@ -352,7 +353,7 @@ const ProvProfilePage: NextPage = () => {
 															/>
 															<div>
 																<p className="leading-none text-lg font-bold">
-																	{item.full_name!.first} {item.full_name!.last}
+																	{item.full_name?.first} {item.full_name?.last}
 																</p>
 																<p className="leading-none opacity-75">
 																	@{item.username}

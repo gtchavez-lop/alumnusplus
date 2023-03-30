@@ -349,7 +349,7 @@ const FeedPage = () => {
 
 								<div className="flex flex-col gap-2">
 									{recommendedUsers.isSuccess &&
-										recommendedUsers.data.length < 1 ? (
+									recommendedUsers.data.length < 1 ? (
 										<p>
 											We can&apos;t find any recommended connections for you at
 											this moment.

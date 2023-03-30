@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 const HunterEventPage: NextPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;

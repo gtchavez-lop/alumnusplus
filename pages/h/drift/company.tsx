@@ -95,10 +95,10 @@ const ProvisionerPage: NextPage = () => {
 	const handleFollowCompany = async () => {
 		if (!_companyData.isSuccess) return;
 
-		let h_newList = _currentUser.followedCompanies.concat(
+		const h_newList = _currentUser.followedCompanies.concat(
 			_companyData.data?.id,
 		);
-		let p_newList = [..._companyData.data?.followers, _currentUser.id];
+		const p_newList = [..._companyData.data?.followers, _currentUser.id];
 
 		// update hunter
 		const { error: h_error } = await supabase
@@ -127,10 +127,10 @@ const ProvisionerPage: NextPage = () => {
 	const handleUnfollowCompany = async () => {
 		if (!_companyData.isSuccess) return;
 
-		let h_newList = _currentUser.followedCompanies.filter(
+		const h_newList = _currentUser.followedCompanies.filter(
 			(id) => id !== _companyData.data.id,
 		);
-		let p_newList = _companyData.data.followers.filter(
+		const p_newList = _companyData.data.followers.filter(
 			(id) => id !== _currentUser.id,
 		);
 

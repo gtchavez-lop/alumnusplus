@@ -22,6 +22,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Footer from "@/components/Footer";
 
 const RegisterHunterSubPage = () => {
 	const router = useRouter();

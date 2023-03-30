@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useStore } from "@nanostores/react";
+import Footer from "@/components/Footer";
 
 type TTabs = {
 	title: string;
@@ -272,4 +273,5 @@ const DriftPage: NextPage = () => {
 // 	</motion.main>
 // ) : (
 // )}
+
 export default DriftPage;
