@@ -1038,6 +1038,7 @@ const EditProfilePage: NextPage = () => {
 											return;
 										}
 											
+										}
 
 										setTempUserDetails({
 											...tempUserDetails,
@@ -1185,17 +1186,6 @@ const EditProfilePage: NextPage = () => {
 												| "degree"
 												| "other",
 										};
-
-										if (
-											!(
-												newTraining.title &&
-												newTraining.location &&
-												newTraining.organizer
-											)
-										) {
-											toast.error("Please fill all fields");
-											return;
-										}
 
 										setTempUserDetails({
 											...tempUserDetails,

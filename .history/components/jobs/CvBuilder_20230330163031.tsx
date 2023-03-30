@@ -44,7 +44,7 @@ const templates = [
 	{
 		name: "Novie 2",
 		value: "novie2",
-		image: "/cvtemplate/preview_novie2.png",
+		image: "/cvtemplate/preview_gab2.png",
 	},
 ];
 

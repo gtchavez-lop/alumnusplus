@@ -1186,17 +1186,6 @@ const EditProfilePage: NextPage = () => {
 												| "other",
 										};
 
-										if (
-											!(
-												newTraining.title &&
-												newTraining.location &&
-												newTraining.organizer
-											)
-										) {
-											toast.error("Please fill all fields");
-											return;
-										}
-
 										setTempUserDetails({
 											...tempUserDetails,
 											trainings: [...tempUserDetails.trainings, newTraining],

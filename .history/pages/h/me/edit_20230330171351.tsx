@@ -1006,8 +1006,18 @@ const EditProfilePage: NextPage = () => {
 
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
-										
-										
+										if (
+											!(
+												data.degreeName &&
+												data.Institution &&
+												data.location &&
+												data.yearGraduated
+											)
+										) {
+											toast.error("Please fill all fields");
+											return;
+											
+										}
 
 										const newEducation: HEducation = {
 											institution: data.institution as string,
@@ -1025,19 +1035,6 @@ const EditProfilePage: NextPage = () => {
 											location: data.location as string,
 											yearGraduated: data.yearGraduated as string,
 										};
-										if (
-											!(
-												newEducation.degreeName &&
-												newEducation.location &&
-												newEducation.institution &&
-												newEducation.yearGraduated
-									
-											)
-										) {
-											toast.error("Please fill all fields");
-											return;
-										}
-											
 
 										setTempUserDetails({
 											...tempUserDetails,
@@ -1185,17 +1182,6 @@ const EditProfilePage: NextPage = () => {
 												| "degree"
 												| "other",
 										};
-
-										if (
-											!(
-												newTraining.title &&
-												newTraining.location &&
-												newTraining.organizer
-											)
-										) {
-											toast.error("Please fill all fields");
-											return;
-										}
 
 										setTempUserDetails({
 											...tempUserDetails,
