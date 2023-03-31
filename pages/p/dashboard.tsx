@@ -223,6 +223,11 @@ const Prov_Dashboard = () => {
 						{/* right side */}
 						<div className="col-span-2 hidden lg:flex flex-col gap-5">
 							<div className="flex flex-col gap-4">
+								<Link href={"https://monaverse.com/spaces/wicket?invite=T0RVek5qTTJOdzp1cy8q"} className="btn btn-primary">
+									Go to metaverse
+								</Link>
+							</div>
+							<div className="flex flex-col gap-4">
 								<h2 className="text-2xl font-bold">Recent Activities</h2>
 								<div className="flex flex-col gap-2">
 									{activities.isLoading &&

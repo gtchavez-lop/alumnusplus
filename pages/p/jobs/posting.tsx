@@ -9,6 +9,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
 import Fuse from "fuse.js";
+import Link from "next/link";
 import Modal from "@/components/Modal";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import _Skills from "@/lib/skills.json";
@@ -189,6 +190,12 @@ const JobPostingPage: NextPage = () => {
 								<MdEdit className="text-lg" />
 								{!isEditing ? <span>Edit</span> : <span>Cancel Changes</span>}
 							</button>
+							<Link
+								href={`/p/jobs/applicants?job_id=${router.query.id}`}
+								className="btn"
+							>
+								See Applicants
+							</Link>
 							<button
 								onClick={() => setIsDeleting(true)}
 								className="btn btn-error gap-2"
