@@ -37,6 +37,14 @@ const NewRegistrationPage: NextPage = () => {
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
 				<Tabs tabs={_tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+				<select
+					className="lg:hidden select select-primary w-full"
+					value={activeTab}
+					onChange={(e) => setActiveTab(e.target.value)}
+				>
+					<option value="hunter">Hunter</option>
+					<option value="provisioner">Provisioner</option>
+				</select>
 
 				<div ref={tabContentRef}>
 					{activeTab === "hunter" && <RegisterHunterSubPage />}

@@ -6,6 +6,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
+import Link from "next/link";
 import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
@@ -17,7 +18,6 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import Link from "next/link";
 
 type TTab = {
 	title: string;
@@ -80,7 +80,6 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		if (
 			!(
 				tempUserDetails.legalName &&
-				tempUserDetails.companyEmail &&
 				tempUserDetails.foundingYear &&
 				tempUserDetails.industryType &&
 				tempUserDetails.shortDescription &&
@@ -92,10 +91,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		}
 
 		// check if email is valid
-		if (!tempUserDetails.companyEmail.includes("@")) {
-			toast.error("Please enter a valid email");
-			return;
-		}
+		// if (!tempUserDetails.companyEmail.includes("@")) {
+		// 	toast.error("Please enter a valid email");
+		// 	return;
+		// }
 
 		// check if founding year is valid
 		if (tempUserDetails.foundingYear > dayjs().year()) {

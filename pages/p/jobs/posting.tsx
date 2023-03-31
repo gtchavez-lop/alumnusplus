@@ -17,49 +17,10 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { id } = context.query;
-
-	const { data, error } = await supabase
-		.from("public_jobs")
-		.select("*")
-		.eq("id", id)
-		.single();
-
-	if (error) {
-		console.error(error);
-		return {
-			props: {
-				jobData: {
-					isLoading: false,
-					isFetched: true,
-					data: {} as unknown as TProvJobPost,
-				},
-			},
-		};
-	}
-
-	return {
-		props: {
-			jobData: {
-				isLoading: false,
-				isFetched: true,
-				data: data as TProvJobPost,
-			},
-		},
-	};
-};
-
-const JobPostingPage: NextPage<{
-	jobData: {
-		isLoading: boolean;
-		isFetched: boolean;
-		data: TProvJobPost;
-	};
-}> = ({ jobData }) => {
+const JobPostingPage: NextPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
 	const [isEditing, setIsEditing] = useState(false);
-	const [tempData, setTempData] = useState<TProvJobPost>(jobData.data);
+	const [tempData, setTempData] = useState({} as TProvJobPost);
 	const skillsearchform = useRef<HTMLFormElement>(null);
 	const [skillsetRequirementSearchResult, setSkillsetRequirementSearchResult] =
 		useState<string[]>([]);
@@ -73,20 +34,47 @@ const JobPostingPage: NextPage<{
 		threshold: 0.3,
 	});
 
+	const fetchJobData = async () => {
+		const { id } = router.query;
+
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.select("*")
+			.eq("id", id)
+			.single();
+
+		if (error) {
+			return {} as unknown as TProvJobPost;
+		}
+
+		return data as TProvJobPost;
+	};
+
+	const _jobData = useQuery({
+		queryKey: ["jobData"],
+		queryFn: fetchJobData,
+		enabled: !!router.query.id,
+		refetchOnWindowFocus: false,
+		onSuccess: (data) => {
+			setTempData(data);
+		},
+	});
+
 	const handleChanges = async () => {
 		const { error } = await supabase
 			.from("public_jobs")
 			.update(tempData)
-			.eq("id", jobData.data.id);
+			.eq("id", router.query.id);
 
 		if (error) {
 			console.error(error);
 			toast.error("Error updating job posting.");
-		} else {
-			toast.success("Job posting updated.");
-			setHasChanges(false);
-			jobData.data = tempData;
+			return;
 		}
+
+		toast.success("Job posting updated.");
+		setHasChanges(false);
+		_jobData.refetch();
 
 		setIsEditing(false);
 	};
@@ -95,34 +83,36 @@ const JobPostingPage: NextPage<{
 		const { error } = await supabase
 			.from("public_jobs")
 			.delete()
-			.eq("id", jobData.data.id);
+			.eq("id", router.query.id);
 
 		if (error) {
 			console.error(error);
 			toast.error("Error deleting job posting.");
-		} else {
-			toast.success("Job posting deleted.");
-			router.push("/p/jobs");
+			return;
 		}
+
+		toast.success("Job posting deleted.");
+		router.push("/p/jobs");
 	};
 
 	useEffect(() => {
-		setHasChanges(JSON.stringify(tempData) !== JSON.stringify(jobData.data));
+		setHasChanges(JSON.stringify(tempData) !== JSON.stringify(_jobData.data));
 	}, [tempData]);
 
 	return (
 		<>
-			{!(jobData && _currentUser) && (
-				<motion.main
-					variants={AnimPageTransition}
-					initial="initial"
-					animate="animate"
-					exit="exit"
-					className="relative min-h-screen w-full flex justify-center items-center"
-				>
-					<FiLoader className="animate-spin text-xl" />
-				</motion.main>
-			)}
+			{_jobData.isLoading ||
+				(!_currentUser && (
+					<motion.main
+						variants={AnimPageTransition}
+						initial="initial"
+						animate="animate"
+						exit="exit"
+						className="relative min-h-screen w-full flex justify-center items-center"
+					>
+						<FiLoader className="animate-spin text-xl" />
+					</motion.main>
+				))}
 
 			<AnimatePresence mode="wait">
 				{hasChanges && (
@@ -146,7 +136,7 @@ const JobPostingPage: NextPage<{
 							</button>
 							<button
 								onClick={() => {
-									setTempData(jobData.data);
+									setTempData(_jobData.data as TProvJobPost);
 									setHasChanges(false);
 									toast("Changes discarded.");
 									setHasChanges(false);
@@ -160,7 +150,7 @@ const JobPostingPage: NextPage<{
 				)}
 			</AnimatePresence>
 
-			{jobData && _currentUser && (
+			{_jobData.isSuccess && _currentUser && (
 				<motion.main
 					variants={AnimPageTransition}
 					initial="initial"
@@ -169,13 +159,27 @@ const JobPostingPage: NextPage<{
 					className="relative min-h-screen w-full grid grid-cols-5 gap-10 py-24"
 				>
 					{/* action buttons */}
-					{jobData.data?.uploader_id === _currentUser.id && (
+					{_jobData.data.uploader_id === _currentUser.id && (
 						<div className="col-span-full flex items-center justify-end gap-2">
+							<label className="flex items-center gap-2">
+								<span className="ml-2">Draft</span>
+								<input
+									type="checkbox"
+									checked={tempData.draft}
+									onChange={(e) => {
+										setTempData({
+											...tempData,
+											draft: e.target.checked,
+										});
+									}}
+									className="checkbox checkbox-primary"
+								/>
+							</label>
 							<button
 								onClick={() => {
 									if (isEditing) {
 										setIsEditing(!isEditing);
-										setTempData(jobData.data);
+										setTempData(_jobData.data);
 									} else {
 										setIsEditing(!isEditing);
 									}
@@ -205,7 +209,7 @@ const JobPostingPage: NextPage<{
 									Job Title
 								</p>
 								{!isEditing ? (
-									<p>{jobData.data?.job_title}</p>
+									<p>{_jobData.data.job_title}</p>
 								) : (
 									<input
 										type="text"
@@ -225,7 +229,7 @@ const JobPostingPage: NextPage<{
 									Job Type
 								</span>
 								{!isEditing ? (
-									<span>{jobData.data?.job_type}</span>
+									<span>{_jobData.data.job_type}</span>
 								) : (
 									<select
 										value={tempData.job_type}
@@ -250,7 +254,7 @@ const JobPostingPage: NextPage<{
 									Job Location
 								</span>
 								{!isEditing ? (
-									<span>{jobData.data?.job_location}</span>
+									<span>{_jobData.data.job_location}</span>
 								) : (
 									<input
 										type="text"
@@ -270,7 +274,7 @@ const JobPostingPage: NextPage<{
 									Short Description
 								</span>
 								{!isEditing ? (
-									<span>{jobData.data?.short_description}</span>
+									<span>{_jobData.data.short_description}</span>
 								) : (
 									<textarea
 										value={tempData.short_description}
@@ -291,7 +295,7 @@ const JobPostingPage: NextPage<{
 								</span>
 								{!isEditing ? (
 									<ul className="list-disc pl-5">
-										{jobData.data?.job_skills.map((skill, index) => (
+										{_jobData.data.job_skills.map((skill, index) => (
 											<li key={`qualification_${index}`}>{skill}</li>
 										))}
 									</ul>
@@ -300,6 +304,7 @@ const JobPostingPage: NextPage<{
 										<div className="flex flex-wrap gap-2 bg-base-200 p-2 rounded-btn">
 											{tempData.job_skills.map((skill, index) => (
 												<div
+													key={`skill_${index}`}
 													onClick={() => {
 														setTempData({
 															...tempData,
@@ -361,6 +366,7 @@ const JobPostingPage: NextPage<{
 											<div className="flex flex-wrap gap-2 bg-base-200 p-2 rounded-btn">
 												{skillsetRequirementSearchResult.map((skill, index) => (
 													<div
+														key={`skill_${index}`}
 														onClick={() => {
 															setTempData({
 																...tempData,
@@ -386,7 +392,7 @@ const JobPostingPage: NextPage<{
 								</span>
 								{!isEditing ? (
 									<ul className="list-disc pl-5">
-										{jobData.data?.job_qualifications.map(
+										{_jobData.data.job_qualifications.map(
 											(qualification, index) => (
 												<li key={`qualification_${index}`}>{qualification}</li>
 											),
@@ -417,6 +423,7 @@ const JobPostingPage: NextPage<{
 												{tempData.job_qualifications.map(
 													(qualification, index) => (
 														<div
+															key={`qualification_${index}`}
 															onClick={() => {
 																setTempData({
 																	...tempData,
@@ -454,7 +461,7 @@ const JobPostingPage: NextPage<{
 
 						{!isEditing ? (
 							<ReactMarkdown className="prose ">
-								{jobData.data?.full_description}
+								{_jobData.data.full_description}
 							</ReactMarkdown>
 						) : (
 							<div className="flex flex-col gap-2">

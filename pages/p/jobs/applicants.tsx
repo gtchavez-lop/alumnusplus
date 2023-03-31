@@ -105,7 +105,11 @@ const JobPostingPage: NextPage<{
 							<h3 className="text-lg font-bold opacity-75 text-primary">
 								Full Description
 							</h3>
+<<<<<<< HEAD
 							<p className="flex flex-col mb-5">
+=======
+							<p className="flex flex-col mb-3  mb-5">
+>>>>>>> c44c31dad3152987e69a66cccf8f41b115cf3d9a
 								{jobData.data?.full_description}
 							</p>
 							<div className="flex flex-col">

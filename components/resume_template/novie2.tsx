@@ -16,174 +16,145 @@ const Novie2: FC = () => {
 	return (
 		_currentUser && (
 			<>
-				<div>
-					<p className="text-4xl font-bold">
-						{_currentUser.full_name.first} {_currentUser.full_name.last}
-					</p>
-					<p className="text-xl">{_currentUser.skill_primary}</p>
+				<div className="flex justify-center items-center">
+                    <Image
+                        src={_currentUser.avatar_url}
+                        alt="profile picture"
+                        width={150}
+                        height={150}
+                        className="mr-4"
+                    />
+
+                    <div>
+                        <p className="text-4xl font-bold">
+                            {_currentUser.full_name.first} {_currentUser.full_name.last}
+                        </p>
+                        <p className="text-xl">{_currentUser.skill_primary}</p>
+                    </div>
+
 				</div>
 
-				<div className="grid grid-cols-2 gap-2 mt-10">
-					<div className="flex flex-col gap-2">
-						<div className="flex gap-2">
-							<p className="w-[90px] font-bold">Phone</p>
-							<p>
-								{_currentUser.phone.length > 0
-									? _currentUser.phone
-									: "-------------------------"}
-							</p>
-						</div>
-						<div className="flex gap-2">
-							<p className="w-[90px] font-bold">Email</p>
-							<p>
-								{_currentUser.email.length > 0
-									? _currentUser.email
-									: "-------------------------"}
-							</p>
-						</div>
-					</div>
-					<div className="flex flex-col gap-2">
-						{
-							// get all keys in _currentUser.social_media_links
-							Object.keys(_currentUser.social_media_links).map((key) => {
-								const selectedKey = key as
-									| "facebook"
-									| "instagram"
-									| "linkedin"
-									| "twitter"
-									| "youtube"
-									| "github";
-								const socialObject = {
-									socialType: key,
-									socialUrl: _currentUser.social_media_links[
-										selectedKey
-									] as unknown as string,
-								};
-
-								return (
-									socialObject.socialUrl.length > 0 && (
-										<div className="flex gap-2">
-											<p className="w-[90px] font-bold capitalize">
-												{selectedKey}
-											</p>
-											<Link href={socialObject.socialUrl}>
-												{socialObject.socialUrl}
-											</Link>
-										</div>
-									)
-								);
-							})
-						}
-					</div>
-				</div>
-
-				<ReactMarkdown className="prose max-w-max mt-10">
+                <ReactMarkdown className="prose max-w-max mt-10">
 					{_currentUser.cover_letter}
 				</ReactMarkdown>
 
+
 				{/* experience */}
-				<div className="flex flex-col gap-2 mt-10">
-					<h2 className="text-2xl border-b-2 border-base-content/50 w-full">
-						Job Experiences
-					</h2>
-					{_currentUser.experience.map((exp, index) => (
-						<div className="grid grid-cols-5" key={`exp_${index}`}>
-							<div className="col-span-1">
-								<p className="flex font-bold mt-[3px] flex-col">
-									<span>{dayjs(exp.startDate).format("YYYY-MM")} to</span>
+
+                <div className="grid grid-cols-2 gap-10 mt-10">
+                    <div className="flex flex-col">
+                        <h2 className="text-2xl border-b-2 border-base-content/50 w-full">
+                                Job Experiences
+                        </h2>
+                        {_currentUser.experience.map((exp, index) => (
+                        <div className="col-span-4 mt-4" key={`exp_${index}`}>
+								<p className="text-xl font-bold">{exp.jobPosition} |{" "} {exp.location}</p>
+								<p className="italic">								
+									<span>{dayjs(exp.startDate).format("MMMM YYYY")} to </span>
 									<span>
 										{exp.isCurrent
 											? "Current"
-											: dayjs(exp.endDate).format("YYYY-MM")}
+											: dayjs(exp.endDate).format("MMMM YYYY")}
 									</span>
 								</p>
-							</div>
-							<div className="col-span-4">
-								<p className="text-xl font-bold">{exp.jobPosition}</p>
-								<p className="italic">{exp.location}</p>
 								<ReactMarkdown className="prose max-w-max mt-3">
 									{exp.description}
 								</ReactMarkdown>
-							</div>
-						</div>
-					))}
-				</div>
+                        </div>
+                        ))}
 
-				{/* Education */}
-				<div className="flex flex-col gap-2 mt-10">
-					<h2 className="text-2xl border-b-2 border-base-content/50 w-full">
-						Education History
-					</h2>
-					{_currentUser.education.map((edu, index) => (
-						<div className="grid grid-cols-5" key={`edu_${index}`}>
-							<div className="col-span-1">
-								<p className="flex gap-2 font-bold mt-[3px]">
-									Year {edu.yearGraduated}
+                    <div className="flex flex-col mt-4">
+                        <h2 className="text-2xl border-b-2 border-base-content/50 w-full">
+                        Trainings and Seminars
+                        </h2>
+                        {_currentUser.trainings.map((training, index) => (
+                        <div className="col-span-4 mt-4" key={`training_${index}`}>
+								<p className="text-xl capitalize font-bold">{training.title} | {training.type}</p>
+								<p className="">								
+                                {training.organizer}
+								</p>								<p className="italic">								
+                                {dayjs(training.date).format("YYYY MMMM")} | {training.location}
 								</p>
-							</div>
-							<div className="col-span-4">
-								<p className="text-xl capitalize font-bold">
-									{edu.degreeType} | {edu.degreeName}
-								</p>
-								<p className="underline underline-offset-2 mt-2">
-									{edu.institution}
-								</p>
-								<p className="italic">{edu.location}</p>
-							</div>
-						</div>
-					))}
-				</div>
+                        </div>
+                        ))}
 
-				{/* Skill */}
-				<div className="flex flex-col gap-2 mt-10">
-					<h2 className="text-2xl border-b-2 border-base-content/50 w-full">
-						Skillset
-					</h2>
-					{/* primary */}
-					<div className="grid grid-cols-5">
-						<div className="col-span-1">
-							<p className="flex gap-2 font-bold mt-[3px]">Primary Skill</p>
-						</div>
-						<div className="col-span-4">
-							<p className="text-xl capitalize">{_currentUser.skill_primary}</p>
-						</div>
-					</div>
-					{/* secondary */}
-					<div className="grid grid-cols-5">
-						<div className="col-span-1">
-							<p className="flex gap-2 font-bold mt-[3px]">Secondary Skills</p>
-						</div>
-						<div className="col-span-4 flex gap-7 flex-wrap">
-							{_currentUser.skill_secondary.map((skill, index) => (
-								<p className="text-xl capitalize " key={`skillsec_${index}`}>
-									{skill}
-								</p>
-							))}
-						</div>
-					</div>
-				</div>
+                    </div>
+                </div>
 
-				{/* Trainings and Seminars */}
-				<div className="flex flex-col gap-2 mt-10">
-					<h2 className="text-2xl border-b-2 border-base-content/50 w-full">
-						Trainings and Seminars
-					</h2>
-					{_currentUser.trainings.map((training, index) => (
-						<div className="grid grid-cols-5" key={`training_${index}`}>
-							<div className="col-span-1">
-								<p className="flex gap-2 font-bold mt-[3px]">
-									{dayjs(training.date).format("YYYY MMMM")}
-								</p>
-							</div>
-							<div className="col-span-4">
-								<p className="text-xl capitalize font-bold">
-									{training.type} | {training.title}
-								</p>
-								<p className="italic">{training.location}</p>
-							</div>
-						</div>
-					))}
-				</div>
+
+                {/* Contact , Skills, Education */}
+                    <div className="flex flex-col">
+                        <div>
+                            <h2 className="text-2xl border-b-2 border-base-content/50 w-full">
+                                Contact
+                            </h2>
+                                <div className="flex flex-col mt-4" >
+                                    <div className="flex flex-row items-center">
+                                        <MdPhone className="w-5 h-5 mr-3" />
+                                        <p>
+                                            {_currentUser.phone.length > 0
+                                            ? _currentUser.phone
+                                            : "-------------------------"}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-row items-center">
+                                        <MdEmail className="w-5 h-5 mr-3" />
+                                        <p>
+                                            {_currentUser.email.length > 0
+                                                ? _currentUser.email
+                                                : "-------------------------"}
+                                        </p>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div>
+                            <h2 className="text-2xl border-b-2 border-base-content/50 w-full mt-5">
+                                Skillset
+                            </h2>
+                            {/* primary */}
+                            <div className="grid grid-cols-5 mt-4">
+                                <div className="col-span-1">
+                                    <p className="flex gap-2 font-bold mt-[3px]">Primary Skill</p>
+                                </div>
+                                <div className="col-span-4 ml-5 mt-1">
+                                    <p className="capitalize">{_currentUser.skill_primary}</p>
+                                </div>
+                            </div>
+                            {/* secondary */}
+                            <div className="grid grid-cols-5 mt-3">
+                                <div className="col-span-1">
+                                    <p className="flex gap-2 font-bold mt-[3px]">Secondary Skills</p>
+                                </div>
+                                <div className="col-span-4 ml-5 mt-1">
+                                    {_currentUser.skill_secondary.map((skill, index) => (
+                                        <p className="capitalize " key={`skillsec_${index}`}>
+                                            {skill}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h2 className="text-2xl border-b-2 border-base-content/50 w-full mt-5">
+                                Education History
+                            </h2>
+                            {_currentUser.education.map((edu, index) => (
+                                <div className="col-span-4 mt-4" key={`edu_${index}`}>
+                                    <p className="text-xl capitalize font-bold">{edu.degreeType} |{" "} {edu.degreeName}</p>
+                                    <p className="italic">
+                                        {edu.institution} |	{edu.location} | {edu.yearGraduated}
+                                    </p>
+
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>     
+                </div>
+
 			</>
 		)
 	);
