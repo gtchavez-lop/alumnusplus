@@ -14,6 +14,7 @@ import {
 
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
+import Footer from "@/components/Footer";
 import Tabs from "@/components/Tabs";
 import dynamic from "next/dynamic";
 import { empty } from "uuidv4";
@@ -79,7 +80,8 @@ const ApplyPage = () => {
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select("*,uploader:uploader_id(legalName)");
+			.select("*,uploader:uploader_id(legalName)")
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -97,7 +99,8 @@ const ApplyPage = () => {
 			.select(
 				"job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.contains("job_skills:text[]", [_userDetails.skill_primary]);
+			.contains("job_skills:text[]", [_userDetails.skill_primary])
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -115,7 +118,8 @@ const ApplyPage = () => {
 			.select(
 				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.in("id", savedjobs);
+			.in("id", savedjobs)
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -133,7 +137,8 @@ const ApplyPage = () => {
 			.select(
 				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
 			)
-			.in("id", appliedjobs);
+			.in("id", appliedjobs)
+			.eq("draft", false);
 
 		if (error) {
 			console.log(error);
@@ -304,6 +309,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 
@@ -315,6 +321,7 @@ const ApplyPage = () => {
 											key={item.id}
 											job={item}
 											isSaved={_userDetails.saved_jobs.includes(item.id)}
+											isApplied={_userDetails.applied_jobs.includes(item.id)}
 										/>
 									))}
 							</motion.div>
@@ -335,6 +342,7 @@ const ApplyPage = () => {
 								recommendedJobs.data.map((job, index) => (
 									<JobCard
 										isSaved={_userDetails.saved_jobs.includes(job.id)}
+										isApplied={_userDetails.applied_jobs.includes(job.id)}
 										job={job}
 										key={`recommendedjob_${index}`}
 									/>
@@ -353,7 +361,7 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "saved" && (
-						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10">
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5 w-full">
 							{savedJobs.isSuccess &&
 								savedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`savedjob_${index}`} />
@@ -372,10 +380,7 @@ const ApplyPage = () => {
 						</motion.div>
 					)}
 					{tabSelected === "applied" && (
-						<motion.div className=" mt-10">
-							<p className="alert alert-warning">
-								This feature is still in development. We are working on it.
-							</p>
+						<motion.div className="grid grid-cols-1 lg:grid-cols-2 mt-10 gap-5">
 							{appliedJobs.isSuccess &&
 								appliedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`appliedjob_${index}`} />

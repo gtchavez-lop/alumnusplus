@@ -3,6 +3,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
+import Footer from "@/components/Footer";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,6 +36,7 @@ const DriftPage: NextPage = () => {
 	const [activeTab, setActiveTab] = useState<"nearby" | "all">("nearby");
 	const [tabContentRef] = useAutoAnimate<HTMLDivElement>();
 	const _currentUser = useStore($accountDetails);
+	const [searchResults, setSearchResults] = useState<IUserProvisioner[]>([]);
 
 	const getLocation = async () => {
 		const location = await fetch(
@@ -204,6 +206,44 @@ const DriftPage: NextPage = () => {
 					)}
 					{activeTab === "all" && (
 						<>
+							{!allCompanies.isLoading && (
+								<form
+									onSubmit={(e) => {
+										const form = e.target as HTMLFormElement;
+										const query = form.query.value;
+
+										e.preventDefault();
+
+										const searchResults = allCompanies.data?.filter((item) => {
+											return (
+												item.legalName
+													.toLowerCase()
+													.includes(query.toLowerCase()) ||
+												item.address?.city
+													.toLowerCase()
+													.includes(query.toLowerCase())
+											);
+										}) as IUserProvisioner[];
+
+										setSearchResults(searchResults);
+									}}
+									className="col-span-full w-full max-w-md mx-auto flex gap-2"
+								>
+									<input
+										type="text"
+										name="query"
+										placeholder="Search for companies here"
+										className="input input-primary flex-1"
+										onChange={(e) => {
+											if (e.target.value === "") {
+												setSearchResults([]);
+											}
+										}}
+									/>
+									<button className="btn btn-primary">Search</button>
+								</form>
+							)}
+
 							{allCompanies.isLoading &&
 								Array(3)
 									.fill(0)
@@ -217,7 +257,34 @@ const DriftPage: NextPage = () => {
 							{allCompanies.isSuccess &&
 								!allCompanies.isLoading &&
 								allCompanies.data?.length > 0 &&
+								searchResults.length === 0 &&
 								allCompanies.data?.map((item, index) => (
+									<Link
+										key={`company-${index}`}
+										href={`/h/drift/company?id=${item.id}`}
+										passHref
+										className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
+									>
+										<div className="flex flex-col items-center gap-2 cursor-pointer">
+											<Image
+												alt=""
+												src={
+													item.avatar_url ||
+													`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${item.legalName}`
+												}
+												className="mask mask-squircle w-[100px] h-[100px]"
+												width={100}
+												height={100}
+											/>
+											<p>{item.legalName}</p>
+										</div>
+									</Link>
+								))}
+
+							{allCompanies.isSuccess &&
+								!allCompanies.isLoading &&
+								searchResults.length > 0 &&
+								searchResults.map((item, index) => (
 									<Link
 										key={`company-${index}`}
 										href={`/h/drift/company?id=${item.id}`}
@@ -272,4 +339,5 @@ const DriftPage: NextPage = () => {
 // 	</motion.main>
 // ) : (
 // )}
+
 export default DriftPage;

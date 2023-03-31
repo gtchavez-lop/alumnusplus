@@ -534,6 +534,7 @@ export interface IUserHunter {
   }
   applied_jobs: string[]
   avatar_url: string
+  banner_url: string
   bio: string
   birthdate: string
   birthplace: string
@@ -577,9 +578,9 @@ export interface IUserHunter {
 
 export interface IUserProvisioner {
   address: {
-    address: string | null
-    city: string | null
-    postalCode: string | null
+    address: string
+    city: string
+    postalCode: string
   }
   alternativeNames: string[]
   avatar_url: string
@@ -595,6 +596,7 @@ export interface IUserProvisioner {
   fullDescription: string
   id: string
   industryType: string
+  is_live: boolean
   jobPostings: []
   legalName: string
   shortDescription: string
@@ -637,6 +639,7 @@ export type THunterBlogPost = {
   updatedAt: string | null
   uploader: IUserHunter
   upvoters: string[]
+  draft: boolean
 }
 
 export interface TProvJobPost {
@@ -650,6 +653,8 @@ export interface TProvJobPost {
   job_type:           string[];
   created_at:         string;
   job_skills:         string[];
+  draft:              boolean;
+  applicants: string[];
 }
 
 export interface TProvBlogPost {
@@ -660,4 +665,5 @@ export interface TProvBlogPost {
 	uploader: IUserProvisioner;
 	upvoters: string[];
 	type: "provblog" | "event";
+  draft: boolean;
 }

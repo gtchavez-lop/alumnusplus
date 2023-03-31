@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { FC, useState } from "react";
 import {
 	MdArrowBack,
 	MdArrowForward,
@@ -17,9 +18,8 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
-const ProvisionerPage: NextPage = () => {
+const RegisterProvisionerSubPage: FC = () => {
 	const [formPage, setFormPage] = useState(1);
 	const [localRegData, setLocalRegData] = useState<IUserProvisioner>({
 		address: {
@@ -36,6 +36,7 @@ const ProvisionerPage: NextPage = () => {
 			email: "",
 			phone: "",
 		},
+		is_live: false,
 		foundingYear: 0,
 		fullDescription: "",
 		followers: [],
@@ -100,13 +101,7 @@ const ProvisionerPage: NextPage = () => {
 
 	return (
 		<>
-			<motion.main
-				variants={AnimPageTransition}
-				initial="initial"
-				animate="animate"
-				exit="exit"
-				className="relative min-h-screen w-full pt-24 pb-36"
-			>
+			<div>
 				<div className="flex flex-col items-center py-5">
 					<h1 className="text-3xl font-bold text-secondary">
 						Register as a Provisioner (Company)
@@ -636,9 +631,9 @@ const ProvisionerPage: NextPage = () => {
 						</motion.div>
 					)}
 				</div>
-			</motion.main>
+			</div>
 		</>
 	);
 };
 
-export default ProvisionerPage;
+export default RegisterProvisionerSubPage;

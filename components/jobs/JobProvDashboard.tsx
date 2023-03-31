@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 
-const JobCardProv: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
+const JobCardDashboard: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
 	job,
 	viewMode,
 }) => {
@@ -24,13 +24,11 @@ const JobCardProv: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
 
 			{viewMode === "grid" && (
 				<Link
-					href={`/p/jobs/posting?id=${job.id}`}
+					href={`/p/jobs/details?id=${job.id}`}
 					onClick={() => setIsClicked(true)}
 					className="flex flex-col max-h-fit h-fit w-full rounded-btn p-5 bg-base-200 hover:bg-primary/25 transition-all"
 				>
-					<h1 className="text-xl font-bold">
-						{job.draft && "(Draft)"} {job.job_title}
-					</h1>
+					<h1 className="text-xl font-bold">{job.job_title}</h1>
 
 					<p className="text-sm">
 						{job.job_location} |{" "}
@@ -64,14 +62,12 @@ const JobCardProv: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
 			)}
 			{viewMode === "list" && (
 				<Link
-					href={`/p/jobs/posting?id=${job.id}`}
+					href={`/p/jobs/details?id=${job.id}`}
 					onClick={() => setIsClicked(true)}
 					className="flex items-end w-full rounded-btn py-3 px-4 bg-base-200 hover:bg-primary/50 transition-all justify-between"
 				>
 					<div>
-						<h1 className="text-xl font-bold">
-							{job.draft && "(Draft)"} {job.job_title}
-						</h1>
+						<h1 className="text-xl font-bold">{job.job_title}</h1>
 
 						<p className="text-sm">
 							{job.job_location} |{" "}
@@ -100,4 +96,4 @@ const JobCardProv: FC<{ job: TProvJobPost; viewMode: "grid" | "list" }> = ({
 	);
 };
 
-export default JobCardProv;
+export default JobCardDashboard;

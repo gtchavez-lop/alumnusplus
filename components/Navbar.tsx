@@ -71,10 +71,10 @@ const Navbar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							<Link href="/register" className='btn btn-primary gap-2'>
+							{/* <Link href="/register" className='btn btn-primary gap-2'>
 								<MdPersonAdd className="text-lg" />
 								<span>Sign Up</span>
-							</Link>
+							</Link> */}
 							<Link href="/login" className='btn btn-ghost gap-2'>
 								<MdPerson className="text-lg" />
 								<span>Log In</span>
@@ -259,17 +259,6 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<button
-								// href="/p/events"
-								className={`btn ${
-									router.pathname.includes("/p/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-								disabled
-							>
-								<MdEvent className="text-lg" />
-							</button>
 							<Link
 								href="/p/me"
 								className={`btn ${

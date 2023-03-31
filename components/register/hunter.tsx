@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { FC, useState } from "react";
 import {
 	MdArrowBack,
 	MdArrowForward,
@@ -21,9 +22,8 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
-const RegisterHunterSubPage = () => {
+const RegisterHunterSubPage: FC = () => {
 	const router = useRouter();
 	const [formPage, setFormPage] = useState(1);
 	const [localPassword, setLocalPassword] = useState({
@@ -32,54 +32,7 @@ const RegisterHunterSubPage = () => {
 	});
 	const [passwordMatched, setPasswordMatched] = useState<boolean>(true);
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
-	const [localRegData, setLocalRegData] = useState<IUserHunter>({
-		address: {
-			address: "",
-			city: "",
-			postalCode: "",
-		},
-		applied_jobs: [],
-		avatar_url: "",
-		bio: "",
-		citizenship: "Filipino",
-		civil_status: "single",
-		cover_letter: "",
-		email: "",
-		experience: [],
-		birthdate: "",
-		birthplace: "",
-		connections: [],
-		created_at: "",
-		education: [],
-		full_name: {
-			first: "",
-			last: "",
-			middle: "",
-		},
-		followedCompanies: [],
-		gender: "male",
-		id: "",
-		id_number: "",
-		id_type: "other",
-		is_verified: false,
-		phone: "",
-		saved_jobs: [],
-		skill_primary: "",
-		skill_secondary: [],
-		social_media_links: {
-			facebook: "",
-			instagram: "",
-			linkedin: "",
-			github: "",
-			twitter: "",
-			youtube: "",
-		},
-		subscription_type: "junior",
-		type: "hunter",
-		trainings: [],
-		updated_at: "",
-		username: "",
-	});
+	const [localRegData, setLocalRegData] = useState({} as IUserHunter);
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);
@@ -150,13 +103,7 @@ const RegisterHunterSubPage = () => {
 
 	return (
 		<>
-			<motion.main
-				variants={AnimPageTransition}
-				initial="initial"
-				animate="animate"
-				exit="exit"
-				className="relative min-h-screen w-full pt-16 lg:pt-24 pb-36"
-			>
+			<div>
 				<div className="flex flex-col items-center py-5">
 					<h1 className="text-3xl font-bold text-secondary text-center w-full">
 						Register as a Hunter (Job Seeker)
@@ -198,7 +145,6 @@ const RegisterHunterSubPage = () => {
 													if (isUsernameTaken) {
 														e.currentTarget.classList.add("input-error");
 														toast.error("Username is already taken.");
-														return;
 													} else {
 														e.currentTarget.classList.remove("input-error");
 													}
@@ -235,7 +181,6 @@ const RegisterHunterSubPage = () => {
 													if (isEmailTaken) {
 														e.currentTarget.classList.add("input-error");
 														toast.error("Email is already taken.");
-														return;
 													} else {
 														e.currentTarget.classList.remove("input-error");
 													}
@@ -588,7 +533,7 @@ const RegisterHunterSubPage = () => {
 									</label>
 
 									<label className="flex flex-col">
-										<span>Bio</span>
+										<span>Bio (You can add your bio later)</span>
 										<textarea
 											id="bio"
 											value={localRegData.bio}
@@ -621,7 +566,6 @@ const RegisterHunterSubPage = () => {
 													localRegData.birthdate &&
 													localRegData.birthplace &&
 													localRegData.gender &&
-													localRegData.bio &&
 													localRegData.email &&
 													localPassword.password
 												)
@@ -1044,7 +988,7 @@ const RegisterHunterSubPage = () => {
 						)}
 					</div>
 				)}
-			</motion.main>
+			</div>
 		</>
 	);
 };

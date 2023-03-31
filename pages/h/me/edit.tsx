@@ -8,13 +8,13 @@ import {
 	IAccountData,
 	IUserHunter,
 } from "@/lib/types";
+import { MdArrowBack, MdArrowUpward } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Compressor from "compressorjs";
 import Fuse from "fuse.js";
 import Image from "next/image";
 import Link from "next/link";
-import { MdArrowBack } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
 import { ToastError } from "@/components/customToasts";
@@ -1296,6 +1296,18 @@ const EditProfilePage: NextPage = () => {
 								</div>
 							</div>
 						)}
+
+						<div className="flex mt-16 justify-end">
+							<button
+								onClick={() => {
+									// scroll to top
+									window.scrollTo({ top: 0, behavior: "smooth" });
+								}}
+								className="btn btn-square"
+							>
+								<MdArrowUpward className="text-lg" />
+							</button>
+						</div>
 					</div>
 				</motion.main>
 			)}

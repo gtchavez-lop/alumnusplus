@@ -19,6 +19,7 @@ import { uuid } from "uuidv4";
 const CreateNewJobPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
 	const router = useRouter();
+
 	const [jobSkillQuery, setJobSkillQuery] = useState("");
 	const [jobSkillSearchResults, setJobSkillSearchResults] = useState<string[]>(
 		[],
@@ -28,12 +29,14 @@ const CreateNewJobPage = () => {
 		created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		full_description: "",
 		job_location: "",
+		applicants: [],
 		job_qualifications: [],
 		job_skills: [],
 		job_title: "",
 		job_type: [],
 		short_description: "",
 		uploader_id: "",
+		draft: false,
 	});
 	const _SkillList = new Fuse(Skills, {
 		threshold: 0.3,
@@ -61,6 +64,46 @@ const CreateNewJobPage = () => {
 			.insert<TProvJobPost[]>([
 				{
 					...addJobSchema,
+					draft: false,
+					uploader_id: _currentUser.id,
+				},
+			]);
+
+		toast.dismiss();
+		if (error) {
+			toast.error(error.message);
+			return;
+		}
+
+		if (!error) {
+			toast.success("Job posted successfully");
+			router.push("/p/jobs");
+		}
+	};
+
+	const submitJobAsDraftHandler = async () => {
+		// check if the user has filled out all the fields
+		if (
+			addJobSchema.job_title === "" ||
+			addJobSchema.full_description === "" ||
+			addJobSchema.short_description === "" ||
+			addJobSchema.job_qualifications.length === 0 ||
+			addJobSchema.job_location === "" ||
+			addJobSchema.job_type.length === 0 ||
+			addJobSchema.job_skills.length === 0
+		) {
+			toast.error("Please fill out all the fields");
+			return;
+		}
+
+		toast.loading("Posting job...");
+
+		const { error } = await supabase
+			.from("public_jobs")
+			.insert<TProvJobPost[]>([
+				{
+					...addJobSchema,
+					draft: true,
 					uploader_id: _currentUser.id,
 				},
 			]);
@@ -357,6 +400,21 @@ const CreateNewJobPage = () => {
 					<Link href="/p/jobs" className="btn btn-ghost">
 						Cancel
 					</Link>
+					<button
+						disabled={
+							!(
+								addJobSchema.job_title.length > 0 &&
+								addJobSchema.job_type.length > 0 &&
+								addJobSchema.job_skills.length > 0 &&
+								addJobSchema.short_description.length > 0 &&
+								addJobSchema.full_description.length > 0
+							)
+						}
+						onClick={submitJobAsDraftHandler}
+						className="btn btn-ghost"
+					>
+						Submit as draft
+					</button>
 					<button
 						disabled={
 							!(

@@ -6,6 +6,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
+import Link from "next/link";
 import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
@@ -79,7 +80,6 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		if (
 			!(
 				tempUserDetails.legalName &&
-				tempUserDetails.companyEmail &&
 				tempUserDetails.foundingYear &&
 				tempUserDetails.industryType &&
 				tempUserDetails.shortDescription &&
@@ -91,10 +91,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		}
 
 		// check if email is valid
-		if (!tempUserDetails.companyEmail.includes("@")) {
-			toast.error("Please enter a valid email");
-			return;
-		}
+		// if (!tempUserDetails.companyEmail.includes("@")) {
+		// 	toast.error("Please enter a valid email");
+		// 	return;
+		// }
 
 		// check if founding year is valid
 		if (tempUserDetails.foundingYear > dayjs().year()) {
@@ -193,7 +193,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 								<p className="text-xl font-bold">Account Details</p>
 
 								<div className="mt-5">
-									<label className="flex flex-col gap-3">
+									<label className="flex flex-col gap-2">
 										<span>Profile Picture</span>
 										<Image
 											src={
@@ -239,6 +239,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 											// disabled
 										/>
 									</label>
+
 									<label className="flex flex-col">
 										<span>Email</span>
 										<input
@@ -248,10 +249,18 @@ const ProvisionerProfileEditPage: NextPage = () => {
 											readOnly
 											disabled
 										/>
+
+										<Link
+											href="/h/me/resetpassword"
+											className="btn btn-primary mt-1"
+										>
+											Reset Password
+										</Link>
 									</label>
 								</div>
 							</div>
 						)}
+
 						{tabSelected === "company" && (
 							<div>
 								<p className="text-xl font-bold">Company Details</p>
@@ -311,9 +320,9 @@ const ProvisionerProfileEditPage: NextPage = () => {
 													...tempUserDetails,
 													industryType: e.target.value,
 												});
-												let res = f_industryType.search(e.target.value);
-												let mappedRes = res.map((r) => r.item);
-												let limited = mappedRes.slice(0, 5);
+												const res = f_industryType.search(e.target.value);
+												const mappedRes = res.map((r) => r.item);
+												const limited = mappedRes.slice(0, 5);
 												setIndustryTypeSearchResults(limited);
 											}}
 										/>
