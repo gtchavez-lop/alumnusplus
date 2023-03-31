@@ -37,18 +37,7 @@ const tabs: TTab[] = [
 		title: "Socials",
 		value: "socials",
 	},
-	{
-		title: "Employment",
-		value: "employment",
-	},
-	{
-		title: "Education",
-		value: "education",
-	},
-	{
-		title: "Trainings",
-		value: "trainings",
-	},
+
 	{
 		title: "Verification",
 		value: "verification",

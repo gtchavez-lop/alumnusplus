@@ -387,57 +387,6 @@ const FeedPage = () => {
 									)}
 								</div>
 							</div>
-
-							<div className="grid grid-cols-2 font-light text-sm opacity-75">
-								<div className="flex flex-col">
-									<p className="font-bold text-lg">Features</p>
-									<Link
-										href="/util/features#blogging"
-										className="link link-hover"
-									>
-										Mini Blogging
-									</Link>
-									<Link
-										href="/util/features#companyhunting"
-										className="link link-hover"
-									>
-										Geo-Company Hunting
-									</Link>
-									<Link
-										href="/util/features#jobposting"
-										className="link link-hover"
-									>
-										Job Posting
-									</Link>
-									<Link
-										href="/util/features#metaverse"
-										className="link link-hover"
-									>
-										Metaverse
-									</Link>
-								</div>
-								<div className="flex flex-col">
-									<p className="font-bold text-lg">Wicket Journeys</p>
-									<Link href={"/util/about-us"} className="link link-hover">
-										About Us
-									</Link>
-									<Link href={"/util/contact"} className="link link-hover">
-										Contact Us
-									</Link>
-									<Link href={"/util/terms-of-use"} className="link link-hover">
-										Terms of use
-									</Link>
-									<Link
-										href={"/util/privacy-policy"}
-										className="link link-hover"
-									>
-										Privacy Policy
-									</Link>
-									<Link href={"/util/cookies"} className="link link-hover">
-										Cookie Policy
-									</Link>
-								</div>
-							</div>
 						</div>
 					</motion.main>
 				</>

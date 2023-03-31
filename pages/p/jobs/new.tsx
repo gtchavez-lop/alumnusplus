@@ -30,6 +30,7 @@ const CreateNewJobPage = () => {
 		created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		full_description: "",
 		job_location: "",
+		draft: false,
 		job_qualifications: [],
 		job_skills: [],
 		job_title: "",
