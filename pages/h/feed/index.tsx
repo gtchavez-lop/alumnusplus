@@ -132,9 +132,9 @@ const FeedPage = () => {
 
 	const handlePost = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const formData = new FormData(e.currentTarget);
-		const content = formData.get("content");
-		const isDraft = formData.get("isDraft") as unknown as HTMLInputElement;
+		const form = e.currentTarget as HTMLFormElement;
+		const content = form.content.value;
+		const isDraft = form.isDraft as HTMLInputElement;
 
 		if (!content) {
 			toast.error("Content is required");
@@ -152,7 +152,7 @@ const FeedPage = () => {
 			updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			uploader: _currentUser.id,
 			upvoters: [],
-			draft: isDraft.checked || true,
+			draft: isDraft.checked ? true : false,
 		});
 
 		toast.dismiss();

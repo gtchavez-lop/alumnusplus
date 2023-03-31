@@ -1,4 +1,6 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { FiMoon, FiSun } from "react-icons/fi";
+import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import {
 	MdApps,
 	MdDashboard,
@@ -14,7 +16,6 @@ import {
 	MdWork,
 } from "react-icons/md";
 
-import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -28,7 +29,8 @@ const Navbar = () => {
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
 
-	const _currentUser = useStore($accountDetails) as IUserHunter;
+	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const _currentUser = useStore($accountDetails) as any;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -96,7 +98,11 @@ const Navbar = () => {
 								}}
 								className='btn btn-ghost btn-square gap-2'
 							>
-								<MdOutlineDarkMode className="text-lg" />
+								{_globalTheme === "dark" ? (
+									<FiSun className="text-lg" />
+								) : (
+									<FiMoon className="text-lg" />
+								)}
 							</div>
 						</div>
 					</div>
@@ -192,7 +198,8 @@ const Navbar = () => {
 								</ul>
 							</div> */}
 							<p className="font-semibold opacity-75">
-								{_currentUser.full_name.first} {_currentUser.full_name.last}
+								{_currentUser.full_name.first}{" "}
+								{_currentUser.full_name.last || ""}
 							</p>
 							<Link
 								href="/h/me"
@@ -228,7 +235,12 @@ const Navbar = () => {
 							width={40}
 							height={40}
 						/>
-						<div className="flex gap-1">
+						<div className="flex gap-1 items-center">
+							{_currentUser.is_live && (
+								<p className="text-success font-bold mr-5 animate-bounce">
+									LIVE
+								</p>
+							)}
 							<Link
 								href="/p/dashboard"
 								className={`btn ${

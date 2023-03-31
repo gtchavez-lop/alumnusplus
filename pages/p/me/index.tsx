@@ -132,7 +132,18 @@ const ProvProfilePage: NextPage = () => {
 	});
 
 	const handleLiveInMetaverse = async () => {
-		console.log("live in metaverse");
+		const { error } = await supabase
+			.from("user_provisioners")
+			.update({ is_live: !isMetaverseLive })
+			.eq("id", _currentUser.id);
+
+		if (error) {
+			toast.error(error.message);
+			return;
+		}
+
+		setIsMetaverseLive(!isMetaverseLive);
+		$accountDetails.set({ ..._currentUser, is_live: !isMetaverseLive });
 	};
 
 	useEffect(() => {
@@ -157,7 +168,7 @@ const ProvProfilePage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 					>
-						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5 overflow-hidden">
+						<div className="flex flex-col gap-5 overflow-hidden">
 							<div className="col-span-full lg:col-span-3">
 								{/* profile */}
 								<div className="relative rounded-btn overflow-hidden flex flex-col gap-3">
@@ -165,7 +176,10 @@ const ProvProfilePage: NextPage = () => {
 										<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 										<Image
 											className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
-											src={`https://picsum.photos/seed/${_currentUser.legalName}/900/450`}
+											src={
+												_currentUser.banner_url ||
+												`https://picsum.photos/seed/${_currentUser.legalName}/900/450`
+											}
 											alt="background"
 											width={900}
 											height={450}
@@ -186,7 +200,7 @@ const ProvProfilePage: NextPage = () => {
 										/>
 										<div>
 											<p className="text-xl leading-tight font-bold">
-												Wicket Journeys
+												{_currentUser.legalName}
 											</p>
 											<p className="text-sm">
 												{_currentUser.followers.length} followers
@@ -196,11 +210,11 @@ const ProvProfilePage: NextPage = () => {
 									<div className="z-10 flex justify-end items-center gap-2 mt-5">
 										<button
 											onClick={handleLiveInMetaverse}
-											className="btn btn-sm lg:btn-md btn-ghost mr-auto"
+											className="btn btn-sm lg:btn-md mr-auto"
 										>
-											{isMetaverseLive
-												? "Stop Live in Metaverse"
-												: "Live in Metaverse"}
+											{_currentUser.is_live
+												? "Set your Metaverse Status to Offline"
+												: "Set your Metaverse Status to Live"}
 										</button>
 										<Link
 											href="/p/me/edit"
@@ -249,24 +263,6 @@ const ProvProfilePage: NextPage = () => {
 										setTabSelected(e as "about" | "jobs" | "followers");
 									}}
 								/>
-
-								{/* <ul className="tabs tabs-boxed">
-									{tabs.map((item, index) => (
-										<li
-											key={`tab-${index}`}
-											onClick={() => {
-												setTabSelected(
-													item.value as "about" | "jobs" | "followers",
-												);
-											}}
-											className={`tab ${
-												tabSelected === item.value && "tab-active"
-											}`}
-										>
-											{item.name}
-										</li>
-									))}
-								</ul> */}
 
 								{/* content */}
 								<div className="mt-10 overflow-hidden" ref={tabContent}>
@@ -342,7 +338,7 @@ const ProvProfilePage: NextPage = () => {
 												<p className="text-lg font-bold text-primary">
 													Full Description
 												</p>
-												<ReactMarkdown className="prose">
+												<ReactMarkdown className="prose w-full max-w-max">
 													{_currentUser.fullDescription}
 												</ReactMarkdown>
 											</div>

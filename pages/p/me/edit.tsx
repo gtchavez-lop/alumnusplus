@@ -194,6 +194,46 @@ const ProvisionerProfileEditPage: NextPage = () => {
 
 								<div className="mt-5">
 									<label className="flex flex-col gap-2">
+										<span>Banner Image</span>
+										<Image
+											src={
+												tempUserDetails.banner_url ||
+												`https://picsum.photos/seed/${_currentUser.legalName}/900/450`
+											}
+											alt="Banner Image"
+											className="w-full h-48 object-cover bg-primary rounded-btn"
+											width={900}
+											height={450}
+										/>
+										<input
+											className="file-input 	file-input-primary"
+											type="file"
+											onChange={(e) => {
+												const input = e as ChangeEvent<HTMLInputElement>;
+												if (input.currentTarget.files) {
+													// blob
+													const file = input.currentTarget.files[0];
+													// check if there is an image
+													if (!file.type.includes("image")) {
+														toast.error("Please upload an image");
+														return;
+													}
+													// check if image is not too big
+													if (file.size > 2 * 1024 * 1024) {
+														toast.error("Image is too big");
+														return;
+													}
+													// update temp user details
+													setTempUserDetails({
+														...tempUserDetails,
+														banner_url: URL.createObjectURL(file),
+													});
+												}
+											}}
+										/>
+									</label>
+
+									<label className="flex flex-col gap-2">
 										<span>Profile Picture</span>
 										<Image
 											src={

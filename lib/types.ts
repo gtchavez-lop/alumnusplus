@@ -584,6 +584,7 @@ export interface IUserProvisioner {
   }
   alternativeNames: string[]
   avatar_url: string
+  banner_url: string
   companyEmail: string
   companySize: string
   companyType: string
