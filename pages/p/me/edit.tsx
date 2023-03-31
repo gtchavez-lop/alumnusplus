@@ -7,6 +7,7 @@ import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import { MdArrowBack, MdWarning } from "react-icons/md";
+import Link from "next/link";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
@@ -17,7 +18,7 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import Link from "next/link";
+
 
 type TTab = {
 	title: string;

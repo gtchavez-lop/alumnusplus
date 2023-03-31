@@ -259,17 +259,6 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<button
-								// href="/p/events"
-								className={`btn ${
-									router.pathname.includes("/p/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-								disabled
-							>
-								<MdEvent className="text-lg" />
-							</button>
 							<Link
 								href="/p/me"
 								className={`btn ${

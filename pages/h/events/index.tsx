@@ -1,5 +1,6 @@
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
+import Footer from "@/components/Footer";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +15,6 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
-import Footer from "@/components/Footer";
 
 dayjs.extend(relativeTime);
 
@@ -78,7 +78,10 @@ const HunterEventPage: NextPage = () => {
 
 					{publicEvents.data && publicEvents.data.length > 0 ? (
 						publicEvents.data.map((item, index) => (
-							<div className="flex flex-col p-5 rounded-btn bg-base-200 border-2 border-transparent hover:border-primary transition-all">
+							<div
+								key={`publicevent_${index}`}
+								className="flex flex-col p-5 rounded-btn bg-base-200 border-2 border-transparent hover:border-primary transition-all"
+							>
 								<div className="flex items-center gap-2">
 									<Link
 										className="relative w-8 h-8 lg:w-10 lg:h-10 mask mask-squircle bg-primary "

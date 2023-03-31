@@ -44,7 +44,7 @@ const JobPostings = () => {
 
 	return (
 		<>
-			{!provJobs.isLoading ? (
+			{!provJobs.isLoading && !!_currentUser ? (
 				<>
 					<motion.main
 						variants={AnimPageTransition}

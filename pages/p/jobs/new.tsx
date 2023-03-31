@@ -31,6 +31,7 @@ const CreateNewJobPage = () => {
 		full_description: "",
 		job_location: "",
 		draft: false,
+		applicants: [],
 		job_qualifications: [],
 		job_skills: [],
 		job_title: "",

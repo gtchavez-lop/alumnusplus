@@ -1,5 +1,5 @@
 import { FC, useRef } from "react";
-import { MdEmail, MdPhone, MdPrint, MdWarning } from "react-icons/md";
+import { MdArrowBack, MdEmail, MdPhone, MdPrint, MdWarning } from "react-icons/md";
 import ReactPDF, { Document, Page } from "@react-pdf/renderer";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -14,6 +14,7 @@ import Image from "next/image";
 import { NextPage } from "next";
 import Novie1 from "@/components/resume_template/novie1";
 import Novie2 from "@/components/resume_template/novie2";
+import Novie3 from "@/components/resume_template/novie3";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -21,10 +22,21 @@ import { useStore } from "@nanostores/react";
 
 const DefaultTemplate: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
+	const router = useRouter();
 
 	return (
 		<>
 			{/* header */}
+			<div className="flex items-center gap-2 mb-10">
+					<button
+						className="btn btn-square btn-primary btn-ghost"
+						onClick={() => router.back()}
+					>
+						<MdArrowBack className="text-2xl" />
+					</button>
+					<p>Go Back</p>
+				</div>
+
 			<div className="flex gap-5 items-end">
 				<Image
 					src={_currentUser.avatar_url}
@@ -185,13 +197,14 @@ const GeneratedCV: NextPage = () => {
 							{template === "gabbie2" && <Gab2 />}
 							{template === "novie1" && <Novie1 />}
 							{template === "novie2" && <Novie2 />}
+							{template === "novie3" && <Novie3 />}
 						</div>
 					)}
 				</Page>
 			</Document>
 
 			{/* print button */}
-			<div className="hidden lg:flex fixed bottom-0 left-0 w-full p-5 justify-center print:hidden opacity-25 hover:opacity-100 transition-all">
+			<div className="hidden lg:flex fixed bottom-60 left-20 w-full p-5 justify-center print:hidden opacity-25 hover:opacity-100 transition-all">
 				<div className="flex justify-end w-full max-w-5xl">
 					<button
 						onClick={() => {
