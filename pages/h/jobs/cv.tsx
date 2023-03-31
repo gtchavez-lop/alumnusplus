@@ -6,7 +6,6 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Carlo1 from "@/components/resume_template/carlo1";
 import Carlo2 from "@/components/resume_template/carlo2";
-import Gab1 from "@/components/resume_template/gab1";
 import Gab2 from "@/components/resume_template/gab2";
 import Head from "next/head";
 import { IUserHunter } from "@/lib/types";
@@ -182,8 +181,7 @@ const GeneratedCV: NextPage = () => {
 							{template === "default" && <DefaultTemplate />}
 							{template === "carlo1" && <Carlo1 />}
 							{template === "carlo2" && <Carlo2 />}
-							{template === "gabbie1" && <Gab1 />}
-							{template === "gabbie2" && <Gab2 />}
+							{template === "gabbie1" && <Gab2 />}
 							{template === "novie1" && <Novie1 />}
 							{template === "novie2" && <Novie2 />}
 							{template === "novie3" && <Novie3 />}
