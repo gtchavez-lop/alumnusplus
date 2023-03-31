@@ -191,7 +191,7 @@ const BlogPage: NextPage = () => {
 		}
 
 		toast.dismiss();
-		router.push("/h/feed");
+		router.back();
 	};
 
 	const handleUpdateBlog = async () => {
@@ -316,7 +316,7 @@ const BlogPage: NextPage = () => {
 	};
 
 	useEffect(() => {
-		if (!!_blogData.isSuccess && !!currentUser) {
+		if (_blogData.isSuccess && currentUser) {
 			checkIfLiked(_blogData.data.upvoters);
 		}
 	});
