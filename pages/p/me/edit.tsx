@@ -6,8 +6,8 @@ import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
+import { MdArrowBack, MdWarning } from "react-icons/md";
 import Link from "next/link";
-import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+
 
 type TTab = {
 	title: string;
@@ -37,18 +38,7 @@ const tabs: TTab[] = [
 		title: "Socials",
 		value: "socials",
 	},
-	{
-		title: "Employment",
-		value: "employment",
-	},
-	{
-		title: "Education",
-		value: "education",
-	},
-	{
-		title: "Trainings",
-		value: "trainings",
-	},
+
 	{
 		title: "Verification",
 		value: "verification",
@@ -80,6 +70,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		if (
 			!(
 				tempUserDetails.legalName &&
+				tempUserDetails.companyEmail &&
 				tempUserDetails.foundingYear &&
 				tempUserDetails.industryType &&
 				tempUserDetails.shortDescription &&
@@ -91,10 +82,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		}
 
 		// check if email is valid
-		// if (!tempUserDetails.companyEmail.includes("@")) {
-		// 	toast.error("Please enter a valid email");
-		// 	return;
-		// }
+		if (!tempUserDetails.companyEmail.includes("@")) {
+			toast.error("Please enter a valid email");
+			return;
+		}
 
 		// check if founding year is valid
 		if (tempUserDetails.foundingYear > dayjs().year()) {
@@ -129,8 +120,16 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<p className="text-4xl font-bold">Edit Your Profile</p>
+					<div className="flex items-center gap-2 mb-10">
+						<button
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
+						>
+							<MdArrowBack className="text-2xl" />
+						</button>
 
+						<p className="text-4xl font-bold">Edit Your Profile</p>
+					</div>
 					<AnimatePresence mode="wait">
 						{JSON.stringify(_currentUser) !==
 							JSON.stringify(tempUserDetails) && (
@@ -193,6 +192,46 @@ const ProvisionerProfileEditPage: NextPage = () => {
 								<p className="text-xl font-bold">Account Details</p>
 
 								<div className="mt-5">
+									<label className="flex flex-col gap-2">
+										<span>Banner Image</span>
+										<Image
+											src={
+												tempUserDetails.banner_url ||
+												`https://picsum.photos/seed/${_currentUser.legalName}/900/450`
+											}
+											alt="Banner Image"
+											className="w-full h-48 object-cover bg-primary rounded-btn"
+											width={900}
+											height={450}
+										/>
+										<input
+											className="file-input 	file-input-primary"
+											type="file"
+											onChange={(e) => {
+												const input = e as ChangeEvent<HTMLInputElement>;
+												if (input.currentTarget.files) {
+													// blob
+													const file = input.currentTarget.files[0];
+													// check if there is an image
+													if (!file.type.includes("image")) {
+														toast.error("Please upload an image");
+														return;
+													}
+													// check if image is not too big
+													if (file.size > 2 * 1024 * 1024) {
+														toast.error("Image is too big");
+														return;
+													}
+													// update temp user details
+													setTempUserDetails({
+														...tempUserDetails,
+														banner_url: URL.createObjectURL(file),
+													});
+												}
+											}}
+										/>
+									</label>
+
 									<label className="flex flex-col gap-2">
 										<span>Profile Picture</span>
 										<Image

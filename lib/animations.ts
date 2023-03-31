@@ -1,11 +1,9 @@
 export const AnimPageTransition = {
   initial: {
-    // clipPath: 'polygon(0 0, 0% 0, 0% 100%, 0% 100%)',
     opacity: 0,
-    scale: 0.9,
+    scale: 0.95,
   },
   animate: {
-    // clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
     opacity: 1,
     scale: 1,
     transformOrigin: "top",
@@ -13,7 +11,6 @@ export const AnimPageTransition = {
   },
   exit: {
     opacity: 0,
-    // clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)',
     transition: { duration: 0.3, ease: [.92,.08,.84,.15] },
   },
 };

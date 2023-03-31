@@ -78,26 +78,10 @@ const Home = () => {
 
 	return (
 		<>
-			{/* <motion.div
-				initial={{ opacity: 0 }}
-				animate={{
-					opacity: 1,
-					transition: { duration: 0.5, ease: "circOut" },
-				}}
-				exit={{ opacity: 0, transition: { duration: 0.2, ease: "circIn" } }}
-				className="absolute top-0 left-0 w-full h-full"
-			>
-				<Image
-					src="./mainbg.svg"
-					className="absolute w-full min-h-[50vh] top-0 object-contain object-top  opacity-40"
-					fill
-					alt=""
-				/>
-			</motion.div> */}
 			{/* bg background */}
 			<div
 				style={{
-					opacity: scrollYValue > 50 ? 0 : 1,
+					opacity: scrollYValue > 0 ? 0 : 1,
 				}}
 				className="absolute transition-opacity w-full h-screen inset-0 flex justify-center items-end"
 			>

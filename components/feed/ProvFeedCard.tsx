@@ -9,8 +9,9 @@ interface BlogEventPostProps {
 	id: string;
 	updatedAt: string | null;
 	uploader: IUserProvisioner;
-	upvoters: string[];
+	upvoters: string[];	
 	type: "provblog" | "event";
+	draft: boolean;
 }
 const ProvFeedCard: FC<{ item: BlogEventPostProps }> = ({ item }) => {
 	return (
@@ -30,7 +31,7 @@ const ProvFeedCard: FC<{ item: BlogEventPostProps }> = ({ item }) => {
 					<div className="flex flex-col">
 						<p className="leading-none">
 							<span className="text-primary">{item.uploader.legalName}</span>{" "}
-							posted a {item.type === "provblog" ? "blog" : "event"} post
+							posted a {item.type === "provblog" ? "blog" : "event"} post {item.draft && "(Draft)"}
 						</p>
 						<p className="leading-none text-sm opacity-75">
 							{dayjs(item.createdAt).format("MMMM DD, YYYY H:MMA")}
