@@ -5,6 +5,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FC } from "react";
 import Image from "next/image";
+import JobCardDashboard from "@/components/jobs/JobProvDashboard";
 import Link from "next/link";
 import { MdWarning } from "react-icons/md";
 import ProvFeedCard from "@/components/feed/ProvFeedCard";
@@ -15,7 +16,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
-import JobCardDashboard from "@/components/jobs/JobProvDashboard";
 
 dayjs.extend(relativeTime);
 
@@ -31,6 +31,7 @@ interface BlogEventPostProps {
 	uploader: IUserProvisioner;
 	upvoters: string[];
 	type: "provblog" | "event";
+	draft: boolean;
 }
 
 const Prov_Dashboard = () => {
@@ -95,7 +96,6 @@ const Prov_Dashboard = () => {
 					className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 				>
 					<div className="grid grid-cols-5 gap-5">
-
 						<div className="col-span-full lg:col-span-3 flex flex-col gap-5">
 							{/* stats */}
 							{jobs.isSuccess && (
@@ -108,10 +108,11 @@ const Prov_Dashboard = () => {
 											</div>
 											<div className="stat-title">Job Posts</div>
 											<div
-												className={`stat-value ${jobs.isLoading ||
+												className={`stat-value ${
+													jobs.isLoading ||
 													(!jobs.isSuccess &&
 														"bg-slate-500/50 rounded-btn animate-pulse text-transparent")
-													}`}
+												}`}
 											>
 												{jobs.isSuccess && jobs.data
 													? jobs.data.length > 0
@@ -185,7 +186,6 @@ const Prov_Dashboard = () => {
 											{jobs.data?.map(
 												(job, index) =>
 													index < 3 && (
-
 														<JobCardDashboard
 															viewMode="list"
 															key={job.id}
@@ -218,14 +218,10 @@ const Prov_Dashboard = () => {
 									)}
 								</div>
 							</div>
-
-
 						</div>
 
 						{/* right side */}
 						<div className="col-span-2 hidden lg:flex flex-col gap-5">
-
-
 							<div className="flex flex-col gap-4">
 								<h2 className="text-2xl font-bold">Recent Activities</h2>
 								<div className="flex flex-col gap-2">
