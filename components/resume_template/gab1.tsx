@@ -37,7 +37,7 @@ const Gab1: FC = () => {
 				<h2 className="text-lg text-left mb-2 font-bold underline underline-offset-4 ">
 					PROFESSIONAL SUMMARY
 				</h2>
-				<ReactMarkdown className="mt-4 text-justify items-center  prose prose-sm max-w-max">
+				<ReactMarkdown className="mt-4 text-justify items-center  prose prose-sm ">
 					{_currentUser.cover_letter}
 				</ReactMarkdown>
 			</div>

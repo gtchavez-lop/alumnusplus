@@ -6,8 +6,8 @@ import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
+import { MdArrowBack, MdWarning } from "react-icons/md";
 import Link from "next/link";
-import { MdWarning } from "react-icons/md";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
 import _Industries from "@/lib/industryTypes.json";
@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+
 
 type TTab = {
 	title: string;
@@ -37,18 +38,7 @@ const tabs: TTab[] = [
 		title: "Socials",
 		value: "socials",
 	},
-	{
-		title: "Employment",
-		value: "employment",
-	},
-	{
-		title: "Education",
-		value: "education",
-	},
-	{
-		title: "Trainings",
-		value: "trainings",
-	},
+
 	{
 		title: "Verification",
 		value: "verification",
@@ -80,6 +70,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		if (
 			!(
 				tempUserDetails.legalName &&
+				tempUserDetails.companyEmail &&
 				tempUserDetails.foundingYear &&
 				tempUserDetails.industryType &&
 				tempUserDetails.shortDescription &&
@@ -91,10 +82,10 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		}
 
 		// check if email is valid
-		// if (!tempUserDetails.companyEmail.includes("@")) {
-		// 	toast.error("Please enter a valid email");
-		// 	return;
-		// }
+		if (!tempUserDetails.companyEmail.includes("@")) {
+			toast.error("Please enter a valid email");
+			return;
+		}
 
 		// check if founding year is valid
 		if (tempUserDetails.foundingYear > dayjs().year()) {
@@ -129,8 +120,16 @@ const ProvisionerProfileEditPage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<p className="text-4xl font-bold">Edit Your Profile</p>
+					<div className="flex items-center gap-2 mb-10">
+						<button
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
+						>
+							<MdArrowBack className="text-2xl" />
+						</button>
 
+						<p className="text-4xl font-bold">Edit Your Profile</p>
+					</div>
 					<AnimatePresence mode="wait">
 						{JSON.stringify(_currentUser) !==
 							JSON.stringify(tempUserDetails) && (

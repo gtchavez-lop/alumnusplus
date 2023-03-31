@@ -8,6 +8,7 @@ import {
 	TProvBlogPost,
 } from "@/lib/types";
 import {
+	MdArrowBack,
 	MdCheckCircle,
 	MdComment,
 	MdDelete,
@@ -143,6 +144,15 @@ const ProvBlogPostPage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full pt-24 pb-36 overflow-y-hidden"
 					>
+						<div className="flex items-center gap-2 mb-10">
+							<button
+								className="btn btn-square btn-primary btn-ghost"
+								onClick={() => router.back()}
+							>
+								<MdArrowBack className="text-2xl" />
+							</button>
+							<p>Go Back</p>
+						</div>
 						{/* header */}
 						<div className="flex items-center gap-4 0">
 							<Image
@@ -155,6 +165,7 @@ const ProvBlogPostPage: NextPage = () => {
 								height={40}
 								className="mask mask-squircle"
 							/>
+
 							<div className="flex flex-col">
 								<Link
 									href={

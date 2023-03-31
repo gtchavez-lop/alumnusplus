@@ -397,7 +397,7 @@ const ProvProfilePage: NextPage = () => {
 													followerList.data.map((item, index) => (
 														<div
 															key={`follower_${index}`}
-															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center"
+															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center mb-2"
 														>
 															<Image
 																width={50}
