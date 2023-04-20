@@ -137,8 +137,6 @@ export default function FeaturesPage() {
 					</div>
 				</div>
 			</motion.main>
-
-			<Footer />
 		</>
 	);
 }

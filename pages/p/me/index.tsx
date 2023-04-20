@@ -152,10 +152,12 @@ const ProvProfilePage: NextPage = () => {
 			$themeMode.set(localTheme as "light" | "dark");
 			document.body.setAttribute("data-theme", localTheme);
 		}
+	});
 
+	useEffect(() => {
 		// check if live in metaverse
 		setIsMetaverseLive(!!_currentUser && _currentUser.is_live ? true : false);
-	});
+	}, [_currentUser, isMetaverseLive, setIsMetaverseLive]);
 
 	return (
 		<>
@@ -395,7 +397,7 @@ const ProvProfilePage: NextPage = () => {
 													followerList.data.map((item, index) => (
 														<div
 															key={`follower_${index}`}
-															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center"
+															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center mb-2"
 														>
 															<Image
 																width={50}
@@ -445,6 +447,7 @@ const ProvProfilePage: NextPage = () => {
 										<input
 											checked={_currentTheme === "dark"}
 											onChange={(e) => {
+												console.log(e.target.checked);
 												$themeMode.set(e.target.checked ? "dark" : "light");
 												document.body.setAttribute(
 													"data-theme",
@@ -455,14 +458,14 @@ const ProvProfilePage: NextPage = () => {
 											className="toggle toggle-primary"
 										/>
 									</label>
-									<label className="flex items-center justify-between">
+									{/* <label className="flex items-center justify-between">
 										<span>Notifications</span>
 										<input
 											type="checkbox"
 											disabled
 											className="toggle toggle-primary"
 										/>
-									</label>
+									</label> */}
 
 									<label className="mt-7">
 										<span>End your session</span>

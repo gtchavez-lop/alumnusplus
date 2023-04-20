@@ -295,7 +295,7 @@ const Home = () => {
 				</div>
 			</motion.div>
 
-			<Pricing />
+			{/* <Pricing /> */}
 
 			<motion.div className="relative flex flex-col items-center justify-center min-h-[50vh] px-2 lg:px-0">
 				{/* try this app now */}

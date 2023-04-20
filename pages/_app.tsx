@@ -11,9 +11,11 @@ import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdCheckCircleOutline, MdHourglassTop } from "react-icons/md";
 import { Toaster, toast } from "react-hot-toast";
 
+import { Analytics } from "@vercel/analytics/react";
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
 import { FiLoader } from "react-icons/fi";
+import Footer from "@/components/Footer";
 import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -21,10 +23,8 @@ import Script from "next/script";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useStore } from "@nanostores/react";
-import Footer from "@/components/Footer";
 
 const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
@@ -181,6 +181,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 				}}
 				position="bottom-right"
 			/>
+			<Analytics />
 
 			<Script src="https://cdn.botpress.cloud/webchat/v0/inject.js" />
 			<Script

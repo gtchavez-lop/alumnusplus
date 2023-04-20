@@ -54,8 +54,8 @@ const Pricing: FC = () => {
 								<>
 									<div className="flex flex-col mt-10">
 										{/* header */}
-										<div className="grid grid-cols-5 gap-2 mb-10 ">
-											<div className="col-span-2" />
+										<div className="grid grid-cols-3 gap-2 mb-10 ">
+											<div className="col-span-1" />
 											<div className="flex flex-col items-center justify-center">
 												<h3 className="text-center font-bold text-2xl">
 													Junior
@@ -68,7 +68,7 @@ const Pricing: FC = () => {
 											</div>
 											<div className="flex flex-col items-center justify-center">
 												<h3 className="text-center font-bold text-2xl">
-													Senior
+													Expert
 												</h3>
 												<div className="flex items-center justify-center mt-4">
 													<p className="text-2xl font-bold">₱</p>
@@ -76,35 +76,29 @@ const Pricing: FC = () => {
 												</div>
 												<p className="text-center">/month</p>
 											</div>
-											<div className="flex flex-col items-center justify-center">
-												<h3 className="text-center font-bold text-2xl">
-													Expert
-												</h3>
-												<div className="flex items-center justify-center mt-4">
-													<p className="text-2xl font-bold">₱</p>
-													<p className="text-5xl font-bold">198</p>
-												</div>
-												<p className="text-center">/month</p>
-											</div>
+
 										</div>
 									</div>
 								</>
 								{/* blog feed */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Blog Feed
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">Blog Post</p>
-										<p className=" text-center w-full">5 posts/day</p>
-										<p className=" text-center w-full">15 posts/day</p>
-										<p className=" text-center w-full">Unlimited</p>
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">Blog Post</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Image Attachments on Posts
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
+											Posts  Image Embed
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
@@ -112,12 +106,10 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Upvoting Posts
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -126,17 +118,13 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Commenting on Posts
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
+
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
@@ -144,8 +132,8 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Advertisement Cards
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -154,12 +142,10 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Hunter Suggestion
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -168,31 +154,33 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 								</>
 
 								{/* finder */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mt-5 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mt-5 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Finder
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Finder Proximity
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
+											Nearby Company
 										</p>
-										<p className=" text-center w-full">50m</p>
-										<p className=" text-center w-full">1.2km</p>
-										<p className=" text-center w-full">1.8km</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
+
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Job Prioritization
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -201,22 +189,20 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 								</>
 
 								{/* Metaverse */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mt-5 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mt-5 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Metaverse
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Metaverse Access
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -225,28 +211,24 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Voice Chatting
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
+
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Avatar Customization
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -255,67 +237,45 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 								</>
 
 								{/* Wicket Profile */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mt-5 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mt-5 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Wicket Profile
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Profile Customization
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											Basic
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
-											Limited
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
 											Customized
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Storage Limit
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											100mb
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											250mb
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											500mb
-										</p>
-									</div>
-
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Profile Bio Template Options
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											Basic
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
-											Junior + 5
+											Expert + 5
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											Unlimited
-										</p>
+
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Job Application Prioritization
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -324,22 +284,20 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 								</>
 
 								{/* Job Seeking */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mt-5 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mt-5 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Job Seeking
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Prioritization by Career Tagging
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -348,13 +306,11 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Prioritization by Proximity
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -363,63 +319,11 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
 								</>
 
-								{/* Communication */}
-								<div>
-									<div className="grid grid-cols-5 gap-2 mt-5 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
-											Communication
-										</p>
-									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">Audio Call</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-									</div>
-
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Text-based Messaging
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-									</div>
-
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Image Attachments
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
-									</div>
-								</div>
 							</motion.div>
 						)}
 
@@ -434,8 +338,8 @@ const Pricing: FC = () => {
 								<>
 									<div className="flex flex-col mt-10">
 										{/* header */}
-										<div className="grid grid-cols-5 gap-2 mb-10 ">
-											<div className="col-span-2" />
+										<div className="grid grid-cols-3 gap-2 mb-10 ">
+											<div className="col-span-1" />
 											<div className="flex flex-col items-center justify-center">
 												<h3 className="text-center font-bold text-2xl">
 													Junior
@@ -448,7 +352,7 @@ const Pricing: FC = () => {
 											</div>
 											<div className="flex flex-col items-center justify-center">
 												<h3 className="text-center font-bold text-2xl">
-													Senior
+													Expert
 												</h3>
 												<div className="flex items-center justify-center mt-4">
 													<p className="text-2xl font-bold">₱</p>
@@ -456,36 +360,30 @@ const Pricing: FC = () => {
 												</div>
 												<p className="text-center">/month</p>
 											</div>
-											<div className="flex flex-col items-center justify-center">
-												<h3 className="text-center font-bold text-2xl">
-													Expert
-												</h3>
-												<div className="flex items-center justify-center mt-4">
-													<p className="text-2xl font-bold">₱</p>
-													<p className="text-5xl font-bold">249</p>
-												</div>
-												<p className="text-center">/month</p>
-											</div>
+
 										</div>
 									</div>
 								</>
 
 								{/* blog feed */}
 								<>
-									<div className="grid grid-cols-5 gap-2 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 gap-2 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Blog Feed
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">Blog Post</p>
-										<p className=" text-center w-full">5 posts/day</p>
-										<p className=" text-center w-full">15 posts/day</p>
-										<p className=" text-center w-full">Unlimited</p>
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">Blog Post</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
+										<p className="flex justify-center items-center text-center w-full">
+											<FiCheck className="text-green-500" />
+										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
-											Image Attachments on Posts
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
+											Posts Image Embed
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
@@ -493,12 +391,10 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Upvoting Posts
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -507,17 +403,13 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Commenting on Posts
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
+
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
@@ -525,8 +417,8 @@ const Pricing: FC = () => {
 											<FiCheck className="text-green-500" />
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Advertisement Cards
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -535,34 +427,30 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
-										</p>
+
 									</div>
 								</>
 
 								{/* job postings */}
 								<>
-									<div className="grid grid-cols-5 mt-5 gap-2 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 mt-5 gap-2 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Job Postings
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">Template</p>
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">Template</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Prioritization
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -571,27 +459,24 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">Featured</p>
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">Featured</p>
 										<p className=" text-center w-full">N/A</p>
 										<p className=" text-center w-full">1/Month</p>
-										<p className=" text-center w-full">3/Month</p>
 									</div>
 								</>
 
 								{/* metaverse */}
 								<>
-									<div className="grid grid-cols-5 mt-5 gap-2 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 mt-5 gap-2 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Metaverse
 										</p>
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Create / Host Venue
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
@@ -600,25 +485,19 @@ const Pricing: FC = () => {
 										<p className="flex justify-center items-center text-center w-full">
 											<FiCheck className="text-green-500" />
 										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiCheck className="text-green-500" />
-										</p>
+
 									</div>
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Maximum Participants
 										</p>
 										<p className=" text-center w-full">N/A</p>
-										<p className=" text-center w-full">25</p>
 										<p className=" text-center w-full">50</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Invite Guest/s
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
@@ -631,27 +510,23 @@ const Pricing: FC = () => {
 
 								{/* Profile */}
 								<>
-									<div className="grid grid-cols-5 mt-5 gap-2 mb-1">
-										<p className="col-span-2 text-lg text-center font-bold">
+									<div className="grid grid-cols-3 mt-5 gap-2 mb-1">
+										<p className="col-span-1 text-lg text-center font-bold">
 											Profile
 										</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Profile Customization
 										</p>
 										<p className=" text-center w-full">Basic</p>
-										<p className=" text-center w-full">Limited</p>
 										<p className=" text-center w-full">Customized</p>
 									</div>
 
-									<div className="grid grid-cols-5 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
-										<p className="col-span-2 text-center w-full">
+									<div className="grid grid-cols-3 gap-2 w-full hover:bg-primary/60 rounded-full hover:py-2 transition-all">
+										<p className="col-span-1 text-center w-full">
 											Suggestion Prioritization on Hunters
-										</p>
-										<p className="flex justify-center items-center text-center w-full">
-											<FiX className="text-red-500" />
 										</p>
 										<p className="flex justify-center items-center text-center w-full">
 											<FiX className="text-red-500" />
@@ -726,10 +601,10 @@ const Pricing: FC = () => {
 											<p className="text-lg font-bold">Blog Feed</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Blog Post</span>
-												<span>5 posts/day</span>
+												<FiCheck className="text-green-500" />
 											</p>
 											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments on posts</span>
+												<span>Posts Image Embed</span>
 												<span>
 													<FiX className="text-red-500" />
 												</span>
@@ -764,7 +639,7 @@ const Pricing: FC = () => {
 											<p className="text-lg font-bold">Finder</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Finder Proximity</span>
-												<span>50m</span>
+												<FiCheck className="text-green-500" />
 											</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Job Prioritization</span>
@@ -802,10 +677,7 @@ const Pricing: FC = () => {
 												<span>Profile Customization</span>
 												<span>Basic</span>
 											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Storage Limit</span>
-												<span>100mb</span>
-											</p>
+
 											<p className="flex justify-between w-full items-center">
 												<span>Profile Bio Template Options</span>
 												<span>Basic</span>
@@ -833,34 +705,13 @@ const Pricing: FC = () => {
 												</span>
 											</p>
 										</div>
-										{/* Communication */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Communication</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Audio Call</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Text based Messaging</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments</span>
-												<span>
-													<FiX className="text-red-500" />
-												</span>
-											</p>
-										</div>
+
 									</div>
 								</div>
-								{/* Senior tier */}
+								{/* Expert tier */}
 								<div tabIndex={0} className="collapse">
 									<div className="collapse-title pr-0 flex justify-between text-xl font-medium">
-										<span>Senior Tier</span>
+										<span>Expert Tier</span>
 										<span className="text-2xl font-bold flex items-center">
 											₱148/m
 											<FiChevronDown />
@@ -872,10 +723,12 @@ const Pricing: FC = () => {
 											<p className="text-lg font-bold">Blog Feed</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Blog Post</span>
-												<span>15 posts/day</span>
+												<span>
+													<FiCheck className="text-green-500" />
+												</span>
 											</p>
 											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments on posts</span>
+												<span>Posts Image Embed</span>
 												<span>
 													<FiCheck className="text-green-500" />
 												</span>
@@ -910,7 +763,7 @@ const Pricing: FC = () => {
 											<p className="text-lg font-bold">Finder</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Finder Proximity</span>
-												<span>1.2km</span>
+												<FiCheck className="text-green-500" />
 											</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Job Prioritization</span>
@@ -948,13 +801,10 @@ const Pricing: FC = () => {
 												<span>Profile Customization</span>
 												<span>Limited</span>
 											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Storage Limit</span>
-												<span>250mb</span>
-											</p>
+
 											<p className="flex justify-between w-full items-center">
 												<span>Profile Bio Template Options</span>
-												<span>Junior + 5</span>
+												<span>Expert + 5</span>
 											</p>
 											<p className="flex justify-between w-full items-center">
 												<span>Job Application Prioritization</span>
@@ -979,176 +829,9 @@ const Pricing: FC = () => {
 												</span>
 											</p>
 										</div>
-										{/* Communication */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Communication</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Audio Call</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Text based Messaging</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
 									</div>
 								</div>
-								{/* Expert tier */}
-								<div tabIndex={0} className="collapse">
-									<div className="collapse-title pr-0 flex justify-between text-xl font-medium">
-										<span>Expert Tier</span>
-										<span className="text-2xl font-bold flex items-center">
-											₱198/m
-											<FiChevronDown />
-										</span>
-									</div>
-									<div className="collapse-content">
-										{/* blog feed */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Blog Feed</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Blog Post</span>
-												<span>Unlimited</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments on posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Upvoting Posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Commenting on Posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Advertisement Cards</span>
-												<span>
-													<FiX className="text-red-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Hunter Suggestion</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Finder */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Finder</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Finder Proximity</span>
-												<span>1.8km</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Job Prioritization</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Metaverse */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Metaverse</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Metaverse Access</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Voice Chatting</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Avatar Customization</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Wicket Profile */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Wicket Profile</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Profile Customization</span>
-												<span>Customized</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Storage Limit</span>
-												<span>500mb</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Profile Bio Template Options</span>
-												<span>UNLIMITED</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Job Application Prioritization</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Job Seeking */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Job Seeking</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Prioritization by Career Tagging</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Prioritization by Proximity</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Communication */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Communication</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Audio Call</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Text based Messaging</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-									</div>
-								</div>
+
 							</motion.div>
 						)}
 
@@ -1261,10 +944,10 @@ const Pricing: FC = () => {
 										</div>
 									</div>
 								</div>
-								{/* Senior tier */}
+								{/*Expert tier */}
 								<div tabIndex={0} className="collapse">
 									<div className="collapse-title pr-0 flex justify-between text-xl font-medium">
-										<span>Senior Tier</span>
+										<span>Expert Tier</span>
 										<span className="text-2xl font-bold flex items-center">
 											₱148/m
 											<FiChevronDown />
@@ -1361,105 +1044,7 @@ const Pricing: FC = () => {
 										</div>
 									</div>
 								</div>
-								{/* Expert tier */}
-								<div tabIndex={0} className="collapse">
-									<div className="collapse-title pr-0 flex justify-between text-xl font-medium">
-										<span>Expert Tier</span>
-										<span className="text-2xl font-bold flex items-center">
-											₱249/m
-											<FiChevronDown />
-										</span>
-									</div>
-									<div className="collapse-content">
-										{/* blog feed */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Blog Feed</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Blog Post</span>
-												<span>Unlimited</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Image Attachments in posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Upvoting Posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Commenting on Posts</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Advertisement Cards</span>
-												<span>
-													<FiX className="text-red-500" />
-												</span>
-											</p>
-										</div>
 
-										{/* Job Posting */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Job Postings</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Template</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Prioritization</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Featured</span>
-												<span>3/Month</span>
-											</p>
-										</div>
-										{/* Metaverse */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Metaverse</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Create / Host Venue</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Maximum Participants</span>
-												<span>50</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Invite Guest/s</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-										{/* Wicket Profile */}
-										<div className="mb-5 flex flex-col gap-1 w-full">
-											<p className="text-lg font-bold">Profile</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Profile Customization</span>
-												<span>Customized</span>
-											</p>
-											<p className="flex justify-between w-full items-center">
-												<span>Suggestion Prioritization on Hunters</span>
-												<span>
-													<FiCheck className="text-green-500" />
-												</span>
-											</p>
-										</div>
-									</div>
-								</div>
 							</motion.div>
 						)}
 					</AnimatePresence>

@@ -148,7 +148,6 @@ export default function CookiePolicyPage() {
 					<li>By visiting this link: </li>
 				</ul>
 			</motion.main>
-			<Footer />
 		</>
 	);
 }
