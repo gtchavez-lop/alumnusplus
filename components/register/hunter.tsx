@@ -45,7 +45,12 @@ const RegisterHunterSubPage: FC = () => {
 		bio: "",
 		citizenship: "",
 		birthplace: "",
-		civil_status: "" as "single" | "married" | "divorced" | "widowed" | "separated",
+		civil_status: "" as
+			| "single"
+			| "married"
+			| "divorced"
+			| "widowed"
+			| "separated",
 		connections: [],
 		education: [],
 		cover_letter: "",
@@ -58,10 +63,15 @@ const RegisterHunterSubPage: FC = () => {
 			last: "",
 			middle: "",
 		},
-		gender: "" as "male" | "female" | "non-binary" | "other" | "prefer not to say",
+		gender: "male" as
+			| "male"
+			| "female"
+			| "non-binary"
+			| "other"
+			| "prefer not to say",
 		id: "",
 		id_number: "",
-		id_type: "" as  "other" | "national id" | "passport" | "driver's license",
+		id_type: "" as "other" | "national id" | "passport" | "driver's license",
 		is_verified: false,
 		phone: "",
 		saved_jobs: [],
@@ -71,7 +81,7 @@ const RegisterHunterSubPage: FC = () => {
 			facebook: "",
 			instagram: "",
 			linkedin: "",
-			twitter	: "",
+			twitter: "",
 			github: "",
 			youtube: "",
 		},
@@ -80,7 +90,6 @@ const RegisterHunterSubPage: FC = () => {
 		type: "hunter",
 		updated_at: "",
 		username: "",
-
 	});
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]

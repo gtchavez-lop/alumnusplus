@@ -21,7 +21,6 @@ import Script from "next/script";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import Footer from "@/components/Footer";
