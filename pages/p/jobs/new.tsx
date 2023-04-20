@@ -5,6 +5,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import Skills from "@/lib/skills.json";
 import dayjs from "dayjs";
@@ -15,7 +16,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
-import { MdArrowBack } from "react-icons/md";
 
 const CreateNewJobPage = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
@@ -57,7 +57,6 @@ const CreateNewJobPage = () => {
 			toast.error("Please fill out all the fields");
 			return;
 		}
-
 		toast.loading("Posting job...");
 
 		const { error } = await supabase
@@ -176,7 +175,7 @@ const CreateNewJobPage = () => {
 						placeholder="What are the qualifications for this job?"
 						className="input input-bordered"
 						onKeyDown={(e) => {
-							if (e.key === "Enter") {
+							if (e.key === "Enter" || e.key === "Tab") {
 								e.preventDefault();
 								// check for duplicates
 								if (

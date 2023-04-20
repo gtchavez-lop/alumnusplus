@@ -1,10 +1,10 @@
 import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FormEvent, useRef, useState } from "react";
 
 import { AnimPageTransition } from "@/lib/animations";
 import Footer from "@/components/Footer";
-import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
-import { FormEvent, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const ContactPage = () => {
@@ -106,8 +106,6 @@ const ContactPage = () => {
 					</div>
 				</div>
 			</motion.div>
-
-			<Footer />
 		</>
 	);
 };

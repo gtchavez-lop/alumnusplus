@@ -131,7 +131,6 @@ const EditProfilePage: NextPage = () => {
 		if (
 			tempUserDetails.address.address.length < 5 ||
 			tempUserDetails.address.city.length < 5 ||
-			tempUserDetails.bio.length < 1 ||
 			!tempUserDetails.birthdate ||
 			tempUserDetails.birthplace.length < 5 ||
 			tempUserDetails.full_name.first.length < 2 ||

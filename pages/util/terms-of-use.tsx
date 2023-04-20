@@ -749,7 +749,6 @@ export default function TermsOfUsePage() {
 					</Link>
 				</p>
 			</motion.main>
-			<Footer />
 		</>
 	);
 }

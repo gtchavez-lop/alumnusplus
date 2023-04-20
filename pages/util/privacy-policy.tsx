@@ -864,7 +864,6 @@ export default function PrivacyPolicyPage() {
 					</p>
 				</>
 			</motion.main>
-			<Footer />
 		</>
 	);
 }

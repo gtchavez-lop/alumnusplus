@@ -147,7 +147,6 @@ const AboutPage: NextPage = () => {
 					</div>
 				</div>
 			</motion.div>
-			<Footer />
 		</>
 	);
 };
