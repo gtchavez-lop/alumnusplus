@@ -1005,6 +1005,20 @@ const EditProfilePage: NextPage = () => {
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
 
+										// check if all fields are filled
+										if (
+											!(
+												data.institution &&
+												data.degreeType &&
+												data.degreeName &&
+												data.location &&
+												data.yearGraduated
+											)
+										) {
+											toast.error("Please fill all fields");
+											return;
+										}
+
 										const newEducation: HEducation = {
 											institution: data.institution as string,
 											degreeType: data.degreeType as
@@ -1155,6 +1169,20 @@ const EditProfilePage: NextPage = () => {
 
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
+
+										// validate form
+										if (
+											!(
+												data.title &&
+												data.date &&
+												data.organizer &&
+												data.location &&
+												data.type
+											)
+										) {
+											toast.error("Please fill up all the fields");
+											return;
+										}
 
 										const newTraining: HTraining = {
 											title: data.title as string,

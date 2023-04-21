@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChangeEvent, useState } from "react";
+import { MdArrowBack, MdWarning } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
-import { MdArrowBack, MdWarning } from "react-icons/md";
 import Link from "next/link";
 import { NextPage } from "next";
 import Tabs from "@/components/Tabs";
@@ -18,7 +18,6 @@ import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-
 
 type TTab = {
 	title: string;
@@ -70,7 +69,6 @@ const ProvisionerProfileEditPage: NextPage = () => {
 		if (
 			!(
 				tempUserDetails.legalName &&
-				tempUserDetails.companyEmail &&
 				tempUserDetails.foundingYear &&
 				tempUserDetails.industryType &&
 				tempUserDetails.shortDescription &&
@@ -320,7 +318,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 										/>
 									</label>
 									<label className="flex flex-col">
-										<span>Company Email</span>
+										<span>Company Email (Optional)</span>
 										<input
 											className="input input-primary"
 											value={tempUserDetails.companyEmail}

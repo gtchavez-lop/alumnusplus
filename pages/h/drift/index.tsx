@@ -3,7 +3,6 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
-import Footer from "@/components/Footer";
 import { IUserProvisioner } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -277,7 +276,10 @@ const DriftPage: NextPage = () => {
 												width={100}
 												height={100}
 											/>
-											<p>{item.legalName}</p>
+											<p className="truncate overflow-ellipsis max-w-full">
+												{item.legalName}{" "}
+												aksjdlaksjdlkajsdlkajsldkjaslkdj;asldkfjjjlaksdjfjlksajdfasdlfkjl;asdkjf;laksdjfl;ksajdfl;kajsdf;lkjasdlf;kjasl;dkfjalskdjfalskdfkjhasgdfjkhgasdjfhgasjdkhfgjkahsdgfjhagsdf
+											</p>
 										</div>
 									</Link>
 								))}

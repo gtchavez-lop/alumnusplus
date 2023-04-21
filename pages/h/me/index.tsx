@@ -299,22 +299,6 @@ const ProfilePage: NextPage = () => {
 											width={128}
 											height={128}
 										/>
-
-										{_currentUser.subscription_type === "junior" && (
-											<div className="badge badge-primary absolute bottom-1 sm:-right-5">
-												Junior Hunter
-											</div>
-										)}
-										{_currentUser.subscription_type === "senior" && (
-											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Senior Hunter
-											</div>
-										)}
-										{_currentUser.subscription_type === "expert" && (
-											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Expert Hunter
-											</div>
-										)}
 									</div>
 									<div>
 										<p className="text-3xl font-bold flex gap-1 items-center">

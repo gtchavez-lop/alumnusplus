@@ -134,7 +134,10 @@ const Prov_Dashboard = () => {
 												</div>
 											) : (
 												<div className="stat-value">
-													{activities.data?.length}
+													{jobs.data.reduce(
+														(acc, curr) => acc + curr.applicants.length,
+														0,
+													)}
 												</div>
 											)}
 											<div className="stat-desc">Current Count</div>
