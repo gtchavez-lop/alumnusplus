@@ -324,7 +324,7 @@ const EditProfilePage: NextPage = () => {
 									<input
 										className="file-input file-input-primary"
 										type="file"
-										accept="image/png, image/gif, image/jpeg"
+										accept="image/*"
 										onChange={({ currentTarget }) => {
 											// check if file exceeds 1mb
 											const file = currentTarget.files?.[0] as Blob;
@@ -343,6 +343,11 @@ const EditProfilePage: NextPage = () => {
 															...tempUserDetails,
 															avatar_url: reader.result?.toString() || "",
 														});
+													};
+													reader.onerror = (error) => {
+														toast.error(
+															"An error occured while uploading your profile picture.",
+														);
 													};
 												},
 											});

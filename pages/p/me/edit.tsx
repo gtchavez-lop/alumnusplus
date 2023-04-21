@@ -341,7 +341,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 											onChange={(e) => {
 												setTempUserDetails({
 													...tempUserDetails,
-													companyEmail: e.target.value,
+													foundingYear: parseFloat(e.target.value),
 												});
 											}}
 										/>
