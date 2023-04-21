@@ -221,16 +221,13 @@ const LogInPage = () => {
 									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
 										Don&apos;t have an account?
 										<Link href="/register" className="link link-secondary">
-											Sign up
+											Register Here
 										</Link>
 										.
 									</p>
 									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
 										Forgot your password?
-										<Link
-											href="/util/passwordreset"
-											className="link link-secondary"
-										>
+										<Link href="/util/passwordreset" className="link">
 											Recover here
 										</Link>
 										.

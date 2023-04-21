@@ -48,7 +48,7 @@ const FeedPage = () => {
 	];
 
 	const fetchHunterFeed = async () => {
-		const connections = _currentUser.connections.concat(_currentUser.id);
+		const connections = [..._currentUser.connections, _currentUser.id];
 
 		const { data, error } = await supabase
 			.from("public_posts")
@@ -90,7 +90,7 @@ const FeedPage = () => {
 		const { data, error } = await supabase
 			.from("new_recommended_hunters")
 			.select("*")
-			.limit(5);
+			.limit(4);
 
 		if (error) {
 			console.log("error", error);
@@ -111,18 +111,22 @@ const FeedPage = () => {
 				queryFn: fetchHunterFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
+				networkMode: "offlineFirst",
 			},
 			{
 				queryKey: ["provFeed"],
 				queryFn: fetchProvFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
+				networkMode: "offlineFirst",
 			},
 			{
 				queryKey: ["recommendedUsers"],
 				queryFn: fetchRecommendedUsers,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
+				refetchOnMount: false,
+				networkMode: "offlineFirst",
 			},
 		],
 	});

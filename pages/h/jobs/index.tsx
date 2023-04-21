@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import { IUserHunter, TProvJobPost } from "@/lib/types";
 import {
+	MdInfo,
 	MdOutlineSignalCellularNoSim,
 	MdSearch,
 	MdWarning,
@@ -254,13 +255,13 @@ const ApplyPage = () => {
 				</select>
 
 				{/* content */}
-				<div ref={tabContentRef} className="overflow-hidden">
+				<div ref={tabContentRef} className="mt-5">
 					{/* all jobs */}
 					{tabSelected === "all" && (
 						<>
 							<form
 								onSubmit={searchJob}
-								className="input-group w-full max-w-md mb-5"
+								className="input-group w-full max-w-md mb-5 mx-auto"
 							>
 								<input
 									name="searchQuery"
@@ -274,7 +275,7 @@ const ApplyPage = () => {
 									}}
 								/>
 								<button type="submit" className="btn btn-primary">
-									<MdSearch />
+									<MdSearch className="text-lg" />
 								</button>
 							</form>
 
@@ -332,12 +333,6 @@ const ApplyPage = () => {
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
 							key={"recommended_jobs"}
 						>
-							<div className="col-span-full">
-								<div className="alert alert-warning">
-									This feature is still in development. We only show you jobs
-									based on your primary skill.
-								</div>
-							</div>
 							{recommendedJobs.isSuccess &&
 								recommendedJobs.data.map((job, index) => (
 									<JobCard
@@ -366,6 +361,12 @@ const ApplyPage = () => {
 								savedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`savedjob_${index}`} />
 								))}
+							{savedJobs.isSuccess && savedJobs.data.length < 1 && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>No saved jobs</p>
+								</div>
+							)}
 							{savedJobs.isLoading &&
 								Array(2)
 									.fill(0)

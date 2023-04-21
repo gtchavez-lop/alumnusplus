@@ -1,20 +1,16 @@
 import { GetServerSideProps, NextPage } from "next";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
 
+import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { $accountDetails } from "@/lib/globalStates";
+import JobApplicantCard from "@/components/jobs/JobApplicantCard";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
-import dayjs from "dayjs";
-import JobApplicantCard from "@/components/jobs/JobApplicantCard";
-import { MdWarning } from "react-icons/md";
-import Link from "next/link";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.query;
@@ -61,12 +57,11 @@ const JobDetailsPage: NextPage<{
 		const { data, error } = await supabase
 			.from("user_hunters")
 			.select("*")
-			.in("id", jobData.data.applicants)
+			.in("id", jobData.data.applicants);
 
 		if (error) {
 			console.log(error);
 			return [];
-
 		}
 
 		return data as IUserHunter[];
@@ -80,7 +75,6 @@ const JobDetailsPage: NextPage<{
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
 			},
-
 		],
 	});
 
@@ -111,7 +105,9 @@ const JobDetailsPage: NextPage<{
 						<h3 className="text-2xl font-bold">Overview</h3>
 
 						<div className="mt-5  border-b-2">
-							<h1 className="text-xl font-bold text-primary">{jobData.data.job_title}</h1>
+							<h1 className="text-xl font-bold text-primary">
+								{jobData.data.job_title}
+							</h1>
 
 							<p className="text-sm">
 								{jobData.data.job_location} |{" "}
@@ -122,7 +118,8 @@ const JobDetailsPage: NextPage<{
 								}
 							</p>
 							<p className="text-sm opacity-50">
-								Posted on {dayjs(jobData.data.created_at).format("MMMM D, YYYY")}
+								Posted on{" "}
+								{dayjs(jobData.data.created_at).format("MMMM D, YYYY")}
 							</p>
 						</div>
 						{/* full description */}
@@ -133,7 +130,9 @@ const JobDetailsPage: NextPage<{
 								</span>
 								<span className=" mb-5">{jobData.data?.short_description}</span>
 							</p>
-							<h3 className="text-lg font-bold opacity-75 text-primary">Full Description</h3>
+							<h3 className="text-lg font-bold opacity-75 text-primary">
+								Full Description
+							</h3>
 							<p className="flex flex-col  mb-5">
 								{jobData.data?.full_description}
 							</p>
@@ -160,17 +159,13 @@ const JobDetailsPage: NextPage<{
 								</ul>
 							</div>
 						</div>
-
 					</div>
-
 
 					{/* right side applicants*/}
 					<div className="col-span-full lg:col-span-2">
 						<h3 className="text-2xl font-bold">Applicants</h3>
-						<div className="flec flex-col gap-2">
-						</div>
-						{/* <div className="flex flex-col gap-2">
-							{applicants.isLoading && (
+						<div className="flex flex-col gap-2 mt-5">
+							{applicants.isFetching && (
 								<>
 									{Array(2)
 										.fill("")
@@ -178,18 +173,31 @@ const JobDetailsPage: NextPage<{
 											<div
 												style={{ transitionDelay: `${i * 100}ms` }}
 												key={`loading_${i}`}
-												className="bg-slate-500/50 rounded-btn animate-pulse text-transparent"
+												className="bg-slate-500/50 rounded-btn animate-pulse text-transparent select-none h-[164px]"
 											>
 												<h1 className="text-xl font-bold">placeholder</h1>
 												<p className="text-sm">placeholder</p>
-												<div className="mt-4 h-[50px]">placeholder</div>
-												<p className="text-sm mt-5 opacity-50">
-													placeholder
-												</p>
 											</div>
 										))}
 								</>
 							)}
+
+							{applicants.isSuccess && (
+								<>
+									{applicants.data?.map(
+										(applicant, index) =>
+											index < 3 && (
+												<JobApplicantCard
+													key={applicant.id}
+													applicant={applicant}
+												/>
+											),
+									)}
+								</>
+							)}
+						</div>
+						{/* <div className="flex flex-col gap-2">
+							
 
 							{applicants.isFetched && (
 								<>
@@ -229,7 +237,6 @@ const JobDetailsPage: NextPage<{
 							)}
 						</div> */}
 					</div>
-
 				</motion.main>
 			)}
 		</>

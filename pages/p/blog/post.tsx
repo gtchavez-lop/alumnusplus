@@ -91,6 +91,11 @@ const ProvBlogPostPage: NextPage = () => {
 	const handleDeleteBlog = async () => {
 		toast.loading("Processing...");
 
+		if (!router.query.id) {
+			toast.error("Something went wrong");
+			return;
+		}
+
 		const { error } = await supabase
 			.from("public_posts")
 			.delete()

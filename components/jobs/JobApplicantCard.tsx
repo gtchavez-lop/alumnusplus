@@ -21,9 +21,9 @@ const JobApplicantCard: FC<{ applicant: IUserHunter }> = ({ applicant }) => {
 					</div>
 				)}
 
-				<div
-					// href={`/h?user=${applicant.username}`}
-					className="flex flex-col gap-2 p-4 hover:bg-base-200 rounded-btn"
+				<Link
+					href={`/p/jobs/applicant-profile/${applicant.username}`}
+					className="flex flex-col gap-2 p-4 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
 				>
 					<div className="flex gap-2 items-center">
 						<Image
@@ -57,7 +57,7 @@ const JobApplicantCard: FC<{ applicant: IUserHunter }> = ({ applicant }) => {
 							))}
 						</div>
 					</div>
-				</div>
+				</Link>
 			</>
 		)
 	);

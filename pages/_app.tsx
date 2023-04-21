@@ -141,11 +141,13 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					<div className="flex justify-center bg-base-100 overflow-x-hidden">
 						<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
 							<AnimatePresence mode="wait">
-								<Component
-									{...pageProps}
-									rotuer={router}
-									key={router.pathname}
-								/>
+								<div className="min-h-screen">
+									<Component
+										{...pageProps}
+										rotuer={router}
+										key={router.pathname}
+									/>
+								</div>
 							</AnimatePresence>
 							<Footer />
 						</div>
