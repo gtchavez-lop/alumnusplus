@@ -201,7 +201,7 @@ const AppBar = () => {
 								</Link>
 							</div>
 						</div>
-						<div className="grid grid-cols-4 gap-3 py-5 w-full">
+						<div className="grid grid-cols-3 gap-3 py-5 w-full">
 							<Link
 								href={"/p/dashboard"}
 								className={`btn btn-sm  ${
@@ -232,17 +232,6 @@ const AppBar = () => {
 							>
 								<MdOutlineWork className="text-lg" />
 							</Link>
-							<button
-								disabled
-								// href={"/p/events"}
-								className={`btn btn-sm  ${
-									router.pathname.includes("/p/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdOutlineEvent className="text-lg" />
-							</button>
 						</div>
 					</div>
 				</motion.div>

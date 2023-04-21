@@ -277,8 +277,7 @@ const DriftPage: NextPage = () => {
 												height={100}
 											/>
 											<p className="truncate overflow-ellipsis max-w-full">
-												{item.legalName}{" "}
-												aksjdlaksjdlkajsdlkajsldkjaslkdj;asldkfjjjlaksdjfjlksajdfasdlfkjl;asdkjf;laksdjfl;ksajdfl;kajsdf;lkjasdlf;kjasl;dkfjalskdjfalskdfkjhasgdfjkhgasdjfhgasjdkhfgjkahsdgfjhagsdf
+												{item.legalName}
 											</p>
 										</div>
 									</Link>
