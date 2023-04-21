@@ -157,6 +157,20 @@ const ProvProfilePage: NextPage = () => {
 		$accountDetails.set({ ..._currentUser, is_live: !isMetaverseLive });
 	};
 
+	const toggleTheme = () => {
+		if (_currentTheme === "dark") {
+			// set to light mode
+			$themeMode.set("light");
+			document.body.setAttribute("data-theme", "light");
+			localStorage.setItem("theme", "light");
+		} else {
+			// set to dark mode
+			$themeMode.set("dark");
+			document.body.setAttribute("data-theme", "dark");
+			localStorage.setItem("theme", "dark");
+		}
+	};
+
 	useEffect(() => {
 		const localTheme = getTheme();
 		if (localTheme) {
@@ -467,17 +481,10 @@ const ProvProfilePage: NextPage = () => {
 									<label className="flex items-center justify-between">
 										<span>Dark Mode</span>
 										<input
-											checked={_currentTheme === "dark"}
-											onChange={(e) => {
-												console.log(e.target.checked);
-												$themeMode.set(e.target.checked ? "dark" : "light");
-												document.body.setAttribute(
-													"data-theme",
-													e.target.checked ? "dark" : "light",
-												);
-											}}
 											type="checkbox"
 											className="toggle toggle-primary"
+											checked={_currentTheme === "dark"}
+											onChange={toggleTheme}
 										/>
 									</label>
 									{/* <label className="flex items-center justify-between">
