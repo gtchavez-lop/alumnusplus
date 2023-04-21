@@ -738,7 +738,7 @@ const ProfilePage: NextPage = () => {
 											recommendedUsers.data.length > 0 &&
 											recommendedUsers.data.map((thisUser, index) => (
 												<Link
-													href={`/h/${thisUser.username}`}
+													href={`/h?user=${thisUser.username}`}
 													key={`connection_${index}`}
 												>
 													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-primary hover:bg-opacity-30 transition">
