@@ -6,12 +6,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import { IUserHunter, TProvJobPost } from "@/lib/types";
-import {
-	MdInfo,
-	MdOutlineSignalCellularNoSim,
-	MdSearch,
-	MdWarning,
-} from "react-icons/md";
+import { MdInfo, MdSearch } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
@@ -97,9 +92,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.contains("job_skills:text[]", [_userDetails.skill_primary])
 			.eq("draft", false);
 
@@ -116,9 +109,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.in("id", savedjobs)
 			.eq("draft", false);
 
@@ -135,9 +126,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.in("id", appliedjobs)
 			.eq("draft", false);
 
@@ -145,12 +134,6 @@ const ApplyPage = () => {
 			console.log(error);
 			return [] as unknown as Promise<Job[]>;
 		}
-		// if (data) {
-		// 	data.filter(
-		// 		(applied: TProvJobPost) => a.id !== allJobs?.id,
-		// 	);
-		// 	return data as unknown as Promise<Job[]>;
-		// }
 
 		return data as unknown as Promise<Job[]>;
 	};

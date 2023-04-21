@@ -226,17 +226,7 @@ const Prov_Dashboard = () => {
 						</div>
 
 						{/* right side */}
-						<div className="col-span-2 hidden lg:flex flex-col gap-5">
-							<div className="flex flex-col gap-4">
-								<Link
-									href={
-										"https://monaverse.com/spaces/wicket?invite=T0RVek5qTTJOdzp1cy8q"
-									}
-									className="btn btn-primary"
-								>
-									Go to metaverse
-								</Link>
-							</div>
+						<div className="col-span-full lg:col-span-2 flex flex-col gap-5 mt-10">
 							<div className="flex flex-col gap-4">
 								<h2 className="text-2xl font-bold">Recent Activities</h2>
 								<div className="flex flex-col gap-2">
@@ -265,6 +255,15 @@ const Prov_Dashboard = () => {
 												),
 										)}
 								</div>
+
+								<Link
+									href={
+										"https://monaverse.com/spaces/wicket?invite=T0RVek5qTTJOdzp1cy8q"
+									}
+									className="btn btn-primary mt-5"
+								>
+									Go to metaverse
+								</Link>
 							</div>
 						</div>
 					</div>

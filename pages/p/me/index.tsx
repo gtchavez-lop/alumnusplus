@@ -2,7 +2,16 @@ import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdAdd, MdClose } from "react-icons/md";
+import {
+	MdAdd,
+	MdClose,
+	MdEdit,
+	MdPerson,
+	MdShare,
+	MdViewSidebar,
+	MdWifi,
+	MdWifiOff,
+} from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 
@@ -182,7 +191,9 @@ const ProvProfilePage: NextPage = () => {
 											className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
 											src={
 												_currentUser.banner_url ||
-												`https://picsum.photos/seed/${_currentUser.legalName}/900/450`
+												`https://picsum.photos/seed/${
+													_currentUser.legalName || _currentUser.id
+												}/900/450`
 											}
 											alt="background"
 											width={900}
@@ -211,35 +222,44 @@ const ProvProfilePage: NextPage = () => {
 											</p>
 										</div>
 									</div>
-									<div className="z-10 flex justify-end items-center gap-2 mt-5">
+									<div className="z-10 flex justify-end gap-2 gap-y-5 mt-5">
 										<button
 											onClick={handleLiveInMetaverse}
-											className="btn btn-sm lg:btn-md mr-auto"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											{_currentUser.is_live
-												? "Set your Metaverse Status to Offline"
-												: "Set your Metaverse Status to Live"}
+											{_currentUser.is_live ? (
+												<MdWifiOff className="text-lg" />
+											) : (
+												<MdWifi className="text-lg" />
+											)}
+
+											<span className="hidden lg:block">
+												{_currentUser.is_live ? "Stop Live" : "Go Live"}
+											</span>
 										</button>
 										<Link
 											href="/p/me/edit"
-											className="btn btn-sm lg:btn-md btn-primary"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											Edit
+											<MdEdit className="text-lg" />
+											<span className="hidden lg:block">Edit</span>
 										</Link>
 										<button
-											className="btn btn-sm lg:btn-md btn-primary"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 											onClick={() => {
 												navigator.clipboard.writeText(window.location.href);
 												toast.success("Link copied to clipboard!");
 											}}
 										>
-											Share Page
+											<MdShare className="text-lg" />
+											<span className="hidden lg:block">Share Page</span>
 										</button>
 										<Link
 											href="/p/me/hunter-view"
-											className="btn btn-sm lg:btn-md"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											View as Hunter
+											<MdPerson className="text-lg" />
+											<span className="hidden lg:block">View as Hunter</span>
 										</Link>
 									</div>
 								</div>

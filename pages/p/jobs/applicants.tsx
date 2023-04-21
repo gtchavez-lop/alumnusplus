@@ -45,6 +45,7 @@ const JobApplicants: NextPage = () => {
 	});
 
 	const fetchApplicants = async () => {
+		console.log(_targetJob.data?.applicants);
 		const { data, error } = await supabase
 			.from("user_hunters")
 			.select("*")

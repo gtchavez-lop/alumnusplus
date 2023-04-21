@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdPeople } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
@@ -97,7 +97,10 @@ const JobPostingPage: NextPage = () => {
 	};
 
 	useEffect(() => {
-		setHasChanges(JSON.stringify(tempData) !== JSON.stringify(_jobData.data));
+		if (tempData) {
+			const isSame = JSON.stringify(tempData) === JSON.stringify(_jobData.data);
+			setHasChanges(!isSame);
+		}
 	}, [tempData]);
 
 	return (
@@ -188,20 +191,23 @@ const JobPostingPage: NextPage = () => {
 								className="btn btn-ghost gap-2"
 							>
 								<MdEdit className="text-lg" />
-								{!isEditing ? <span>Edit</span> : <span>Cancel Changes</span>}
+								<span className="hidden lg:block">
+									{!isEditing ? "Edit" : "Cancel Changes"}
+								</span>
 							</button>
 							<Link
 								href={`/p/jobs/applicants?job_id=${router.query.id}`}
 								className="btn"
 							>
-								See Applicants
+								<MdPeople className="text-lg" />
+								<span className="hidden lg:block">Applicants</span>
 							</Link>
 							<button
 								onClick={() => setIsDeleting(true)}
 								className="btn btn-error gap-2"
 							>
 								<MdDelete className="text-lg" />
-								<span>Delete</span>
+								<span className="hidden lg:block">Delete</span>
 							</button>
 						</div>
 					)}

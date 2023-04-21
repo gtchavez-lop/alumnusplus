@@ -175,7 +175,7 @@ const CreateNewJobPage = () => {
 						placeholder="What are the qualifications for this job?"
 						className="input input-bordered"
 						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === "Tab") {
+							if (e.key === ",") {
 								e.preventDefault();
 								// check for duplicates
 								if (
@@ -198,6 +198,9 @@ const CreateNewJobPage = () => {
 							}
 						}}
 					/>
+					<p className="text-right opacity-75">
+						Separate qualifications using a comma
+					</p>
 					<div className="flex flex-wrap gap-2 mt-2">
 						{addJobSchema.job_qualifications.map((qualification, index) => (
 							<div

@@ -14,6 +14,7 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -153,30 +154,30 @@ const ApplicantProfile: NextPage<{ username: string }> = ({ username }) => {
 							onTabChange={(tab) => setTabSelected(tab as TTab["value"])}
 							tabs={PageTabs}
 						/>
-						{/* <div className="hidden lg:block mb-5">
-					<ul className="tabs tabs-boxed justify-evenly">
-						{PageTabs.map((tab, index) => (
-							<li
-								key={`tab-${index}`}
-								onClick={() =>
-									setTabSelected(
-										tab.value as
-											| "about"
-											| "posts"
-											| "experiences"
-											| "education"
-											| "savedjobs",
-									)
-								}
-								className={`tab flex items-center gap-2 transition ${
-									tabSelected === tab.value && "tab-active"
-								}`}
-							>
-								{tab.name}
-							</li>
-						))}
-					</ul>
-				</div> */}
+						<div className="hidden lg:block mb-5">
+							<ul className="tabs tabs-boxed justify-evenly">
+								{PageTabs.map((tab, index) => (
+									<li
+										key={`tab-${index}`}
+										onClick={() =>
+											setTabSelected(
+												tab.value as
+													| "about"
+													| "posts"
+													| "experiences"
+													| "education"
+													| "savedjobs",
+											)
+										}
+										className={`tab flex items-center gap-2 transition ${
+											tabSelected === tab.value && "tab-active"
+										}`}
+									>
+										{tab.title}
+									</li>
+								))}
+							</ul>
+						</div>
 
 						{/* tab contents */}
 						<div className="py-5" ref={tabContentRef}>
@@ -188,10 +189,10 @@ const ApplicantProfile: NextPage<{ username: string }> = ({ username }) => {
 											<p className="text-2xl font-bold">Bio</p>
 										</div>
 
-										<div className="prose">
+										<ReactMarkdown className="prose">
 											{applicant.data?.bio ||
 												"This user has not added a bio yet"}
-										</div>
+										</ReactMarkdown>
 									</div>
 									{/* skills */}
 									<div className="flex flex-col shadow-md rounded-btn p-5 gap-3">
