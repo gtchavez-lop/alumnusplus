@@ -641,6 +641,7 @@ const EditProfilePage: NextPage = () => {
 												id="skillSecondary_input"
 												type="text"
 												placeholder="Add a skill"
+												disabled={tempUserDetails.skill_secondary.length > 10}
 												onChange={(e) => {
 													const res = f_Skills.search(e.target.value);
 													const skills = res.map((skill) => skill.item);

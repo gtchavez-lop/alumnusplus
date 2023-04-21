@@ -1,5 +1,6 @@
 import { FiArchive, FiBriefcase, FiUser } from "react-icons/fi";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
+import { MdInfo, MdWarning } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -7,7 +8,6 @@ import { FC } from "react";
 import Image from "next/image";
 import JobCardDashboard from "@/components/jobs/JobProvDashboard";
 import Link from "next/link";
-import { MdWarning } from "react-icons/md";
 import ProvFeedCard from "@/components/feed/ProvFeedCard";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -46,9 +46,10 @@ const Prov_Dashboard = () => {
 
 		if (error) {
 			console.log(error);
+			return [];
 		}
 
-		return data as TProvJobPost[];
+		return (data as TProvJobPost[]) || [];
 	};
 
 	const fetchBlogPosts = async () => {
@@ -181,9 +182,9 @@ const Prov_Dashboard = () => {
 										</>
 									)}
 
-									{jobs.isFetched && (
-										<>
-											{jobs.data?.map(
+									<>
+										{jobs.isSuccess &&
+											jobs.data?.map(
 												(job, index) =>
 													index < 3 && (
 														<JobCardDashboard
@@ -194,19 +195,21 @@ const Prov_Dashboard = () => {
 													),
 											)}
 
-											{jobs.isSuccess && !jobs.data && (
-												<div className="flex flex-col items-center gap-2">
-													<MdWarning className="text-4xl text-warning" />
-													<p className="text-center">
-														You have not posted any jobs yet. <br />
-														<Link href="/p/jobs/new" className="btn btn-link">
-															Post a job
-														</Link>
-													</p>
-												</div>
-											)}
+										{jobs.isSuccess && !jobs.data && (
+											<div className="flex flex-col items-center gap-2">
+												<MdInfo className="text-4xl text-info" />
+												<p className="text-center">
+													You have not posted any jobs yet. <br />
+													<Link href="/p/jobs/new" className="btn btn-link">
+														Post a job
+													</Link>
+												</p>
+											</div>
+										)}
 
-											{jobs.isSuccess && !jobs.data && (
+										{jobs.isSuccess &&
+											!jobs.isLoading &&
+											jobs.data.length > 5 && (
 												<Link
 													href={"/p/jobs"}
 													className="btn btn-ghost btn-block"
@@ -214,8 +217,7 @@ const Prov_Dashboard = () => {
 													See all Jobs
 												</Link>
 											)}
-										</>
-									)}
+									</>
 								</div>
 							</div>
 						</div>
@@ -223,7 +225,12 @@ const Prov_Dashboard = () => {
 						{/* right side */}
 						<div className="col-span-2 hidden lg:flex flex-col gap-5">
 							<div className="flex flex-col gap-4">
-								<Link href={"https://monaverse.com/spaces/wicket?invite=T0RVek5qTTJOdzp1cy8q"} className="btn btn-primary">
+								<Link
+									href={
+										"https://monaverse.com/spaces/wicket?invite=T0RVek5qTTJOdzp1cy8q"
+									}
+									className="btn btn-primary"
+								>
 									Go to metaverse
 								</Link>
 							</div>
@@ -242,10 +249,8 @@ const Prov_Dashboard = () => {
 
 									{activities.isSuccess && activities.data.length < 1 && (
 										<div className="flex flex-col items-center gap-2">
-											<MdWarning className="text-4xl text-warning" />
-											<p className="text-center">
-												You have not posted any blog activities yet.
-											</p>
+											<MdInfo className="text-4xl text-info" />
+											<p className="text-center">No recent activities yet</p>
 										</div>
 									)}
 

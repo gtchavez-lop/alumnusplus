@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
 import { MdAdd, MdClose } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
@@ -16,7 +17,6 @@ import Tabs from "@/components/Tabs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -50,6 +50,7 @@ const ProvProfilePage: NextPage = () => {
 	const [tabContent] = useAutoAnimate();
 	const [isSigningOut, setIsSigningOut] = useState(false);
 	const [isMetaverseLive, setIsMetaverseLive] = useState(false);
+	const cacheQueryClient = useQueryClient();
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -74,6 +75,7 @@ const ProvProfilePage: NextPage = () => {
 
 			$accountDetails.set(null);
 			$accountType.set(null);
+			cacheQueryClient.clear();
 
 			router.push("/");
 		} catch (error) {

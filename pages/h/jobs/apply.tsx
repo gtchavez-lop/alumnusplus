@@ -194,7 +194,7 @@ const ApplyPage = () => {
 											</button>
 										) : (
 											<button onClick={handleApply} className="btn btn-primary">
-												Sumbit Application
+												Submit Application
 												<MdSend className="text-lg" />
 											</button>
 										)}

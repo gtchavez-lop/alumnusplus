@@ -118,7 +118,7 @@ const VerifyIdentity = () => {
 		const textInput = form.querySelector(
 			"input[type='text']",
 		) as HTMLInputElement;
-		const file = filInput!.files![0];
+		const file = filInput?.files?.[0];
 
 		// check if all fields are filled
 		if (!(file && textInput.value)) {
@@ -214,21 +214,6 @@ const VerifyIdentity = () => {
 			>
 				<h1 className="text-4xl font-bold">Verify Identity</h1>
 
-				{/* add warning as this is a beta feateure */}
-				<p className="alert alert-warning justify-start mt-3">
-					<MdWarning className="text-xl" />
-					<span>
-						This feature is a work in progress. Some features may not work or
-						may be replaced in the future
-					</span>
-				</p>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-					{/* <p className="alert alert-warning justify-center">
-						<MdWarning />
-						We only accept Philippine National Identity Card in this version.
-					</p> */}
-				</div>
-
 				{/* mobile webcam */}
 				<div className="hidden flex-col items-center justify-center mt-10 ">
 					{!capturedImage && (
@@ -300,8 +285,8 @@ const VerifyIdentity = () => {
 								selectedIDType === "national id"
 									? "0000-0000-0000-0000"
 									: selectedIDType === "driver's license"
-										? "A00000000-0000000-0000000"
-										: "0000-0000-0000-0000"
+									? "A00000000-0000000-0000000"
+									: "0000-0000-0000-0000"
 							}
 							disabled={_currentUser.is_verified}
 							type="text"
