@@ -47,7 +47,7 @@ const thePeople = [
 	},
 	{
 		name: "Efrhaim",
-		img: "https://api.dicebear.com/5.x/lorelei-neutral/png?seed=Efrhaim",
+		img: "/profile/ej.jpg",
 		position: "Writer",
 	},
 	{
@@ -57,7 +57,7 @@ const thePeople = [
 	},
 	{
 		name: "Jaypee",
-		img: "https://api.dicebear.com/5.x/lorelei-neutral/png?seed=Jaypee",
+		img: "/profile/jaypee.jpg",
 		position: "Multimedia Manager",
 	},
 	{
@@ -147,7 +147,6 @@ const AboutPage: NextPage = () => {
 					</div>
 				</div>
 			</motion.div>
-			<Footer />
 		</>
 	);
 };

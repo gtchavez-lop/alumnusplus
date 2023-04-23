@@ -131,7 +131,6 @@ const EditProfilePage: NextPage = () => {
 		if (
 			tempUserDetails.address.address.length < 5 ||
 			tempUserDetails.address.city.length < 5 ||
-			tempUserDetails.bio.length < 1 ||
 			!tempUserDetails.birthdate ||
 			tempUserDetails.birthplace.length < 5 ||
 			tempUserDetails.full_name.first.length < 2 ||
@@ -225,15 +224,14 @@ const EditProfilePage: NextPage = () => {
 					exit="exit"
 					className="relative min-h-screen w-full pt-24 pb-36"
 				>
-					<div className="flex flex-col lg:flex-row lg:items-center gap-2">
+					<div className="flex items-center gap-2 mb-10">
 						<button
-							onClick={() => {
-								router.push("/h/me");
-							}}
-							className="btn btn-ghost btn-square text-lg"
+							className="btn btn-square btn-primary btn-ghost"
+							onClick={() => router.back()}
 						>
-							<MdArrowBack />
+							<MdArrowBack className="text-2xl" />
 						</button>
+
 						<h1 className="text-4xl font-bold">Edit Your Profile</h1>
 					</div>
 
@@ -326,7 +324,7 @@ const EditProfilePage: NextPage = () => {
 									<input
 										className="file-input file-input-primary"
 										type="file"
-										accept="image/png, image/gif, image/jpeg"
+										accept="image/*"
 										onChange={({ currentTarget }) => {
 											// check if file exceeds 1mb
 											const file = currentTarget.files?.[0] as Blob;
@@ -345,6 +343,11 @@ const EditProfilePage: NextPage = () => {
 															...tempUserDetails,
 															avatar_url: reader.result?.toString() || "",
 														});
+													};
+													reader.onerror = (error) => {
+														toast.error(
+															"An error occured while uploading your profile picture.",
+														);
 													};
 												},
 											});
@@ -643,6 +646,7 @@ const EditProfilePage: NextPage = () => {
 												id="skillSecondary_input"
 												type="text"
 												placeholder="Add a skill"
+												disabled={tempUserDetails.skill_secondary.length > 10}
 												onChange={(e) => {
 													const res = f_Skills.search(e.target.value);
 													const skills = res.map((skill) => skill.item);
@@ -1006,6 +1010,20 @@ const EditProfilePage: NextPage = () => {
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
 
+										// check if all fields are filled
+										if (
+											!(
+												data.institution &&
+												data.degreeType &&
+												data.degreeName &&
+												data.location &&
+												data.yearGraduated
+											)
+										) {
+											toast.error("Please fill all fields");
+											return;
+										}
+
 										const newEducation: HEducation = {
 											institution: data.institution as string,
 											degreeType: data.degreeType as
@@ -1156,6 +1174,20 @@ const EditProfilePage: NextPage = () => {
 
 										const formData = new FormData(form);
 										const data = Object.fromEntries(formData.entries());
+
+										// validate form
+										if (
+											!(
+												data.title &&
+												data.date &&
+												data.organizer &&
+												data.location &&
+												data.type
+											)
+										) {
+											toast.error("Please fill up all the fields");
+											return;
+										}
 
 										const newTraining: HTraining = {
 											title: data.title as string,

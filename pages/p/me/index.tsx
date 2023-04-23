@@ -2,8 +2,18 @@ import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
 import { AnimPageTransition, AnimTabTransition } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdAdd, MdClose } from "react-icons/md";
+import {
+	MdAdd,
+	MdClose,
+	MdEdit,
+	MdPerson,
+	MdShare,
+	MdViewSidebar,
+	MdWifi,
+	MdWifiOff,
+} from "react-icons/md";
 import { useEffect, useState } from "react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import Image from "next/image";
 import JobCard from "@/components/jobs/JobCard";
@@ -16,7 +26,6 @@ import Tabs from "@/components/Tabs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -50,6 +59,7 @@ const ProvProfilePage: NextPage = () => {
 	const [tabContent] = useAutoAnimate();
 	const [isSigningOut, setIsSigningOut] = useState(false);
 	const [isMetaverseLive, setIsMetaverseLive] = useState(false);
+	const cacheQueryClient = useQueryClient();
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -74,6 +84,7 @@ const ProvProfilePage: NextPage = () => {
 
 			$accountDetails.set(null);
 			$accountType.set(null);
+			cacheQueryClient.clear();
 
 			router.push("/");
 		} catch (error) {
@@ -132,7 +143,32 @@ const ProvProfilePage: NextPage = () => {
 	});
 
 	const handleLiveInMetaverse = async () => {
-		console.log("live in metaverse");
+		const { error } = await supabase
+			.from("user_provisioners")
+			.update({ is_live: !isMetaverseLive })
+			.eq("id", _currentUser.id);
+
+		if (error) {
+			toast.error(error.message);
+			return;
+		}
+
+		setIsMetaverseLive(!isMetaverseLive);
+		$accountDetails.set({ ..._currentUser, is_live: !isMetaverseLive });
+	};
+
+	const toggleTheme = () => {
+		if (_currentTheme === "dark") {
+			// set to light mode
+			$themeMode.set("light");
+			document.body.setAttribute("data-theme", "light");
+			localStorage.setItem("theme", "light");
+		} else {
+			// set to dark mode
+			$themeMode.set("dark");
+			document.body.setAttribute("data-theme", "dark");
+			localStorage.setItem("theme", "dark");
+		}
 	};
 
 	useEffect(() => {
@@ -141,10 +177,12 @@ const ProvProfilePage: NextPage = () => {
 			$themeMode.set(localTheme as "light" | "dark");
 			document.body.setAttribute("data-theme", localTheme);
 		}
+	});
 
+	useEffect(() => {
 		// check if live in metaverse
 		setIsMetaverseLive(!!_currentUser && _currentUser.is_live ? true : false);
-	});
+	}, [_currentUser, isMetaverseLive, setIsMetaverseLive]);
 
 	return (
 		<>
@@ -157,7 +195,7 @@ const ProvProfilePage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full flex flex-col gap-10 pt-24 pb-36 "
 					>
-						<div className="grid grid-cols-1 lg:grid-cols-5 gap-5 overflow-hidden">
+						<div className="flex flex-col gap-5 overflow-hidden">
 							<div className="col-span-full lg:col-span-3">
 								{/* profile */}
 								<div className="relative rounded-btn overflow-hidden flex flex-col gap-3">
@@ -165,7 +203,12 @@ const ProvProfilePage: NextPage = () => {
 										<div className="bg-gradient-to-t from-base-100 to-transparent w-full h-full absolute opacity-75" />
 										<Image
 											className="object-cover rounded-btn rounded-b-none object-center w-full h-full "
-											src={`https://picsum.photos/seed/${_currentUser.legalName}/900/450`}
+											src={
+												_currentUser.banner_url ||
+												`https://picsum.photos/seed/${
+													_currentUser.legalName || _currentUser.id
+												}/900/450`
+											}
 											alt="background"
 											width={900}
 											height={450}
@@ -186,42 +229,51 @@ const ProvProfilePage: NextPage = () => {
 										/>
 										<div>
 											<p className="text-xl leading-tight font-bold">
-												Wicket Journeys
+												{_currentUser.legalName}
 											</p>
 											<p className="text-sm">
 												{_currentUser.followers.length} followers
 											</p>
 										</div>
 									</div>
-									<div className="z-10 flex justify-end items-center gap-2 mt-5">
+									<div className="z-10 flex justify-end gap-2 gap-y-5 mt-5">
 										<button
 											onClick={handleLiveInMetaverse}
-											className="btn btn-sm lg:btn-md btn-ghost mr-auto"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											{isMetaverseLive
-												? "Stop Live in Metaverse"
-												: "Live in Metaverse"}
+											{_currentUser.is_live ? (
+												<MdWifiOff className="text-lg" />
+											) : (
+												<MdWifi className="text-lg" />
+											)}
+
+											<span className="hidden lg:block">
+												{_currentUser.is_live ? "Stop Live" : "Go Live"}
+											</span>
 										</button>
 										<Link
 											href="/p/me/edit"
-											className="btn btn-sm lg:btn-md btn-primary"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											Edit
+											<MdEdit className="text-lg" />
+											<span className="hidden lg:block">Edit</span>
 										</Link>
 										<button
-											className="btn btn-sm lg:btn-md btn-primary"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 											onClick={() => {
 												navigator.clipboard.writeText(window.location.href);
 												toast.success("Link copied to clipboard!");
 											}}
 										>
-											Share Page
+											<MdShare className="text-lg" />
+											<span className="hidden lg:block">Share Page</span>
 										</button>
 										<Link
 											href="/p/me/hunter-view"
-											className="btn btn-sm lg:btn-md"
+											className="btn btn-sm lg:btn-md gap-2 btn-ghost"
 										>
-											View as Hunter
+											<MdPerson className="text-lg" />
+											<span className="hidden lg:block">View as Hunter</span>
 										</Link>
 									</div>
 								</div>
@@ -249,24 +301,6 @@ const ProvProfilePage: NextPage = () => {
 										setTabSelected(e as "about" | "jobs" | "followers");
 									}}
 								/>
-
-								{/* <ul className="tabs tabs-boxed">
-									{tabs.map((item, index) => (
-										<li
-											key={`tab-${index}`}
-											onClick={() => {
-												setTabSelected(
-													item.value as "about" | "jobs" | "followers",
-												);
-											}}
-											className={`tab ${
-												tabSelected === item.value && "tab-active"
-											}`}
-										>
-											{item.name}
-										</li>
-									))}
-								</ul> */}
 
 								{/* content */}
 								<div className="mt-10 overflow-hidden" ref={tabContent}>
@@ -342,7 +376,7 @@ const ProvProfilePage: NextPage = () => {
 												<p className="text-lg font-bold text-primary">
 													Full Description
 												</p>
-												<ReactMarkdown className="prose">
+												<ReactMarkdown className="prose w-full max-w-max">
 													{_currentUser.fullDescription}
 												</ReactMarkdown>
 											</div>
@@ -399,7 +433,7 @@ const ProvProfilePage: NextPage = () => {
 													followerList.data.map((item, index) => (
 														<div
 															key={`follower_${index}`}
-															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center"
+															className="bg-base-200 rounded-btn p-4 flex gap-3 items-center mb-2"
 														>
 															<Image
 																width={50}
@@ -447,26 +481,20 @@ const ProvProfilePage: NextPage = () => {
 									<label className="flex items-center justify-between">
 										<span>Dark Mode</span>
 										<input
-											checked={_currentTheme === "dark"}
-											onChange={(e) => {
-												$themeMode.set(e.target.checked ? "dark" : "light");
-												document.body.setAttribute(
-													"data-theme",
-													e.target.checked ? "dark" : "light",
-												);
-											}}
 											type="checkbox"
 											className="toggle toggle-primary"
+											checked={_currentTheme === "dark"}
+											onChange={toggleTheme}
 										/>
 									</label>
-									<label className="flex items-center justify-between">
+									{/* <label className="flex items-center justify-between">
 										<span>Notifications</span>
 										<input
 											type="checkbox"
 											disabled
 											className="toggle toggle-primary"
 										/>
-									</label>
+									</label> */}
 
 									<label className="mt-7">
 										<span>End your session</span>

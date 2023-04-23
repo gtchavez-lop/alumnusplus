@@ -11,9 +11,11 @@ import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdCheckCircleOutline, MdHourglassTop } from "react-icons/md";
 import { Toaster, toast } from "react-hot-toast";
 
+import { Analytics } from "@vercel/analytics/react";
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
 import { FiLoader } from "react-icons/fi";
+import Footer from "@/components/Footer";
 import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -21,10 +23,8 @@ import Script from "next/script";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
 import { useStore } from "@nanostores/react";
-import Footer from "@/components/Footer";
 
 const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
@@ -141,11 +141,13 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					<div className="flex justify-center bg-base-100 overflow-x-hidden">
 						<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
 							<AnimatePresence mode="wait">
-								<Component
-									{...pageProps}
-									rotuer={router}
-									key={router.pathname}
-								/>
+								<div className="min-h-screen">
+									<Component
+										{...pageProps}
+										rotuer={router}
+										key={router.pathname}
+									/>
+								</div>
 							</AnimatePresence>
 							<Footer />
 						</div>
@@ -181,6 +183,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 				}}
 				position="bottom-right"
 			/>
+			<Analytics />
 
 			<Script src="https://cdn.botpress.cloud/webchat/v0/inject.js" />
 			<Script

@@ -6,11 +6,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import { IUserHunter, TProvJobPost } from "@/lib/types";
-import {
-	MdOutlineSignalCellularNoSim,
-	MdSearch,
-	MdWarning,
-} from "react-icons/md";
+import { MdInfo, MdSearch } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import CvBuilder from "@/components/jobs/CvBuilder";
@@ -96,9 +92,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.contains("job_skills:text[]", [_userDetails.skill_primary])
 			.eq("draft", false);
 
@@ -115,9 +109,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.in("id", savedjobs)
 			.eq("draft", false);
 
@@ -134,9 +126,7 @@ const ApplyPage = () => {
 
 		const { data, error } = await supabase
 			.from("public_jobs")
-			.select(
-				"id,job_title,uploader:uploader_id(legalName),job_location,short_description,created_at,job_type,job_skills",
-			)
+			.select("*,uploader:uploader_id(legalName)")
 			.in("id", appliedjobs)
 			.eq("draft", false);
 
@@ -144,12 +134,6 @@ const ApplyPage = () => {
 			console.log(error);
 			return [] as unknown as Promise<Job[]>;
 		}
-		// if (data) {
-		// 	data.filter(
-		// 		(applied: TProvJobPost) => a.id !== allJobs?.id,
-		// 	);
-		// 	return data as unknown as Promise<Job[]>;
-		// }
 
 		return data as unknown as Promise<Job[]>;
 	};
@@ -254,13 +238,13 @@ const ApplyPage = () => {
 				</select>
 
 				{/* content */}
-				<div ref={tabContentRef} className="overflow-hidden">
+				<div ref={tabContentRef} className="mt-5">
 					{/* all jobs */}
 					{tabSelected === "all" && (
 						<>
 							<form
 								onSubmit={searchJob}
-								className="input-group w-full max-w-md mb-5"
+								className="input-group w-full max-w-md mb-5 mx-auto"
 							>
 								<input
 									name="searchQuery"
@@ -274,7 +258,7 @@ const ApplyPage = () => {
 									}}
 								/>
 								<button type="submit" className="btn btn-primary">
-									<MdSearch />
+									<MdSearch className="text-lg" />
 								</button>
 							</form>
 
@@ -332,12 +316,6 @@ const ApplyPage = () => {
 							className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
 							key={"recommended_jobs"}
 						>
-							<div className="col-span-full">
-								<div className="alert alert-warning">
-									This feature is still in development. We only show you jobs
-									based on your primary skill.
-								</div>
-							</div>
 							{recommendedJobs.isSuccess &&
 								recommendedJobs.data.map((job, index) => (
 									<JobCard
@@ -366,6 +344,12 @@ const ApplyPage = () => {
 								savedJobs.data.map((job, index) => (
 									<JobCard job={job} key={`savedjob_${index}`} />
 								))}
+							{savedJobs.isSuccess && savedJobs.data.length < 1 && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>No saved jobs</p>
+								</div>
+							)}
 							{savedJobs.isLoading &&
 								Array(2)
 									.fill(0)

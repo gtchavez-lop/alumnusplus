@@ -32,24 +32,19 @@ const templates = [
 		image: "/cvtemplate/preview_gab1.png",
 	},
 	{
-		name: "Gabbie 2",
-		value: "gabbie2",
-		image: "/cvtemplate/preview_gab2.png",
-	},
-	{
 		name: "Novie 1",
 		value: "novie1",
-		image: "/cvtemplate/preview_gab2.png",
+		image: "/cvtemplate/preview_novie1.png",
 	},
 	{
 		name: "Novie 2",
 		value: "novie2",
-		image: "/cvtemplate/preview_gab2.png",
+		image: "/cvtemplate/preview_novie2.png",
 	},
 	{
 		name: "Novie 3",
 		value: "novie3",
-		image: "/cvtemplate/preview_gab2.png",
+		image: "/cvtemplate/preview_novie3.png",
 	},
 ];
 
@@ -84,12 +79,12 @@ const CvBuilder: FC = () => {
 		_currentUser && (
 			<>
 				<div>
-					<h2 className="text-3xl">Build your Wicket CV here</h2>
+					<h2 className="text-3xl">Build your Wicket CV/Resume here</h2>
 
 					<div className="mt-10">
 						<h4 className="text-lg font-bold">
 							Write a cover letter to the hiring manager. Then click the button
-							below to generate your CV.
+							below to generate your CV or Resume.
 						</h4>
 
 						<textarea

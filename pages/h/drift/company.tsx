@@ -16,6 +16,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
+import { MdArrowBack } from "react-icons/md";
 
 interface Job {
 	id: string;
@@ -171,6 +172,16 @@ const ProvisionerPage: NextPage = () => {
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
+				<div className="flex items-center gap-2 mb-10">
+					<button
+						className="btn btn-square btn-primary btn-ghost"
+						onClick={() => router.back()}
+					>
+						<MdArrowBack className="text-2xl" />
+					</button>
+					<p>Go Back</p>
+				</div>
+
 				{!(_companyData.isLoading && _companyOpenJobs.isLoading) && (
 					<div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
 						<div className="col-span-full lg:col-span-3">
@@ -324,46 +335,6 @@ const ProvisionerPage: NextPage = () => {
 										</div>
 									</div>
 								)}
-							</div>
-						</div>
-						<div className="col-span-full lg:col-span-2">
-							<div className="divider col-span-full" />
-							<div className="grid grid-cols-2 mt-5 font-light text-sm opacity-75">
-								<div className="flex flex-col">
-									<p className="font-bold text-lg">Features</p>
-									<Link
-										href="/util/features#blogging"
-										className="link link-hover"
-									>
-										Mini Blogging
-									</Link>
-									<Link
-										href="/util/features#companyhunting"
-										className="link link-hover"
-									>
-										Geo-Company Hunting
-									</Link>
-									<Link
-										href="/util/features#jobposting"
-										className="link link-hover"
-									>
-										Job Posting
-									</Link>
-									<Link
-										href="/util/features#metaverse"
-										className="link link-hover"
-									>
-										Metaverse
-									</Link>
-								</div>
-								<div>
-									<p className="font-bold text-lg">Wicket Journeys</p>
-									<p className="link link-hover">About Us</p>
-									<p className="link link-hover">Contact Us</p>
-									<p className="link link-hover">Terms of use</p>
-									<p className="link link-hover">Privacy policy</p>
-									<p className="link link-hover">Cookie policy</p>
-								</div>
 							</div>
 						</div>
 					</div>

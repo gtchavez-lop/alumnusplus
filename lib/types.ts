@@ -1,6 +1,5 @@
 export type Json =
   | string
-  | string[]
   | number
   | boolean
   | null
@@ -132,7 +131,9 @@ export interface Database {
       }
       public_jobs: {
         Row: {
+          applicants: string[] | null
           created_at: string | null
+          draft: boolean | null
           full_description: string | null
           id: string
           job_location: string | null
@@ -144,7 +145,9 @@ export interface Database {
           uploader_id: string | null
         }
         Insert: {
+          applicants?: string[] | null
           created_at?: string | null
+          draft?: boolean | null
           full_description?: string | null
           id?: string
           job_location?: string | null
@@ -156,7 +159,9 @@ export interface Database {
           uploader_id?: string | null
         }
         Update: {
+          applicants?: string[] | null
           created_at?: string | null
+          draft?: boolean | null
           full_description?: string | null
           id?: string
           job_location?: string | null
@@ -173,99 +178,170 @@ export interface Database {
           comments: Json | null
           content: string | null
           createdAt: string | null
+          draft: boolean | null
           id: string
           type: string | null
           updatedAt: string | null
           uploader: string | null
-          uploaderID: string | null
           upvoters: Json | null
         }
         Insert: {
           comments?: Json | null
           content?: string | null
           createdAt?: string | null
+          draft?: boolean | null
           id: string
           type?: string | null
           updatedAt?: string | null
           uploader?: string | null
-          uploaderID?: string | null
           upvoters?: Json | null
         }
         Update: {
           comments?: Json | null
           content?: string | null
           createdAt?: string | null
+          draft?: boolean | null
           id?: string
           type?: string | null
           updatedAt?: string | null
           uploader?: string | null
-          uploaderID?: string | null
+          upvoters?: Json | null
+        }
+      }
+      public_provposts: {
+        Row: {
+          comments: Json | null
+          content: string | null
+          createdAt: string | null
+          draft: boolean | null
+          id: string
+          type: string | null
+          updatedAt: string | null
+          uploader: string | null
+          upvoters: Json | null
+        }
+        Insert: {
+          comments?: Json | null
+          content?: string | null
+          createdAt?: string | null
+          draft?: boolean | null
+          id: string
+          type?: string | null
+          updatedAt?: string | null
+          uploader?: string | null
+          upvoters?: Json | null
+        }
+        Update: {
+          comments?: Json | null
+          content?: string | null
+          createdAt?: string | null
+          draft?: boolean | null
+          id?: string
+          type?: string | null
+          updatedAt?: string | null
+          uploader?: string | null
           upvoters?: Json | null
         }
       }
       user_hunters: {
         Row: {
           address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
           bio: string
           birthdate: string | null
           birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
           connections: Json | null
+          cover_letter: string
           created_at: string | null
           education: Json | null
           email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
           full_name: Json | null
           gender: string | null
           id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
           phone: string | null
           saved_jobs: Json | null
           skill_primary: string | null
           skill_secondary: Json | null
           social_media_links: Json | null
           subscription_type: string
+          trainings: Json
           type: string | null
           updated_at: string | null
           username: string | null
         }
         Insert: {
           address?: Json | null
+          applied_jobs?: string[] | null
+          avatar_url?: string | null
+          banner_url?: string | null
           bio?: string
           birthdate?: string | null
           birthplace?: string | null
+          citizenship?: string | null
+          civil_status?: string | null
           connections?: Json | null
+          cover_letter?: string
           created_at?: string | null
           education?: Json | null
           email?: string | null
+          experience?: Json | null
+          followedCompanies?: string[] | null
           full_name?: Json | null
           gender?: string | null
           id?: string
+          id_number?: string | null
+          id_type?: string | null
+          is_verified?: boolean
           phone?: string | null
           saved_jobs?: Json | null
           skill_primary?: string | null
           skill_secondary?: Json | null
           social_media_links?: Json | null
           subscription_type?: string
+          trainings?: Json
           type?: string | null
           updated_at?: string | null
           username?: string | null
         }
         Update: {
           address?: Json | null
+          applied_jobs?: string[] | null
+          avatar_url?: string | null
+          banner_url?: string | null
           bio?: string
           birthdate?: string | null
           birthplace?: string | null
+          citizenship?: string | null
+          civil_status?: string | null
           connections?: Json | null
+          cover_letter?: string
           created_at?: string | null
           education?: Json | null
           email?: string | null
+          experience?: Json | null
+          followedCompanies?: string[] | null
           full_name?: Json | null
           gender?: string | null
           id?: string
+          id_number?: string | null
+          id_type?: string | null
+          is_verified?: boolean
           phone?: string | null
           saved_jobs?: Json | null
           skill_primary?: string | null
           skill_secondary?: Json | null
           social_media_links?: Json | null
           subscription_type?: string
+          trainings?: Json
           type?: string | null
           updated_at?: string | null
           username?: string | null
@@ -275,63 +351,87 @@ export interface Database {
         Row: {
           address: Json | null
           alternativeNames: Json | null
+          avatar_url: string | null
+          banner_url: string | null
           companyEmail: string | null
           companySize: string | null
           companyType: string | null
           contactInformation: Json | null
+          followers: string[] | null
           foundingYear: number | null
           fullDescription: string | null
           id: string
           industryType: string | null
+          is_live: boolean | null
           jobPostings: Json | null
           legalName: string | null
           shortDescription: string | null
           socialProfiles: Json | null
           tags: Json | null
+          totalVisits: number
           type: string | null
           website: string | null
         }
         Insert: {
           address?: Json | null
           alternativeNames?: Json | null
+          avatar_url?: string | null
+          banner_url?: string | null
           companyEmail?: string | null
           companySize?: string | null
           companyType?: string | null
           contactInformation?: Json | null
+          followers?: string[] | null
           foundingYear?: number | null
           fullDescription?: string | null
           id?: string
           industryType?: string | null
+          is_live?: boolean | null
           jobPostings?: Json | null
           legalName?: string | null
           shortDescription?: string | null
           socialProfiles?: Json | null
           tags?: Json | null
+          totalVisits?: number
           type?: string | null
           website?: string | null
         }
         Update: {
           address?: Json | null
           alternativeNames?: Json | null
+          avatar_url?: string | null
+          banner_url?: string | null
           companyEmail?: string | null
           companySize?: string | null
           companyType?: string | null
           contactInformation?: Json | null
+          followers?: string[] | null
           foundingYear?: number | null
           fullDescription?: string | null
           id?: string
           industryType?: string | null
+          is_live?: boolean | null
           jobPostings?: Json | null
           legalName?: string | null
           shortDescription?: string | null
           socialProfiles?: Json | null
           tags?: Json | null
+          totalVisits?: number
           type?: string | null
           website?: string | null
         }
       }
     }
     Views: {
+      new_recommended_hunters: {
+        Row: {
+          avatar_url: string | null
+          email: string | null
+          full_name: Json | null
+          id: string | null
+          username: string | null
+        }
+      }
       recommended_hunters: {
         Row: {
           address: Json | null
@@ -349,22 +449,34 @@ export interface Database {
         }
         Returns: {
           address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
           bio: string
           birthdate: string | null
           birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
           connections: Json | null
+          cover_letter: string
           created_at: string | null
           education: Json | null
           email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
           full_name: Json | null
           gender: string | null
           id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
           phone: string | null
           saved_jobs: Json | null
           skill_primary: string | null
           skill_secondary: Json | null
           social_media_links: Json | null
           subscription_type: string
+          trainings: Json
           type: string | null
           updated_at: string | null
           username: string | null
@@ -398,22 +510,34 @@ export interface Database {
         }
         Returns: {
           address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
           bio: string
           birthdate: string | null
           birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
           connections: Json | null
+          cover_letter: string
           created_at: string | null
           education: Json | null
           email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
           full_name: Json | null
           gender: string | null
           id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
           phone: string | null
           saved_jobs: Json | null
           skill_primary: string | null
           skill_secondary: Json | null
           social_media_links: Json | null
           subscription_type: string
+          trainings: Json
           type: string | null
           updated_at: string | null
           username: string | null
@@ -425,22 +549,34 @@ export interface Database {
         }
         Returns: {
           address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
           bio: string
           birthdate: string | null
           birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
           connections: Json | null
+          cover_letter: string
           created_at: string | null
           education: Json | null
           email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
           full_name: Json | null
           gender: string | null
           id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
           phone: string | null
           saved_jobs: Json | null
           skill_primary: string | null
           skill_secondary: Json | null
           social_media_links: Json | null
           subscription_type: string
+          trainings: Json
           type: string | null
           updated_at: string | null
           username: string | null
@@ -468,25 +604,124 @@ export interface Database {
         }
         Returns: {
           address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
           bio: string
           birthdate: string | null
           birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
           connections: Json | null
+          cover_letter: string
           created_at: string | null
           education: Json | null
           email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
           full_name: Json | null
           gender: string | null
           id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
           phone: string | null
           saved_jobs: Json | null
           skill_primary: string | null
           skill_secondary: Json | null
           social_media_links: Json | null
           subscription_type: string
+          trainings: Json
           type: string | null
           updated_at: string | null
           username: string | null
+        }[]
+      }
+      search_hunters: {
+        Args: {
+          searchquery: string
+        }
+        Returns: {
+          address: Json | null
+          applied_jobs: string[] | null
+          avatar_url: string | null
+          banner_url: string | null
+          bio: string
+          birthdate: string | null
+          birthplace: string | null
+          citizenship: string | null
+          civil_status: string | null
+          connections: Json | null
+          cover_letter: string
+          created_at: string | null
+          education: Json | null
+          email: string | null
+          experience: Json | null
+          followedCompanies: string[] | null
+          full_name: Json | null
+          gender: string | null
+          id: string
+          id_number: string | null
+          id_type: string | null
+          is_verified: boolean
+          phone: string | null
+          saved_jobs: Json | null
+          skill_primary: string | null
+          skill_secondary: Json | null
+          social_media_links: Json | null
+          subscription_type: string
+          trainings: Json
+          type: string | null
+          updated_at: string | null
+          username: string | null
+        }[]
+      }
+      search_job: {
+        Args: {
+          searchquery: string
+        }
+        Returns: {
+          applicants: string[] | null
+          created_at: string | null
+          draft: boolean | null
+          full_description: string | null
+          id: string
+          job_location: string | null
+          job_qualifications: string[] | null
+          job_skills: string[] | null
+          job_title: string | null
+          job_type: string[] | null
+          short_description: string | null
+          uploader_id: string | null
+        }[]
+      }
+      search_provisioners: {
+        Args: {
+          searchquery: string
+        }
+        Returns: {
+          address: Json | null
+          alternativeNames: Json | null
+          avatar_url: string | null
+          banner_url: string | null
+          companyEmail: string | null
+          companySize: string | null
+          companyType: string | null
+          contactInformation: Json | null
+          followers: string[] | null
+          foundingYear: number | null
+          fullDescription: string | null
+          id: string
+          industryType: string | null
+          is_live: boolean | null
+          jobPostings: Json | null
+          legalName: string | null
+          shortDescription: string | null
+          socialProfiles: Json | null
+          tags: Json | null
+          totalVisits: number
+          type: string | null
+          website: string | null
         }[]
       }
     }
@@ -584,6 +819,7 @@ export interface IUserProvisioner {
   }
   alternativeNames: string[]
   avatar_url: string
+  banner_url: string
   companyEmail: string
   companySize: string
   companyType: string

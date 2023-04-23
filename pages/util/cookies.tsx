@@ -143,12 +143,21 @@ export default function CookiePolicyPage() {
 					contact us through one of our preferred contact methods:
 				</p>
 
-				<ul className="grid grid-cols-1 md:grid-cols-2">
-					<li>Email: </li>
-					<li>By visiting this link: </li>
+				<ul className="grid grid-cols-1 md:grid-cols-2 mt-5">
+					<li>
+						Email:
+						<span className="underline underline-offset-4 ml-5">
+							wicket.journeys@gmail.com
+						</span>
+					</li>
+					<li>
+						By visiting this link:
+						<span className="underline underline-offset-4 ml-5">
+							wicket.vercel.app/util/contact
+						</span>
+					</li>
 				</ul>
 			</motion.main>
-			<Footer />
 		</>
 	);
 }

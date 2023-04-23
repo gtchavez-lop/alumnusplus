@@ -32,7 +32,65 @@ const RegisterHunterSubPage: FC = () => {
 	});
 	const [passwordMatched, setPasswordMatched] = useState<boolean>(true);
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
-	const [localRegData, setLocalRegData] = useState({} as IUserHunter);
+	const [localRegData, setLocalRegData] = useState<IUserHunter>({
+		address: {
+			address: "",
+			city: "",
+			postalCode: "",
+		},
+		applied_jobs: [],
+		avatar_url: "",
+		banner_url: "",
+		birthdate: "",
+		bio: "",
+		citizenship: "",
+		birthplace: "",
+		civil_status: "" as
+			| "single"
+			| "married"
+			| "divorced"
+			| "widowed"
+			| "separated",
+		connections: [],
+		education: [],
+		cover_letter: "",
+		created_at: "",
+		email: "",
+		experience: [],
+		followedCompanies: [],
+		full_name: {
+			first: "",
+			last: "",
+			middle: "",
+		},
+		gender: "male" as
+			| "male"
+			| "female"
+			| "non-binary"
+			| "other"
+			| "prefer not to say",
+		id: "",
+		id_number: "",
+		id_type: "" as "other" | "national id" | "passport" | "driver's license",
+		is_verified: false,
+		phone: "",
+		saved_jobs: [],
+		skill_primary: "",
+		skill_secondary: [],
+		social_media_links: {
+			facebook: "",
+			instagram: "",
+			linkedin: "",
+			twitter: "",
+			github: "",
+			youtube: "",
+		},
+		subscription_type: "" as "junior" | "senior" | "expert",
+		trainings: [],
+		type: "hunter",
+		updated_at: "",
+		username: "",
+	});
 	const [citiesSearchResults, setCitiesSearchResults] = useState<
 		{ city: string; admin_name: string }[]
 	>([]);

@@ -78,26 +78,10 @@ const Home = () => {
 
 	return (
 		<>
-			{/* <motion.div
-				initial={{ opacity: 0 }}
-				animate={{
-					opacity: 1,
-					transition: { duration: 0.5, ease: "circOut" },
-				}}
-				exit={{ opacity: 0, transition: { duration: 0.2, ease: "circIn" } }}
-				className="absolute top-0 left-0 w-full h-full"
-			>
-				<Image
-					src="./mainbg.svg"
-					className="absolute w-full min-h-[50vh] top-0 object-contain object-top  opacity-40"
-					fill
-					alt=""
-				/>
-			</motion.div> */}
 			{/* bg background */}
 			<div
 				style={{
-					opacity: scrollYValue > 50 ? 0 : 1,
+					opacity: scrollYValue > 0 ? 0 : 1,
 				}}
 				className="absolute transition-opacity w-full h-screen inset-0 flex justify-center items-end"
 			>
@@ -311,7 +295,7 @@ const Home = () => {
 				</div>
 			</motion.div>
 
-			<Pricing />
+			{/* <Pricing /> */}
 
 			<motion.div className="relative flex flex-col items-center justify-center min-h-[50vh] px-2 lg:px-0">
 				{/* try this app now */}
@@ -326,10 +310,7 @@ const Home = () => {
 					{/* button */}
 					<div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
 						<Link href="/register" className="btn btn-primary w-[250px]">
-							Sign up an account
-						</Link>
-						<Link href="/login" className="btn btn-ghost w-[250px]">
-							Sign in your account
+							Register now
 						</Link>
 					</div>
 				</div>

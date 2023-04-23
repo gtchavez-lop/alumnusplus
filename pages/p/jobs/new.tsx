@@ -1,10 +1,11 @@
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiPlus, FiSkipBack, FiX } from "react-icons/fi";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Fuse from "fuse.js";
 import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import Skills from "@/lib/skills.json";
 import dayjs from "dayjs";
@@ -29,6 +30,7 @@ const CreateNewJobPage = () => {
 		created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		full_description: "",
 		job_location: "",
+		draft: false,
 		applicants: [],
 		job_qualifications: [],
 		job_skills: [],
@@ -36,7 +38,6 @@ const CreateNewJobPage = () => {
 		job_type: [],
 		short_description: "",
 		uploader_id: "",
-		draft: false,
 	});
 	const _SkillList = new Fuse(Skills, {
 		threshold: 0.3,
@@ -56,7 +57,6 @@ const CreateNewJobPage = () => {
 			toast.error("Please fill out all the fields");
 			return;
 		}
-
 		toast.loading("Posting job...");
 
 		const { error } = await supabase
@@ -64,46 +64,6 @@ const CreateNewJobPage = () => {
 			.insert<TProvJobPost[]>([
 				{
 					...addJobSchema,
-					draft: false,
-					uploader_id: _currentUser.id,
-				},
-			]);
-
-		toast.dismiss();
-		if (error) {
-			toast.error(error.message);
-			return;
-		}
-
-		if (!error) {
-			toast.success("Job posted successfully");
-			router.push("/p/jobs");
-		}
-	};
-
-	const submitJobAsDraftHandler = async () => {
-		// check if the user has filled out all the fields
-		if (
-			addJobSchema.job_title === "" ||
-			addJobSchema.full_description === "" ||
-			addJobSchema.short_description === "" ||
-			addJobSchema.job_qualifications.length === 0 ||
-			addJobSchema.job_location === "" ||
-			addJobSchema.job_type.length === 0 ||
-			addJobSchema.job_skills.length === 0
-		) {
-			toast.error("Please fill out all the fields");
-			return;
-		}
-
-		toast.loading("Posting job...");
-
-		const { error } = await supabase
-			.from("public_jobs")
-			.insert<TProvJobPost[]>([
-				{
-					...addJobSchema,
-					draft: true,
 					uploader_id: _currentUser.id,
 				},
 			]);
@@ -129,8 +89,16 @@ const CreateNewJobPage = () => {
 				exit="exit"
 				className="relative min-h-screen w-full pt-24 pb-36"
 			>
-				<p className="text-2xl font-bold mb-10">Add new Post</p>
+				<div className="flex items-center gap-2 mb-10">
+					<button
+						className="btn btn-square btn-primary btn-ghost"
+						onClick={() => router.back()}
+					>
+						<MdArrowBack className="text-lg" />
+					</button>
 
+					<p className="text-2xl font-bold">Add new Post</p>
+				</div>
 				{/* job title */}
 				<label className="flex flex-col mb-5">
 					<span className="text-lg text-primary font-bold">Job Title</span>
@@ -207,7 +175,7 @@ const CreateNewJobPage = () => {
 						placeholder="What are the qualifications for this job?"
 						className="input input-bordered"
 						onKeyDown={(e) => {
-							if (e.key === "Enter") {
+							if (e.key === ",") {
 								e.preventDefault();
 								// check for duplicates
 								if (
@@ -230,6 +198,9 @@ const CreateNewJobPage = () => {
 							}
 						}}
 					/>
+					<p className="text-right opacity-75">
+						Separate qualifications using a comma
+					</p>
 					<div className="flex flex-wrap gap-2 mt-2">
 						{addJobSchema.job_qualifications.map((qualification, index) => (
 							<div
@@ -400,21 +371,6 @@ const CreateNewJobPage = () => {
 					<Link href="/p/jobs" className="btn btn-ghost">
 						Cancel
 					</Link>
-					<button
-						disabled={
-							!(
-								addJobSchema.job_title.length > 0 &&
-								addJobSchema.job_type.length > 0 &&
-								addJobSchema.job_skills.length > 0 &&
-								addJobSchema.short_description.length > 0 &&
-								addJobSchema.full_description.length > 0
-							)
-						}
-						onClick={submitJobAsDraftHandler}
-						className="btn btn-ghost"
-					>
-						Submit as draft
-					</button>
 					<button
 						disabled={
 							!(

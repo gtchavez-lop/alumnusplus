@@ -84,8 +84,10 @@ const HunterEventPage: NextPage = () => {
 							>
 								<div className="flex items-center gap-2">
 									<Link
-										className="relative w-8 h-8 lg:w-10 lg:h-10 mask mask-squircle bg-primary "
-										href={`/drift/company?id=${item.uploader.id}`}
+										className={`relative w-8 h-8 lg:w-10 lg:h-10 avatar  ${
+											item.uploader.is_live && "online"
+										}`}
+										href={`/h/drift/company?id=${item.uploader.id}`}
 									>
 										<Image
 											src={
@@ -93,14 +95,14 @@ const HunterEventPage: NextPage = () => {
 												`https://api.dicebear.com/5.x/shapes/png?seed=${item.uploader.legalName}`
 											}
 											alt="avatar"
-											className="object-center object-cover"
+											className="object-center object-cover mask mask-circle"
 											fill
 										/>
 									</Link>
 									<div className="flex flex-col gap-1 justify-center">
 										<p className="leading-none flex w-full">
 											<Link
-												href={`/drift/company?id=${item.uploader.id}`}
+												href={`/h/drift/company?id=${item.uploader.id}`}
 												className="flex"
 											>
 												{item.uploader.legalName}

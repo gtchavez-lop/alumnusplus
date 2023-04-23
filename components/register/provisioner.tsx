@@ -27,6 +27,7 @@ const RegisterProvisionerSubPage: FC = () => {
 			city: "",
 			postalCode: "",
 		},
+		banner_url: "",
 		avatar_url: "",
 		alternativeNames: [],
 		companyEmail: "",

@@ -81,7 +81,7 @@ const ProvisionerPage: NextPage = () => {
 										<p className="text-xl leading-tight font-bold">
 											{companyData.legalName}
 										</p>
-										<p className="text-sm">0 followers</p>
+										<p className="text-sm">{companyData.followers.length} followers</p>
 									</div>
 								</div>
 								<div className="z-10 flex justify-end items-center gap-2 mt-5">

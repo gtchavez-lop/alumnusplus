@@ -8,6 +8,7 @@ import {
 	TProvBlogPost,
 } from "@/lib/types";
 import {
+	MdArrowBack,
 	MdCheckCircle,
 	MdComment,
 	MdDelete,
@@ -58,6 +59,7 @@ const ProvBlogPostPage: NextPage = () => {
 	const [isEditingRef] = useAutoAnimate();
 	const router = useRouter();
 	const [tempData, setTempData] = useState({} as BlogEventPostProps);
+	const [isUpvoted, setIsUpvoted] = useState(false);
 
 	const fetchBlogData = async () => {
 		const { id } = router.query;
@@ -89,6 +91,11 @@ const ProvBlogPostPage: NextPage = () => {
 
 	const handleDeleteBlog = async () => {
 		toast.loading("Processing...");
+
+		if (!router.query.id) {
+			toast.error("Something went wrong");
+			return;
+		}
 
 		const { error } = await supabase
 			.from("public_posts")
@@ -132,6 +139,85 @@ const ProvBlogPostPage: NextPage = () => {
 		_blogData.refetch();
 	};
 
+	const handleUpvoteBlog = async () => {
+		// get current upvoters
+		const { data: upvoters, error } = await supabase
+			.from("public_provposts")
+			.select("upvoters")
+			.eq("id", router.query.id)
+			.single();
+
+		if (error) {
+			console.log(error);
+			return;
+		}
+
+		// check if user has already upvoted
+		const hasUpvoted = upvoters?.upvoters.includes(currentUser.id);
+
+		// if user has already upvoted, remove user from upvoters
+		if (hasUpvoted) {
+			const newUpvoters = upvoters?.upvoters.filter(
+				(id: string) => id !== currentUser.id,
+			);
+
+			const { error } = await supabase
+				.from("public_provposts")
+				.update({
+					upvoters: newUpvoters,
+				})
+				.eq("id", router.query.id);
+
+			if (error) {
+				console.log(error);
+				return;
+			}
+
+			setIsUpvoted(false);
+			_blogData.refetch();
+			return;
+		}
+
+		// if user has not upvoted, add user to upvoters
+		const { error: error2 } = await supabase
+			.from("public_provposts")
+			.update({
+				upvoters: [...upvoters?.upvoters, currentUser.id],
+			})
+			.eq("id", router.query.id);
+
+		if (error2) {
+			console.log(error2);
+			return;
+		}
+
+		setIsUpvoted(true);
+		_blogData.refetch();
+	};
+
+	const checkIfUpvoted = async () => {
+		const { data: upvoters, error } = await supabase
+			.from("public_provposts")
+			.select("upvoters")
+			.eq("id", router.query.id)
+			.single();
+
+		if (error) {
+			console.log(error);
+			return;
+		}
+
+		if (upvoters?.upvoters.includes(currentUser.id)) {
+			setIsUpvoted(true);
+		}
+	};
+
+	useEffect(() => {
+		if (currentUser) {
+			checkIfUpvoted();
+		}
+	}, [currentUser]);
+
 	return (
 		<>
 			{_blogData.isSuccess && !!currentUser && (
@@ -143,6 +229,15 @@ const ProvBlogPostPage: NextPage = () => {
 						exit="exit"
 						className="relative min-h-screen w-full pt-24 pb-36 overflow-y-hidden"
 					>
+						<div className="flex items-center gap-2 mb-10">
+							<button
+								className="btn btn-square btn-primary btn-ghost"
+								onClick={() => router.back()}
+							>
+								<MdArrowBack className="text-2xl" />
+							</button>
+							<p>Go Back</p>
+						</div>
 						{/* header */}
 						<div className="flex items-center gap-4 0">
 							<Image
@@ -155,6 +250,7 @@ const ProvBlogPostPage: NextPage = () => {
 								height={40}
 								className="mask mask-squircle"
 							/>
+
 							<div className="flex flex-col">
 								<Link
 									href={
@@ -235,11 +331,11 @@ const ProvBlogPostPage: NextPage = () => {
 							)}
 						</div>
 						{/* content grid */}
-						<div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-10">
+						<div className="flex flex-col gap-4 mt-10">
 							{/* content */}
-							<div className="col-span-3" ref={isEditingRef}>
+							<div ref={isEditingRef}>
 								{!isEditing ? (
-									<ReactMarkdown className="prose">
+									<ReactMarkdown className="prose prose-lg max-w-max">
 										{tempData.content}
 									</ReactMarkdown>
 								) : (
@@ -257,15 +353,20 @@ const ProvBlogPostPage: NextPage = () => {
 								)}
 							</div>
 							{/* sidebar */}
-							<div className="col-span-2" ref={isCommentingRef}>
+							<div className="mt-10" ref={isCommentingRef}>
 								{/* upvote and comment toggler */}
 								<div className="flex items-center gap-1">
-									<p>
-										Upvotes:{" "}
-										<span className="text-primary font-bold">
-											{_blogData.data.upvoters.length}
-										</span>
-									</p>
+									<button
+										onClick={handleUpvoteBlog}
+										className="btn btn-ghost gap-2 text-xl"
+									>
+										{isUpvoted ? (
+											<MdFavorite className="text-red-500" />
+										) : (
+											<MdFavoriteBorder />
+										)}
+										{_blogData.data.upvoters.length}
+									</button>
 									<button
 										onClick={() => {
 											navigator.clipboard.writeText(window.location.href);

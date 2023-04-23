@@ -22,8 +22,10 @@ import {
 	MdTrain,
 	MdWork,
 } from "react-icons/md";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import { AnimPageTransition } from "@/lib/animations";
+import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import Modal from "@/components/Modal";
@@ -34,11 +36,9 @@ import dayjs from "dayjs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
-import Footer from "@/components/Footer";
 
 interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;
@@ -96,6 +96,7 @@ const ProfilePage: NextPage = () => {
 	const [tabSelected, setTabSelected] = useState<TTabs>("about");
 	const [tabContentRef] = useAutoAnimate();
 	const [signOutModalVisible, setSignOutModalVisible] = useState(false);
+	const cacheQueryClient = useQueryClient();
 
 	const _globalTheme = useStore($themeMode);
 
@@ -127,6 +128,7 @@ const ProfilePage: NextPage = () => {
 
 		$accountType.set(null);
 		$accountDetails.set(null);
+		cacheQueryClient.clear();
 
 		toast.dismiss();
 		router.push("/login");
@@ -161,23 +163,23 @@ const ProfilePage: NextPage = () => {
 	};
 
 	const fetchRecommendedUsers = async () => {
-		const localConnection = [_currentUser.connections, _currentUser.id];
-		const convertedMapToString = localConnection.map((item) => {
-			return item.toString();
-		});
-		const joined = convertedMapToString.join(",");
+		const connections = _currentUser.connections.concat(_currentUser.id);
 
 		const { data, error } = await supabase
 			.from("new_recommended_hunters")
-			.select("id,full_name,username,email,avatar_url")
-			.not("id", "in", `(${joined})`)
-			.limit(5);
+			.select("*")
+			.limit(4);
 
-		if (error || localConnection.length === 0) {
-			return [];
+		if (error) {
+			console.log("error", error);
+			return [] as IUserHunter[];
 		}
 
-		return data;
+		const filtered = data.filter(
+			(user: { id: string }) => !connections.includes(user.id),
+		);
+
+		return filtered as IUserHunter[];
 	};
 
 	const fetchUserSavedJobs = async () => {
@@ -233,6 +235,7 @@ const ProfilePage: NextPage = () => {
 				queryKey: ["recommendedUsers"],
 				queryFn: fetchRecommendedUsers,
 				enabled: !!_currentUser,
+				refetchOnMount: false,
 				onError: () => {
 					console.error("failed to fetch recommended users");
 				},
@@ -296,22 +299,6 @@ const ProfilePage: NextPage = () => {
 											width={128}
 											height={128}
 										/>
-
-										{_currentUser.subscription_type === "junior" && (
-											<div className="badge badge-primary absolute bottom-1 sm:-right-5">
-												Junior Hunter
-											</div>
-										)}
-										{_currentUser.subscription_type === "senior" && (
-											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Senior Hunter
-											</div>
-										)}
-										{_currentUser.subscription_type === "expert" && (
-											<div className="badge badge-primary absolute bottom-1 -right-5">
-												Expert Hunter
-											</div>
-										)}
 									</div>
 									<div>
 										<p className="text-3xl font-bold flex gap-1 items-center">
@@ -751,7 +738,7 @@ const ProfilePage: NextPage = () => {
 											recommendedUsers.data.length > 0 &&
 											recommendedUsers.data.map((thisUser, index) => (
 												<Link
-													href={`/h/${thisUser.username}`}
+													href={`/h?user=${thisUser.username}`}
 													key={`connection_${index}`}
 												>
 													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-primary hover:bg-opacity-30 transition">

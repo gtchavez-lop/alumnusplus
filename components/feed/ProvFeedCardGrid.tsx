@@ -96,6 +96,7 @@ const ProvFeedCardGrid: FC<{ item: TProvBlogPost }> = ({ item }) => {
 							toast("Link Shared");
 						}}
 					>
+						<span>Copy Share Link</span>
 						<MdShare />
 					</button>
 				</div>
