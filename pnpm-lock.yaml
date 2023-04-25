@@ -79,6 +79,9 @@ dependencies:
   react:
     specifier: 18.2.0
     version: 18.2.0
+  react-chatbot-kit:
+    specifier: ^2.1.2
+    version: 2.1.2
   react-dom:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
@@ -4485,6 +4488,16 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /react-chatbot-kit@2.1.2:
+    resolution: {integrity: sha512-N9bhg7/YnVz3TcNaV19szfBqCLHfVevisdqg38QowOI1hxgebwejrkggGz+T04yJK2j7dhwNqHpx5nWMfugzZw==}
+    dependencies:
+      react-conditionally-render: 1.0.2
+    dev: false
+
+  /react-conditionally-render@1.0.2:
+    resolution: {integrity: sha512-CtjIgaLHVDSgHis3gv/PT/8EnD6GPUL8PrhUjh7DP6S5Y3p56dGu7y2nVg6pYv1kv+fGznRhRmX3assr/vRw3A==}
     dev: false
 
   /react-dom@18.2.0(react@18.2.0):

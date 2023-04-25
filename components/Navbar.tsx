@@ -203,7 +203,9 @@ const Navbar = () => {
 							</p>
 							<Link
 								href="/h/me"
-								className={`btn btn-circle ${
+								className={`avatar h-10 w-10 rounded-full
+								${_currentUser.activeJob && "online"}
+								${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
@@ -215,7 +217,7 @@ const Navbar = () => {
 										src={_currentUser.avatar_url}
 										width={40}
 										height={40}
-										className="rounded-full"
+										className="mask mask-circle"
 									/>
 								) : (
 									<MdPerson className="text-lg" />

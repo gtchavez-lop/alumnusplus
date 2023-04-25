@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FC, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import {
+	MdAdd,
 	MdArrowBack,
 	MdArrowForward,
 	MdClose,
@@ -24,13 +25,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 const RegisterHunterSubPage: FC = () => {
+	// states
 	const router = useRouter();
 	const [formPage, setFormPage] = useState(1);
-	const [localPassword, setLocalPassword] = useState({
-		password: "",
-		confirmPassword: "",
-	});
-	const [passwordMatched, setPasswordMatched] = useState<boolean>(true);
+	const [formInputRef] = useAutoAnimate();
+	const [localPassword, setLocalPassword] = useState<string>("");
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [localRegData, setLocalRegData] = useState<IUserHunter>({
 		address: {
@@ -38,6 +37,7 @@ const RegisterHunterSubPage: FC = () => {
 			city: "",
 			postalCode: "",
 		},
+		activeJob: "",
 		applied_jobs: [],
 		avatar_url: "",
 		banner_url: "",
@@ -101,950 +101,916 @@ const RegisterHunterSubPage: FC = () => {
 		useState<string>("");
 	const [skillsetSecondarySearchResults, setSkillsetSecondarySearchResults] =
 		useState<string[]>([]);
-	const [formInputRef] = useAutoAnimate();
 
+	// Fuse Search
 	const PhCities = new Fuse(_PHCities, {
 		keys: ["city", "admin_name"],
 		threshold: 0.3,
 	});
-
 	const Skillset = new Fuse(_Skillset, {
 		threshold: 0.3,
 	});
-
 	const Citizenship = new Fuse(_Citizenhip, {
 		keys: ["nationality"],
 		threshold: 0.3,
 	});
 
-	const fetchComonData = async () => {
-		const { data, error } = await supabase
-			.from("user_hunters")
-			.select("username,email,phone");
-
-		if (error) {
-			console.log(error);
-			return;
-		}
-
-		return data;
-	};
-
-	const handleSignUp = async () => {
-		const { error } = await supabase.auth.signUp({
-			email: localRegData.email,
-			password: localPassword.password,
-			options: {
-				data: {
-					...localRegData,
-					avatar_url: `https://api.dicebear.com/5.x/bottts-neutral/png?seed=${localRegData.username}`,
-					created_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-					updated_at: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				},
-			},
-		});
-
-		if (error) {
-			console.log(error);
-			toast.error(error.message);
-			return;
-		}
-
-		toast("Please check your email for verification link.");
-		router.push("/login");
-	};
-
-	const usernameList = useQuery({
-		queryKey: ["usernames"],
-		queryFn: fetchComonData,
-	});
-
 	return (
 		<>
-			<div>
-				<div className="flex flex-col items-center py-5">
-					<h1 className="text-3xl font-bold text-secondary text-center w-full">
-						Register as a Hunter (Job Seeker)
-					</h1>
-					<p className="text-center w-fulll">
-						Fill out the forms below to create your account.
-					</p>
-				</div>
+			<div className="flex flex-col items-center py-5">
+				<h1 className="text-3xl font-bold text-secondary text-center w-full">
+					Register as a Hunter (Job Seeker)
+				</h1>
+				<p className="text-center w-fulll">
+					Fill out the forms below to create your account.
+				</p>
+			</div>
 
-				{!(usernameList.isLoading || usernameList.isError) && (
-					<div
-						ref={formInputRef}
-						className="w-full bg-base-200 p-5 rounded-btn max-w-xl mx-auto mt-10"
+			<div
+				ref={formInputRef}
+				className="w-full bg-base-200 p-5 rounded-btn max-w-xl mx-auto mt-10"
+			>
+				{formPage === 1 && (
+					<form
+						onChange={(e: FormEvent<HTMLFormElement>) => {
+							const form = e.target as HTMLFormElement;
+							switch (form.name) {
+								case "username":
+									if (!/^[a-zA-Z0-9_.-]*$/.test(form.value)) {
+										form.classList.add("input-error");
+										// remove all characters that are not alphanumeric, underscore, period, or dash
+									} else {
+										form.classList.remove("input-error");
+									}
+									break;
+								case "email":
+									if (
+										!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(
+											form.value,
+										)
+									) {
+										form.classList.add("input-error");
+									} else {
+										form.classList.remove("input-error");
+									}
+									break;
+								case "password":
+									const confirmPassword = document.getElementById(
+										"confirmPassword",
+									) as HTMLInputElement;
+
+									if (confirmPassword.value !== form.value) {
+										form.classList.add("input-error");
+										confirmPassword.classList.add("input-error");
+									} else {
+										if (
+											!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/.test(
+												form.value,
+											) ||
+											form.value.length < 8 ||
+											form.value.length > 20
+										) {
+											form.classList.add("input-error");
+											confirmPassword.classList.add("input-error");
+										} else {
+											form.classList.remove("input-error");
+											confirmPassword.classList.remove("input-error");
+										}
+									}
+									break;
+								case "confirmPassword":
+									const passwordInput = document.getElementById(
+										"password",
+									) as HTMLInputElement;
+
+									if (passwordInput.value !== form.value) {
+										form.classList.add("input-error");
+										passwordInput.classList.add("input-error");
+									} else {
+										if (
+											!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/.test(
+												form.value,
+											) ||
+											form.value.length < 8 ||
+											form.value.length > 20
+										) {
+											form.classList.add("input-error");
+											passwordInput.classList.add("input-error");
+										} else {
+											form.classList.remove("input-error");
+											passwordInput.classList.remove("input-error");
+										}
+									}
+									break;
+							}
+						}}
+						onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+							e.preventDefault();
+							toast.dismiss();
+							toast.loading("Checking if username and email are available");
+
+							const form = e.target as HTMLFormElement;
+
+							const usernameInput = form["username"] as HTMLInputElement;
+							const emailInput = form["email"] as HTMLInputElement;
+							const passwordInput = form["password"] as HTMLInputElement;
+							// check if username, email, and password are valid
+							if (usernameInput.classList.contains("input-error")) {
+								toast.dismiss();
+								toast.error(
+									"Username must only contain alphanumeric characters, underscores, periods, and dashes",
+								);
+								return;
+							}
+							if (emailInput.classList.contains("input-error")) {
+								toast.dismiss();
+								toast.error("Please enter a valid email address");
+								return;
+							}
+							if (passwordInput.classList.contains("input-error")) {
+								toast.dismiss();
+								toast.error(
+									"Password must be at least 8 characters long, and must contain at least one uppercase letter, one lowercase letter, and one number, and one special character",
+								);
+								return;
+							}
+
+							// check if username and email are already taken
+							const { data, error } = await supabase
+								.from("user_hunters")
+								.select("username,email")
+								.or(
+									`username.eq.${usernameInput.value},email.eq.${emailInput.value}`,
+								);
+
+							console.log(data, error);
+
+							if (error) {
+								toast.dismiss();
+								toast(error.message);
+								return;
+							}
+
+							if (data.length > 0) {
+								for (const c in data) {
+									if (data[c].username === usernameInput.value) {
+										toast.dismiss();
+										toast.error("Username is already taken");
+										break;
+									}
+									if (data[c].email === emailInput.value) {
+										toast.dismiss();
+										toast.error("Email is already taken");
+										break;
+									}
+								}
+							}
+
+							console.log(data);
+							toast.dismiss();
+							setLocalRegData({
+								...localRegData,
+								username: usernameInput.value,
+								email: emailInput.value,
+							});
+							setLocalPassword(passwordInput.value);
+
+							window.scrollTo({
+								top: 0,
+								behavior: "smooth",
+							});
+							setFormPage(2);
+						}}
 					>
-						{formPage === 1 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold">Account Information</h2>
+						<h2 className="text-2xl font-bold">Account Information</h2>
 
-								<div className="mt-5 flex flex-col gap-3">
-									<label className="flex flex-col">
-										<span>Username</span>
+						<div className="mt-5 flex flex-col gap-3">
+							<label className="flex flex-col">
+								<span>
+									<span>Username</span>
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="username"
+									name="username"
+									required
+									maxLength={20}
+									value={localRegData.username}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											username: e.target.value,
+										});
+									}}
+									className="input input-primary"
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									<span>Email</span>
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="email"
+									id="email"
+									name="email"
+									required
+									value={localRegData.email}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											email: e.target.value,
+										});
+									}}
+									className="input input-primary"
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									<span>Password</span>
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<div className="flex items-center gap-1">
+									<label className="input-group">
 										<input
-											type="text"
-											id="username"
-											value={localRegData.username}
-											className="input input-primary"
+											type={!isPasswordRevealed ? "password" : "text"}
+											id="password"
+											name="password"
+											required
+											className="input input-primary flex-1"
+											value={localPassword}
 											onChange={(e) => {
-												const formatted = e.target.value
-													.trim()
-													.replace(/[^a-zA-Z0-9_-]/g, "")
-													.slice(0, 20);
-
-												if (usernameList.data) {
-													const isUsernameTaken = usernameList.data.some(
-														(user: { username: string }) =>
-															user.username === formatted,
-													);
-
-													if (isUsernameTaken) {
-														e.currentTarget.classList.add("input-error");
-														toast.error("Username is already taken.");
-													} else {
-														e.currentTarget.classList.remove("input-error");
-													}
-												}
-
-												setLocalRegData({
-													...localRegData,
-													username: formatted,
-												});
+												setLocalPassword(e.target.value);
 											}}
 										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Email</span>
-										<input
-											type="email"
-											id="email"
-											value={localRegData.email}
-											className="input input-primary"
-											onChange={(e) => {
-												// check if email is valid and trim spaces
-												const formatted = e.target.value
-													.replace(/[^a-zA-Z0-9@._-]/g, "")
-													.trim();
-
-												// check if email is already taken
-												if (usernameList.data) {
-													const isEmailTaken = usernameList.data.some(
-														(user: { email: string }) =>
-															user.email === formatted,
-													);
-
-													if (isEmailTaken) {
-														e.currentTarget.classList.add("input-error");
-														toast.error("Email is already taken.");
-													} else {
-														e.currentTarget.classList.remove("input-error");
-													}
-												}
-
-												setLocalRegData({
-													...localRegData,
-													email: formatted,
-												});
-											}}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Password</span>
-										<div className="flex items-center gap-1">
-											{!isPasswordRevealed ? (
-												<input
-													type="password"
-													id="password"
-													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
-													onChange={(e) => {
-														setLocalPassword({
-															...localPassword,
-															password: e.currentTarget.value,
-														});
-
-														setPasswordMatched(
-															localPassword.confirmPassword ===
-																e.currentTarget.value,
-														);
-													}}
-												/>
-											) : (
-												<input
-													type="text"
-													id="password"
-													value={localPassword.password}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
-													onChange={(e) => {
-														setLocalPassword({
-															...localPassword,
-															password: e.currentTarget.value,
-														});
-
-														setPasswordMatched(
-															localPassword.confirmPassword ===
-																e.currentTarget.value,
-														);
-													}}
-												/>
-											)}
-											<div
-												onClick={() =>
-													setIsPasswordRevealed(!isPasswordRevealed)
-												}
-												className="btn btn-ghost text-lg"
-											>
-												{isPasswordRevealed ? (
-													<MdVisibilityOff />
-												) : (
-													<MdVisibility />
-												)}
-											</div>
-										</div>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Confirm Password</span>
-										<div className="flex items-center gap-1">
-											{!isPasswordRevealed ? (
-												<input
-													type="password"
-													id="confirmPassword"
-													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
-													onChange={(e) => {
-														setLocalPassword({
-															...localPassword,
-															confirmPassword: e.currentTarget.value,
-														});
-
-														setPasswordMatched(
-															localPassword.password === e.currentTarget.value,
-														);
-													}}
-												/>
-											) : (
-												<input
-													type="text"
-													id="confirmPassword"
-													value={localPassword.confirmPassword}
-													className={`input input-primary flex-1 ${
-														!passwordMatched && "input-error"
-													}`}
-													onChange={(e) => {
-														setLocalPassword({
-															...localPassword,
-															confirmPassword: e.currentTarget.value,
-														});
-
-														setPasswordMatched(
-															localPassword.password === e.currentTarget.value,
-														);
-													}}
-												/>
-											)}
-										</div>
-									</label>
-
-									<div className="flex justify-end mt-10">
 										<button
-											className="btn btn-primary btn-block"
-											disabled={
-												!(
-													passwordMatched &&
-													localRegData.email &&
-													localRegData.username &&
-													localPassword.password &&
-													localPassword.confirmPassword
-												)
-											}
-											onClick={() => setFormPage(2)}
+											type="button"
+											onClick={() => setIsPasswordRevealed(!isPasswordRevealed)}
+											className="btn btn-primary"
 										>
-											Next
+											{!isPasswordRevealed ? (
+												<MdVisibility className="text-lg" />
+											) : (
+												<MdVisibilityOff className="text-lg" />
+											)}
 										</button>
-									</div>
+									</label>
 								</div>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									<span>Confirm Password</span>
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<div className="flex items-center gap-1">
+									<input
+										type={!isPasswordRevealed ? "password" : "text"}
+										id="confirmPassword"
+										name="confirmPassword"
+										required
+										className="input input-primary flex-1"
+									/>
+								</div>
+							</label>
 
-								{usernameList.isLoading && <p>Common Data loading...</p>}
-							</motion.div>
-						)}
+							<div className="flex justify-end mt-10">
+								<button type="submit" className="btn btn-primary">
+									Next
+								</button>
+							</div>
+						</div>
+					</form>
+				)}
+				{formPage === 2 && (
+					<form
+						onSubmit={(e: FormEvent<HTMLFormElement>) => {
+							e.preventDefault();
 
-						{formPage === 2 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold">Personal Information</h2>
+							const form = e.target as HTMLFormElement;
 
-								<div className="mt-5 flex flex-col gap-3">
-									<label className="flex flex-col">
-										<span>First Name</span>
-										<input
-											type="text"
-											id="first_name"
-											value={localRegData.full_name.first}
-											className="input input-primary"
-											onChange={(e) =>
+							const givenNameInput = form["givenName"] as HTMLInputElement;
+							const middleNameInput = form["middleName"] as HTMLInputElement;
+							const lastNameInput = form["lastName"] as HTMLInputElement;
+							const birthdateInput = form["birthdate"] as HTMLInputElement;
+							const birthplaceInput = form["birthplace"] as HTMLInputElement;
+							const civilStatusInput = form[
+								"civil_status"
+							] as HTMLSelectElement;
+							const genderInput = form["gender"] as HTMLSelectElement;
+							const mobileInput = form["mobileNumber"] as HTMLInputElement;
+
+							setLocalRegData({
+								...localRegData,
+								full_name: {
+									first: givenNameInput.value,
+									middle: middleNameInput.value,
+									last: lastNameInput.value,
+								},
+								birthdate: birthdateInput.value,
+								birthplace: birthplaceInput.value,
+								civil_status: civilStatusInput.value as
+									| "single"
+									| "married"
+									| "divorced"
+									| "widowed"
+									| "separated",
+								gender: genderInput.value as
+									| "male"
+									| "female"
+									| "non-binary"
+									| "other"
+									| "prefer not to say",
+								phone: mobileInput.value,
+							});
+
+							setFormPage(3);
+						}}
+					>
+						<h2 className="text-2xl font-bold">Personal Information</h2>
+
+						<div className="mt-5 flex flex-col gap-3">
+							<label className="flex flex-col">
+								<span>
+									Given Name
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="givenName"
+									name="givenName"
+									required
+									className="input input-primary"
+									value={localRegData.full_name.first}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											full_name: {
+												...localRegData.full_name,
+												first: e.target.value.replace(/[^a-zA-Z ]/g, ""),
+											},
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>Middle Name</span>
+								<input
+									type="text"
+									id="middleName"
+									name="middleName"
+									className="input input-primary"
+									value={localRegData.full_name.middle}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											full_name: {
+												...localRegData.full_name,
+												middle: e.target.value.replace(/[^a-zA-Z ]/g, ""),
+											},
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Last Name
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="lastName"
+									name="lastName"
+									required
+									className="input input-primary"
+									value={localRegData.full_name.last}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											full_name: {
+												...localRegData.full_name,
+												last: e.target.value.replace(/[^a-zA-Z ]/g, ""),
+											},
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Birthdate
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="date"
+									id="birthdate"
+									name="birthdate"
+									required
+									max={dayjs().subtract(18, "years").format("YYYY-MM-DD")}
+									min={dayjs().subtract(60, "years").format("YYYY-MM-DD")}
+									className="input input-primary"
+									value={localRegData.birthdate}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											birthdate: e.target.value,
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Birthplace
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="birthplace"
+									name="birthplace"
+									required
+									className="input input-primary"
+									value={localRegData.birthplace}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											birthplace: e.target.value,
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Civil Status
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+
+								<select
+									id="civil_status"
+									name="civil_status"
+									defaultValue="single"
+									required
+									className='select select-primary'
+									value={localRegData.civil_status}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											civil_status: e.target.value as
+												| "single"
+												| "married"
+												| "divorced"
+												| "widowed"
+												| "separated",
+										});
+									}}
+								>
+									<option value="single">Single</option>
+									<option value="married">Married</option>
+									<option value="widowed">Widowed</option>
+									<option value="separated">Separated</option>
+									<option value="divorced">Divorced</option>
+								</select>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Gender
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+
+								<select
+									id="gender"
+									name="gender"
+									defaultValue="male"
+									required
+									className='select select-primary'
+									value={localRegData.gender}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											gender: e.target.value as
+												| "male"
+												| "female"
+												| "non-binary"
+												| "other"
+												| "prefer not to say",
+										});
+									}}
+								>
+									<option value="male">Male</option>
+									<option value="female">Female</option>
+									<option value="non-binary">Non-Binary</option>
+									<option value="other">Other</option>
+									<option value="prefer not to say">Prefer not to say</option>
+								</select>
+							</label>
+							<label className="flex flex-col">
+								<span>Mobile Number</span>
+								<div className="flex gap-2 items-center">
+									<span>+63</span>
+									<input
+										type="number"
+										id="mobileNumber"
+										name="mobileNumber"
+										className="input input-primary flex-1"
+										value={localRegData.phone}
+										onChange={(e) => {
+											setLocalRegData({
+												...localRegData,
+												phone: e.target.value,
+											});
+										}}
+									/>
+								</div>
+							</label>
+							<label className="flex flex-col">
+								<span>Bio (can be added later)</span>
+								<textarea
+									id="bio"
+									name="bio"
+									className="input input-primary h-32"
+									rows={3}
+									value={localRegData.bio}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											bio: e.target.value,
+										});
+									}}
+								/>
+							</label>
+						</div>
+
+						<div className="flex justify-between mt-10">
+							<button
+								type="button"
+								onClick={() => setFormPage(1)}
+								className="btn btn-primary"
+							>
+								Back
+							</button>
+							<button type="submit" className="btn btn-primary">
+								Next
+							</button>
+						</div>
+					</form>
+				)}
+				{formPage === 3 && (
+					<form
+						onSubmit={(e: FormEvent<HTMLFormElement>) => {
+							e.preventDefault();
+
+							const form = e.target as HTMLFormElement;
+							const cityInput = form["city"] as HTMLInputElement;
+
+							// check if city is included in the list of cities
+							// loop through cities in json file
+							let cityExists = false;
+							for (const city of _PHCities) {
+								if (city.city === cityInput.value) {
+									cityExists = true;
+									break;
+								}
+							}
+
+							if (!cityExists) {
+								toast.error("City does not exist");
+								return;
+							}
+
+							setFormPage(4);
+						}}
+					>
+						<h2 className="text-2xl font-bold">Residence Information</h2>
+
+						<div className="mt-5 flex flex-col gap-3">
+							<label className="flex flex-col">
+								<span>
+									Address
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="address"
+									name="address"
+									required
+									className="input input-primary"
+									value={localRegData.address.address}
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											address: {
+												...localRegData.address,
+												address: e.target.value,
+											},
+										});
+									}}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span>
+									City
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+
+								<input
+									type="text"
+									id="city"
+									value={localRegData.address.city}
+									className="input input-primary"
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											address: {
+												...localRegData.address,
+												city: e.currentTarget.value,
+											},
+										});
+
+										if (e.currentTarget.value.length > 2) {
+											const res = PhCities.search(e.currentTarget.value);
+											const cities = res.map((city) => ({
+												city: city.item.city,
+												admin_name: city.item.admin_name,
+											}));
+											const limited = cities.slice(0, 5);
+											setCitiesSearchResults(limited);
+										} else {
+											setCitiesSearchResults([]);
+										}
+									}}
+								/>
+								<AnimatePresence mode="wait">
+									{citiesSearchResults.length > 0 && (
+										<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
+											{citiesSearchResults.map((city, index: number) => (
+												<div
+													onClick={() => {
+														setLocalRegData({
+															...localRegData,
+															address: {
+																...localRegData.address,
+																city: city.city,
+															},
+														});
+														setCitiesSearchResults([]);
+													}}
+													className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
+													key={`city-${index}`}
+												>
+													{city.city}, {city.admin_name}
+												</div>
+											))}
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</label>
+						</div>
+
+						<div className="flex justify-between mt-10">
+							<button
+								type="button"
+								onClick={() => setFormPage(2)}
+								className="btn btn-primary"
+							>
+								Back
+							</button>
+							<button type="submit" className="btn btn-primary">
+								Next
+							</button>
+						</div>
+					</form>
+				)}
+				{formPage === 4 && (
+					<form
+						onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+							e.preventDefault();
+
+							toast.loading("Registering...");
+
+							// check if primary skill is not empty
+							if (localRegData.skill_primary === "") {
+								toast.dismiss();
+								toast.error("Primary skill is required");
+								return;
+							}
+
+							// check if secondary skill has 3 items with max of 10
+							if (
+								localRegData.skill_secondary.length < 3 ||
+								localRegData.skill_secondary.length > 10
+							) {
+								toast.dismiss();
+								toast.error(
+									"Secondary skill must have at least 3 items and maximum of 10",
+								);
+								return;
+							}
+
+							const { error } = await supabase.auth.signUp({
+								email: localRegData.email,
+								password: localPassword,
+								options: {
+									data: localRegData,
+								},
+							});
+
+							if (error) {
+								toast.dismiss();
+								toast.error(error.message);
+								return;
+							}
+
+							toast.dismiss();
+							toast.success("Successfully registered");
+							toast("Redirecting to login page...");
+							toast("Please check your email for verification");
+
+							setTimeout(() => {
+								router.push("/login");
+							}, 5000);
+						}}
+					>
+						<h2 className="text-2xl font-bold">Skillset Tagging</h2>
+
+						<div className="mt-5 flex flex-col gap-3">
+							<label className="flex flex-col">
+								<span>
+									Primary Skill
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+								<input
+									type="text"
+									id="primary_skill"
+									value={localRegData.skill_primary}
+									className="input input-primary"
+									required
+									onChange={(e) => {
+										setLocalRegData({
+											...localRegData,
+											skill_primary: e.currentTarget.value,
+										});
+										const res = Skillset.search(e.currentTarget.value);
+										const skills = res.map((skill) => skill.item);
+										const limited = skills.slice(0, 5);
+
+										setSkillsetPrimarySearchResults(limited);
+									}}
+								/>
+								{skillsetPrimarySearchResults.length > 0 && (
+									<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
+										{/* add custom tag */}
+										<div
+											onClick={() => {
 												setLocalRegData({
 													...localRegData,
-													full_name: {
-														...localRegData.full_name,
-														first: e.target.value,
-													},
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Middle Name (optional)</span>
-										<input
-											type="text"
-											id="middle_name"
-											value={localRegData.full_name.middle}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													full_name: {
-														...localRegData.full_name,
-														middle: e.target.value,
-													},
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Last Name</span>
-										<input
-											type="text"
-											id="last_name"
-											value={localRegData.full_name.last}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													full_name: {
-														...localRegData.full_name,
-														last: e.target.value,
-													},
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Birthdate</span>
-										<input
-											type="date"
-											id="birthdate"
-											value={localRegData.birthdate}
-											max={
-												dayjs().diff(dayjs().subtract(18, "year"), "year") === 0
-													? dayjs().format("YYYY-MM-DD")
-													: dayjs().subtract(18, "year").format("YYYY-MM-DD")
-											}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													birthdate: e.target.value,
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Birthplace</span>
-										<input
-											type="text"
-											id="birthplace"
-											value={localRegData.birthplace}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													birthplace: e.target.value,
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Civil Status</span>
-										<select
-											id="civil_status"
-											value={localRegData.civil_status}
-											className='select select-primary'
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													civil_status: e.target.value as
-														| "single"
-														| "married"
-														| "widowed"
-														| "separated"
-														| "divorced",
-												})
-											}
-										>
-											<option value="single">Single</option>
-											<option value="married">Married</option>
-											<option value="widowed">Widowed</option>
-											<option value="separated">Separated</option>
-											<option value="divorced">Divorced</option>
-										</select>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Citizenship</span>
-										<input
-											type="text"
-											id="citizenship"
-											value={localRegData.citizenship}
-											className="input input-primary"
-											onChange={(e) => {
-												setLocalRegData({
-													...localRegData,
-													citizenship: e.target.value,
+													// make it title case
+													skill_primary: localRegData.skill_primary
+														.split(" ")
+														.map(
+															(word) => word[0].toUpperCase() + word.slice(1),
+														)
+														.join(" "),
 												});
-												const inputquery = e.target.value;
-												const res = Citizenship.search(inputquery);
-												const mapped = res.map((r) => r.item.nationality);
-												setCitizenshipResults(mapped);
+												setSkillsetPrimarySearchResults([]);
 											}}
-										/>
-										{citizenshipResults.length > 0 && (
-											<div className="rounded-btn bg-base-200 w-full mt-1">
-												{citizenshipResults.map((result, index) => (
+											className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content flex justify-between items-center gap-2"
+										>
+											{localRegData.skill_primary} <MdAdd />
+										</div>
+										{skillsetPrimarySearchResults.map(
+											(skill: string, index: number) => (
+												<div
+													onClick={() => {
+														setLocalRegData({
+															...localRegData,
+															skill_primary: skill,
+														});
+														setSkillsetPrimarySearchResults([]);
+													}}
+													className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
+													key={`skill-${index}`}
+												>
+													{skill}
+												</div>
+											),
+										)}
+									</motion.div>
+								)}
+							</label>
+							<label className="flex flex-col">
+								<span>
+									Secondary Skills
+									<span className="text-red-500 ml-1">*</span>
+								</span>
+
+								<input
+									type="text"
+									id="secondary_skill"
+									className="input input-primary"
+									value={skillsetSecondaryInput}
+									onChange={(e) => {
+										setSkillsetSecondaryInput(e.currentTarget.value);
+										const res = Skillset.search(e.currentTarget.value);
+										const skills = res.map((skill) => skill.item);
+										const filtered = skills.filter(
+											(skill) =>
+												skill !== localRegData.skill_primary &&
+												!localRegData.skill_secondary.includes(skill),
+										);
+										const limited = filtered.slice(0, 5);
+
+										setSkillsetSecondarySearchResults(limited);
+									}}
+								/>
+								{localRegData.skill_secondary.length < 3 && (
+									<span className="ml-auto text-error">
+										Must be at least 3 skills
+									</span>
+								)}
+								{skillsetSecondaryInput.length > 0 && (
+									<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
+										{/* add custom tag */}
+										<div
+											onClick={() => {
+												setLocalRegData({
+													...localRegData,
+													// make it title case
+													skill_secondary: [
+														...localRegData.skill_secondary,
+														skillsetSecondaryInput
+															.split(" ")
+															.map(
+																(word) => word[0].toUpperCase() + word.slice(1),
+															)
+															.join(" "),
+													],
+												});
+												setSkillsetSecondaryInput("");
+											}}
+											className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content flex justify-between items-center gap-2"
+										>
+											{skillsetSecondaryInput} <MdAdd />
+										</div>
+										{skillsetSecondarySearchResults.length > 0 &&
+											skillsetSecondarySearchResults.map(
+												(skill: string, index: number) => (
 													<div
-														key={`citizenship-result-${index}`}
-														className="p-2 cursor-pointer"
 														onClick={() => {
+															setSkillsetSecondaryInput("");
 															setLocalRegData({
 																...localRegData,
-																citizenship: result,
+																skill_secondary: [
+																	...localRegData.skill_secondary,
+																	skill,
+																],
 															});
-															setCitizenshipResults([]);
+															setSkillsetSecondarySearchResults([]);
 														}}
+														className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
+														key={`skill-${index}`}
 													>
-														{result}
+														{skill}
 													</div>
-												))}
-											</div>
-										)}
-									</label>
-
-									<label className="flex flex-col">
-										<span>Gender</span>
-										<select
-											id="gender"
-											value={localRegData.gender}
-											className='select select-primary'
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													gender: e.target.value as
-														| "male"
-														| "female"
-														| "non-binary"
-														| "other"
-														| "prefer not to say",
-												})
-											}
-										>
-											<option value="male">Male</option>
-											<option value="female">Female</option>
-											<option value="non-binary">Non-Binary</option>
-											<option value="other">Other</option>
-											<option value="prefer not to say">
-												Prefer not to say
-											</option>
-										</select>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Contact Number</span>
-										<span className="w-full flex gap-2 items-center">
-											<span>+63</span>
-											<input
-												type="text"
-												id="contact_number"
-												value={localRegData.phone}
-												className="input input-primary flex-1"
-												onChange={(e) =>
+												),
+											)}
+									</motion.div>
+								)}
+								{localRegData.skill_secondary.length > 0 && (
+									<div className="flex flex-wrap gap-2 mt-2">
+										{localRegData.skill_secondary.map((skill, index) => (
+											<div
+												key={`skill-${index}`}
+												className="badge badge-accent cursor-pointer"
+												onClick={() => {
+													const newSkills = localRegData.skill_secondary.filter(
+														(s) => s !== skill,
+													);
 													setLocalRegData({
 														...localRegData,
-														phone: e.target.value,
-													})
-												}
-											/>
-										</span>
-									</label>
-
-									<label className="flex flex-col">
-										<span>Bio (You can add your bio later)</span>
-										<textarea
-											id="bio"
-											value={localRegData.bio}
-											rows={5}
-											className="textarea textarea-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													bio: e.target.value,
-												})
-											}
-										/>
-										<span className="self-end opacity-50">Markdown</span>
-									</label>
-
-									<div className="flex justify-between mt-10">
-										<button
-											className="btn btn-ghost gap-2"
-											onClick={() => setFormPage(1)}
-										>
-											<MdArrowBack />
-											<span>Go Back to Page 1</span>
-										</button>
-										<button
-											className="btn btn-primary gap-2"
-											disabled={
-												!(
-													localRegData.full_name.first &&
-													localRegData.full_name.last &&
-													localRegData.birthdate &&
-													localRegData.birthplace &&
-													localRegData.gender &&
-													localRegData.email &&
-													localPassword.password
-												)
-											}
-											onClick={() => setFormPage(3)}
-										>
-											<span>Go to Page 3</span>
-											<MdArrowForward />
-										</button>
-									</div>
-								</div>
-							</motion.div>
-						)}
-
-						{formPage === 3 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold">Residence Information</h2>
-
-								<div className="mt-5 flex flex-col gap-3">
-									<label className="flex flex-col">
-										<span>Physical Address</span>
-										<input
-											type="text"
-											id="address"
-											value={localRegData.address.address}
-											className="input input-primary"
-											onChange={(e) =>
-												setLocalRegData({
-													...localRegData,
-													address: {
-														...localRegData.address,
-														address: e.target.value,
-													},
-												})
-											}
-										/>
-									</label>
-
-									<label className="flex flex-col">
-										<span>City</span>
-										<input
-											type="text"
-											id="city"
-											value={localRegData.address.city}
-											className="input input-primary"
-											onChange={(e) => {
-												setLocalRegData({
-													...localRegData,
-													address: {
-														...localRegData.address,
-														city: e.currentTarget.value,
-													},
-												});
-
-												if (e.currentTarget.value.length > 2) {
-													const res = PhCities.search(e.currentTarget.value);
-													const cities = res.map((city) => ({
-														city: city.item.city,
-														admin_name: city.item.admin_name,
-													}));
-													const limited = cities.slice(0, 5);
-													setCitiesSearchResults(limited);
-												} else {
-													setCitiesSearchResults([]);
-												}
-											}}
-										/>
-										<AnimatePresence mode="wait">
-											{citiesSearchResults.length > 0 && (
-												<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
-													{citiesSearchResults.map((city, index: number) => (
-														<div
-															onClick={() => {
-																setLocalRegData({
-																	...localRegData,
-																	address: {
-																		...localRegData.address,
-																		city: city.city,
-																	},
-																});
-																setCitiesSearchResults([]);
-															}}
-															className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
-															key={`city-${index}`}
-														>
-															{city.city}, {city.admin_name}
-														</div>
-													))}
-												</motion.div>
-											)}
-										</AnimatePresence>
-									</label>
-
-									<div className="flex justify-between mt-10">
-										<button
-											className="btn btn-ghost gap-2"
-											onClick={() => setFormPage(2)}
-										>
-											<MdArrowBack />
-											<span>Go Back to Page 2</span>
-										</button>
-										<button
-											className="btn btn-primary gap-2"
-											disabled={
-												!(
-													localRegData.address.address &&
-													localRegData.address.city &&
-													localRegData.email &&
-													localPassword.password
-												)
-											}
-											onClick={() => setFormPage(4)}
-										>
-											<span>Go to Page 4</span>
-											<MdArrowForward />
-										</button>
-									</div>
-								</div>
-							</motion.div>
-						)}
-
-						{formPage === 4 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold">Skill Profiling</h2>
-
-								<div className="mt-5 flex flex-col gap-3">
-									<label className="flex flex-col">
-										<span>Primary Skill</span>
-										<input
-											type="text"
-											id="primary_skill"
-											value={localRegData.skill_primary}
-											className="input input-primary"
-											onChange={(e) => {
-												setLocalRegData({
-													...localRegData,
-													skill_primary: e.currentTarget.value,
-												});
-												const res = Skillset.search(e.currentTarget.value);
-												const skills = res.map((skill) => skill.item);
-												const limited = skills.slice(0, 5);
-
-												setSkillsetPrimarySearchResults(limited);
-											}}
-										/>
-										{skillsetPrimarySearchResults.length > 0 && (
-											<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
-												{skillsetPrimarySearchResults.map(
-													(skill: string, index: number) => (
-														<div
-															onClick={() => {
-																setLocalRegData({
-																	...localRegData,
-																	skill_primary: skill,
-																});
-																setSkillsetPrimarySearchResults([]);
-															}}
-															className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
-															key={`skill-${index}`}
-														>
-															{skill}
-														</div>
-													),
-												)}
-											</motion.div>
-										)}
-									</label>
-
-									<label className="flex flex-col">
-										<span>Secondary Skill</span>
-										<input
-											type="text"
-											id="secondary_skill"
-											className="input input-primary"
-											value={skillsetSecondaryInput}
-											onChange={(e) => {
-												setSkillsetSecondaryInput(e.currentTarget.value);
-												const res = Skillset.search(e.currentTarget.value);
-												const skills = res.map((skill) => skill.item);
-												const filtered = skills.filter(
-													(skill) =>
-														skill !== localRegData.skill_primary &&
-														!localRegData.skill_secondary.includes(skill),
-												);
-												const limited = filtered.slice(0, 5);
-
-												setSkillsetSecondarySearchResults(limited);
-											}}
-										/>
-										{localRegData.skill_secondary.length < 3 && (
-											<span className="ml-auto text-error">
-												Must be at least 3 skills
-											</span>
-										)}
-										{skillsetSecondarySearchResults.length > 0 && (
-											<motion.div className="bg-base-300 p-3 flex flex-col gap-2 mt-2 rounded-btn">
-												{skillsetSecondarySearchResults.map(
-													(skill: string, index: number) => (
-														<div
-															onClick={() => {
-																setSkillsetSecondaryInput("");
-																setLocalRegData({
-																	...localRegData,
-																	skill_secondary: [
-																		...localRegData.skill_secondary,
-																		skill,
-																	],
-																});
-																setSkillsetSecondarySearchResults([]);
-															}}
-															className="p-2 bg-base-200 rounded-btn cursor-pointer hover:bg-primary hover:text-primary-content"
-															key={`skill-${index}`}
-														>
-															{skill}
-														</div>
-													),
-												)}
-											</motion.div>
-										)}
-										{localRegData.skill_secondary.length > 0 && (
-											<div className="flex flex-wrap gap-2 mt-2">
-												{localRegData.skill_secondary.map((skill, index) => (
-													<div
-														key={`skill-${index}`}
-														className="badge badge-accent cursor-pointer"
-														onClick={() => {
-															const newSkills =
-																localRegData.skill_secondary.filter(
-																	(s) => s !== skill,
-																);
-															setLocalRegData({
-																...localRegData,
-																skill_secondary: newSkills,
-															});
-														}}
-													>
-														<span>{skill}</span>
-														<MdClose />
-													</div>
-												))}
+														skill_secondary: newSkills,
+													});
+												}}
+											>
+												<span>{skill}</span>
+												<MdClose />
 											</div>
-										)}
-									</label>
-
-									<div className="flex justify-between mt-10">
-										<button
-											className="btn btn-ghost gap-2"
-											onClick={() => setFormPage(3)}
-										>
-											<MdArrowBack />
-											<span>Go Back to Page 3</span>
-										</button>
-										<button
-											className="btn btn-primary gap-2"
-											disabled={
-												!(
-													localRegData.skill_primary &&
-													localRegData.skill_secondary.length > 2
-												)
-											}
-											onClick={() => setFormPage(5)}
-										>
-											<span>Go to Page 5</span>
-											<MdArrowForward />
-										</button>
+										))}
 									</div>
-								</div>
-							</motion.div>
-						)}
+								)}
+							</label>
+						</div>
 
-						{formPage === 5 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold">Information Review</h2>
-
-								<div className="mt-5 flex flex-col gap-3">
-									<div className="flex flex-col gap-2">
-										<span className="text-lg font-bold">
-											Personal Information
-										</span>
-
-										<div className="flex flex-col gap-3 ml-3">
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Full Name
-												</span>
-												<span className="leading-none">
-													{localRegData.full_name.first}{" "}
-													{localRegData.full_name.middle ?? ""}
-													{localRegData.full_name.last}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Email
-												</span>
-												<span className="leading-none">
-													{localRegData.email}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Birthdate
-												</span>
-												<span className="leading-none">
-													{localRegData.birthdate}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Birthplace
-												</span>
-												<span className="leading-none">
-													{localRegData.birthplace}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Gender
-												</span>
-												<span className="leading-none capitalize">
-													{localRegData.gender}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Mobile Phone Number
-												</span>
-												<span className="leading-none capitalize">
-													{localRegData.phone}
-												</span>
-											</p>
-										</div>
-									</div>
-
-									<div className="flex flex-col gap-2">
-										<span className="text-lg font-bold">
-											Residence Information
-										</span>
-
-										<div className="flex flex-col gap-3 ml-3">
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Physical Address
-												</span>
-												<span className="leading-none">
-													{localRegData.address.address}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													City
-												</span>
-												<span className="leading-none">
-													{localRegData.address.city}
-												</span>
-											</p>
-										</div>
-									</div>
-
-									<div className="flex flex-col gap-2">
-										<span className="text-lg font-bold">Skill Profiling</span>
-
-										<div className="flex flex-col gap-3 ml-3">
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Primary Skill
-												</span>
-												<span className="leading-none">
-													{localRegData.skill_primary}
-												</span>
-											</p>
-
-											<p className="flex flex-col">
-												<span className="text-sm font-bold leading-none text-accent">
-													Secondary Skills
-												</span>
-												<span className="leading-none">
-													{localRegData.skill_secondary.join(", ")}
-												</span>
-											</p>
-										</div>
-									</div>
-								</div>
-
-								<div className="flex justify-between mt-10">
-									<button
-										className="btn btn-ghost gap-2"
-										onClick={() => setFormPage(4)}
-									>
-										<MdArrowBack />
-										<span>Go Back to Page 4</span>
-									</button>
-									<button
-										className="btn btn-primary gap-2"
-										onClick={() => {
-											setFormPage(6);
-											handleSignUp();
-										}}
-									>
-										<span>Sign Up and Verify</span>
-										<MdPersonAdd />
-									</button>
-								</div>
-							</motion.div>
-						)}
-
-						{formPage === 6 && (
-							<motion.div>
-								<h2 className="text-2xl font-bold flex gap-2 items-center">
-									Signing Up
-									<FiLoader className=" animate-spin" />
-								</h2>
-							</motion.div>
-						)}
-					</div>
+						<div className="flex justify-between mt-10">
+							<button
+								type="button"
+								onClick={() => setFormPage(formPage - 1)}
+								className="btn btn-primary"
+							>
+								Back
+							</button>
+							<button type="submit" className="btn btn-primary">
+								Next
+							</button>
+						</div>
+					</form>
 				)}
 			</div>
 		</>

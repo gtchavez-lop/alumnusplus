@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "react-chatbot-kit/build/main.css";
 
 import {
 	$accountData,
@@ -11,15 +12,19 @@ import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdCheckCircleOutline, MdHourglassTop } from "react-icons/md";
 import { Toaster, toast } from "react-hot-toast";
 
+import ActionProvider from "@/components/chatbot/ActionProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
+import Chatbot from "react-chatbot-kit";
 import { FiLoader } from "react-icons/fi";
 import Footer from "@/components/Footer";
 import Head from "next/head";
+import MessageParser from "@/components/chatbot/MessageParser";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Script from "next/script";
+import chatbotConfig from "@/lib/chatbot/config";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
@@ -182,13 +187,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					},
 				}}
 				position="bottom-right"
-			/>
-			<Analytics />
-
-			<Script src="https://cdn.botpress.cloud/webchat/v0/inject.js" />
-			<Script
-				src="https://mediafiles.botpress.cloud/9617c997-0110-42fe-80ab-e8ec407e2908/webchat/config.js"
-				defer
 			/>
 		</>
 	);

@@ -9,6 +9,7 @@ import { IUserHunter, TProvJobPost } from "@/lib/types";
 import { MdInfo, MdSearch } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
+import ActiveJobTabPanel from "@/components/jobs/ActiveJobTabPanel";
 import CvBuilder from "@/components/jobs/CvBuilder";
 import Footer from "@/components/Footer";
 import Tabs from "@/components/Tabs";
@@ -58,6 +59,10 @@ const tabs: TTab[] = [
 	{
 		title: "Applied Jobs",
 		value: "applied",
+	},
+	{
+		title: "Active Job",
+		value: "active",
 	},
 	{
 		title: "CV/Resume Builder",
@@ -381,6 +386,12 @@ const ApplyPage = () => {
 										/>
 									))}
 						</motion.div>
+					)}
+
+					{tabSelected === "active" && (
+						<div className="mt-10">
+							<ActiveJobTabPanel />
+						</div>
 					)}
 					{tabSelected === "cv" && (
 						<motion.div className=" mt-10">
