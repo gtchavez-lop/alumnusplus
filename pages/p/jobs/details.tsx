@@ -188,6 +188,7 @@ const JobDetailsPage: NextPage<{
 										(applicant, index) =>
 											index < 3 && (
 												<JobApplicantCard
+													job_id={jobData.data.id}
 													key={applicant.id}
 													applicant={applicant}
 												/>

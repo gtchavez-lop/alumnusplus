@@ -1,13 +1,13 @@
-import React from "react";
+import React, { FC } from "react";
 
-const ActionProvider = ({ children }) => {
+const ActionProvider: FC<{ children: FC[] | string }> = ({ children }) => {
 	return (
 		<div>
-			{React.Children.map(children, (child) => {
+			{/* {React.Children.map(children, (child) => {
 				return React.cloneElement(child, {
 					actions: {},
 				});
-			})}
+			})} */}
 		</div>
 	);
 };

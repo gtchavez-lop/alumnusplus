@@ -37,6 +37,7 @@ const RegisterHunterSubPage: FC = () => {
 			city: "",
 			postalCode: "",
 		},
+		activeJob: "",
 		applied_jobs: [],
 		avatar_url: "",
 		banner_url: "",
