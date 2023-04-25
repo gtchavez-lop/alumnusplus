@@ -182,8 +182,14 @@ const LogInPage = () => {
 										Password
 									</p>
 
-									<div className="flex gap-2 items-center">
-										{!isPasswordRevealed ? (
+									<div className="input-group">
+										<input
+											type={isPasswordRevealed ? "text" : "password"}
+											id="password"
+											name="password"
+											className="input input-primary input-bordered w-full"
+										/>
+										{/* {!isPasswordRevealed ? (
 											<input
 												type="password"
 												id="Password"
@@ -197,19 +203,20 @@ const LogInPage = () => {
 												name="password"
 												className="input input-primary input-bordered w-full"
 											/>
-										)}
-										<div
+										)} */}
+										<button
+											type="button"
 											onClick={() => {
 												setIsPasswordRevealed(!isPasswordRevealed);
 											}}
-											className="btn btn-ghost text-lg"
+											className="btn btn-primary text-lg"
 										>
 											{isPasswordRevealed ? (
 												<MdVisibilityOff />
 											) : (
 												<MdVisibility />
 											)}
-										</div>
+										</button>
 									</div>
 								</div>
 

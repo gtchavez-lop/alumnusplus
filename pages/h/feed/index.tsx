@@ -48,17 +48,15 @@ const FeedPage = () => {
 	];
 
 	const fetchHunterFeed = async () => {
-		const connections = [..._currentUser.connections, _currentUser.id];
-
 		const { data, error } = await supabase
 			.from("public_posts")
-			.select("*,uploader:uploader(*)")
+			.select("*,uploader(*)")
+			.in("uploader", [_currentUser.id, ..._currentUser.connections])
 			.order("createdAt", { ascending: false })
-			.in("uploader", connections)
 			.eq("draft", false);
 
 		if (error) {
-			console.log("error", error);
+			console.log("hunter feed error", error);
 			return [] as THunterBlogPost[];
 		}
 
@@ -107,21 +105,21 @@ const FeedPage = () => {
 	const [hunterFeed, provFeed, recommendedUsers] = useQueries({
 		queries: [
 			{
-				queryKey: ["hunterFeed"],
+				queryKey: ["h.feed.hunter"],
 				queryFn: fetchHunterFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
 				networkMode: "offlineFirst",
 			},
 			{
-				queryKey: ["provFeed"],
+				queryKey: ["h.feed.provisioner"],
 				queryFn: fetchProvFeed,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
 				networkMode: "offlineFirst",
 			},
 			{
-				queryKey: ["recommendedUsers"],
+				queryKey: ["h.feed.recommended"],
 				queryFn: fetchRecommendedUsers,
 				enabled: !!_currentUser,
 				refetchOnWindowFocus: false,
@@ -191,20 +189,19 @@ const FeedPage = () => {
 							<div ref={mainFeed_ui} className="flex gap-2 w-full relative">
 								{!isMakingPost ? (
 									<>
-										<div className=" relative w-12 h-12">
-											<Image
-												src={_currentUser.avatar_url}
-												alt="avatar"
-												className="bg-primary mask mask-squircle"
-												fill
-											/>
-										</div>
+										<Image
+											src={_currentUser.avatar_url}
+											alt="avatar"
+											width={48}
+											height={48}
+											className="bg-primary object-cover rounded"
+										/>
 
 										<input
 											placeholder="What's on your mind?"
 											readOnly
 											onClick={() => setIsMakingPost(true)}
-											className="input input-primary rounded-full w-full"
+											className="input input-primary w-full"
 										/>
 									</>
 								) : (
@@ -331,13 +328,13 @@ const FeedPage = () => {
 
 									router.push(`/h/search?query=${searchQuery}`);
 								}}
-								className="flex flex-row items-center gap-3"
+								className="input-group"
 							>
 								<input
 									type="text"
 									name="searchQuery"
 									placeholder="Search for people"
-									className="input input-bordered flex-1"
+									className="input input-primary flex-1"
 								/>
 								<button type="submit" className="btn btn-primary">
 									<MdSearch className="text-lg" />

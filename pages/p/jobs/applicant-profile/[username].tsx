@@ -1,10 +1,12 @@
 import {
+	FiCheck,
 	FiFacebook,
 	FiGithub,
 	FiInstagram,
 	FiLinkedin,
 	FiLoader,
 	FiTwitter,
+	FiX,
 } from "react-icons/fi";
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
@@ -19,8 +21,10 @@ import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQueries } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 
@@ -62,6 +66,7 @@ const ApplicantProfile: NextPage<{ username: string }> = ({ username }) => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;
 	const [tabSelected, setTabSelected] = useState<TTab["value"]>("about");
 	const [tabContentRef] = useAutoAnimate();
+	const router = useRouter();
 
 	const fetchApplicant = async () => {
 		const { data, error } = await supabase
@@ -89,6 +94,68 @@ const ApplicantProfile: NextPage<{ username: string }> = ({ username }) => {
 			},
 		],
 	});
+
+	const handleRejectApplicant = async () => {
+		toast.loading("Rejecting applicant...");
+
+		//get updated job data
+		const { data: updatedData, error: updatedDataError } = await supabase
+			.from("public_jobs")
+			.select("applicants")
+			.eq("id", router.query.job_id)
+			.single();
+
+		if (updatedDataError) {
+			toast.dismiss();
+			toast.error("Something went wrong");
+			return;
+		}
+
+		//remove applicant from job
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.update({
+				applicants: updatedData.applicants.filter(
+					(ap: string) => ap !== applicant.data?.id,
+				),
+			})
+			.eq("id", router.query.job_id);
+
+		if (error) {
+			toast.dismiss();
+			toast.error("Failed to reject applicant");
+			return;
+		}
+
+		toast.dismiss();
+		toast.success("Applicant rejected");
+		router.push("/p/jobs");
+	};
+	const handleAcceptApplicant = async () => {
+		toast.loading("Accepting applicant...");
+
+		const newAppliedJobs = applicant.data?.applied_jobs.filter(
+			(job: string) => job !== router.query.job_id,
+		);
+		const { error } = await supabase
+			.from("user_hunters")
+			.update({
+				activeJob: router.query.job_id,
+				// remove job from applicant's applied jobs
+				applied_jobs: newAppliedJobs,
+			})
+			.eq("username", username);
+
+		if (error) {
+			toast.dismiss();
+			toast.error("Failed to accept applicant");
+			return;
+		}
+
+		toast.dismiss();
+		toast.success("Applicant accepted");
+		applicant.refetch();
+	};
 
 	return applicant.isSuccess ? (
 		<>
@@ -148,36 +215,39 @@ const ApplicantProfile: NextPage<{ username: string }> = ({ username }) => {
 								))}
 							</select>
 						</div>
+						{/* accept and reject buttons */}
+						{!applicant.data.activeJob ? (
+							<div className="flex justify-end gap-2">
+								<button
+									onClick={handleRejectApplicant}
+									className="btn btn-ghost gap-2"
+								>
+									<FiX className="text-lg text-error" />
+									<span className="text-error">Reject Applicant</span>
+								</button>
+								<button
+									onClick={handleAcceptApplicant}
+									className="btn btn-primary gap-2"
+								>
+									<FiCheck className="text-lg" />
+									<span>Accept Applicant</span>
+								</button>
+							</div>
+						) : (
+							<div className="flex justify-end gap-2">
+								<button className="btn btn-ghost gap-2">
+									<FiX className="text-lg text-error" />
+									<span className="text-error">Terminate Applicant</span>
+								</button>
+							</div>
+						)}
+
 						{/* desktop tabs */}
 						<Tabs
 							activeTab={tabSelected}
 							onTabChange={(tab) => setTabSelected(tab as TTab["value"])}
 							tabs={PageTabs}
 						/>
-						<div className="hidden lg:block mb-5">
-							<ul className="tabs tabs-boxed justify-evenly">
-								{PageTabs.map((tab, index) => (
-									<li
-										key={`tab-${index}`}
-										onClick={() =>
-											setTabSelected(
-												tab.value as
-													| "about"
-													| "posts"
-													| "experiences"
-													| "education"
-													| "savedjobs",
-											)
-										}
-										className={`tab flex items-center gap-2 transition ${
-											tabSelected === tab.value && "tab-active"
-										}`}
-									>
-										{tab.title}
-									</li>
-								))}
-							</ul>
-						</div>
 
 						{/* tab contents */}
 						<div className="py-5" ref={tabContentRef}>
