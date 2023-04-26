@@ -4,7 +4,7 @@ import {
 	$accountType,
 } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
@@ -15,11 +15,15 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useStore } from "@nanostores/react";
 
 const LogInPage = () => {
 	const router = useRouter();
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+	const _currentUser = useStore($accountDetails) as
+		| IUserHunter
+		| IUserProvisioner;
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -78,6 +82,21 @@ const LogInPage = () => {
 			router.push("/p/dashboard");
 		}
 	};
+
+	const checkUser = async () => {
+		if (_currentUser) {
+			if (_currentUser.type === "hunter") {
+				router.push("/h/feed");
+			}
+			if (_currentUser.type === "provisioner") {
+				router.push("/p/dashboard");
+			}
+		}
+	};
+
+	useEffect(() => {
+		checkUser();
+	}, [_currentUser]);
 
 	return (
 		<>

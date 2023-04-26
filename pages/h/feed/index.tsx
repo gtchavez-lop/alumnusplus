@@ -1,6 +1,7 @@
 import { AnimLoading, AnimPageTransition } from "@/lib/animations";
 import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost, TProvBlogPost } from "@/lib/types";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import FeedCard from "@/components/feed/FeedCard";
@@ -15,7 +16,6 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
@@ -102,31 +102,31 @@ const FeedPage = () => {
 		return filtered as IUserHunter[];
 	};
 
-	const [hunterFeed, provFeed, recommendedUsers] = useQueries({
-		queries: [
-			{
-				queryKey: ["h.feed.hunter"],
-				queryFn: fetchHunterFeed,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				networkMode: "offlineFirst",
-			},
-			{
-				queryKey: ["h.feed.provisioner"],
-				queryFn: fetchProvFeed,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				networkMode: "offlineFirst",
-			},
-			{
-				queryKey: ["h.feed.recommended"],
-				queryFn: fetchRecommendedUsers,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				refetchOnMount: false,
-				networkMode: "offlineFirst",
-			},
-		],
+	const hunterFeed = useQuery({
+		queryKey: ["h.feed.hunter"],
+		queryFn: fetchHunterFeed,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
+		keepPreviousData: true,
+	});
+	const provFeed = useQuery({
+		queryKey: ["h.feed.provisioner"],
+		queryFn: fetchProvFeed,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
+		keepPreviousData: true,
+	});
+	const recommendedUsers = useQuery({
+		queryKey: ["h.feed.recommended"],
+		queryFn: fetchRecommendedUsers,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
 	});
 
 	const handlePost = async (e: FormEvent<HTMLFormElement>) => {

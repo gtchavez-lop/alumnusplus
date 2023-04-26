@@ -804,6 +804,10 @@ const RegisterHunterSubPage: FC = () => {
 								return;
 							}
 
+							// add default avatar
+							localRegData.avatar_url = `https://api.dicebear.com/6.x/adventurer/png?seed=${localRegData.username}`;
+							localRegData.banner_url = `https://picsum.photos/seed/${localRegData.username}/200/300`;
+
 							const { error } = await supabase.auth.signUp({
 								email: localRegData.email,
 								password: localPassword,
