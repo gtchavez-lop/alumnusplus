@@ -6,63 +6,63 @@ import { motion } from "framer-motion";
 
 const thePeople = [
 	{
-		name: "Gabbie",
-		img: "/profile/gab.jpg",
+		name: "Gabrielle D. Napoto",
+		img: "/profile/gabie.jpg",
 		position: "Project Manager",
 	},
 	{
-		name: "Gerald",
-		img: "/profile/gerald.jpg",
+		name: "Gerald T. Chavez",
+		img: "/profile/gerald.png",
 		position: "Principal Engineer (Wicket)",
 	},
 	{
-		name: "Edz",
-		img: "/profile/edz.jpg",
+		name: "Edriane D. Barcita",
+		img: "/profile/edz.png",
 		position: "Principal Engineer (Metaverse)",
 	},
 	{
-		name: "Carlo",
-		img: "/profile/carlo.jpg",
+		name: "Carlo L. Diaz",
+		img: "/profile/carlo.jpeg",
 		position: "Front-end Developer",
 	},
 	{
-		name: "Trizha",
-		img: "/profile/trizh.jpg",
+		name: "Trizhalyn L. Maglangit",
+		img: "/profile/trizha.JPG",
 		position: "Writer",
 	},
 	{
-		name: "Kevin",
-		img: "/profile/kevin.jpg",
+		name: "Kevin Z. Corpin",
+		img: "/profile/kevin.png",
 		position: "UI/UX Designer",
 	},
 	{
-		name: "Novie",
-		img: "/profile/novie.jpg",
+		name: "Novie Dame E. Marbas",
+		img: "/profile/novs.jpg",
 		position: "UI/UX Designer",
 	},
 	{
-		name: "Jaymar",
-		img: "/profile/jaymar.jpg",
+		name: "Jaymar M. Walohan",
+		img: "/profile/jimar.jpg",
 		position: "Front-end Developer",
 	},
 	{
-		name: "Efrhaim",
+		name: "Efrhaim Jay J. Riate",
 		img: "/profile/ej.jpg",
 		position: "Writer",
 	},
 	{
-		name: "Lloyd",
-		img: "/profile/lloyd.jpg",
+		name: "John Lloyd N. Igharas",
+		img: "/profile/jlloyd.jpg",
 		position: "Meta Developer",
 	},
 	{
-		name: "Jaypee",
-		img: "/profile/jaypee.jpg",
+		name: " John Philip N. Bulaclac",
+		img: "/profile/jaypeee.jpg",
 		position: "Multimedia Manager",
 	},
 	{
-		name: "Miks",
-		img: "/profile/miks.jpg",
+		name: "Mikkie Gregorio",
+		img: "/profile/miki.jpg",
 		position: "Front-end Developer",
 	},
 ];
@@ -93,7 +93,7 @@ const AboutPage: NextPage = () => {
 					<div className="w-full lg:w-8/12 relative">
 						<Image
 							className="w-full h-full object-cover rounded-btn"
-							src="/profile/our-team.jpg"
+							src="/profile/groupbg.png"
 							alt="A group of People"
 							fill
 						/>
