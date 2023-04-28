@@ -404,6 +404,18 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
+							{recommendedJobs.isSuccess && recommendedJobs.data.length < 1 && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>No recommended jobs</p>
+								</div>
+							)}
+							{recommendedJobs.isError && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>Something went wrong</p>
+								</div>
+							)}
 						</motion.div>
 					)}
 					{tabSelected === "saved" && (
@@ -450,7 +462,6 @@ const ApplyPage = () => {
 									))}
 						</motion.div>
 					)}
-
 					{tabSelected === "active" && (
 						<div className="mt-10">
 							<ActiveJobTabPanel />

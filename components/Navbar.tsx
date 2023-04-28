@@ -3,9 +3,11 @@ import { FiMoon, FiSun } from "react-icons/fi";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import {
 	MdApps,
+	MdDarkMode,
 	MdDashboard,
 	MdEvent,
 	MdHome,
+	MdLightMode,
 	MdMap,
 	MdNotes,
 	MdNotifications,
@@ -48,6 +50,20 @@ const Navbar = () => {
 		return "light";
 	};
 
+	const toggleTheme = () => {
+		if (_globalTheme === "dark") {
+			// set to light mode
+			$themeMode.set("light");
+			document.body.setAttribute("data-theme", "light");
+			localStorage.setItem("theme", "light");
+		} else {
+			// set to dark mode
+			$themeMode.set("dark");
+			document.body.setAttribute("data-theme", "dark");
+			localStorage.setItem("theme", "dark");
+		}
+	};
+
 	useEffect(() => {
 		const localTheme = getTheme();
 		if (localTheme) {
@@ -60,10 +76,7 @@ const Navbar = () => {
 		<>
 			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full z-[20] h-auto print:invisible">
 				{!(_accountType && _currentUser) && (
-					<div
-						// ref={navbarContainer}
-						className="mx-auto max-w-5xl w-full flex items-center justify-between"
-					>
+					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Link href="/" className="text-lg font-bold">
 							<Image
 								alt="logo"
@@ -73,10 +86,6 @@ const Navbar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							{/* <Link href="/register" className='btn btn-primary gap-2'>
-								<MdPersonAdd className="text-lg" />
-								<span>Sign Up</span>
-							</Link> */}
 							<Link href="/login" className='btn btn-ghost gap-2'>
 								<MdPerson className="text-lg" />
 								<span>Log In</span>
@@ -161,68 +170,52 @@ const Navbar = () => {
 							</Link>
 						</div>
 						<div className="flex gap-2 items-center">
-							{/* <div className="dropdown dropdown-end dropdown-hover hidden">
-								<Link
-									href="/h/notifications"
-									tabIndex={0}
-									className={`btn btn-square  ${
-										router.pathname.includes("/h/notifications")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
-								>
-									<MdNotifications className="text-lg" />
-								</Link>
-								<ul
-									tabIndex={0}
-									className="dropdown-content menu p-4 shadow-lg bg-base-200 rounded-btn btn-square w-[400px] gap-1 mt-1"
-								>
-									<li className="mb-2 text-lg font-bold">Notifications</li>
-									{Array(5)
-										.fill("placeholder")
-										.map((_, i) => (
-											<li key={`notifskeleton_${i}`}>
-												<p
-													style={{ animationDelay: `${i * 100}ms` }}
-													className="bg-zinc-500 bg-opacity-40 animate-pulse text-transparent"
-												>
-													Placeholder notification
-												</p>
-											</li>
-										))}
-									<li className="self-center text-center w-full">
-										<Link href="/h/notifications" className="text-center">
-											See all notifications
-										</Link>
-									</li>
-								</ul>
-							</div> */}
 							<p className="font-semibold opacity-75">
 								{_currentUser.full_name.first}{" "}
 								{_currentUser.full_name.last || ""}
 							</p>
-							<Link
-								href="/h/me"
-								className={`avatar h-10 w-10 rounded-full
+							<div className="dropdown dropdown-hover dropdown-end">
+								<button
+									tabIndex={0}
+									className={`avatar h-10 w-10 rounded-full
 								${_currentUser.activeJob && "online"}
 								${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
-							>
-								{_currentUser.avatar_url ? (
-									<Image
-										alt="avatar"
-										src={_currentUser.avatar_url}
-										width={40}
-										height={40}
-										className="mask mask-circle"
-									/>
-								) : (
-									<MdPerson className="text-lg" />
-								)}
-							</Link>
+								>
+									{_currentUser.avatar_url ? (
+										<Image
+											alt="avatar"
+											src={_currentUser.avatar_url}
+											width={40}
+											height={40}
+											className="mask mask-circle"
+										/>
+									) : (
+										<MdPerson className="text-lg" />
+									)}
+								</button>
+								<ul className="dropdown-content menu p-3 shadow bg-base-200 rounded-btn w-52">
+									<li>
+										<p onClick={toggleTheme}>
+											{_globalTheme === "dark" ? (
+												<MdLightMode className="text-lg" />
+											) : (
+												<MdDarkMode className="text-lg" />
+											)}
+											{_globalTheme === "dark" ? "Light Mode" : "Dark Mode"}
+										</p>
+									</li>
+									<li>
+										<Link href="/h/me">
+											<MdPerson className="text-lg" />
+											<span>Go to Profile</span>
+										</Link>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				)}
