@@ -1,11 +1,11 @@
 import { AnimLoading, AnimPageTransition } from "@/lib/animations";
+import { FiAlertTriangle, FiLoader } from "react-icons/fi";
 import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost, TProvBlogPost } from "@/lib/types";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import FeedCard from "@/components/feed/FeedCard";
-import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { MdSearch } from "react-icons/md";
@@ -287,6 +287,22 @@ const FeedPage = () => {
 													);
 												}
 											})}
+
+										{hunterFeed.isError && (
+											<div className="py-10 flex flex-col">
+												<FiAlertTriangle className="text-3xl self-center" />
+												<p className="text-center w-full self-center max-w-xs">
+													Something went wrong. Please try again later. Or click
+													the button below to refresh.
+												</p>
+												<button
+													onClick={() => hunterFeed.refetch()}
+													className="btn btn-primary self-center"
+												>
+													Refresh
+												</button>
+											</div>
+										)}
 									</div>
 								)}
 								{feedTab === "provisioner" && (
