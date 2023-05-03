@@ -266,7 +266,7 @@ const FeedPage = () => {
 							<div className="mt-10 overflow-y-hidden" ref={tabContent}>
 								{feedTab === "hunter" && (
 									<div className="flex flex-col gap-5" ref={feedList_ui}>
-										{hunterFeed.isLoading && (
+										{hunterFeed.isFetching && (
 											<div className="py-10 flex flex-col">
 												<FiLoader className="animate-spin duration-500 text-3xl self-center" />
 												<p className="text-center w-full self-center max-w-xs">
