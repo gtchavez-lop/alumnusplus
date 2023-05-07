@@ -14,6 +14,7 @@ import {
 	QueryClientProvider,
 } from "@tanstack/react-query";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
+import { Toaster, toast } from "react-hot-toast";
 
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
@@ -21,7 +22,6 @@ import { FiLoader } from "react-icons/fi";
 import Footer from "@/components/Footer";
 import Head from "next/head";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
@@ -34,93 +34,149 @@ const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
 export default function App({ Component, pageProps, router }: AppProps) {
 	const _currentTheme = useStore($themeMode);
 
-	const checkUser = async () => {
-		const { data } = await supabase.auth.getUser();
-
-		if (data.user) {
-			const metadata = data.user?.user_metadata as
-				| IUserHunter
-				| IUserProvisioner;
-
-			if (metadata && metadata.type === "hunter") {
-				$accountType.set("hunter");
-				const { data: newData, error } = await supabase
-					.from("user_hunters")
-					.select("*")
-					.eq("id", data.user?.id)
-					.single();
-
-				if (error) {
-					console.log(error);
-					return;
-				} else {
-					$accountDetails.set({
-						...newData,
-						id: data.user?.id as string,
-					});
-					$accountData.set({
-						created_at: data.user?.created_at as string,
-						email: data.user?.email as string,
-						id: data.user?.id as string,
-						email_confirmed_at: data.user?.email_confirmed_at as string,
-						phone: data.user?.phone as string,
-						raw_user_meta_data: metadata,
-					});
-
-					if (router.pathname === "/") {
-						router.push("/h/feed");
-						$hasAccount.set(true);
-					}
-				}
-			} else if (metadata && metadata.type === "provisioner") {
-				$accountType.set("provisioner");
-				const { data: newData, error } = await supabase
-					.from("user_provisioners")
-					.select("*")
-					.eq("id", data.user?.id)
-					.single();
-
-				if (error) {
-					console.log(error);
-					return;
-				} else {
-					$accountDetails.set({
-						...newData,
-						id: data.user?.id as string,
-					});
-					$accountData.set({
-						created_at: data.user?.created_at as string,
-						email: data.user?.email as string,
-						id: data.user?.id as string,
-						email_confirmed_at: data.user?.email_confirmed_at as string,
-						phone: data.user?.phone as string,
-						raw_user_meta_data: metadata,
-					});
-
-					if (router.pathname === "/") {
-						router.push("/p/dashboard");
-						$hasAccount.set(true);
-					}
-				}
-			}
-
-			// change route depending on account type
-		}
-	};
-
 	useEffect(() => {
-		// check for user
-		checkUser();
+		const { data } = supabase.auth.onAuthStateChange((event, session) => {
+			switch (event) {
+				case "SIGNED_IN":
+					const metadata = session?.user.user_metadata as
+						| IUserHunter
+						| IUserProvisioner;
+					const type = metadata.type;
+					$accountType.set(type);
+					$accountData.set({
+						created_at: session?.user?.created_at as string,
+						email: session?.user?.email as string,
+						email_confirmed_at: session?.user?.email_confirmed_at as string,
+						id: session?.user?.id as string,
+						phone: session?.user?.phone as string,
+						raw_user_meta_data: metadata,
+					});
 
-		// get theme from localStorage
-		const theme = localStorage.getItem("theme");
+					if (
+						router.pathname === "/" ||
+						router.pathname === "/login" ||
+						router.pathname === "/register"
+					) {
+						if (type === "hunter") {
+							// fetch hunter data
+							supabase
+								.from("user_hunters")
+								.select("*")
+								.eq("id", session?.user.id)
+								.single()
+								.then((res) => {
+									if (!res.error) {
+										$accountDetails.set(res.data);
+										router.push("/h/feed");
+									} else {
+										$accountDetails.set(null);
+										toast.error(res.error.message);
+										router.push("/login");
+									}
+								});
+						} else if (type === "provisioner") {
+							// fetch provisioner data
+							supabase
+								.from("user_provisioners")
+								.select("*")
+								.eq("id", session?.user.id)
+								.single()
+								.then((res) => {
+									if (!res.error) {
+										$accountDetails.set(res.data);
+										router.push("/p/dashboard");
+									} else {
+										$accountDetails.set(null);
+										toast.error("Please try logging in again.");
+										router.push("/login");
+									}
+								});
+						}
+					}
+					break;
+				case "SIGNED_OUT":
+					$accountType.set(null);
+					$accountDetails.set(null);
+					$accountData.set(null);
+					break;
+			}
+		});
 
-		// set to global theme state
-		if (theme) {
-			$themeMode.set(theme as "light" | "dark");
-			document.documentElement.setAttribute("data-theme", theme);
-		}
-	});
+		return () => {
+			console.log("ALSKJDAKLSJDLKAJSDLKJ");
+			supabase.auth
+				.getUser()
+				.then((user) => {
+					const metadata = user.data.user?.user_metadata as
+						| IUserHunter
+						| IUserProvisioner;
+					const type = metadata.type;
+					$accountType.set(type);
+					$accountData.set({
+						created_at: user.data.user?.created_at as string,
+						email: user.data.user?.email as string,
+						email_confirmed_at: user.data.user?.email_confirmed_at as string,
+						id: user.data.user?.id as string,
+						phone: user.data.user?.phone as string,
+						raw_user_meta_data: metadata,
+					});
+
+					if (type === "hunter") {
+						// fetch hunter data
+						supabase
+							.from("user_hunters")
+							.select("*")
+							.eq("id", user.data.user?.id)
+							.single()
+							.then((res) => {
+								if (!res.error) {
+									$accountDetails.set(res.data);
+									if (
+										router.pathname === "/" ||
+										router.pathname === "/login" ||
+										router.pathname === "/register"
+									) {
+										router.push("/h/feed");
+									}
+								} else {
+									$accountDetails.set(null);
+									toast.error(res.error.message);
+									router.push("/login");
+								}
+							});
+					} else if (type === "provisioner") {
+						// fetch provisioner data
+						supabase
+							.from("user_provisioners")
+							.select("*")
+							.eq("id", user.data.user?.id)
+							.single()
+							.then((res) => {
+								if (!res.error) {
+									$accountDetails.set(res.data);
+
+									if (
+										router.pathname === "/" ||
+										router.pathname === "/login" ||
+										router.pathname === "/register"
+									) {
+										router.push("/p/dashboard");
+									}
+								} else {
+									$accountDetails.set(null);
+									toast.error("Please try logging in again.");
+									router.push("/login");
+								}
+							});
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+					return;
+				});
+			data.subscription.unsubscribe();
+		};
+	}, [supabase, router]);
 
 	return (
 		<>
