@@ -81,22 +81,7 @@ const LogInPage = () => {
 		if (metadata.type === "provisioner") {
 			router.push("/p/dashboard");
 		}
-	};
-
-	const checkUser = async () => {
-		if (_currentUser) {
-			if (_currentUser.type === "hunter") {
-				router.push("/h/feed");
-			}
-			if (_currentUser.type === "provisioner") {
-				router.push("/p/dashboard");
-			}
-		}
-	};
-
-	useEffect(() => {
-		checkUser();
-	}, [_currentUser]);
+	}
 
 	return (
 		<>

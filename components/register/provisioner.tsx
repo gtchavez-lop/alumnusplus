@@ -74,7 +74,7 @@ const RegisterProvisionerSubPage: FC = () => {
 		<>
 			<div className="flex flex-col items-center py-5">
 				<h1 className="text-3xl font-bold text-secondary text-center w-full">
-					Register as a Company (Job Seeker)
+					Register as a Company (Job Provider)
 				</h1>
 				<p className="text-center w-fulll">
 					Fill out the forms below to create your account.
