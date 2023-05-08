@@ -13,14 +13,14 @@ import { motion, useScroll } from "framer-motion";
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiArrowDown } from "react-icons/fi";
+import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
+import { link } from "fs";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-import Link from "next/link";
-import { link } from "fs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { id } = context.query;
@@ -138,10 +138,11 @@ const JobPage: NextPage<{ jobData: LocalProvJobPost }> = ({ jobData }) => {
 
 						{/* apply button */}
 						<div className="flex gap-2 mt-5 justify-end">
-							{isApplied ? (
+							{isApplied || _currentUser.activeJob ? (
 								<button className="btn btn-primary gap-2" disabled>
 									<MdCheck className="text-lg" />
-									Applied
+									{isApplied && "Applied"}
+									{_currentUser.activeJob && "You have an active job"}
 								</button>
 							) : (
 								<Link

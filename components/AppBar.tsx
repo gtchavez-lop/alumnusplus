@@ -109,7 +109,7 @@ const AppBar = () => {
 								</Link>
 								<Link
 									href="/h/me"
-									className={`btn btn-sm ${
+									className={`btn btn-circle ${
 										router.pathname.includes("/h/me")
 											? "btn-primary"
 											: "btn-ghost"
@@ -150,9 +150,8 @@ const AppBar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<button
-								disabled
-								// href="/h/events"
+							<Link
+								href="/h/events"
 								className={`btn btn-sm  ${
 									router.pathname.includes("/h/events")
 										? "btn-primary"
@@ -160,7 +159,7 @@ const AppBar = () => {
 								}`}
 							>
 								<MdEvent className="text-lg" />
-							</button>
+							</Link>
 						</div>
 					</div>
 				</motion.div>

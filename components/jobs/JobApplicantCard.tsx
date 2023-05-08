@@ -9,7 +9,10 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
 
-const JobApplicantCard: FC<{ applicant: IUserHunter }> = ({ applicant }) => {
+const JobApplicantCard: FC<{ applicant: IUserHunter; job_id: string }> = ({
+	applicant,
+	job_id,
+}) => {
 	const [isClicked, setIsClicked] = useState(false);
 
 	return (
@@ -22,7 +25,7 @@ const JobApplicantCard: FC<{ applicant: IUserHunter }> = ({ applicant }) => {
 				)}
 
 				<Link
-					href={`/p/jobs/applicant-profile/${applicant.username}`}
+					href={`/p/jobs/applicant-profile/${applicant.username}?job_id=${job_id}`}
 					className="flex flex-col gap-2 p-4 bg-base-200 hover:bg-base-300 transition-all rounded-btn"
 				>
 					<div className="flex gap-2 items-center">
