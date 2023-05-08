@@ -7,8 +7,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import { IUserHunter, TProvJobPost } from "@/lib/types";
 import { MdInfo, MdSearch } from "react-icons/md";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
+import ActiveJobTabPanel from "@/components/jobs/ActiveJobTabPanel";
 import CvBuilder from "@/components/jobs/CvBuilder";
 import Footer from "@/components/Footer";
 import Tabs from "@/components/Tabs";
@@ -17,7 +19,6 @@ import { empty } from "uuidv4";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -60,6 +61,10 @@ const tabs: TTab[] = [
 		value: "applied",
 	},
 	{
+		title: "Active Job",
+		value: "active",
+	},
+	{
 		title: "CV/Resume Builder",
 		value: "cv",
 	},
@@ -71,7 +76,23 @@ const ApplyPage = () => {
 	const [tabContentRef] = useAutoAnimate();
 	const [jobResult, setJobResult] = useState<Job[]>([]);
 	const [isSearching, setIsSearching] = useState(false);
+	const [allJobPage, setAllJobPage] = useState<number>(0);
 	const router = useRouter();
+
+	const fetchPaginatedAllJobs = async () => {
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.select("*,uploader:uploader_id(legalName)")
+			.eq("draft", false)
+			.range(allJobPage * 9, (allJobPage + 1) * 9);
+
+		if (error) {
+			console.log(error);
+			return [];
+		}
+
+		return data;
+	}
 
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
@@ -138,14 +159,22 @@ const ApplyPage = () => {
 		return data as unknown as Promise<Job[]>;
 	};
 
-	const [allJobs, recommendedJobs, savedJobs, appliedJobs] = useQueries({
+	const allJobs = useQuery({
+		queryKey: ["h.jobs.all", allJobPage],
+		queryFn: fetchPaginatedAllJobs,
+		enabled: !!_userDetails,
+		refetchOnWindowFocus: false,
+		keepPreviousData: true,
+	});
+
+	const [recommendedJobs, savedJobs, appliedJobs] = useQueries({
 		queries: [
-			{
-				queryKey: ["allJobs"],
-				queryFn: fetchAllJobs,
-				refetchOnWindowFocus: false,
-				enabled: !!_userDetails,
-			},
+			// {
+			// 	queryKey: ["allJobs"],
+			// 	queryFn: fetchAllJobs,
+			// 	refetchOnWindowFocus: false,
+			// 	enabled: !!_userDetails,
+			// },
 			{
 				queryKey: ["recommendedJobs"],
 				queryFn: fetchRecommendedJobs,
@@ -309,6 +338,45 @@ const ApplyPage = () => {
 										/>
 									))}
 							</motion.div>
+
+							{allJobs.isSuccess && (
+								// next page button
+								<div className="flex justify-between max-w-md mx-auto mt-10">
+									<button
+										disabled={allJobPage === 0}
+										onClick={() => {
+											// go to top of the page
+											window.scrollTo({
+												top: 0,
+												behavior: "smooth",
+											});
+											setAllJobPage((prev) => {
+												// do not go less than 0
+												if (prev - 1 < 0) {
+													return 0;
+												}
+												return prev - 1;
+											});
+										}}
+										className="btn btn-primary"
+									>
+										Previous
+									</button>
+									<button
+										onClick={() => {
+											// go to top of the page
+											window.scrollTo({
+												top: 0,
+												behavior: "smooth",
+											});
+											setAllJobPage((prev) => prev + 1);
+										}}
+										className="btn btn-primary"
+									>
+										Next
+									</button>
+								</div>
+							)}
 						</>
 					)}
 					{tabSelected === "recommended" && (
@@ -336,6 +404,18 @@ const ApplyPage = () => {
 											className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 										/>
 									))}
+							{recommendedJobs.isSuccess && recommendedJobs.data.length < 1 && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>No recommended jobs</p>
+								</div>
+							)}
+							{recommendedJobs.isError && (
+								<div className="col-span-full text-center flex flex-col items-center my-5">
+									<MdInfo className="text-4xl text-primary" />
+									<p>Something went wrong</p>
+								</div>
+							)}
 						</motion.div>
 					)}
 					{tabSelected === "saved" && (
@@ -381,6 +461,11 @@ const ApplyPage = () => {
 										/>
 									))}
 						</motion.div>
+					)}
+					{tabSelected === "active" && (
+						<div className="mt-10">
+							<ActiveJobTabPanel />
+						</div>
 					)}
 					{tabSelected === "cv" && (
 						<motion.div className=" mt-10">

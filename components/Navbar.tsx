@@ -3,9 +3,12 @@ import { FiMoon, FiSun } from "react-icons/fi";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import {
 	MdApps,
+	MdDarkMode,
 	MdDashboard,
 	MdEvent,
 	MdHome,
+	MdLightMode,
+	MdLogout,
 	MdMap,
 	MdNotes,
 	MdNotifications,
@@ -18,8 +21,11 @@ import {
 
 import Image from "next/image";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 
@@ -28,7 +34,8 @@ const Navbar = () => {
 	const _globalTheme = useStore($themeMode);
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
-
+	const cacheQueryClient = useQueryClient();
+	
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const _currentUser = useStore($accountDetails) as any;
 
@@ -48,6 +55,39 @@ const Navbar = () => {
 		return "light";
 	};
 
+	const toggleTheme = () => {
+		if (_globalTheme === "dark") {
+			// set to light mode
+			$themeMode.set("light");
+			document.body.setAttribute("data-theme", "light");
+			localStorage.setItem("theme", "light");
+		} else {
+			// set to dark mode
+			$themeMode.set("dark");
+			document.body.setAttribute("data-theme", "dark");
+			localStorage.setItem("theme", "dark");
+		}
+	};
+
+	const handleLogOut = async () => {
+		toast.loading("Logging out...");
+
+		const { error } = await supabase.auth.signOut();
+		if (error) {
+			toast.error(error.message);
+			toast.dismiss();
+			toast.error("Failed to log out");
+			return;
+		}
+
+		$accountType.set(null);
+		$accountDetails.set(null);
+		cacheQueryClient.clear();
+
+		toast.dismiss();
+		router.push("/login");
+	};
+
 	useEffect(() => {
 		const localTheme = getTheme();
 		if (localTheme) {
@@ -60,10 +100,7 @@ const Navbar = () => {
 		<>
 			<div className="fixed top-0 left-0 py-5 hidden lg:flex justify-between bg-base-100 w-full z-[20] h-auto print:invisible">
 				{!(_accountType && _currentUser) && (
-					<div
-						// ref={navbarContainer}
-						className="mx-auto max-w-5xl w-full flex items-center justify-between"
-					>
+					<div className="mx-auto max-w-5xl w-full flex items-center justify-between">
 						<Link href="/" className="text-lg font-bold">
 							<Image
 								alt="logo"
@@ -73,10 +110,6 @@ const Navbar = () => {
 							/>
 						</Link>
 						<div className="flex gap-1">
-							{/* <Link href="/register" className='btn btn-primary gap-2'>
-								<MdPersonAdd className="text-lg" />
-								<span>Sign Up</span>
-							</Link> */}
 							<Link href="/login" className='btn btn-ghost gap-2'>
 								<MdPerson className="text-lg" />
 								<span>Log In</span>
@@ -161,66 +194,59 @@ const Navbar = () => {
 							</Link>
 						</div>
 						<div className="flex gap-2 items-center">
-							{/* <div className="dropdown dropdown-end dropdown-hover hidden">
-								<Link
-									href="/h/notifications"
-									tabIndex={0}
-									className={`btn btn-square  ${
-										router.pathname.includes("/h/notifications")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
-								>
-									<MdNotifications className="text-lg" />
-								</Link>
-								<ul
-									tabIndex={0}
-									className="dropdown-content menu p-4 shadow-lg bg-base-200 rounded-btn btn-square w-[400px] gap-1 mt-1"
-								>
-									<li className="mb-2 text-lg font-bold">Notifications</li>
-									{Array(5)
-										.fill("placeholder")
-										.map((_, i) => (
-											<li key={`notifskeleton_${i}`}>
-												<p
-													style={{ animationDelay: `${i * 100}ms` }}
-													className="bg-zinc-500 bg-opacity-40 animate-pulse text-transparent"
-												>
-													Placeholder notification
-												</p>
-											</li>
-										))}
-									<li className="self-center text-center w-full">
-										<Link href="/h/notifications" className="text-center">
-											See all notifications
-										</Link>
-									</li>
-								</ul>
-							</div> */}
 							<p className="font-semibold opacity-75">
 								{_currentUser.full_name.first}{" "}
 								{_currentUser.full_name.last || ""}
 							</p>
-							<Link
-								href="/h/me"
-								className={`btn btn-circle ${
+							<div className="dropdown dropdown-hover dropdown-end">
+								<button
+									tabIndex={0}
+									className={`avatar h-10 w-10 rounded-full justify-center items-center
+								${_currentUser.activeJob && "online"}
+								${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
-							>
-								{_currentUser.avatar_url ? (
-									<Image
-										alt="avatar"
-										src={_currentUser.avatar_url}
-										width={40}
-										height={40}
-										className="rounded-full"
-									/>
-								) : (
-									<MdPerson className="text-lg" />
-								)}
-							</Link>
+								>
+									{_currentUser.avatar_url ? (
+										<Image
+											alt="avatar"
+											src={_currentUser.avatar_url}
+											width={40}
+											height={40}
+											className="mask mask-circle"
+										/>
+									) : (
+										<MdPerson className="text-lg" />
+									)}
+								</button>
+								<ul className="dropdown-content menu p-3 shadow bg-base-200 rounded-btn w-52">
+									<li>
+										<p onClick={toggleTheme}>
+											{_globalTheme === "dark" ? (
+												<MdLightMode className="text-lg" />
+											) : (
+												<MdDarkMode className="text-lg" />
+											)}
+											{_globalTheme === "dark" ? "Light Mode" : "Dark Mode"}
+										</p>
+									</li>
+									<li>
+										<Link href="/h/me">
+											<MdPerson className="text-lg" />
+											<span>Go to Profile</span>
+										</Link>
+									</li>
+									<div className="divider" />
+									<li>
+										<p onClick={handleLogOut} className="text-error">
+											<MdLogout className="text-lg" />
+											<span>Log Out</span>
+										</p>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				)}
@@ -243,7 +269,7 @@ const Navbar = () => {
 							)}
 							<Link
 								href="/p/dashboard"
-								className={`btn ${
+								className={`btn btn-square ${
 									router.pathname.includes("/p/dashboard")
 										? "btn-primary"
 										: "btn-ghost"
@@ -253,7 +279,7 @@ const Navbar = () => {
 							</Link>
 							<Link
 								href="/p/blog"
-								className={`btn ${
+								className={`btn btn-square ${
 									router.pathname.includes("/p/blog")
 										? "btn-primary"
 										: "btn-ghost"
@@ -263,7 +289,7 @@ const Navbar = () => {
 							</Link>
 							<Link
 								href="/p/jobs"
-								className={`btn ${
+								className={`btn btn-square ${
 									router.pathname.includes("/p/jobs")
 										? "btn-primary"
 										: "btn-ghost"
@@ -271,16 +297,44 @@ const Navbar = () => {
 							>
 								<MdWork className="text-lg" />
 							</Link>
-							<Link
-								href="/p/me"
-								className={`btn ${
-									router.pathname.includes("/p/me")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdPerson className="text-lg" />
-							</Link>
+
+							<div className="dropdown dropdown-hover dropdown-end">
+								<button
+									tabIndex={0}
+									className={`btn btn-square  ${
+										router.pathname.includes("/p/me")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdPerson className="text-lg" />
+								</button>
+								<ul className="dropdown-content menu p-3 shadow bg-base-200 rounded-btn w-52">
+									<li>
+										<p onClick={toggleTheme}>
+											{_globalTheme === "dark" ? (
+												<MdLightMode className="text-lg" />
+											) : (
+												<MdDarkMode className="text-lg" />
+											)}
+											{_globalTheme === "dark" ? "Light Mode" : "Dark Mode"}
+										</p>
+									</li>
+									<li>
+										<Link href="/p/me">
+											<MdPerson className="text-lg" />
+											<span>My Profile</span>
+										</Link>
+									</li>
+									<div className="divider" />
+									<li>
+										<p onClick={handleLogOut} className="text-error">
+											<MdLogout className="text-lg" />
+											<span>Log Out</span>
+										</p>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				)}

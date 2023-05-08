@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
+import { MdInfo, MdWarning } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
@@ -8,7 +9,6 @@ import { AnimPageTransition } from "@/lib/animations";
 import { FiLoader } from "react-icons/fi";
 import JobApplicantCard from "@/components/jobs/JobApplicantCard";
 import Link from "next/link";
-import { MdWarning } from "react-icons/md";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
@@ -115,18 +115,24 @@ const JobApplicants: NextPage = () => {
 								{_applicantList.data?.map((applicants, index) => (
 									<JobApplicantCard
 										key={`applicant_${index}`}
+										job_id={_targetJob.data?.id}
 										applicant={applicants}
 									/>
 								))}
+								{_applicantList.data?.length === 0 && (
+									<div className="col-span-full flex flex-col items-center gap-2">
+										<MdInfo className="text-4xl" />
+										<p className="text-center">
+											There are no applications yet.
+										</p>
+									</div>
+								)}
 
 								{_applicantList.isSuccess && !_applicantList.data && (
 									<div className="flex flex-col items-center gap-2">
 										<MdWarning className="text-4xl text-warning" />
 										<p className="text-center">
-											There are no applications yet. <br />
-											<Link href="/p/jobs/new" className="btn btn-link">
-												Subscribe to Wicket to Prioritisation
-											</Link>
+											There are no applications yet.
 										</p>
 									</div>
 								)}

@@ -1,10 +1,11 @@
 import { AnimLoading, AnimPageTransition } from "@/lib/animations";
+import { FiAlertTriangle, FiLoader } from "react-icons/fi";
 import { FormEvent, useState } from "react";
 import { IUserHunter, THunterBlogPost, TProvBlogPost } from "@/lib/types";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import FeedCard from "@/components/feed/FeedCard";
-import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { MdSearch } from "react-icons/md";
@@ -15,7 +16,6 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
@@ -48,17 +48,15 @@ const FeedPage = () => {
 	];
 
 	const fetchHunterFeed = async () => {
-		const connections = [..._currentUser.connections, _currentUser.id];
-
 		const { data, error } = await supabase
 			.from("public_posts")
-			.select("*,uploader:uploader(*)")
+			.select("*,uploader(*)")
+			.in("uploader", [_currentUser.id, ..._currentUser.connections])
 			.order("createdAt", { ascending: false })
-			.in("uploader", connections)
 			.eq("draft", false);
 
 		if (error) {
-			console.log("error", error);
+			console.log("hunter feed error", error);
 			return [] as THunterBlogPost[];
 		}
 
@@ -104,31 +102,31 @@ const FeedPage = () => {
 		return filtered as IUserHunter[];
 	};
 
-	const [hunterFeed, provFeed, recommendedUsers] = useQueries({
-		queries: [
-			{
-				queryKey: ["hunterFeed"],
-				queryFn: fetchHunterFeed,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				networkMode: "offlineFirst",
-			},
-			{
-				queryKey: ["provFeed"],
-				queryFn: fetchProvFeed,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				networkMode: "offlineFirst",
-			},
-			{
-				queryKey: ["recommendedUsers"],
-				queryFn: fetchRecommendedUsers,
-				enabled: !!_currentUser,
-				refetchOnWindowFocus: false,
-				refetchOnMount: false,
-				networkMode: "offlineFirst",
-			},
-		],
+	const hunterFeed = useQuery({
+		queryKey: ["h.feed.hunter"],
+		queryFn: fetchHunterFeed,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
+		keepPreviousData: true,
+	});
+	const provFeed = useQuery({
+		queryKey: ["h.feed.provisioner"],
+		queryFn: fetchProvFeed,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
+		keepPreviousData: true,
+	});
+	const recommendedUsers = useQuery({
+		queryKey: ["h.feed.recommended"],
+		queryFn: fetchRecommendedUsers,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: !!_currentUser,
+		networkMode: "offlineFirst",
 	});
 
 	const handlePost = async (e: FormEvent<HTMLFormElement>) => {
@@ -191,20 +189,19 @@ const FeedPage = () => {
 							<div ref={mainFeed_ui} className="flex gap-2 w-full relative">
 								{!isMakingPost ? (
 									<>
-										<div className=" relative w-12 h-12">
-											<Image
-												src={_currentUser.avatar_url}
-												alt="avatar"
-												className="bg-primary mask mask-squircle"
-												fill
-											/>
-										</div>
+										<Image
+											src={_currentUser.avatar_url}
+											alt="avatar"
+											width={48}
+											height={48}
+											className="bg-primary object-cover rounded"
+										/>
 
 										<input
 											placeholder="What's on your mind?"
 											readOnly
 											onClick={() => setIsMakingPost(true)}
-											className="input input-primary rounded-full w-full"
+											className="input input-primary w-full"
 										/>
 									</>
 								) : (
@@ -269,7 +266,7 @@ const FeedPage = () => {
 							<div className="mt-10 overflow-y-hidden" ref={tabContent}>
 								{feedTab === "hunter" && (
 									<div className="flex flex-col gap-5" ref={feedList_ui}>
-										{hunterFeed.isLoading && (
+										{hunterFeed.isFetching && (
 											<div className="py-10 flex flex-col">
 												<FiLoader className="animate-spin duration-500 text-3xl self-center" />
 												<p className="text-center w-full self-center max-w-xs">
@@ -290,6 +287,22 @@ const FeedPage = () => {
 													);
 												}
 											})}
+
+										{hunterFeed.isError && (
+											<div className="py-10 flex flex-col">
+												<FiAlertTriangle className="text-3xl self-center" />
+												<p className="text-center w-full self-center max-w-xs">
+													Something went wrong. Please try again later. Or click
+													the button below to refresh.
+												</p>
+												<button
+													onClick={() => hunterFeed.refetch()}
+													className="btn btn-primary self-center"
+												>
+													Refresh
+												</button>
+											</div>
+										)}
 									</div>
 								)}
 								{feedTab === "provisioner" && (
@@ -331,13 +344,13 @@ const FeedPage = () => {
 
 									router.push(`/h/search?query=${searchQuery}`);
 								}}
-								className="flex flex-row items-center gap-3"
+								className="input-group"
 							>
 								<input
 									type="text"
 									name="searchQuery"
 									placeholder="Search for people"
-									className="input input-bordered flex-1"
+									className="input input-primary flex-1"
 								/>
 								<button type="submit" className="btn btn-primary">
 									<MdSearch className="text-lg" />

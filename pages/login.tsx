@@ -4,7 +4,7 @@ import {
 	$accountType,
 } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
@@ -15,11 +15,15 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useStore } from "@nanostores/react";
 
 const LogInPage = () => {
 	const router = useRouter();
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+	const _currentUser = useStore($accountDetails) as
+		| IUserHunter
+		| IUserProvisioner;
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -77,7 +81,7 @@ const LogInPage = () => {
 		if (metadata.type === "provisioner") {
 			router.push("/p/dashboard");
 		}
-	};
+	}
 
 	return (
 		<>
@@ -182,8 +186,14 @@ const LogInPage = () => {
 										Password
 									</p>
 
-									<div className="flex gap-2 items-center">
-										{!isPasswordRevealed ? (
+									<div className="input-group">
+										<input
+											type={isPasswordRevealed ? "text" : "password"}
+											id="password"
+											name="password"
+											className="input input-primary input-bordered w-full"
+										/>
+										{/* {!isPasswordRevealed ? (
 											<input
 												type="password"
 												id="Password"
@@ -197,19 +207,20 @@ const LogInPage = () => {
 												name="password"
 												className="input input-primary input-bordered w-full"
 											/>
-										)}
-										<div
+										)} */}
+										<button
+											type="button"
 											onClick={() => {
 												setIsPasswordRevealed(!isPasswordRevealed);
 											}}
-											className="btn btn-ghost text-lg"
+											className="btn btn-primary text-lg"
 										>
 											{isPasswordRevealed ? (
 												<MdVisibilityOff />
 											) : (
 												<MdVisibility />
 											)}
-										</div>
+										</button>
 									</div>
 								</div>
 
