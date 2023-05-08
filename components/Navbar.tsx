@@ -35,7 +35,7 @@ const Navbar = () => {
 	const router = useRouter();
 	const [navbarContainer] = useAutoAnimate();
 	const cacheQueryClient = useQueryClient();
-	
+
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const _currentUser = useStore($accountDetails) as any;
 
@@ -152,46 +152,57 @@ const Navbar = () => {
 							height={40}
 						/>
 						<div className="flex gap-1">
-							<Link
-								href="/h/feed"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/feed")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdHome className="text-lg" />
-							</Link>
-							<Link
-								href="/h/drift"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/drift")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdMap className="text-lg" />
-							</Link>
-							<Link
-								href="/h/jobs"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdWork className="text-lg" />
-							</Link>
-							<Link
-								href="/h/events"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdEvent className="text-lg" />
-							</Link>
+							<div className="tooltip tooltip-bottom" data-tip="Home">
+								<Link
+									href="/h/feed"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/feed")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdHome className="text-lg " />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Find Companies">
+								<Link
+									href="/h/drift"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/drift")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdMap className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Find Jobs">
+								<Link
+									href="/h/jobs"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/jobs")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdWork className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Events">
+								<Link
+									href="/h/events"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/events")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdEvent className="text-lg" />
+								</Link>
+							</div>
 						</div>
 						<div className="flex gap-2 items-center">
 							<p className="font-semibold opacity-75">
@@ -267,36 +278,44 @@ const Navbar = () => {
 									LIVE
 								</p>
 							)}
-							<Link
-								href="/p/dashboard"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/dashboard")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdDashboard className="text-lg" />
-							</Link>
-							<Link
-								href="/p/blog"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/blog")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdNotes className="text-lg" />
-							</Link>
-							<Link
-								href="/p/jobs"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdWork className="text-lg" />
-							</Link>
+							<div className="tooltip tooltip-bottom" data-tip="Dashboard">
+								<Link
+									href="/p/dashboard"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/dashboard")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdDashboard className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Blog & Events">
+								<Link
+									href="/p/blog"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/blog")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdNotes className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Job Posting">
+								<Link
+									href="/p/jobs"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/jobs")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdWork className="text-lg" />
+								</Link>
+							</div>
 
 							<div className="dropdown dropdown-hover dropdown-end">
 								<button

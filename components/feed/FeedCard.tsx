@@ -391,36 +391,44 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
-							{isLiked ? (
-								<MdFavorite className="text-lg text-red-500" />
-							) : (
-								<MdFavoriteBorder className="text-lg " />
-							)}
-							{/* <FiArrowUp className="font-bold" /> */}
-							{blogData.upvoters ? blogData.upvoters.length : 0}
-						</button>
-						<motion.button
-							onClick={() =>
-								setCommentsOpen(
-									blogData.comments?.length ? !commentsOpen : true,
-								)
-							}
-							className="btn btn-ghost"
-						>
-							<FiMessageSquare className="font-bold" />
-							<span className="ml-2">{blogData.comments?.length ?? 0}</span>
-						</motion.button>
+						<div className="tooltip" data-tip="Upvote">
+							<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
+								{isLiked ? (
+									<MdFavorite className="text-lg text-red-500" />
+								) : (
+									<MdFavoriteBorder className="text-lg " />
+								)}
+								{/* <FiArrowUp className="font-bold" /> */}
+								{blogData.upvoters ? blogData.upvoters.length : 0}
+							</button>
+						</div>
+
+						<div className="tooltip" data-tip="Comment">
+							<motion.button
+								onClick={() =>
+									setCommentsOpen(
+										blogData.comments?.length ? !commentsOpen : true,
+									)
+								}
+								className="btn btn-ghost"
+							>
+								<FiMessageSquare className="font-bold" />
+								<span className="ml-2">{blogData.comments?.length ?? 0}</span>
+							</motion.button>
+						</div>
 					</div>
 
 					{/* report a user */}
 					<div className="flex gap-2">
-						<button
-							onClick={() => setShowModal(!showModal)}
-							className="btn btn-ghost"
-						>
-							<MdReport />
-						</button>
+						<div className="tooltip" data-tip="Report">
+							<button
+								onClick={() => setShowModal(!showModal)}
+								className="btn btn-ghost"
+							>
+								<MdReport />
+							</button>
+						</div>
+
 						{showModal && (
 							<Modal isVisible={showModal} setIsVisible={setShowModal}>
 								<div className="flex justify-between">
@@ -473,17 +481,19 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							</Modal>
 						)}
 
-						<button
-							className="btn btn-ghost gap-2"
-							onClick={() => {
-								const baseURL = window.location.origin;
-								const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
-								navigator.clipboard.writeText(thisLink);
-								toast("Link Shared");
-							}}
-						>
-							<MdShare />
-						</button>
+						<div className="tooltip" data-tip="Share">
+							<button
+								className="btn btn-ghost gap-2"
+								onClick={() => {
+									const baseURL = window.location.origin;
+									const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
+									navigator.clipboard.writeText(thisLink);
+									toast("Link Shared");
+								}}
+							>
+								<MdShare />
+							</button>
+						</div>
 					</div>
 				</div>
 

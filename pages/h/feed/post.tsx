@@ -450,36 +450,45 @@ const BlogPage: NextPage = () => {
 							<div className="col-span-2" ref={isCommentingRef}>
 								{/* upvote and comment toggler */}
 								<div className="flex items-center gap-1">
-									<button
-										onClick={upvoteHandler}
-										className="btn btn-ghost gap-2 text-xl"
-									>
-										{isLiked ? (
-											<MdFavorite className="text-red-500" />
-										) : (
-											<MdFavoriteBorder />
-										)}
-										{_blogData.data.upvoters.length}
-									</button>
-									<button
-										onClick={() => {
-											setIsCommenting(!isCommenting);
-										}}
-										className="btn btn-ghost gap-2 text-xl"
-									>
-										<MdComment />
-										{_blogData.data.comments.length}
-									</button>
-									<button
-										onClick={() => {
-											navigator.clipboard.writeText(window.location.href);
-											toast.success("Link copied to clipboard!");
-										}}
-										className="btn btn-ghost gap-2 text-xl ml-auto"
-									>
-										<MdShare />
-									</button>
+									<div className="tooltip" data-tip="Upvote">
+										<button
+											onClick={upvoteHandler}
+											className="btn btn-ghost gap-2 text-xl"
+										>
+											{isLiked ? (
+												<MdFavorite className="text-red-500" />
+											) : (
+												<MdFavoriteBorder />
+											)}
+											{_blogData.data.upvoters.length}
+										</button>
+									</div>
+
+									<div className="tooltip" data-tip="Comment">
+										<button
+											onClick={() => {
+												setIsCommenting(!isCommenting);
+											}}
+											className="btn btn-ghost gap-2 text-xl"
+										>
+											<MdComment />
+											{_blogData.data.comments.length}
+										</button>
+									</div>
+
+									<div className="tooltip" data-tip="Share">
+										<button
+											onClick={() => {
+												navigator.clipboard.writeText(window.location.href);
+												toast.success("Link copied to clipboard!");
+											}}
+											className="btn btn-ghost gap-2 text-xl ml-auto"
+										>
+											<MdShare />
+										</button>
+									</div>
 								</div>
+
 								{/* comment input */}
 								{isCommenting && (
 									<form
