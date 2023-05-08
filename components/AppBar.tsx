@@ -44,7 +44,7 @@ const AppBar = () => {
 						<Link href="/" className="relative w-8 h-8 md:hidden">
 							<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 						</Link>
-						<Link href="/" className="hidden md:block">
+						<Link href="/h/feed" className="hidden md:block">
 							<Image
 								alt="logo"
 								width={75}
@@ -93,27 +93,25 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<Link href="/feed" className="relative w-9 h-9 lg:hidden">
+							<Link href="/h/feed" className="relative w-9 h-9 lg:hidden">
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
 								<Link
 									href="/h/notifications"
-									className={`btn btn-sm invisible ${
-										router.pathname.includes("/h/notifications")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
+									className={`btn btn-sm invisible ${router.pathname.includes("/h/notifications")
+										? "btn-primary"
+										: "btn-ghost"
+										}`}
 								>
 									<MdNotifications className="text-lg" />
 								</Link>
 								<Link
 									href="/h/me"
-									className={`btn btn-sm ${
-										router.pathname.includes("/h/me")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
+									className={`btn btn-sm ${router.pathname.includes("/h/me")
+										? "btn-primary"
+										: "btn-ghost"
+										}`}
 								>
 									<MdPerson className="text-lg" />
 								</Link>
@@ -122,42 +120,38 @@ const AppBar = () => {
 						<div className="grid grid-cols-4 py-2 pt-4 w-full gap-1">
 							<Link
 								href="/h/feed"
-								className={`btn btn-sm ${
-									router.pathname.includes("/h/feed")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm ${router.pathname.includes("/h/feed")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdHome className="text-lg" />
 							</Link>
 							<Link
 								href="/h/drift"
-								className={`btn btn-sm ${
-									router.pathname.includes("/h/drift")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm ${router.pathname.includes("/h/drift")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdMap className="text-lg" />
 							</Link>
 							<Link
 								href='/h/jobs'
-								className={`btn btn-sm ${
-									router.pathname.includes("/h/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm ${router.pathname.includes("/h/jobs")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdWork className="text-lg" />
 							</Link>
 							<button
 								disabled
 								// href="/h/events"
-								className={`btn btn-sm  ${
-									router.pathname.includes("/h/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm  ${router.pathname.includes("/h/events")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdEvent className="text-lg" />
 							</button>
@@ -175,7 +169,7 @@ const AppBar = () => {
 				>
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<Link href="/" className="relative w-7 h-7 md:hidden">
+							<Link href="/p/dashboard" className="relative w-7 h-7 md:hidden">
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
@@ -191,11 +185,10 @@ const AppBar = () => {
 								</Link> */}
 								<Link
 									href={"/p/me"}
-									className={`btn btn-sm ${
-										router.pathname.includes("/p/me")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
+									className={`btn btn-sm ${router.pathname.includes("/p/me")
+										? "btn-primary"
+										: "btn-ghost"
+										}`}
 								>
 									<MdOutlinePerson className="text-lg" />
 								</Link>
@@ -204,42 +197,38 @@ const AppBar = () => {
 						<div className="grid grid-cols-4 gap-3 py-5 w-full">
 							<Link
 								href={"/p/dashboard"}
-								className={`btn btn-sm  ${
-									router.pathname.includes("/p/dashboard")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm  ${router.pathname.includes("/p/dashboard")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdHome className="text-lg" />
 							</Link>
 							<Link
 								href={"/p/blog"}
-								className={`btn btn-sm  ${
-									router.pathname.includes("/p/blog")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm  ${router.pathname.includes("/p/blog")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdNotes className="text-lg" />
 							</Link>
 							<Link
 								href={"/p/jobs"}
-								className={`btn btn-sm  ${
-									router.pathname.includes("/p/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm  ${router.pathname.includes("/p/jobs")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdOutlineWork className="text-lg" />
 							</Link>
 							<button
 								disabled
 								// href={"/p/events"}
-								className={`btn btn-sm  ${
-									router.pathname.includes("/p/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
+								className={`btn btn-sm  ${router.pathname.includes("/p/events")
+									? "btn-primary"
+									: "btn-ghost"
+									}`}
 							>
 								<MdOutlineEvent className="text-lg" />
 							</button>
