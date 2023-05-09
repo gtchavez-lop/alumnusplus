@@ -44,7 +44,7 @@ const AppBar = () => {
 						<Link href="/" className="relative w-8 h-8 md:hidden">
 							<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 						</Link>
-						<Link href="/h/feed" className="hidden md:block">
+						<Link href="/" className="hidden md:block">
 							<Image
 								alt="logo"
 								width={75}
