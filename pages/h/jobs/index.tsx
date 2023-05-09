@@ -4,10 +4,10 @@ import {
 	AnimTabTransition,
 } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import { IUserHunter, TProvJobPost } from "@/lib/types";
 import { MdInfo, MdSearch } from "react-icons/md";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import ActiveJobTabPanel from "@/components/jobs/ActiveJobTabPanel";
@@ -92,7 +92,7 @@ const ApplyPage = () => {
 		}
 
 		return data;
-	}
+	};
 
 	const fetchAllJobs = async () => {
 		const { data, error } = await supabase
@@ -159,6 +159,21 @@ const ApplyPage = () => {
 		return data as unknown as Promise<Job[]>;
 	};
 
+	const fetchInfiniteAllJobs = async ({ pageParam = 0 }) => {
+		const { data, error } = await supabase
+			.from("public_jobs")
+			.select("*,uploader:uploader_id(legalName)")
+			.eq("draft", false)
+			.range(pageParam * 5, (pageParam + 1) * 5);
+
+		if (error) {
+			console.log(error);
+			return [];
+		}
+
+		return data;
+	};
+
 	const allJobs = useQuery({
 		queryKey: ["h.jobs.all", allJobPage],
 		queryFn: fetchPaginatedAllJobs,
@@ -166,15 +181,20 @@ const ApplyPage = () => {
 		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 	});
+	const AllJobs = useInfiniteQuery({
+		queryKey: ["h.jobs.allJobs"],
+		queryFn: fetchInfiniteAllJobs,
+		enabled: !!_userDetails,
+		refetchOnWindowFocus: false,
+		keepPreviousData: true,
+		getNextPageParam: (lastPage, pages) => {
+			if (lastPage.length < 5) return false;
+			return pages.length;
+		},
+	});
 
 	const [recommendedJobs, savedJobs, appliedJobs] = useQueries({
 		queries: [
-			// {
-			// 	queryKey: ["allJobs"],
-			// 	queryFn: fetchAllJobs,
-			// 	refetchOnWindowFocus: false,
-			// 	enabled: !!_userDetails,
-			// },
 			{
 				queryKey: ["recommendedJobs"],
 				queryFn: fetchRecommendedJobs,
@@ -208,7 +228,8 @@ const ApplyPage = () => {
 		const { data, error } = await supabase
 			.from("public_jobs")
 			.select("*,uploader:uploader_id(legalName)")
-			.ilike("job_title", pattern);
+			.ilike("job_title", pattern)
+			.or(`job_skills.text:ilike.${pattern}`);
 
 		if (error) {
 			console.log(error);
@@ -218,21 +239,6 @@ const ApplyPage = () => {
 		setIsSearching(false);
 		setJobResult(data as Job[]);
 	};
-
-	//   const user_secondarySkills = authState.user_metadata.secondarySkills;
-
-	//   const { data, error } = await __supabase
-	//     .from("public_jobs")
-	//     .select("*")
-	//     .limit(10);
-	//   // .range(recommendedJobPage * 10, recommendedJobPage * 10 + 10);
-
-	//   if (error) {
-	//     console.log(error);
-	//   }
-
-	//   setRecommendedJobs(data);
-	// };
 
 	return (
 		<>
@@ -295,88 +301,97 @@ const ApplyPage = () => {
 								className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
 								key={"all_jobs"}
 							>
-								{isSearching && (
-									<div className="col-span-full text-center flex justify-center my-5">
-										<p>Searching Jobs</p>
-									</div>
-								)}
-
 								{!isSearching &&
-									allJobs.isLoading &&
-									jobResult.length < 1 &&
-									Array(2)
+									AllJobs.isLoading &&
+									Array(6)
 										.fill(0)
 										.map((_, index) => (
 											<motion.div
 												key={`jobloader_${index}`}
-												variants={AnimLoading}
-												animate="animate"
 												className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
 											/>
 										))}
 
-								{!isSearching &&
-									jobResult.length > 0 &&
-									jobResult.map((item, index) => (
-										<JobCard
-											key={item.id}
-											job={item}
-											isSaved={_userDetails.saved_jobs.includes(item.id)}
-											isApplied={_userDetails.applied_jobs.includes(item.id)}
-										/>
+								{jobResult.length < 1 &&
+									AllJobs.data?.pages.map((p, i) => (
+										<Fragment key={`page_${i}`}>
+											{p.map((c) => (
+												<JobCard
+													key={c.id}
+													job={c}
+													isSaved={savedJobs.data?.some(
+														(savedJob) => savedJob.id === c.id,
+													)}
+													isApplied={appliedJobs.data?.some(
+														(appliedJob) => appliedJob.id === c.id,
+													)}
+												/>
+											))}
+										</Fragment>
 									))}
 
 								{!isSearching &&
-									jobResult.length < 1 &&
-									allJobs.isSuccess &&
-									allJobs.data.map((item, index) => (
+									AllJobs.isFetchingNextPage &&
+									Array(6)
+										.fill(0)
+										.map((_, index) => (
+											<motion.div
+												key={`jobloader_${index}`}
+												className="h-[238px] w-full bg-slate-500/50 animate-pulse rounded-btn"
+											/>
+										))}
+
+								{jobResult.length < 1 &&
+									AllJobs.hasNextPage &&
+									!AllJobs.isFetchingNextPage && (
+										<button
+											onClick={() => {
+												AllJobs.fetchNextPage();
+											}}
+											className="btn btn-primary w-full col-span-full mt-5"
+										>
+											Load More
+										</button>
+									)}
+
+								{/* {!isSearching &&
+									!AllJobs.hasNextPage &&
+									!AllJobs.isFetchingNextPage && (
+										<p className="text-center col-span-full mt-5">
+											No more jobs to load
+										</p>
+									)} */}
+
+								{/* {!isSearching &&
+									AllJobs.isError &&
+									!AllJobs.isFetchingNextPage && (
+										<p className="text-center col-span-full mt-5">
+											Failed to load jobs
+										</p>
+									)} */}
+
+								{/* {!isSearching &&
+									AllJobs.data?.pages.length === 0 &&
+									!AllJobs.isFetchingNextPage && (
+										<p className="text-center col-span-full mt-5">
+											No jobs found
+										</p>
+									)} */}
+
+								{jobResult.length > 0 &&
+									jobResult.map((c, i) => (
 										<JobCard
-											key={item.id}
-											job={item}
-											isSaved={_userDetails.saved_jobs.includes(item.id)}
-											isApplied={_userDetails.applied_jobs.includes(item.id)}
+											key={c.id}
+											job={c}
+											isSaved={savedJobs.data?.some(
+												(savedJob) => savedJob.id === c.id,
+											)}
+											isApplied={appliedJobs.data?.some(
+												(appliedJob) => appliedJob.id === c.id,
+											)}
 										/>
 									))}
 							</motion.div>
-
-							{allJobs.isSuccess && (
-								// next page button
-								<div className="flex justify-between max-w-md mx-auto mt-10">
-									<button
-										disabled={allJobPage === 0}
-										onClick={() => {
-											// go to top of the page
-											window.scrollTo({
-												top: 0,
-												behavior: "smooth",
-											});
-											setAllJobPage((prev) => {
-												// do not go less than 0
-												if (prev - 1 < 0) {
-													return 0;
-												}
-												return prev - 1;
-											});
-										}}
-										className="btn btn-primary"
-									>
-										Previous
-									</button>
-									<button
-										onClick={() => {
-											// go to top of the page
-											window.scrollTo({
-												top: 0,
-												behavior: "smooth",
-											});
-											setAllJobPage((prev) => prev + 1);
-										}}
-										className="btn btn-primary"
-									>
-										Next
-									</button>
-								</div>
-							)}
 						</>
 					)}
 					{tabSelected === "recommended" && (

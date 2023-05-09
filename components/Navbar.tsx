@@ -36,8 +36,9 @@ const Navbar = () => {
 	const [navbarContainer] = useAutoAnimate();
 	const cacheQueryClient = useQueryClient();
 	
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const _currentUser = useStore($accountDetails) as any;
+	const _currentUser = useStore($accountDetails);
+	const _currentHunter = useStore($accountDetails) as IUserHunter;
+	const _currentProvisioner = useStore($accountDetails) as IUserProvisioner;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -140,7 +141,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "hunter" && _currentUser && (
+				{_accountType === "hunter" && _currentHunter && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -195,24 +196,24 @@ const Navbar = () => {
 						</div>
 						<div className="flex gap-2 items-center">
 							<p className="font-semibold opacity-75">
-								{_currentUser.full_name.first}{" "}
-								{_currentUser.full_name.last || ""}
+								{_currentHunter.full_name.first}{" "}
+								{_currentHunter.full_name.last || ""}
 							</p>
 							<div className="dropdown dropdown-hover dropdown-end">
 								<button
 									tabIndex={0}
 									className={`avatar h-10 w-10 rounded-full justify-center items-center
-								${_currentUser.activeJob && "online"}
+								${_currentHunter.activeJob && "online"}
 								${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
 								>
-									{_currentUser.avatar_url ? (
+									{_currentHunter.avatar_url ? (
 										<Image
 											alt="avatar"
-											src={_currentUser.avatar_url}
+											src={_currentHunter.avatar_url}
 											width={40}
 											height={40}
 											className="mask mask-circle"
@@ -250,7 +251,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "provisioner" && _currentUser && (
+				{_accountType === "provisioner" && _currentProvisioner && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -262,7 +263,7 @@ const Navbar = () => {
 							height={40}
 						/>
 						<div className="flex gap-1 items-center">
-							{_currentUser.is_live && (
+							{_currentProvisioner.is_live && (
 								<p className="text-success font-bold mr-5 animate-bounce">
 									LIVE
 								</p>

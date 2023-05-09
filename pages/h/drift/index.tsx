@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useState } from "react";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { FormEvent, Fragment, useEffect, useState } from "react";
+import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -147,11 +147,11 @@ const DriftPage: NextPage = () => {
 		return [];
 	};
 
-	const getAllJobs = async () => {
+	const getAllJobs = async ({ pageParam = 0 }) => {
 		const { data, error } = await supabase
 			.from("user_provisioners")
 			.select()
-			.limit(allResultsPage * 10);
+			.range(pageParam * 6, (pageParam + 1) * 6 - 1);
 
 		if (error) {
 			toast.error(error.message);
@@ -161,22 +161,26 @@ const DriftPage: NextPage = () => {
 		return data;
 	};
 
-	const [nearbyResults, allResults] = useQueries({
+	const [nearbyResults] = useQueries({
 		queries: [
 			{
-				queryKey: ["nearby_companies"],
+				queryKey: ["h.drift.nearby_jobs"],
 				queryFn: getNearbyJobs,
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
 				enabled: userLocation !== null && !!_currentUser,
 			},
-			{
-				queryKey: ["all_companies"],
-				queryFn: getAllJobs,
-				refetchOnWindowFocus: false,
-				enabled: !!_currentUser,
-			},
 		],
+	});
+	const allCompanies = useInfiniteQuery({
+		queryKey: ["h.drift.all_companies"],
+		queryFn: getAllJobs,
+		refetchOnWindowFocus: false,
+		enabled: !!_currentUser,
+		getNextPageParam: (lastPage, pages) => {
+			if (lastPage.length < 6) return false;
+			return pages.length + 1;
+		},
 	});
 
 	const handleSearchCompany = async (e: FormEvent<HTMLFormElement>) => {
@@ -313,67 +317,60 @@ const DriftPage: NextPage = () => {
 								</div>
 							</form>
 
-							{allResults.isLoading &&
-								Array(3)
-									.fill(0)
-									.map((_, index) => (
-										<div
-											key={`company-skeleton-${index}`}
-											className="p-3 bg-slate-500/50 animate-pulse rounded-btn h-[224px]"
-										/>
-									))}
-
 							{/* not searching results */}
-							<>
-								{allResults.isSuccess &&
-									allResults.data?.length === 0 &&
-									searchResults.length < 1 && (
-										<div className="col-span-full py-5">
-											<p className="alert alert-info">No companies found</p>
-										</div>
-									)}
+							{searchResults.length === 0 && (
+								<>
+									{allCompanies.isFetched &&
+										allCompanies.data?.pages.map((p, i) => (
+											<Fragment key={`allcompany_page_${i + 1}`}>
+												{p.map((c, j) => (
+													<Link
+														key={`company-${j}`}
+														href={`/h/drift/company?id=${c.id}`}
+														passHref
+														className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
+													>
+														<div className="flex flex-col items-center gap-2 cursor-pointer">
+															<Image
+																alt=""
+																src={
+																	c.avatar_url ||
+																	`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${c.legalName}`
+																}
+																className="mask mask-squircle w-[100px] h-[100px]"
+																width={100}
+																height={100}
+															/>
+															<p>{c.legalName}</p>
+														</div>
+													</Link>
+												))}
+											</Fragment>
+										))}
 
-								{allResults.isSuccess &&
-									searchResults.length < 1 &&
-									allResults.data?.map((item, index) => (
-										<Link
-											key={`company-${index}`}
-											href={`/h/drift/company?id=${item.id}`}
-											passHref
-											className="p-3 hover:border-opacity-0 hover:bg-primary hover:text-primary-content border-2 border-primary transition border-opacity-50 rounded-btn flex flex-col justify-center h-[224px]"
-										>
-											<div className="flex flex-col items-center gap-2 cursor-pointer">
-												<Image
-													alt=""
-													src={
-														item.avatar_url ||
-														`https://api.dicebear.com/5.x/shapes/png?backgroundType=solid&backgroundColor=C7485F&seed=${item.legalName}`
-													}
-													className="mask mask-squircle w-[100px] h-[100px]"
-													width={100}
-													height={100}
+									{allCompanies.isFetching &&
+										Array(6)
+											.fill(0)
+											.map((_, index) => (
+												<div
+													key={`company-skeleton-${index}`}
+													className="p-3 bg-slate-500/50 animate-pulse rounded-btn h-[224px]"
 												/>
-												<p>{item.legalName}</p>
-											</div>
-										</Link>
-									))}
+											))}
 
-								{allResults.isSuccess &&
-									allResults.data?.length > 0 &&
-									searchResults.length < 1 && (
-										<div className="col-span-full flex justify-center mt-5">
+									{/* load more */}
+									{allCompanies.hasNextPage && (
+										<div className="col-span-full flex justify-center">
 											<button
-												onClick={() => {
-													setAllResultsPage(allResultsPage + 1);
-													allResults.refetch();
-												}}
-												className="btn btn-primary btn-block max-w-md"
+												onClick={() => allCompanies.fetchNextPage()}
+												className="btn btn-primary btn-block"
 											>
 												Load more
 											</button>
 										</div>
 									)}
-							</>
+								</>
+							)}
 
 							{/* searching results */}
 							<>
