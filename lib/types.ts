@@ -9,100 +9,6 @@ export type Json =
 export interface Database {
 		public: {
 			Tables: {
-				hunt_blog: {
-					Row: {
-						comments: Json | null;
-						content: string | null;
-						createdAt: string | null;
-						id: string;
-						type: string | null;
-						updatedAt: string | null;
-						uploader: Json | null;
-						uploaderID: string | null;
-						upvoters: Json | null;
-					};
-					Insert: {
-						comments?: Json | null;
-						content?: string | null;
-						createdAt?: string | null;
-						id?: string;
-						type?: string | null;
-						updatedAt?: string | null;
-						uploader?: Json | null;
-						uploaderID?: string | null;
-						upvoters?: Json | null;
-					};
-					Update: {
-						comments?: Json | null;
-						content?: string | null;
-						createdAt?: string | null;
-						id?: string;
-						type?: string | null;
-						updatedAt?: string | null;
-						uploader?: Json | null;
-						uploaderID?: string | null;
-						upvoters?: Json | null;
-					};
-				};
-				job_postings: {
-					Row: {
-						career_level: string | null;
-						created_at: string | null;
-						id: string;
-						job_benefits: string | null;
-						job_category: string | null;
-						job_description: string | null;
-						job_expectedSalary: string | null;
-						job_location: string | null;
-						job_mode: string | null;
-						job_requirements: string[] | null;
-						job_tags: string[] | null;
-						job_title: string | null;
-						job_type: string | null;
-						job_workingHours: string | null;
-						uploader_company_size: string | null;
-						uploader_email: string | null;
-						uploader_legal_name: string | null;
-					};
-					Insert: {
-						career_level?: string | null;
-						created_at?: string | null;
-						id?: string;
-						job_benefits?: string | null;
-						job_category?: string | null;
-						job_description?: string | null;
-						job_expectedSalary?: string | null;
-						job_location?: string | null;
-						job_mode?: string | null;
-						job_requirements?: string[] | null;
-						job_tags?: string[] | null;
-						job_title?: string | null;
-						job_type?: string | null;
-						job_workingHours?: string | null;
-						uploader_company_size?: string | null;
-						uploader_email?: string | null;
-						uploader_legal_name?: string | null;
-					};
-					Update: {
-						career_level?: string | null;
-						created_at?: string | null;
-						id?: string;
-						job_benefits?: string | null;
-						job_category?: string | null;
-						job_description?: string | null;
-						job_expectedSalary?: string | null;
-						job_location?: string | null;
-						job_mode?: string | null;
-						job_requirements?: string[] | null;
-						job_tags?: string[] | null;
-						job_title?: string | null;
-						job_type?: string | null;
-						job_workingHours?: string | null;
-						uploader_company_size?: string | null;
-						uploader_email?: string | null;
-						uploader_legal_name?: string | null;
-					};
-				};
 				notif_hunters: {
 					Row: {
 						created_at: string | null;
@@ -245,9 +151,9 @@ export interface Database {
 				};
 				user_hunters: {
 					Row: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
-						activeJob: string;
 						avatar_url: string | null;
 						banner_url: string | null;
 						bio: string;
@@ -280,9 +186,9 @@ export interface Database {
 						username: string | null;
 					};
 					Insert: {
+						activeJob?: string | null;
 						address?: Json | null;
 						applied_jobs?: string[] | null;
-						activeJob: string;
 						avatar_url?: string | null;
 						banner_url?: string | null;
 						bio?: string;
@@ -315,9 +221,9 @@ export interface Database {
 						username?: string | null;
 					};
 					Update: {
+						activeJob?: string | null;
 						address?: Json | null;
 						applied_jobs?: string[] | null;
-						activeJob: string;
 						avatar_url?: string | null;
 						banner_url?: string | null;
 						bio?: string;
@@ -451,6 +357,7 @@ export interface Database {
 						input_id: string;
 					};
 					Returns: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
 						avatar_url: string | null;
@@ -485,33 +392,12 @@ export interface Database {
 						username: string | null;
 					}[];
 				};
-				getalljobs: {
-					Args: Record<PropertyKey, never>;
-					Returns: {
-						career_level: string | null;
-						created_at: string | null;
-						id: string;
-						job_benefits: string | null;
-						job_category: string | null;
-						job_description: string | null;
-						job_expectedSalary: string | null;
-						job_location: string | null;
-						job_mode: string | null;
-						job_requirements: string[] | null;
-						job_tags: string[] | null;
-						job_title: string | null;
-						job_type: string | null;
-						job_workingHours: string | null;
-						uploader_company_size: string | null;
-						uploader_email: string | null;
-						uploader_legal_name: string | null;
-					}[];
-				};
 				gethunter: {
 					Args: {
 						email_input: string;
 					};
 					Returns: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
 						avatar_url: string | null;
@@ -551,6 +437,7 @@ export interface Database {
 						username_input: string;
 					};
 					Returns: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
 						avatar_url: string | null;
@@ -585,27 +472,12 @@ export interface Database {
 						username: string | null;
 					}[];
 				};
-				gethunterpostsbyid: {
-					Args: {
-						id_input: string;
-					};
-					Returns: {
-						comments: Json | null;
-						content: string | null;
-						createdAt: string | null;
-						id: string;
-						type: string | null;
-						updatedAt: string | null;
-						uploader: Json | null;
-						uploaderID: string | null;
-						upvoters: Json | null;
-					}[];
-				};
 				getpeoplebylocation: {
 					Args: {
 						in_location: string;
 					};
 					Returns: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
 						avatar_url: string | null;
@@ -645,6 +517,7 @@ export interface Database {
 						searchquery: string;
 					};
 					Returns: {
+						activeJob: string | null;
 						address: Json | null;
 						applied_jobs: string[] | null;
 						avatar_url: string | null;
