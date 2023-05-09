@@ -1,10 +1,11 @@
 import { FC, FormEvent, useEffect, useState } from "react";
-import { FiLoader, FiMessageSquare } from "react-icons/fi";
+import { FiLoader, FiMessageSquare, FiX } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
 	MdCheckCircleOutline,
 	MdFavorite,
 	MdFavoriteBorder,
+	MdReport,
 	MdShare,
 } from "react-icons/md";
 
@@ -22,6 +23,8 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { uuid } from "uuidv4";
+import emailjs from "@emailjs/browser";
+import Modal from "../Modal";
 
 dayjs.extend(relativeTime);
 
@@ -50,6 +53,38 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 	const currentUser = useStore($accountDetails) as IUserHunter;
 	const [cardRef] = useAutoAnimate<HTMLDivElement>();
 	const [isClicked, setIsClicked] = useState(false);
+
+	const [showModal, setShowModal] = useState(false);
+
+	const sendEmail = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		const form = e.target as HTMLFormElement;
+		if (!form.user_name.value || !form.user_vio.value || !form.user_msg.value) {
+			toast.error("all fields are required");
+			return;
+		}
+
+		emailjs
+			.sendForm(
+				"service_4310hrm",
+				"template_4j7dmmb",
+				form,
+				"TJt6Hz9Y176DgEzZZ",
+			)
+			.then(
+				(result) => {
+					console.log(result.text);
+				},
+				(error) => {
+					console.log(error.text);
+				},
+			);
+		form.reset();
+		setShowModal(false);
+
+		toast.success("Your Report has been Sent");
+	};
 
 	const checkIfLiked = async () => {
 		const upvotersList = blogData.upvoters as string[];
@@ -356,39 +391,109 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
-							{isLiked ? (
-								<MdFavorite className="text-lg text-red-500" />
-							) : (
-								<MdFavoriteBorder className="text-lg " />
-							)}
-							{/* <FiArrowUp className="font-bold" /> */}
-							{blogData.upvoters ? blogData.upvoters.length : 0}
-						</button>
-						<motion.button
-							onClick={() =>
-								setCommentsOpen(
-									blogData.comments?.length ? !commentsOpen : true,
-								)
-							}
-							className="btn btn-ghost"
-						>
-							<FiMessageSquare className="font-bold" />
-							<span className="ml-2">{blogData.comments?.length ?? 0}</span>
-						</motion.button>
+						<div className="tooltip" data-tip="Upvote">
+							<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
+								{isLiked ? (
+									<MdFavorite className="text-lg text-red-500" />
+								) : (
+									<MdFavoriteBorder className="text-lg " />
+								)}
+								{/* <FiArrowUp className="font-bold" /> */}
+								{blogData.upvoters ? blogData.upvoters.length : 0}
+							</button>
+						</div>
+
+						<div className="tooltip" data-tip="Comment">
+							<motion.button
+								onClick={() =>
+									setCommentsOpen(
+										blogData.comments?.length ? !commentsOpen : true,
+									)
+								}
+								className="btn btn-ghost"
+							>
+								<FiMessageSquare className="font-bold" />
+								<span className="ml-2">{blogData.comments?.length ?? 0}</span>
+							</motion.button>
+						</div>
 					</div>
+
+					{/* report a user */}
 					<div className="flex gap-2">
-						<button
-							className="btn btn-ghost gap-2"
-							onClick={() => {
-								const baseURL = window.location.origin;
-								const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
-								navigator.clipboard.writeText(thisLink);
-								toast("Link Shared");
-							}}
-						>
-							<MdShare />
-						</button>
+						<div className="tooltip" data-tip="Report">
+							<button
+								onClick={() => setShowModal(!showModal)}
+								className="btn btn-ghost"
+							>
+								<MdReport />
+							</button>
+						</div>
+
+						{showModal && (
+							<Modal isVisible={showModal} setIsVisible={setShowModal}>
+								<div className="flex justify-between">
+									<h3 className="text-3xl font-semibold">Report</h3>
+									<button
+										className="btn btn-ghost"
+										type="button"
+										onClick={() => setShowModal(!showModal)}
+									>
+										<FiX />
+									</button>
+								</div>
+								<form onSubmit={sendEmail} className="flex flex-col gap-y-4">
+									<div className="flex flex-col">
+										<label className="text-sm  ml-4">
+											Name of the user you want to report
+										</label>
+										<input
+											type="text"
+											placeholder="John Doe"
+											className="input input-primary input-bordered"
+											name="user_name"
+										/>
+									</div>
+
+									<div className="flex flex-col">
+										<label className="text-sm  ml-4">Violation</label>
+										<input
+											type="text"
+											placeholder="User's violation"
+											className="input input-primary input-bordered"
+											name="user_vio"
+										/>
+									</div>
+
+									<div className="flex flex-col">
+										<label className="text-sm  ml-4">Reason</label>
+										<textarea
+											placeholder="Please tell us the problem"
+											rows={4}
+											className="textarea textarea-primary textarea-bordered"
+											name="user_msg"
+										/>
+									</div>
+
+									<button className="btn btn-primary btn-block" type="submit">
+										Submit
+									</button>
+								</form>
+							</Modal>
+						)}
+
+						<div className="tooltip" data-tip="Share">
+							<button
+								className="btn btn-ghost gap-2"
+								onClick={() => {
+									const baseURL = window.location.origin;
+									const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
+									navigator.clipboard.writeText(thisLink);
+									toast("Link Shared");
+								}}
+							>
+								<MdShare />
+							</button>
+						</div>
 					</div>
 				</div>
 
@@ -449,45 +554,6 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 										{/* actions */}
 										{currentUser.id === blogData.uploader.id && (
 											<>
-												{/* <div className="dropdown dropdown-bottom dropdown-end">
-													<label tabIndex={0} className="btn btn-ghost">
-														<MdMoreHoriz />
-													</label>
-													<ul
-														tabIndex={0}
-														className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-max"
-													>
-														<li>
-															<label
-																htmlFor="deleteCommentModal"
-																className="hover:bg-error hover:text-error-content"
-															>
-																<MdDelete />
-																Delete Comment
-															</label>
-														</li>
-														<li>
-															<p
-																onClick={() => {
-																	changeCommentVisibility(comment.id);
-																}}
-															>
-																{comment.visible ? (
-																	<>
-																		<MdVisibilityOff />
-																		Hide Comment
-																	</>
-																) : (
-																	<>
-																		<MdVisibility />
-																		Show Comment
-																	</>
-																)}
-															</p>
-														</li>
-													</ul>
-												</div> */}
-
 												{/* delete comment modal */}
 												<input
 													type="checkbox"

@@ -130,14 +130,17 @@ const ResetPasswordPage: NextPage = () => {
 									setPasswords({ ...passwords, password: e.target.value })
 								}
 							/>
+
 							<button
 								type="button"
 								onClick={() => setPasswordRevealed(!passwordRevealed)}
-								className="btn btn-primary text-lg"
+								className="btn btn-primary text-lg tooltip"
+								data-tip="Show Password"
 							>
 								{passwordRevealed ? <MdVisibilityOff /> : <MdVisibility />}
 							</button>
 						</label>
+
 						<input
 							id="confirmPassword"
 							name="confirmPassword"
@@ -150,14 +153,15 @@ const ResetPasswordPage: NextPage = () => {
 								})
 							}
 						/>
-						<div className="flex justify-end">
+
+						{/* <div className="flex justify-end">
 							<button
 								onClick={() => setPasswordRevealed(!passwordRevealed)}
 								className="btn btn-ghost text-lg"
 							>
 								{passwordRevealed ? <MdVisibilityOff /> : <MdVisibility />}
 							</button>
-						</div>
+						</div> */}
 
 						<button
 							disabled={

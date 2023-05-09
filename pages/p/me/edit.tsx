@@ -288,7 +288,7 @@ const ProvisionerProfileEditPage: NextPage = () => {
 										/>
 
 										<Link
-											href="/h/me/resetpassword"
+											href="/p/me/resetpassword"
 											className="btn btn-primary mt-1"
 										>
 											Reset Password
