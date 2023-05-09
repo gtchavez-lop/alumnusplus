@@ -36,8 +36,9 @@ const Navbar = () => {
 	const [navbarContainer] = useAutoAnimate();
 	const cacheQueryClient = useQueryClient();
 	
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const _currentUser = useStore($accountDetails) as any;
+	const _currentUser = useStore($accountDetails);
+	const _currentHunter = useStore($accountDetails) as IUserHunter;
+	const _currentProvisioner = useStore($accountDetails) as IUserProvisioner;
 
 	const getTheme = () => {
 		if (typeof window !== "undefined" && window.localStorage) {
@@ -140,7 +141,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "hunter" && _currentUser && (
+				{_accountType === "hunter" && _currentHunter && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -152,67 +153,78 @@ const Navbar = () => {
 							height={40}
 						/>
 						<div className="flex gap-1">
-							<Link
-								href="/h/feed"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/feed")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdHome className="text-lg" />
-							</Link>
-							<Link
-								href="/h/drift"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/drift")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdMap className="text-lg" />
-							</Link>
-							<Link
-								href="/h/jobs"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdWork className="text-lg" />
-							</Link>
-							<Link
-								href="/h/events"
-								className={`btn btn-square ${
-									router.pathname.includes("/h/events")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdEvent className="text-lg" />
-							</Link>
+							<div className="tooltip tooltip-bottom" data-tip="Home">
+								<Link
+									href="/h/feed"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/feed")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdHome className="text-lg " />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Find Companies">
+								<Link
+									href="/h/drift"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/drift")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdMap className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Find Jobs">
+								<Link
+									href="/h/jobs"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/jobs")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdWork className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Events">
+								<Link
+									href="/h/events"
+									className={`btn btn-square ${
+										router.pathname.includes("/h/events")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdEvent className="text-lg" />
+								</Link>
+							</div>
 						</div>
 						<div className="flex gap-2 items-center">
 							<p className="font-semibold opacity-75">
-								{_currentUser.full_name.first}{" "}
-								{_currentUser.full_name.last || ""}
+								{_currentHunter.full_name.first}{" "}
+								{_currentHunter.full_name.last || ""}
 							</p>
 							<div className="dropdown dropdown-hover dropdown-end">
 								<button
 									tabIndex={0}
 									className={`avatar h-10 w-10 rounded-full justify-center items-center
-								${_currentUser.activeJob && "online"}
+								${_currentHunter.activeJob && "online"}
 								${
 									router.pathname.includes("/h/me")
 										? "btn-primary"
 										: "btn-ghost"
 								}`}
 								>
-									{_currentUser.avatar_url ? (
+									{_currentHunter.avatar_url ? (
 										<Image
 											alt="avatar"
-											src={_currentUser.avatar_url}
+											src={_currentHunter.avatar_url}
 											width={40}
 											height={40}
 											className="mask mask-circle"
@@ -250,7 +262,7 @@ const Navbar = () => {
 						</div>
 					</div>
 				)}
-				{_accountType === "provisioner" && _currentUser && (
+				{_accountType === "provisioner" && _currentProvisioner && (
 					<div
 						ref={navbarContainer}
 						className="mx-auto max-w-5xl w-full flex items-center justify-between"
@@ -262,41 +274,49 @@ const Navbar = () => {
 							height={40}
 						/>
 						<div className="flex gap-1 items-center">
-							{_currentUser.is_live && (
+							{_currentProvisioner.is_live && (
 								<p className="text-success font-bold mr-5 animate-bounce">
 									LIVE
 								</p>
 							)}
-							<Link
-								href="/p/dashboard"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/dashboard")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdDashboard className="text-lg" />
-							</Link>
-							<Link
-								href="/p/blog"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/blog")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdNotes className="text-lg" />
-							</Link>
-							<Link
-								href="/p/jobs"
-								className={`btn btn-square ${
-									router.pathname.includes("/p/jobs")
-										? "btn-primary"
-										: "btn-ghost"
-								}`}
-							>
-								<MdWork className="text-lg" />
-							</Link>
+							<div className="tooltip tooltip-bottom" data-tip="Dashboard">
+								<Link
+									href="/p/dashboard"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/dashboard")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdDashboard className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Blog & Events">
+								<Link
+									href="/p/blog"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/blog")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdNotes className="text-lg" />
+								</Link>
+							</div>
+
+							<div className="tooltip tooltip-bottom" data-tip="Job Posting">
+								<Link
+									href="/p/jobs"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/jobs")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdWork className="text-lg" />
+								</Link>
+							</div>
 
 							<div className="dropdown dropdown-hover dropdown-end">
 								<button

@@ -81,7 +81,7 @@ const LogInPage = () => {
 		if (metadata.type === "provisioner") {
 			router.push("/p/dashboard");
 		}
-	}
+	};
 
 	return (
 		<>
@@ -213,7 +213,8 @@ const LogInPage = () => {
 											onClick={() => {
 												setIsPasswordRevealed(!isPasswordRevealed);
 											}}
-											className="btn btn-primary text-lg"
+											className="btn btn-primary text-lg tooltip"
+											data-tip="Show Password"
 										>
 											{isPasswordRevealed ? (
 												<MdVisibilityOff />
