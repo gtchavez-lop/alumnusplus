@@ -14,6 +14,7 @@ import Image from "next/image";
 import { NextPage } from "next";
 import Novie1 from "@/components/resume_template/novie1";
 import Novie2 from "@/components/resume_template/novie2";
+import Novie3 from "@/components/resume_template/novie3";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -185,6 +186,8 @@ const GeneratedCV: NextPage = () => {
 							{template === "gabbie2" && <Gab2 />}
 							{template === "novie1" && <Novie1 />}
 							{template === "novie2" && <Novie2 />}
+							{template === "novie3" && <Novie3 />}
+
 						</div>
 					)}
 				</Page>

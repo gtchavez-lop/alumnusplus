@@ -46,6 +46,11 @@ const templates = [
 		value: "novie2",
 		image: "/cvtemplate/preview_novie2.png",
 	},
+	{
+		name: "Novie 3",
+		value: "novie3",
+		image: "/cvtemplate/preview_gab2.png",
+	},
 ];
 
 const CvBuilder: FC = () => {
