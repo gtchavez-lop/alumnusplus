@@ -7,7 +7,7 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import { useStore } from "@nanostores/react";
 
-const Carlo2: FC = () => {
+const Carlo5: FC = () => {
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	return (
 		<>
@@ -122,4 +122,4 @@ const Carlo2: FC = () => {
 		</>
 	);
 };
-export default Carlo2;
+export default Carlo5;

@@ -27,6 +27,21 @@ const templates = [
 		image: "/cvtemplate/preview_carlo2.png",
 	},
 	{
+		name: "Carlo 3",
+		value: "carlo3",
+		image: "/cvtemplate/preview_carlo3.png",
+	},
+	{
+		name: "Carlo 4",
+		value: "carlo4",
+		image: "/cvtemplate/preview_carlo4.png",
+	},
+	{
+		name: "Carlo 5",
+		value: "carlo5",
+		image: "/cvtemplate/preview_carlo5.png",
+	},
+	{
 		name: "Gabbie 1",
 		value: "gabbie1",
 		image: "/cvtemplate/preview_gab1.png",
