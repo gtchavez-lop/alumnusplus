@@ -1,5 +1,4 @@
 import { MdEmail, MdPhone } from "react-icons/md";
-
 import { $accountDetails } from "@/lib/globalStates";
 import { IUserHunter } from "@/lib/types";
 import Image from "next/image";
