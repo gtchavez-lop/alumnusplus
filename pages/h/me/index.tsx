@@ -25,6 +25,8 @@ import {
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import { AnimPageTransition } from "@/lib/animations";
+import CvBuilder from "@/components/jobs/CvBuilder";
+import FeedCard from "@/components/feed/FeedCard";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,7 +54,8 @@ type TTabs =
 	| "connections"
 	| "followedCompanies"
 	| "trainings"
-	| "savedjobs";
+	| "savedjobs"
+	| "builder";
 
 const PageTabs = [
 	{
@@ -86,6 +89,10 @@ const PageTabs = [
 	{
 		title: "Saved Jobs",
 		value: "savedjobs",
+	},
+	{
+		title: "CV/Resume Builder",
+		value: "builder",
 	},
 ];
 
@@ -137,7 +144,7 @@ const ProfilePage: NextPage = () => {
 	const fetchUserActivities = async () => {
 		const { data, error } = await supabase
 			.from("public_posts")
-			.select("*")
+			.select("*,uploader: user_hunters(id,avatar_url,username,full_name)")
 			.eq("uploader", _currentUser.id);
 
 		if (error) {
@@ -290,7 +297,7 @@ const ProfilePage: NextPage = () => {
 						<section className="flex flex-col gap-5">
 							<div className="flex flex-col gap-3">
 								{/* landing profile */}
-								<div className="flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
+								<div className="relative flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
 									<div className="relative">
 										<Image
 											src={_currentUser.avatar_url}
@@ -319,14 +326,12 @@ const ProfilePage: NextPage = () => {
 											</span>
 										</p>
 									</div>
-								</div>
 
-								<div className="flex justify-end">
 									<Link
 										href={"/h/me/edit"}
-										className="btn btn-primary items-center gap-3"
+										className="absolute sm:relative btn btn-primary items-center gap-3 self-end ml-auto"
 									>
-										Edit Profile
+										<span className="hidden md:block">Edit Profile</span>
 										<FiEdit3 />
 									</Link>
 								</div>
@@ -472,20 +477,25 @@ const ProfilePage: NextPage = () => {
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{userActivities.isSuccess &&
 												userActivities.data.map((activity, index) => (
-													<Link
-														key={`blogpost_${index}`}
-														href={`/h/feed/post?id=${activity.id}`}
-													>
-														<div
-															key={`activity_${index}`}
-															className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary hover:border-transparent hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
-														>
-															<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-base-100" />
-															<ReactMarkdown className="prose prose-sm h-[150px] ">
-																{`${activity.content.substring(0, 300)}`}
-															</ReactMarkdown>
-														</div>
-													</Link>
+													// <Link
+													// 	key={`blogpost_${index}`}
+													// 	href={`/h/feed/post?id=${activity.id}`}
+													// >
+													// 	<div
+													// 		key={`activity_${index}`}
+													// 		className="relative flex gap-2 items-center justify-between overflow-hidden p-5 border-2 border-primary hover:border-transparent hover:bg-primary hover:bg-opacity-30 transition rounded-btn"
+													// 	>
+													// 		<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-base-100" />
+													// 		<ReactMarkdown className="prose prose-sm h-[150px] ">
+													// 			{`${activity.content.substring(0, 300)}`}
+													// 		</ReactMarkdown>
+													// 	</div>
+													// </Link>
+													<FeedCard
+														key={`activity_${index}`}
+														blogData={activity}
+														refetchData={userActivities.refetch}
+													/>
 												))}
 
 											{userActivities.isSuccess &&
@@ -602,7 +612,7 @@ const ProfilePage: NextPage = () => {
 									)}
 									{tabSelected === "education" && (
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-											{_currentUser.experience.length === 0 && (
+											{_currentUser.education.length < 1 && (
 												<div className="col-span-full flex flex-col items-center py-5">
 													<p className="alert alert-info max-w-xs text-center">
 														No Education yet. Please add education to your
@@ -662,7 +672,7 @@ const ProfilePage: NextPage = () => {
 										</div>
 									)}
 									{tabSelected === "savedjobs" && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2">
 											{savedJobs.isSuccess &&
 												savedJobs.data.map((job, index) => (
 													<Link
@@ -704,9 +714,11 @@ const ProfilePage: NextPage = () => {
 											)}
 										</div>
 									)}
+									{tabSelected === "builder" && <CvBuilder />}
 								</div>
 							</div>
 
+							<div className="divider" />
 							{/* second column */}
 							<div className="flex flex-col gap-5">
 								<div className="flex flex-col rounded-btn p-2 gap-3">
@@ -766,19 +778,19 @@ const ProfilePage: NextPage = () => {
 									</div>
 								</div>
 								<div className="divider" />
-								<div className="flex flex-col rounded-btn p-2 gap-5">
-									<label className="flex items-center justify-between">
-										<span>Dark Mode</span>
+								<div className="grid grid-cols-1 md:grid-cols-2">
+									<label className="flex items-center gap-2">
 										<input
 											type="checkbox"
 											className="toggle"
 											checked={_globalTheme === "dark"}
 											onChange={toggleTheme}
 										/>
+										<span>Dark Mode</span>
 									</label>
 									<label
 										onClick={() => setSignOutModalVisible(true)}
-										className="btn btn-error w-full"
+										className="btn btn-error "
 									>
 										Sign out session
 									</label>
