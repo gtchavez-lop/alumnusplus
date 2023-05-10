@@ -4,6 +4,6 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 export const supabase = createClient(
-	supabaseUrl as string,
-	supabaseKey as string,
+  supabaseUrl as string,
+  supabaseKey as string
 );

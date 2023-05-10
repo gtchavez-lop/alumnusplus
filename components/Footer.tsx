@@ -1,35 +1,44 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FiMapPin } from "react-icons/fi";
+import { MdLocationCity } from "react-icons/md";
 
 const Footer = () => {
 	return (
 		<>
 			<div className="h-[2px] w-96 bg-primary my-5 mx-auto rounded-lg print:hidden" />
 			<footer className="footer p-10 text-base-content print:hidden">
-				<div className="flex flex-col md:flex-row md:items-center">
-					<Image
-						src="/logo/wicket-new-adaptive.png"
-						alt="logo"
-						width={50}
-						height={50}
-					/>
-					<p className="font-bold">Wicket Journeys</p>
+				<div className="flex flex-col">
+					<div className="flex flex-col md:flex-row md:items-center">
+						<Image
+							src="/logo/wicket-new-adaptive.png"
+							alt="logo"
+							width={50}
+							height={50}
+						/>
+						<p className="font-bold">Wicket Journeys</p>
+					</div>
+					<div className="flex flex-col md:flex-row">
+						<div className="flex flex-col md:flex-row gap-x-2 font-bold">
+							<FiMapPin />
+							Philippines
+						</div>
+					</div>
+					<p>Congressional Rd Ext, Caloocan, Metro Manila</p>
+					<p>+(63) 949 805 2916</p>
 				</div>
 				<div>
 					<span className="footer-title">Features</span>
-					<Link href="/util/features#blogging" className="link link-hover">
+					<Link href={"/util/mini-blogging"} className="link link-hover">
 						Mini Blogging
 					</Link>
-					<Link
-						href="/util/features#companyhunting"
-						className="link link-hover"
-					>
+					<Link href="/util/geo-company" className="link link-hover">
 						Geo-Company Hunting
 					</Link>
-					<Link href="/util/features#jobposting" className="link link-hover">
+					<Link href={"/util/job-posting"} className="link link-hover">
 						Job Posting
 					</Link>
-					<Link href="/util/features#metaverse" className="link link-hover">
+					<Link href={"/util/metaverse"} className="link link-hover">
 						Metaverse
 					</Link>
 				</div>

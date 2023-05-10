@@ -27,6 +27,21 @@ const templates = [
 		image: "/cvtemplate/preview_carlo2.png",
 	},
 	{
+		name: "Carlo 3",
+		value: "carlo3",
+		image: "/cvtemplate/preview_carlo3.png",
+	},
+	{
+		name: "Carlo 4",
+		value: "carlo4",
+		image: "/cvtemplate/preview_carlo4.png",
+	},
+	{
+		name: "Carlo 5",
+		value: "carlo5",
+		image: "/cvtemplate/preview_carlo5.png",
+	},
+	{
 		name: "Gabbie 1",
 		value: "gabbie1",
 		image: "/cvtemplate/preview_gab1.png",
@@ -114,29 +129,26 @@ const CvBuilder: FC = () => {
 								<div
 									key={`template-${key}`}
 									onClick={() => setSelectedTemplate(template.value)}
-									className={`relative overflow-hidden flex flex-col justify-end items-center h-[140px] border-2 border-primary/0 cursor-pointer hover:scale-[0.98] transition rounded-btn bg-base-300 ${
-										selectedTemplate === template.value &&
+									className={`relative overflow-hidden flex flex-col justify-end items-center h-[140px] border-2 border-primary/0 cursor-pointer hover:scale-[0.98] transition rounded-btn bg-base-300 ${selectedTemplate === template.value &&
 										"text-primary border-primary/100"
-									}`}
+										}`}
 								>
 									<img
 										src={template.image}
 										alt=""
-										className={`absolute h-full w-full object-cover object-center ${
-											selectedTemplate === template.value
-												? "opacity-25"
-												: "opacity-100"
-										}`}
+										className={`absolute h-full w-full object-cover object-center ${selectedTemplate === template.value
+											? "opacity-25"
+											: "opacity-100"
+											}`}
 									/>
 									<div className="absolute w-full h-full inset-0 bg-gradient-to-t from-base-100 to-transparent z-20 ">
 										{" "}
 									</div>
 									<MdCheckCircle
-										className={`absolute text-4xl top-1/2 -translate-y-1/2 transition-all ${
-											selectedTemplate === template.value
-												? "opacity-100"
-												: "opacity-0"
-										}`}
+										className={`absolute text-4xl top-1/2 -translate-y-1/2 transition-all ${selectedTemplate === template.value
+											? "opacity-100"
+											: "opacity-0"
+											}`}
 									/>
 									<p className="absolute bottom-2 z-30">{template.name}</p>
 								</div>

@@ -1,4 +1,5 @@
-import { $accountType, $themeMode } from "@/lib/globalStates";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import {
 	MdEvent,
 	MdHome,
@@ -35,9 +36,13 @@ const AppBar = () => {
 	const router = useRouter();
 	const _globalTheme = useStore($themeMode);
 
+	const _currentUser = useStore($accountDetails);
+	const _currentHunter = useStore($accountDetails) as IUserHunter;
+	const _currentProvisioner = useStore($accountDetails) as IUserProvisioner;
+
 	return (
 		<>
-			{_accountType === null && (
+			{!($accountType && _currentUser) && (
 				<div className="fixed py-5 flex lg:hidden justify-between items-center w-full z-[20] bg-base-100">
 					<div className="mx-auto max-w-5xl w-full px-5 flex justify-between items-center">
 						{/* <p className="text-lg text-primary font-bold">Wicket</p> */}
@@ -84,29 +89,14 @@ const AppBar = () => {
 				</div>
 			)}
 			{/* hunter appbar */}
-			{_accountType === "hunter" && (
-				<motion.div
-					variants={AppBarAnimation}
-					initial="initial"
-					animate="animate"
-					className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20] print:invisible"
-				>
+			{_accountType === "hunter" && _currentHunter && (
+				<div className="fixed pt-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20] print:invisible">
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
-							<Link href="/feed" className="relative w-9 h-9 lg:hidden">
+							<Link href="/h/feed" className="relative w-9 h-9 lg:hidden">
 								<Image alt="logo" fill src="/logo/wicket-new-adaptive.png" />
 							</Link>
 							<div className="flex items-center gap-1">
-								<Link
-									href="/h/notifications"
-									className={`btn btn-sm invisible ${
-										router.pathname.includes("/h/notifications")
-											? "btn-primary"
-											: "btn-ghost"
-									}`}
-								>
-									<MdNotifications className="text-lg" />
-								</Link>
 								<Link
 									href="/h/me"
 									className={`btn btn-circle ${
@@ -162,16 +152,11 @@ const AppBar = () => {
 							</Link>
 						</div>
 					</div>
-				</motion.div>
+				</div>
 			)}
 			{/* provisioner appbar */}
-			{_accountType === "provisioner" && (
-				<motion.div
-					variants={AppBarAnimation}
-					initial="initial"
-					animate="animate"
-					className="fixed py-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20]"
-				>
+			{_accountType === "provisioner" && _currentProvisioner && (
+				<div className="fixed py-5 flex lg:hidden justify-between items-center bg-base-100 w-full z-[20]">
 					<div className="mx-auto max-w-5xl w-full px-5 flex flex-col justify-center">
 						<div className="flex justify-between items-center">
 							<Link href="/" className="relative w-7 h-7 md:hidden">
@@ -233,7 +218,7 @@ const AppBar = () => {
 							</Link>
 						</div>
 					</div>
-				</motion.div>
+				</div>
 			)}
 		</>
 	);

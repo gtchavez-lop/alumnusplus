@@ -432,7 +432,7 @@ const RegisterProvisionerSubPage: FC = () => {
 									<select
 										id="industryType"
 										value={localRegData.industryType}
-										className="select select-primary"
+										className="select select-primary w-full"
 										required
 										onChange={(e) =>
 											setLocalRegData({
