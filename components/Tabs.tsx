@@ -19,7 +19,7 @@ const Tabs: FC<TabComponent> = ({ tabs, activeTab, onTabChange }) => {
 	const [hoveredTab, setHoveredTab] = useState<string>(activeTab);
 
 	return (
-		<ul className="hidden lg:flex gap-2 justify-center my-4 py-2 rounded-btn w-full bg-base-300">
+		<ul className="hidden lg:flex justify-center gap-1 my-4 py-2 rounded-btn w-full bg-base-300">
 			{tabs.map((tab, index) => (
 				<li
 					key={`tab-${index}`}
@@ -28,7 +28,7 @@ const Tabs: FC<TabComponent> = ({ tabs, activeTab, onTabChange }) => {
 						setTabSelected(tab.value);
 						onTabChange(tab.value);
 					}}
-					className="flex items-center justify-center gap-2 relative px-3 py-1 cursor-pointer group"
+					className="flex items-center justify-center relative px-3 py-1 cursor-pointer group"
 				>
 					<span
 						className={`z-10 transition-all ${
