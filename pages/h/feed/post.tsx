@@ -1,20 +1,14 @@
-import { FiArrowUp, FiMessageSquare } from "react-icons/fi";
 import { FormEvent, useEffect, useState } from "react";
-import { GetServerSideProps, NextPage } from "next";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import {
 	MdCheckCircle,
 	MdComment,
 	MdDelete,
-	MdDrafts,
 	MdEdit,
 	MdFavorite,
 	MdFavoriteBorder,
 	MdMoreHoriz,
-	MdPublish,
-	MdSave,
 	MdShare,
-	MdVisibility,
 	MdVisibilityOff,
 } from "react-icons/md";
 
@@ -23,6 +17,7 @@ import { AnimPageTransition } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { NextPage } from "next";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";

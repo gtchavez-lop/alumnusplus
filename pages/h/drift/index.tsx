@@ -101,10 +101,7 @@ const DriftPage: NextPage = () => {
 	const [tabContentRef] = useAutoAnimate<HTMLDivElement>();
 	const _currentUser = useStore($accountDetails);
 	const [searchResults, setSearchResults] = useState<IUserProvisioner[]>([]);
-	const [userLocation, setUserLocation] = useState<GeoCodeResult[] | null>(
-		null,
-	);
-	const [allResultsPage, setAllResultsPage] = useState(1);
+	const [userLocation, setUserLocation] = useState<GeoCodeResult[] | null>(null);
 
 	const getUserLocation = async () => {
 		if (navigator.geolocation) {

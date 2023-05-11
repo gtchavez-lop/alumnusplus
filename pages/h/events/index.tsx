@@ -1,3 +1,5 @@
+import { useQueries, useQuery } from "@tanstack/react-query";
+
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import Footer from "@/components/Footer";
@@ -13,7 +15,6 @@ import { motion } from "framer-motion";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
-import { useQueries } from "@tanstack/react-query";
 import { useStore } from "@nanostores/react";
 
 dayjs.extend(relativeTime);
@@ -37,19 +38,13 @@ const HunterEventPage: NextPage = () => {
 		return data;
 	};
 
-	const [publicEvents] = useQueries({
-		queries: [
-			{
-				queryKey: ["publicEvents"],
-				queryFn: fetchEvents,
-				refetchOnWindowFocus: false,
-				refetchOnReconnect: true,
-				enabled: !!_currentUser,
-			},
-		],
+	const publicEvents = useQuery({
+		queryKey: ["publicEvents"],
+		queryFn: fetchEvents,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: true,
+		enabled: !!_currentUser,
 	});
-
-	console.log(publicEvents);
 
 	return (
 		<>

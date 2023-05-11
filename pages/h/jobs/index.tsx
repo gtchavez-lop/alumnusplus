@@ -1,23 +1,16 @@
-import {
-	AnimLoading,
-	AnimPageTransition,
-	AnimTabTransition,
-} from "@/lib/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimLoading, AnimPageTransition } from "@/lib/animations";
 import { FormEvent, Fragment, useState } from "react";
-import { IUserHunter, TProvJobPost } from "@/lib/types";
 import { MdInfo, MdSearch } from "react-icons/md";
 import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
 import ActiveJobTabPanel from "@/components/jobs/ActiveJobTabPanel";
 import CvBuilder from "@/components/jobs/CvBuilder";
-import Footer from "@/components/Footer";
+import { IUserHunter } from "@/lib/types";
 import Tabs from "@/components/Tabs";
 import dynamic from "next/dynamic";
-import { empty } from "uuidv4";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";

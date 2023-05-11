@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-// import "react-chatbot-kit/build/main.css";
 
 import {
 	$accountData,
@@ -8,11 +7,7 @@ import {
 	$hasAccount,
 	$themeMode,
 } from "@/lib/globalStates";
-import {
-	Hydrate,
-	QueryClient,
-	QueryClientProvider,
-} from "@tanstack/react-query";
+import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
 import { useEffect, useState } from "react";
 

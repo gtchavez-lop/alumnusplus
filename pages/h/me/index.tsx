@@ -1,8 +1,5 @@
 import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
-import { AnimatePresence, motion } from "framer-motion";
 import {
-	FiEdit,
-	FiEdit2,
 	FiEdit3,
 	FiFacebook,
 	FiGithub,
@@ -11,30 +8,20 @@ import {
 	FiTwitter,
 } from "react-icons/fi";
 import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
-import {
-	MdCheck,
-	MdCheckCircle,
-	MdCheckCircleOutline,
-	MdFacebook,
-	MdInfo,
-	MdNote,
-	MdSchool,
-	MdTrain,
-	MdWork,
-} from "react-icons/md";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import { AnimPageTransition } from "@/lib/animations";
 import CvBuilder from "@/components/jobs/CvBuilder";
 import FeedCard from "@/components/feed/FeedCard";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
+import { MdCheckCircleOutline } from "react-icons/md";
 import Modal from "@/components/Modal";
 import { NextPage } from "next";
 import ReactMarkdown from "react-markdown";
 import Tabs from "@/components/Tabs";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -820,31 +807,6 @@ const ProfilePage: NextPage = () => {
 							</Modal>
 						</>
 					)}
-					{/* sign out modal */}
-					{/* <input type="checkbox" id="signoutmodal" className="modal-toggle" />
-					<div className="modal">
-						<div className="modal-box">
-							<h3 className="font-bold text-lg">
-								Are you sure you want to sign out?
-							</h3>
-							<p className="py-4">
-								You will be signed out of all your devices. You can sign back in
-								anytime.
-							</p>
-							<div className="modal-action">
-								<label htmlFor="signoutmodal" className="btn">
-									Cancel
-								</label>
-								<button
-									className="btn btn-error"
-									onClick={handleLogout}
-									disabled={isLoggingOut}
-								>
-									Sign out
-								</button>
-							</div>
-						</div>
-					</div> */}
 				</>
 			)}
 		</>

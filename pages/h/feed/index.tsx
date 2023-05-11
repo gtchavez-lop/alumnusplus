@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useState } from "react";
+import { FormEvent, Fragment, useEffect, useState } from "react";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import { MdEdit, MdEditOff, MdSearch } from "react-icons/md";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { $accountDetails } from "@/lib/globalStates";
@@ -8,14 +9,16 @@ import FeedCard from "@/components/feed/FeedCard";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
-import { MdSearch } from "react-icons/md";
 import { NextPage } from "next";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { uuid } from "uuidv4";
+import uuidv4 from "@/lib/uuid";
 
 type RecommendedHunter = {
 	id: string;
@@ -33,16 +36,56 @@ const HunterFeedPage: NextPage = () => {
 	const [isAddingPost, setIsAddingPost] = useState(false);
 	const _currentHunter = useStore($accountDetails) as IUserHunter;
 	const [feedAreaAutoTransition] = useAutoAnimate({
-		easing: "ease-out",
 		duration: 200,
 	});
-	const supabase = useSupabaseClient();
+	const supabaseClient = useSupabaseClient();
 	const router = useRouter();
+
+	const handleBlogPostSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		const form = e.currentTarget as HTMLFormElement;
+		e.preventDefault();
+
+		const content = form.content.value;
+		const isDraft = form.isDraft as HTMLInputElement;
+
+		if (!content) {
+			toast.error("Please enter a content for your blog post.");
+			return;
+		}
+		if (content.length < 35) {
+			toast.error("Your blog post content is too short.");
+			return;
+		}
+
+		toast.loading("Adding your blog post...");
+
+		const { error } = await supabaseClient.from("public_posts").insert({
+			id: uuidv4(),
+			content: content,
+			comments: [],
+			createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			type: "blogpost",
+			updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			uploader: _currentHunter.id,
+			upvoters: [],
+			draft: isDraft.checked ? true : false,
+		});
+
+		if (error) {
+			toast.dismiss();
+			toast.error("An error occured while trying to add your blog post.");
+			console.error(error);
+			return;
+		}
+
+		toast.dismiss();
+		toast.success("Your blog post has been added successfully.");
+	};
 
 	const fetchHunterPosts = async ({ pageParam = 0 }) => {
 		const connections = [..._currentHunter.connections, _currentHunter.id];
 
-		const { data, error } = await supabase
+		const { data, error } = await supabaseClient
 			.from("public_posts")
 			.select("*,uploader: user_hunters(id,avatar_url,username,full_name)")
 			.in("uploader", connections)
@@ -59,9 +102,10 @@ const HunterFeedPage: NextPage = () => {
 	const fetchRecommendedHunters = async () => {
 		const connections = [..._currentHunter.connections, _currentHunter.id];
 
-		const { data, error } = await supabase
+		const { data, error } = await supabaseClient
 			.from("new_recommended_hunters")
-			.select("*");
+			.select("*")
+			.limit(7);
 
 		if (error) {
 			console.log(error);
@@ -92,6 +136,8 @@ const HunterFeedPage: NextPage = () => {
 		queryFn: fetchRecommendedHunters,
 		enabled: !!_currentHunter,
 		refetchOnWindowFocus: false,
+		keepPreviousData: true,
+		refetchOnMount: false,
 	});
 
 	return (
@@ -105,100 +151,132 @@ const HunterFeedPage: NextPage = () => {
 					className="relative w-full min-h-screen grid grid-cols-1 lg:grid-cols-5 gap-4 pt-24 pb-36"
 				>
 					{/* feed area */}
-					<div className="col-span-full lg:col-span-3">
-						{/* add feed area */}
-						<div
-							ref={feedAreaAutoTransition}
-							className="flex gap-2 items-start"
-						>
-							<Image
-								className="avatar mask mask-squircle hover:-translate-y-1 transition-all"
-								width={50}
-								height={50}
-								alt="avatar"
-								src={
-									_currentHunter
-										? _currentHunter.avatar_url
-										: "https://via.placeholder.com/100"
-								}
-							/>
-							{!isAddingPost ? (
-								<div className="flex-1">
-									<input
-										className="input input-primary w-full"
-										placeholder="What's on your mind?"
-										readOnly
-										onClick={() => setIsAddingPost(true)}
-									/>
-								</div>
-							) : (
-								<form className="flex-1 flex flex-col gap-4">
-									<textarea className="textarea textarea-primary" rows={7} />
-									<div className="flex gap-2">
-										<button
-											onClick={() => setIsAddingPost(false)}
-											type="reset"
-											className="btn btn-ghost btn-sm flex-1"
-										>
-											Cancel
-										</button>
-										<button
-											type="submit"
-											className="btn btn-primary btn-sm flex-1"
-										>
-											Post to your feed
-										</button>
-									</div>
-								</form>
-							)}
-						</div>
-						<div className="divider" />
-						{/* show hunter posts area */}
-						<div className="flex flex-col gap-5" ref={feedAreaAutoTransition}>
-							{hunterPosts.isFetched &&
-								hunterPosts.data?.pages.map((page, i) => (
-									<Fragment key={`page_${i + 1}`}>
-										{page.map((post) => (
-											<FeedCard
-												blogData={post}
-												key={post.id}
-												refetchData={hunterPosts.refetch}
-											/>
-										))}
-									</Fragment>
-								))}
-
-							{hunterPosts.isFetching && (
-								<div className="flex justify-center py-10">
-									<FiLoader className="text-xl animate-spin" />
-								</div>
-							)}
-
-							{hunterPosts.isError && (
-								<p className="alert-error">
-									Something went wrong. Please try again later.
-								</p>
-							)}
-
-							{hunterPosts.hasNextPage && (
-								<button
-									onClick={() => hunterPosts.fetchNextPage()}
-									className="btn btn-primary"
-									disabled={
-										hunterPosts.isFetchingNextPage || hunterPosts.isFetching
+					<>
+						<div className="col-span-full lg:col-span-3">
+							{/* add feed area */}
+							<div
+								ref={feedAreaAutoTransition}
+								className="flex gap-2 items-start"
+							>
+								<Image
+									className="avatar mask mask-squircle hover:-translate-y-1 transition-all"
+									width={50}
+									height={50}
+									alt="avatar"
+									src={
+										_currentHunter
+											? _currentHunter.avatar_url
+											: "https://via.placeholder.com/100"
 									}
-								>
-									{hunterPosts.isFetchingNextPage
-										? "Loading more posts"
-										: hunterPosts.hasNextPage
-										? "Load more posts"
-										: "Nothing more to load"}
-								</button>
-							)}
+								/>
+								{!isAddingPost ? (
+									<div className="flex-1">
+										<input
+											className="input input-primary w-full"
+											placeholder="What's on your mind?"
+											readOnly
+											onClick={() => setIsAddingPost(true)}
+										/>
+									</div>
+								) : (
+									<form
+										onSubmit={handleBlogPostSubmit}
+										className="flex-1 flex flex-col gap-4 items-start w-full"
+									>
+										<textarea
+											name="content"
+											id="content"
+											className="textarea textarea-primary w-full"
+											placeholder="What's on your mind?"
+											onInput={(e) => {
+												e.currentTarget.style.height = "auto";
+												e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+											}}
+										/>
+										<div
+											className="tooltip"
+											data-tip="If this is checked, the blog will be posted privately until you changed it in the blog post content page"
+										>
+											<label className="label flex items-center gap-2">
+												<input
+													type="checkbox"
+													name="isDraft"
+													className="checkbox checkbox-primary"
+												/>
+												<span className="label-text">Draft Post</span>
+											</label>
+										</div>
+										<div className="flex gap-2 w-full">
+											<button
+												onClick={() => setIsAddingPost(false)}
+												type="reset"
+												className="btn btn-ghost btn-sm flex-1"
+											>
+												Cancel
+											</button>
+											<button
+												type="submit"
+												className="btn btn-primary btn-sm flex-1"
+											>
+												Post to your feed
+											</button>
+										</div>
+									</form>
+								)}
+							</div>
+							<div className="divider" />
+							{/* show hunter posts area */}
+							<div className="flex flex-col gap-5" ref={feedAreaAutoTransition}>
+								{/* render cards when hunterPosts is fetched */}
+								{hunterPosts.isFetched &&
+									hunterPosts.data?.pages.map((page, i) => (
+										<Fragment key={`page_${i + 1}`}>
+											{page.map((post) => (
+												<FeedCard
+													blogData={post}
+													key={post.id}
+													refetchData={hunterPosts.refetch}
+												/>
+											))}
+										</Fragment>
+									))}
+
+								{/* render a loading animation when hunterPosts is fetching data */}
+								{hunterPosts.isFetching && (
+									<div className="flex justify-center py-10">
+										<FiLoader className="text-xl animate-spin" />
+									</div>
+								)}
+
+								{/* render an alert when hunterPosts encounters an error */}
+								{hunterPosts.isError && (
+									<p className="alert-error">
+										Something went wrong. Please try again later.
+									</p>
+								)}
+
+								{/* renderr a button for fetching next page of data when it is available */}
+								{hunterPosts.hasNextPage && (
+									<button
+										onClick={() => hunterPosts.fetchNextPage()}
+										className="btn btn-primary"
+										disabled={
+											hunterPosts.isFetchingNextPage || hunterPosts.isFetching
+										}
+									>
+										{hunterPosts.isFetchingNextPage
+											? "Loading more posts"
+											: hunterPosts.hasNextPage
+											? "Load more posts"
+											: "Nothing more to load"}
+									</button>
+								)}
+							</div>
 						</div>
-					</div>
+					</>
 					{/* side area */}
 					<div className="col-span-full lg:col-span-2">
+						{/* search form */}
 						<form
 							onSubmit={(e) => {
 								e.preventDefault();
@@ -225,6 +303,8 @@ const HunterFeedPage: NextPage = () => {
 								<MdSearch className="text-lg" />
 							</button>
 						</form>
+
+						{/* recommended hunters */}
 						<div className="mt-7">
 							<h2 className="text-xl font-semibold mb-2">
 								You might know these hunters

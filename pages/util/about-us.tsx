@@ -1,5 +1,4 @@
 import { AnimPageTransition } from "@/lib/animations";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import { NextPage } from "next";
 import { motion } from "framer-motion";

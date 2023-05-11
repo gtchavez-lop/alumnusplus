@@ -21,9 +21,6 @@ const LogInPage = () => {
 	const router = useRouter();
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
-	const _currentUser = useStore($accountDetails) as
-		| IUserHunter
-		| IUserProvisioner;
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

@@ -2,14 +2,11 @@ import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import { FormEvent, useRef, useState } from "react";
 
 import { AnimPageTransition } from "@/lib/animations";
-import Footer from "@/components/Footer";
 import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const ContactPage = () => {
-	const form = useRef<HTMLFormElement>(null);
-
 	const sendEmail = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 

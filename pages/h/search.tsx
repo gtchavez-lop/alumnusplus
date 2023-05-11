@@ -72,9 +72,6 @@ const SearchPage = () => {
 								}
 
 								window.location.href = `/h/search?query=${searchQuery}`;
-								// router.replace(`/h/search?query=${searchQuery}`);
-								// router.reload();
-								// searchresults.refetch();
 							}}
 							className="mb-5 flex gap-2 items-center"
 						>

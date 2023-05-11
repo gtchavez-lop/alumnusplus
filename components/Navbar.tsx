@@ -13,6 +13,7 @@ import {
 	MdNotes,
 	MdNotifications,
 	MdOutlineDarkMode,
+	MdPeople,
 	MdPerson,
 	MdPersonAdd,
 	MdPostAdd,
@@ -295,7 +296,6 @@ const Navbar = () => {
 									<MdDashboard className="text-lg" />
 								</Link>
 							</div>
-
 							<div className="tooltip tooltip-bottom" data-tip="Blog & Events">
 								<Link
 									href="/p/blog"
@@ -308,7 +308,6 @@ const Navbar = () => {
 									<MdNotes className="text-lg" />
 								</Link>
 							</div>
-
 							<div className="tooltip tooltip-bottom" data-tip="Job Posting">
 								<Link
 									href="/p/jobs"
@@ -319,6 +318,18 @@ const Navbar = () => {
 									}`}
 								>
 									<MdWork className="text-lg" />
+								</Link>
+							</div>
+							<div className="tooltip tooltip-bottom" data-tip="Employees">
+								<Link
+									href="/p/employees"
+									className={`btn btn-square ${
+										router.pathname.includes("/p/employees")
+											? "btn-primary"
+											: "btn-ghost"
+									}`}
+								>
+									<MdPeople className="text-lg" />
 								</Link>
 							</div>
 

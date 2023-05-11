@@ -4,11 +4,8 @@ import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
 import { FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useStore } from "@nanostores/react";
-
-const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 export default function FeaturesPage() {
 	const _accountDetails = useStore($accountDetails) as

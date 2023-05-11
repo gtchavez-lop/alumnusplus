@@ -1,6 +1,6 @@
 import { FiLoader, FiPlus } from "react-icons/fi";
 import { IUserProvisioner, TProvJobPost } from "@/lib/types";
-import { MdGrid3X3, MdGridView, MdList, MdTableView } from "react-icons/md";
+import { MdGridView, MdTableView } from "react-icons/md";
 
 import { $accountDetails } from "@/lib/globalStates";
 import { AnimPageTransition } from "@/lib/animations";
@@ -12,8 +12,6 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
-
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const JobPostings = () => {
 	const _currentUser = useStore($accountDetails) as IUserProvisioner;

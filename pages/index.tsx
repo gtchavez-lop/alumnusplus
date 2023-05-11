@@ -6,16 +6,6 @@ import { AnimPageTransition } from "@/lib/animations";
 import Image from "next/image";
 import Link from "next/link";
 import { MdArrowDownward } from "react-icons/md";
-import dynamic from "next/dynamic";
-
-// import Pricing from "@/components/landing/Pricing";
-
-const Pricing = dynamic(() => import("@/components/landing/Pricing"), {
-	ssr: false,
-});
-const Footer = dynamic(() => import("@/components/Footer"), {
-	ssr: false,
-});
 
 const jobList = [
 	"Web Developer",
@@ -137,14 +127,6 @@ const Home = () => {
 						</motion.span>
 					))}
 				</p>
-				{/* <div className="relative w-[500px] h-[75px]">
-					<Image
-						src="/logo/wicket-new-full-vector.svg"
-						className="w-64 fill-primary z-10"
-						fill
-						alt=""
-					/>
-				</div> */}
 				<p className="text-3xl flex flex-col justify-center w-full text-center mt-5 z-10">
 					<span>Job hunting as</span>
 					<AnimatePresence mode="wait">

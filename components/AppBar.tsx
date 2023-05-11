@@ -5,31 +5,17 @@ import {
 	MdHome,
 	MdMap,
 	MdNotes,
-	MdNotifications,
 	MdOutlineDarkMode,
-	MdOutlineEvent,
-	MdOutlineNotifications,
 	MdOutlinePerson,
 	MdOutlineWork,
 	MdPerson,
-	MdPersonAdd,
 	MdWork,
 } from "react-icons/md";
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
-
-const AppBarAnimation = {
-	initial: { y: -40, opacity: 0 },
-	animate: {
-		y: 0,
-		opacity: 1,
-		transition: { duration: 0.4, easing: "circOut" },
-	},
-};
 
 const AppBar = () => {
 	const _accountType = useStore($accountType);

@@ -1,5 +1,4 @@
 import { AnimPageTransition } from "@/lib/animations";
-import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 
 export default function CookiePolicyPage() {
