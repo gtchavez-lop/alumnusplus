@@ -1,0 +1,46 @@
+{
+  "name": "wicket-new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@formkit/auto-animate": "1.0.0-beta.6",
+    "@nanostores/persistent": "^0.9.0",
+    "@nanostores/react": "^0.7.1",
+    "@supabase/supabase-js": "^2.24.0",
+    "@tailwindcss/typography": "^0.5.9",
+    "@tanstack/react-query": "^4.29.12",
+    "@tanstack/react-query-devtools": "^4.29.12",
+    "@tiptap/extension-floating-menu": "^2.0.3",
+    "@tiptap/pm": "^2.0.3",
+    "@tiptap/react": "^2.0.3",
+    "@tiptap/starter-kit": "^2.0.3",
+    "@types/node": "20.2.5",
+    "@types/react": "18.2.7",
+    "@types/react-dom": "18.2.4",
+    "daisyui": "^3.0.0",
+    "dayjs": "^1.11.7",
+    "framer-motion": "^10.12.16",
+    "nanostores": "^0.9.1",
+    "next": "13.4.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-markdown": "^8.0.7",
+    "typescript": "5.0.4",
+    "usehooks-ts": "^2.9.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "fuse.js": "^6.6.2",
+    "postcss": "^8.4.23",
+    "react-icons": "^4.8.0",
+    "tailwindcss": "^3.3.2",
+    "theme-change": "^2.5.0"
+  }
+}
