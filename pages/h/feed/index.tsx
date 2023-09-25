@@ -1,21 +1,25 @@
-import { Fragment, useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Fragment, useState } from "react";
 
-import { $accountDetails } from "@/lib/globalStates";
-import { AnimPageTransition } from "@/lib/animations";
 import FeedCard from "@/components/feed/FeedCard";
-import { FiLoader } from "react-icons/fi";
-import Image from "next/image";
-import Link from "next/link";
-import { MdSearch } from "react-icons/md";
-import { NextPage } from "next";
-import { motion } from "framer-motion";
-import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { AnimPageTransition } from "@/lib/animations";
+import { $accountDetails } from "@/lib/globalStates";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useRouter } from "next/router";
 import { useStore } from "@nanostores/react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { motion } from "framer-motion";
+import { NextPage } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { FiLoader } from "react-icons/fi";
+import { MdSearch } from "react-icons/md";
 
 type RecommendedHunter = {
 	id: string;
@@ -111,48 +115,41 @@ const HunterFeedPage: NextPage = () => {
 							ref={feedAreaAutoTransition}
 							className="flex gap-2 items-start"
 						>
-							<Image
-								className="avatar mask mask-squircle hover:-translate-y-1 transition-all"
-								width={50}
-								height={50}
-								alt="avatar"
-								src={
-									_currentHunter
-										? _currentHunter.avatar_url
-										: "https://via.placeholder.com/100"
-								}
-							/>
+							<Avatar className="hover:-translate-y-1 transition-all w-10 h-10">
+								<AvatarFallback>
+									{_currentHunter.full_name.first[0]}
+									{_currentHunter.full_name.last[0]}
+								</AvatarFallback>
+								<AvatarImage src={_currentHunter.avatar_url} alt="avatar" />
+							</Avatar>
 							{!isAddingPost ? (
 								<div className="flex-1">
-									<input
-										className="input input-primary w-full"
+									<Input
+										className=" w-full"
 										placeholder="What's on your mind?"
 										readOnly
 										onClick={() => setIsAddingPost(true)}
 									/>
 								</div>
 							) : (
-								<form className="flex-1 flex flex-col gap-4">
-									<textarea className="textarea textarea-primary" rows={7} />
+								<form className="flex-1 flex flex-col gap-2">
+									<Textarea rows={7} />
 									<div className="flex gap-2">
-										<button
+										<Button
 											onClick={() => setIsAddingPost(false)}
 											type="reset"
-											className="btn btn-ghost btn-sm flex-1"
+											className=" flex-1"
 										>
 											Cancel
-										</button>
-										<button
-											type="submit"
-											className="btn btn-primary btn-sm flex-1"
-										>
+										</Button>
+										<Button type="submit" className=" flex-1">
 											Post to your feed
-										</button>
+										</Button>
 									</div>
 								</form>
 							)}
 						</div>
-						<div className="divider" />
+						<Separator className="my-10" />
 						{/* show hunter posts area */}
 						<div className="flex flex-col gap-5" ref={feedAreaAutoTransition}>
 							{hunterPosts.isFetched &&
@@ -213,17 +210,17 @@ const HunterFeedPage: NextPage = () => {
 
 								router.push(`/h/search?query=${searchQuery}`);
 							}}
-							className="input-group"
+							className="flex gap-2"
 						>
-							<input
+							<Input
 								type="text"
 								name="searchQuery"
 								placeholder="Search for people"
-								className="input input-primary flex-1"
+								className="flex-1"
 							/>
-							<button type="submit" className="btn btn-primary">
+							<Button type="submit" variant="outline" size="icon">
 								<MdSearch className="text-lg" />
-							</button>
+							</Button>
 						</form>
 						<div className="mt-7">
 							<h2 className="text-xl font-semibold mb-2">
@@ -245,13 +242,20 @@ const HunterFeedPage: NextPage = () => {
 													className="flex gap-2 items-center justify-between p-2 hover:bg-base-200 rounded-btn"
 												>
 													<div className="flex gap-2 items-center">
-														<Image
+														{/* <Image
 															src={hunter.avatar_url}
 															alt="avatar"
 															className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
 															width={48}
 															height={48}
-														/>
+														/> */}
+														<Avatar className="w-12 h-12">
+															<AvatarFallback>
+																{hunter.full_name.first[0]}
+																{hunter.full_name.last[0]}
+															</AvatarFallback>
+															<AvatarImage src={hunter.avatar_url} />
+														</Avatar>
 														<div>
 															<p className="font-bold leading-none">
 																{hunter.full_name.first} {hunter.full_name.last}

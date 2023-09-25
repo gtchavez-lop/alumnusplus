@@ -1,8 +1,25 @@
-import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
-import { AnimatePresence, motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-	FiEdit,
-	FiEdit2,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { $accountDetails, $accountType, $themeMode } from "@/lib/globalStates";
+import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
+import {
 	FiEdit3,
 	FiFacebook,
 	FiGithub,
@@ -10,37 +27,28 @@ import {
 	FiLinkedin,
 	FiTwitter,
 } from "react-icons/fi";
-import { IUserHunter, IUserProvisioner, TProvJobPost } from "@/lib/types";
-import {
-	MdCheck,
-	MdCheckCircle,
-	MdCheckCircleOutline,
-	MdFacebook,
-	MdInfo,
-	MdNote,
-	MdSchool,
-	MdTrain,
-	MdWork,
-} from "react-icons/md";
-import { useQueries, useQueryClient } from "@tanstack/react-query";
 
-import { AnimPageTransition } from "@/lib/animations";
-import CvBuilder from "@/components/jobs/CvBuilder";
 import FeedCard from "@/components/feed/FeedCard";
-import Footer from "@/components/Footer";
+import CvBuilder from "@/components/jobs/CvBuilder";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { AnimPageTransition } from "@/lib/animations";
+import { supabase } from "@/lib/supabase";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useStore } from "@nanostores/react";
+import dayjs from "dayjs";
+import { motion } from "framer-motion";
+import { NextPage } from "next";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import Modal from "@/components/Modal";
-import { NextPage } from "next";
-import ReactMarkdown from "react-markdown";
-import Tabs from "@/components/Tabs";
-import dayjs from "dayjs";
-import { supabase } from "@/lib/supabase";
-import { toast } from "react-hot-toast";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useStore } from "@nanostores/react";
+import { toast } from "react-hot-toast";
+import { MdCheckCircleOutline } from "react-icons/md";
+import ReactMarkdown from "react-markdown";
 
 interface LocalProvJobPost extends TProvJobPost {
 	uploader_id: IUserProvisioner;
@@ -98,6 +106,7 @@ const PageTabs = [
 
 const ProfilePage: NextPage = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const { setTheme, theme } = useTheme();
 	const _currentUser = useStore($accountDetails) as IUserHunter;
 	const router = useRouter();
 	const [tabSelected, setTabSelected] = useState<TTabs>("about");
@@ -106,20 +115,6 @@ const ProfilePage: NextPage = () => {
 	const cacheQueryClient = useQueryClient();
 
 	const _globalTheme = useStore($themeMode);
-
-	const toggleTheme = () => {
-		if (_globalTheme === "dark") {
-			// set to light mode
-			$themeMode.set("light");
-			document.body.setAttribute("data-theme", "light");
-			localStorage.setItem("theme", "light");
-		} else {
-			// set to dark mode
-			$themeMode.set("dark");
-			document.body.setAttribute("data-theme", "dark");
-			localStorage.setItem("theme", "dark");
-		}
-	};
 
 	const handleLogout = async () => {
 		setIsLoggingOut(true);
@@ -298,21 +293,19 @@ const ProfilePage: NextPage = () => {
 							<div className="flex flex-col gap-3">
 								{/* landing profile */}
 								<div className="relative flex sm:items-center gap-5 flex-col sm:flex-row bg-base-200 rounded-btn p-5">
-									<div className="relative">
-										<Image
-											src={_currentUser.avatar_url}
-											alt="avatar"
-											className="w-32 h-32 bg-primary mask mask-squircle object-cover object-center "
-											width={128}
-											height={128}
-										/>
-									</div>
+									<Avatar className="w-24 h-24">
+										<AvatarFallback>
+											{_currentUser.full_name.first[0]}
+											{_currentUser.full_name.last[0]}
+										</AvatarFallback>
+										<AvatarImage src={_currentUser.avatar_url} />
+									</Avatar>
 									<div>
 										<p className="text-3xl font-bold flex gap-1 items-center">
 											{_currentUser.full_name.first}{" "}
 											{_currentUser.full_name.last}
 											{_currentUser.is_verified && (
-												<MdCheckCircleOutline className="text-blue-500 text-lg" />
+												<MdCheckCircleOutline className="text-blue-500 text-xl ml-1" />
 											)}
 										</p>
 
@@ -327,39 +320,48 @@ const ProfilePage: NextPage = () => {
 										</p>
 									</div>
 
-									<Link
+									<Button className="self-end ml-auto gap-2 items-center">
+										Edit Profile
+										<FiEdit3 />
+									</Button>
+									{/* <Link
 										href={"/h/me/edit"}
-										className="absolute sm:relative btn btn-primary items-center gap-3 self-end ml-auto"
+										className="absolute sm:relative ml-auto"
 									>
 										<span className="hidden md:block">Edit Profile</span>
 										<FiEdit3 />
-									</Link>
+									</Link> */}
 								</div>
 
 								{/* mobile select */}
 								<div className="lg:hidden">
-									<select
-										value={tabSelected}
-										onChange={(e) =>
-											setTabSelected(e.currentTarget.value as TTabs)
-										}
-										className="select select-primary w-full"
-									>
-										{PageTabs.map((tab, index) => (
-											<option key={`tab-${index}`} value={tab.value}>
-												{tab.title}
-											</option>
-										))}
-									</select>
+									<Select onValueChange={(e) => setTabSelected(e as TTabs)}>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="Please Select a tab" />
+										</SelectTrigger>
+										<SelectContent>
+											{PageTabs.map((tab, index) => (
+												<SelectItem key={`tab-${index}`} value={tab.value}>
+													{tab.title}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
 								{/* desktop tabs */}
-								<Tabs
-									tabs={PageTabs}
-									activeTab={tabSelected}
-									onTabChange={(e) => {
-										setTabSelected(e as TTabs);
-									}}
-								/>
+								<div className="hidden lg:flex justify-center">
+									<Tabs
+										defaultValue={"about" as TTabs}
+										value={tabSelected}
+										onValueChange={(e) => setTabSelected(e as TTabs)}
+									>
+										<TabsList>
+											{PageTabs.map((tab, index) => (
+												<TabsTrigger value={tab.value}>{tab.title}</TabsTrigger>
+											))}
+										</TabsList>
+									</Tabs>
+								</div>
 
 								<div className="py-5" ref={tabContentRef}>
 									{tabSelected === "about" && (
@@ -725,19 +727,25 @@ const ProfilePage: NextPage = () => {
 									<p className="text-2xl font-bold">Suggested Connections</p>
 
 									{recommendedUsers.isLoading && (
-										<div className="flex flex-col gap-2">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 											{Array(5)
 												.fill("")
 												.map((_, index) => (
 													<div
+														className="flex items-center gap-2"
 														key={`recommendedloading_${index}`}
-														className="h-[72px] w-full bg-base-300 rounded-btn animate-pulse"
-													/>
+													>
+														<Skeleton className="h-[48px] w-[48px] rounded-full" />
+														<div className="flex flex-col gap-2">
+															<Skeleton className="h-[16px] w-[100px] rounded-xl" />
+															<Skeleton className="h-[16px] w-[50px] rounded-xl" />
+														</div>
+													</div>
 												))}
 										</div>
 									)}
 
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-7">
 										{recommendedUsers.isSuccess &&
 											recommendedUsers.data.length < 1 && (
 												<p>
@@ -753,98 +761,68 @@ const ProfilePage: NextPage = () => {
 													href={`/h?user=${thisUser.username}`}
 													key={`connection_${index}`}
 												>
-													<div className="flex gap-5 items-center justify-between p-3 bg-base-200 rounded-btn hover:bg-primary hover:bg-opacity-30 transition">
-														<div className="flex gap-5 items-center">
-															<Image
-																src={thisUser.avatar_url}
-																alt="avatar"
-																className="w-12 h-12 mask mask-squircle bg-primary object-center object-cover"
-																width={50}
-																height={50}
-															/>
-															<div>
-																<p className="font-bold leading-none">
-																	{thisUser.full_name.first}{" "}
-																	{thisUser.full_name.last}
-																</p>
-																<p className="opacity-50 leading-none">
-																	@{thisUser.username}
-																</p>
-															</div>
+													<div className="flex gap-5 items-center">
+														<Avatar className="w-12 h-12">
+															<AvatarFallback>
+																{thisUser.full_name.first[0]}
+																{thisUser.full_name.last[0]}
+															</AvatarFallback>
+															<AvatarImage src={thisUser.avatar_url} />
+														</Avatar>
+														<div>
+															<p className="font-bold leading-none">
+																{thisUser.full_name.first}{" "}
+																{thisUser.full_name.last}
+															</p>
+															<p className="opacity-50 leading-none">
+																@{thisUser.username}
+															</p>
 														</div>
 													</div>
 												</Link>
 											))}
 									</div>
 								</div>
-								<div className="divider" />
-								<div className="grid grid-cols-1 md:grid-cols-2">
+								<Separator className="my-7" />
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 									<label className="flex items-center gap-2">
-										<input
-											type="checkbox"
-											className="toggle"
-											checked={_globalTheme === "dark"}
-											onChange={toggleTheme}
+										<Switch
+											// checked={theme === "dark"}
+											checked={theme === "dark"}
+											onCheckedChange={(e) =>
+												e ? setTheme("dark") : setTheme("light")
+											}
 										/>
 										<span>Dark Mode</span>
 									</label>
-									<label
-										onClick={() => setSignOutModalVisible(true)}
-										className="btn btn-error "
-									>
-										Sign out session
-									</label>
+									<Dialog>
+										<DialogTrigger className="w-full">
+											<Button variant="destructive" className="w-full">
+												Sign out session
+											</Button>
+										</DialogTrigger>
+										<DialogContent>
+											<DialogHeader>
+												<DialogTitle>
+													Are you sure you want to end your session and log out?
+												</DialogTitle>
+												<DialogDescription>
+													You will be signed out of all your devices. You can
+													sign back in anytime.
+												</DialogDescription>
+												<DialogFooter>
+													<Button variant="ghost">Cancel</Button>
+													<Button variant="destructive" onClick={handleLogout}>
+														Sign out
+													</Button>
+												</DialogFooter>
+											</DialogHeader>
+										</DialogContent>
+									</Dialog>
 								</div>
 							</div>
 						</section>
 					</motion.main>
-
-					{signOutModalVisible && (
-						<>
-							<Modal
-								isVisible={signOutModalVisible}
-								setIsVisible={setSignOutModalVisible}
-							>
-								<p>Do you really want to end your session and log out?</p>
-								<div className="flex justify-end gap-2">
-									<button onClick={handleLogout} className="btn btn-ghost">
-										Yes
-									</button>
-									<button
-										className="btn btn-primary"
-										onClick={() => setSignOutModalVisible(false)}
-									>
-										No
-									</button>
-								</div>
-							</Modal>
-						</>
-					)}
-					{/* sign out modal */}
-					{/* <input type="checkbox" id="signoutmodal" className="modal-toggle" />
-					<div className="modal">
-						<div className="modal-box">
-							<h3 className="font-bold text-lg">
-								Are you sure you want to sign out?
-							</h3>
-							<p className="py-4">
-								You will be signed out of all your devices. You can sign back in
-								anytime.
-							</p>
-							<div className="modal-action">
-								<label htmlFor="signoutmodal" className="btn">
-									Cancel
-								</label>
-								<button
-									className="btn btn-error"
-									onClick={handleLogout}
-									disabled={isLoggingOut}
-								>
-									Sign out
-								</button>
-							</div>
-						</div>
-					</div> */}
 				</>
 			)}
 		</>

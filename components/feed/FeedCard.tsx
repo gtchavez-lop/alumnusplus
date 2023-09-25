@@ -1,32 +1,49 @@
-import { FC, FormEvent, useEffect, useState } from "react";
-import { FiLoader, FiMessageSquare, FiX } from "react-icons/fi";
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
+import { FormEvent, useEffect, useState } from "react";
+import { FiLoader, FiMessageSquare } from "react-icons/fi";
 import {
 	MdCheckCircleOutline,
+	MdDelete,
 	MdFavorite,
 	MdFavoriteBorder,
 	MdReport,
 	MdShare,
 } from "react-icons/md";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 import { $accountDetails } from "@/lib/globalStates";
-import Image from "next/image";
+import { supabase } from "@/lib/supabase";
+import emailjs from "@emailjs/browser";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useStore } from "@nanostores/react";
+import { AvatarFallback } from "@radix-ui/react-avatar";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import Link from "next/link";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import rehypeRaw from "rehype-raw";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { supabase } from "@/lib/supabase";
-import { toast } from "react-hot-toast";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useRouter } from "next/router";
-import { useStore } from "@nanostores/react";
+import { toast } from "sonner";
 import { uuid } from "uuidv4";
-import emailjs from "@emailjs/browser";
-import Modal from "../Modal";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 dayjs.extend(relativeTime);
+
+interface Props {
+	blogData: THunterBlogPost;
+	refetchData: Function;
+}
 
 type IComment = {
 	id: string;
@@ -44,10 +61,7 @@ type IComment = {
 	visible: boolean;
 };
 
-const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
-	blogData,
-	refetchData,
-}) => {
+const FeedCard = ({ blogData, refetchData }: Props) => {
 	const [isLiked, setIsLiked] = useState(false);
 	const [commentsOpen, setCommentsOpen] = useState(false);
 	const currentUser = useStore($accountDetails) as IUserHunter;
@@ -60,7 +74,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 		e.preventDefault();
 
 		const form = e.target as HTMLFormElement;
-		if (!form.user_name.value || !form.user_vio.value || !form.user_msg.value) {
+		if (!(form.user_name.value && form.user_vio.value && form.user_msg.value)) {
 			toast.error("all fields are required");
 			return;
 		}
@@ -326,22 +340,23 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 				</div>
 			)}
 
-			<div className="flex flex-col p-5 rounded-btn bg-base-200">
+			<div className="flex flex-col p-5 rounded-xl bg-secondary">
 				<div className="flex items-center gap-2">
 					<Link
-						className="relative w-8 h-8 lg:w-10 lg:h-10 mask mask-squircle bg-primary "
+						className="relative w-8 h-8 lg:w-10 lg:h-10"
 						href={
 							currentUser.id === blogData.uploader.id
 								? "/h/me"
 								: `/h?user=${blogData.uploader.username}`
 						}
 					>
-						<Image
-							src={blogData.uploader.avatar_url}
-							alt="avatar"
-							className="object-center object-cover"
-							fill
-						/>
+						<Avatar>
+							<AvatarFallback>
+								{blogData.uploader.full_name.first[0]}
+								{blogData.uploader.full_name.last[0]}
+							</AvatarFallback>
+							<AvatarImage src={blogData.uploader.avatar_url} />
+						</Avatar>
 					</Link>
 					<div className="flex flex-col gap-1 justify-center">
 						<p className="leading-none flex w-full">
@@ -373,7 +388,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 					className="mt-5 h-[101px] overflow-hidden relative"
 					onClick={() => setIsClicked(true)}
 				>
-					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-base-200" />
+					<div className="absolute w-full h-full bg-gradient-to-b from-transparent to-secondary" />
 					<ReactMarkdown
 						rehypePlugins={[rehypeRaw]}
 						className="prose-sm prose-headings:text-xl -z-10"
@@ -391,82 +406,88 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<div className="tooltip" data-tip="Upvote">
-							<button onClick={upvoteHandler} className="btn btn-ghost gap-2">
-								{isLiked ? (
-									<MdFavorite className="text-lg text-red-500" />
-								) : (
-									<MdFavoriteBorder className="text-lg " />
-								)}
-								{/* <FiArrowUp className="font-bold" /> */}
-								{blogData.upvoters ? blogData.upvoters.length : 0}
-							</button>
-						</div>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									onClick={upvoteHandler}
+									variant="ghost"
+									size="icon"
+									className="gap-2"
+								>
+									{isLiked ? (
+										<MdFavorite className="text-lg text-red-500" />
+									) : (
+										<MdFavoriteBorder className="text-lg " />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								{blogData.upvoters ? blogData.upvoters.length : 0} Upvotes
+							</TooltipContent>
+						</Tooltip>
 
-						<div className="tooltip" data-tip="Comment">
-							<motion.button
-								onClick={() =>
-									setCommentsOpen(
-										blogData.comments?.length ? !commentsOpen : true,
-									)
-								}
-								className="btn btn-ghost"
-							>
-								<FiMessageSquare className="font-bold" />
-								<span className="ml-2">{blogData.comments?.length ?? 0}</span>
-							</motion.button>
-						</div>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={() =>
+										setCommentsOpen(
+											blogData.comments?.length ? !commentsOpen : true,
+										)
+									}
+									className="btn"
+								>
+									<FiMessageSquare className="font-bold" />
+									{/* <span className="ml-2">{blogData.comments?.length ?? 0}</span> */}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								{blogData.comments?.length ?? 0} Comments
+							</TooltipContent>
+						</Tooltip>
 					</div>
 
 					{/* report a user */}
 					<div className="flex gap-2">
-						<div className="tooltip" data-tip="Report">
-							<button
-								onClick={() => setShowModal(!showModal)}
-								className="btn btn-ghost"
-							>
-								<MdReport />
-							</button>
-						</div>
-
-						{showModal && (
-							<Modal isVisible={showModal} setIsVisible={setShowModal}>
-								<div className="flex justify-between">
-									<h3 className="text-3xl font-semibold">Report</h3>
-									<button
-										className="btn btn-ghost"
-										type="button"
-										onClick={() => setShowModal(!showModal)}
-									>
-										<FiX />
-									</button>
-								</div>
+						<Dialog>
+							<DialogTrigger>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<Button
+											variant="ghost"
+											size="icon"
+											onClick={() => setShowModal(!showModal)}
+										>
+											<MdReport className="text-lg text-yellow-500" />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>Report Content</TooltipContent>
+								</Tooltip>
+							</DialogTrigger>
+							<DialogContent>
+								<DialogHeader>
+									<DialogTitle>Report Content</DialogTitle>
+									<DialogDescription>
+										Tell us why you want to report this content. This action
+										can&apos;t be undone.
+									</DialogDescription>
+								</DialogHeader>
 								<form onSubmit={sendEmail} className="flex flex-col gap-y-4">
 									<div className="flex flex-col">
-										<label className="text-sm  ml-4">
+										<label className="text-sm">
 											Name of the user you want to report
 										</label>
-										<input
+										<Input
 											type="text"
 											placeholder="John Doe"
-											className="input input-primary input-bordered"
 											name="user_name"
 										/>
 									</div>
 
 									<div className="flex flex-col">
-										<label className="text-sm  ml-4">Violation</label>
-										<input
-											type="text"
-											placeholder="User's violation"
-											className="input input-primary input-bordered"
-											name="user_vio"
-										/>
-									</div>
-
-									<div className="flex flex-col">
-										<label className="text-sm  ml-4">Reason</label>
-										<textarea
+										<label className="text-sm">Reason</label>
+										<Textarea
 											placeholder="Please tell us the problem"
 											rows={4}
 											className="textarea textarea-primary textarea-bordered"
@@ -474,26 +495,30 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 										/>
 									</div>
 
-									<button className="btn btn-primary btn-block" type="submit">
-										Submit
-									</button>
+									<Button variant="destructive" type="submit">
+										Submit Report
+									</Button>
 								</form>
-							</Modal>
-						)}
+							</DialogContent>
+						</Dialog>
 
-						<div className="tooltip" data-tip="Share">
-							<button
-								className="btn btn-ghost gap-2"
-								onClick={() => {
-									const baseURL = window.location.origin;
-									const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
-									navigator.clipboard.writeText(thisLink);
-									toast("Link Shared");
-								}}
-							>
-								<MdShare />
-							</button>
-						</div>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={() => {
+										const baseURL = window.location.origin;
+										const thisLink = `${baseURL}/h/feed/post?id=${blogData.id}`;
+										navigator.clipboard.writeText(thisLink);
+										toast("Link Shared");
+									}}
+								>
+									<MdShare />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>Share Post</TooltipContent>
+						</Tooltip>
 					</div>
 				</div>
 
@@ -513,16 +538,14 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 													? "/h/me"
 													: `/h?user=${comment.commenter.username}`
 											}
-											className="relative min-w-10 min-h-10 w-10 h-10"
 										>
-											<Image
-												src={comment.commenter.avatar_url}
-												alt="avatar"
-												className="min-w-10 min-h-10 mask mask-squircle bg-primary object-center object-cover"
-												// width={48}
-												// height={48}
-												fill
-											/>
+											<Avatar>
+												<AvatarFallback>
+													{comment.commenter.full_name.first[0]}
+													{comment.commenter.full_name.last[0]}
+												</AvatarFallback>
+												<AvatarImage src={comment.commenter.avatar_url} />
+											</Avatar>
 										</Link>
 										{/* content */}
 										<div className="flex flex-col bg-base-100 w-full rounded-btn p-3">
@@ -555,7 +578,7 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 										{currentUser.id === blogData.uploader.id && (
 											<>
 												{/* delete comment modal */}
-												<input
+												{/* <input
 													type="checkbox"
 													id="deleteCommentModal"
 													className="modal-toggle"
@@ -586,7 +609,32 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 															</label>
 														</div>
 													</div>
-												</div>
+												</div> */}
+												<Dialog>
+													<DialogTrigger>
+														<Button variant="ghost" size="icon">
+															<MdDelete className="text-lg text-red-500" />
+														</Button>
+													</DialogTrigger>
+													<DialogContent>
+														<DialogHeader>
+															<DialogTitle>Confirm Delete Comment</DialogTitle>
+															<DialogDescription>
+																Are you sure you want to delete this comment?
+																This action can&apos;t be undone.
+															</DialogDescription>
+														</DialogHeader>
+														<DialogFooter className="space-x-3">
+															<Button variant="ghost">Cancel</Button>
+															<Button
+																variant="destructive"
+																onClick={() => removeComment(comment.id)}
+															>
+																Delete
+															</Button>
+														</DialogFooter>
+													</DialogContent>
+												</Dialog>
 											</>
 										)}
 									</div>
@@ -594,26 +642,31 @@ const FeedCard: FC<{ blogData: THunterBlogPost; refetchData: Function }> = ({
 							)}
 							<form onSubmit={(e) => handleComment(e)}>
 								<div className="flex gap-2 mt-5">
-									<Image
-										src={currentUser.avatar_url}
-										alt="avatar"
-										className="w-10 h-10 mask mask-squircle bg-primary object-center object-cover"
-										width={40}
-										height={40}
-									/>
+									<Link
+										href={
+											currentUser.id === blogData.uploader.id
+												? "/h/me"
+												: `/h?user=${currentUser.username}`
+										}
+									>
+										<Avatar>
+											<AvatarFallback>
+												{currentUser.full_name.first[0]}
+												{currentUser.full_name.last[0]}
+											</AvatarFallback>
+											<AvatarImage src={currentUser.avatar_url} />
+										</Avatar>
+									</Link>
 									<div className="flex flex-col bg-base-100 w-full rounded-btn">
-										<textarea
-											className="w-full bg-base-100 rounded-btn p-3"
+										<Textarea
+											className="w-full"
 											placeholder="Write a comment..."
 											rows={1}
 											name="commentContent"
 										/>
-										<button
-											className="btn btn-primary ml-auto mt-3"
-											type="submit"
-										>
+										<Button className="ml-auto mt-3" type="submit">
 											Comment
-										</button>
+										</Button>
 									</div>
 								</div>
 							</form>

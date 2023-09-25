@@ -4,26 +4,24 @@ import {
 	$accountType,
 } from "@/lib/globalStates";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { IAccountData, IUserHunter, IUserProvisioner } from "@/lib/types";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { AnimPageTransition } from "@/lib/animations";
+import { Button } from "@/components/ui/button";
 import { FiLoader } from "react-icons/fi";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useStore } from "@nanostores/react";
 
 const LogInPage = () => {
 	const router = useRouter();
 	const [isPasswordRevealed, setIsPasswordRevealed] = useState<boolean>(false);
 	const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
-	const _currentUser = useStore($accountDetails) as
-		| IUserHunter
-		| IUserProvisioner;
 
 	const handleLogIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -92,7 +90,7 @@ const LogInPage = () => {
 						initial="initial"
 						animate="animate"
 						exit="exit"
-						className="fixed z-50 top-0 left-0 bg-base-100/80 select-none w-screen h-full flex flex-col justify-center items-center"
+						className="fixed z-50 top-0 left-0 bg-background/80 select-none w-screen h-full flex flex-col justify-center items-center"
 					>
 						<FiLoader className="text-2xl animate-spin" />
 						<p>Logging you in</p>
@@ -107,7 +105,7 @@ const LogInPage = () => {
 				exit="exit"
 			>
 				<div className="lg:grid lg:min-h-screen lg:grid-cols-12 pb-10 lg:pb-0">
-					<div className="relative flex h-52 items-end  lg:col-span-5 lg:h-full xl:col-span-6">
+					<div className="relative flex h-52 items-end lg:col-span-5 lg:h-full xl:col-span-6">
 						<Image
 							alt="Night"
 							src="https://images.unsplash.com/photo-1444210971048-6130cf0c46cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80"
@@ -166,54 +164,35 @@ const LogInPage = () => {
 
 							<form
 								onSubmit={handleLogIn}
-								className="mt-8 grid grid-cols-6 gap-6"
+								className="mt-8 grid grid-cols-6 gap-2"
 							>
 								<label className="col-span-full">
 									<span className="block text-sm font-medium text-opacity-70 w-full">
 										Email
 									</span>
 
-									<input
-										type="email"
-										id="Email"
-										name="email"
-										className="input input-primary input-bordered w-full"
-									/>
+									<Input id="email" name="email" type="email" />
 								</label>
 
-								<div className="col-span-full">
+								<div className="col-span-full mb-5">
 									<p className="block text-sm font-medium text-opacity-70">
 										Password
 									</p>
 
-									<div className="input-group">
-										<input
+									<div className="flex">
+										<Input
 											type={isPasswordRevealed ? "text" : "password"}
 											id="password"
 											name="password"
-											className="input input-primary input-bordered w-full"
+											className="rounded-r-none"
 										/>
-										{/* {!isPasswordRevealed ? (
-											<input
-												type="password"
-												id="Password"
-												name="password"
-												className="input input-primary input-bordered w-full"
-											/>
-										) : (
-											<input
-												type="text"
-												id="Password"
-												name="password"
-												className="input input-primary input-bordered w-full"
-											/>
-										)} */}
-										<button
+										<Button
+											size="icon"
 											type="button"
 											onClick={() => {
 												setIsPasswordRevealed(!isPasswordRevealed);
 											}}
-											className="btn btn-primary text-lg tooltip"
+											className="rounded-l-none"
 											data-tip="Show Password"
 										>
 											{isPasswordRevealed ? (
@@ -221,29 +200,33 @@ const LogInPage = () => {
 											) : (
 												<MdVisibility />
 											)}
-										</button>
+										</Button>
 									</div>
 								</div>
 
 								<div className="col-span-full ">
-									<button type="submit" className="btn btn-primary mb-5">
+									<Button type="submit" className="w-full mb-5">
 										Log in Account
-									</button>
+									</Button>
 
-									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
+									<div className="mt-4 flex items-center text-sm text-gray-500 sm:mt-0 flex gap-2">
 										Don&apos;t have an account?
-										<Link href="/register" className="link link-secondary">
-											Register Here
+										<Link href="/register">
+											<Button variant="link" size="sm">
+												Register Here
+											</Button>
 										</Link>
 										.
-									</p>
-									<p className="mt-4 text-sm text-gray-500 sm:mt-0 flex gap-2">
+									</div>
+									<div className="mt-4 flex items-center text-sm text-gray-500 sm:mt-0 flex gap-2">
 										Forgot your password?
-										<Link href="/util/passwordreset" className="link">
-											Recover here
+										<Link href="/util/passwordreset">
+											<Button variant="link" size="sm">
+												Recover here
+											</Button>
 										</Link>
 										.
-									</p>
+									</div>
 								</div>
 							</form>
 						</div>

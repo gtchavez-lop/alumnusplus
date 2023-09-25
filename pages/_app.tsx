@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-// import "react-chatbot-kit/build/main.css";
 
 import {
 	$accountData,
@@ -8,27 +7,25 @@ import {
 	$hasAccount,
 	$themeMode,
 } from "@/lib/globalStates";
-import {
-	Hydrate,
-	QueryClient,
-	QueryClientProvider,
-} from "@tanstack/react-query";
 import { IUserHunter, IUserProvisioner } from "@/lib/types";
+import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { AnimatePresence } from "framer-motion";
-import type { AppProps } from "next/app";
-import { FiLoader } from "react-icons/fi";
 import Footer from "@/components/Footer";
-import Head from "next/head";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { Toaster } from "react-hot-toast";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import dynamic from "next/dynamic";
+import NextThemeProvider from "@/components/ThemeProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
 import { useStore } from "@nanostores/react";
+import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AnimatePresence } from "framer-motion";
+import type { AppProps } from "next/app";
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import { Toaster } from "react-hot-toast";
+import { FiLoader } from "react-icons/fi";
 
 const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
@@ -144,57 +141,69 @@ export default function App({ Component, pageProps, router }: AppProps) {
 			>
 				<QueryClientProvider client={tanstackClient}>
 					<Hydrate state={pageProps.dehydratedState}>
-						<>
-							<AppBar />
-							<Navbar />
+						<NextThemeProvider
+							attribute="class"
+							defaultTheme="dark"
+							enableSystem
+						>
+							<TooltipProvider>
+								<>
+									{/* <AppBar /> */}
+									<Navbar />
 
-							<div className="flex justify-center bg-base-100 overflow-x-hidden">
-								<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
-									<AnimatePresence mode="wait">
-										<div className="min-h-screen">
-											<Component
-												{...pageProps}
-												rotuer={router}
-												key={router.pathname}
-											/>
+									<div className="flex justify-center bg-background overflow-x-hidden">
+										<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
+											<AnimatePresence mode="wait">
+												<div className="min-h-screen">
+													<Component
+														{...pageProps}
+														rotuer={router}
+														key={router.pathname}
+													/>
+												</div>
+											</AnimatePresence>
+											<Footer />
 										</div>
-									</AnimatePresence>
-									<Footer />
-								</div>
-							</div>
+									</div>
 
-							<ReactQueryDevtools initialIsOpen={false} />
-						</>
+									<ReactQueryDevtools initialIsOpen={false} />
+									<Toaster
+										toastOptions={{
+											style: {
+												background:
+													_currentTheme === "dark" ? "#3D4451" : "#3D4451",
+												color: "#bec3ce", // _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+											},
+											success: {
+												icon: "✔️",
+												style: {
+													background:
+														_currentTheme === "dark" ? "#22c55e" : "#bef264",
+													color:
+														_currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+												},
+											},
+											error: {
+												icon: "❌",
+												style: {
+													background:
+														_currentTheme === "dark" ? "#f87171" : "#dc2626",
+													color:
+														_currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
+												},
+											},
+											loading: {
+												icon: <FiLoader className="animate-spin text-lg" />,
+											},
+										}}
+										position="bottom-right"
+									/>
+								</>
+							</TooltipProvider>
+						</NextThemeProvider>
 					</Hydrate>
 				</QueryClientProvider>
 			</SessionContextProvider>
-
-			<Toaster
-				toastOptions={{
-					style: {
-						background: _currentTheme === "dark" ? "#3D4451" : "#3D4451",
-						color: "#bec3ce", // _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
-					},
-					success: {
-						icon: "✔️",
-						style: {
-							background: _currentTheme === "dark" ? "#22c55e" : "#bef264",
-							color: _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
-						},
-					},
-					error: {
-						icon: "❌",
-						style: {
-							background: _currentTheme === "dark" ? "#f87171" : "#dc2626",
-							color: _currentTheme === "dark" ? "#0d0d14" : "#bec3ce",
-						},
-					},
-					loading: {
-						icon: <FiLoader className="animate-spin text-lg" />,
-					},
-				}}
-				position="bottom-right"
-			/>
 		</>
 	);
 }
