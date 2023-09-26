@@ -1,8 +1,9 @@
 import { $accountDetails, $accountType } from "@/lib/globalStates";
-import { FiArchive, FiBriefcase, FiHome, FiMenu } from "react-icons/fi";
+import { FiArchive, FiBriefcase, FiHome, FiMenu, FiMoon } from "react-icons/fi";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import { useStore } from "@nanostores/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,6 +14,8 @@ const NavbarNew = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const _accountType = useStore($accountType);
 	const _accountDetails = useStore($accountDetails);
+	const { theme, setTheme } = useTheme();
+
 	return (
 		<div className="fixed top-0 left-0 w-full flex justify-center py-5 px-3 bg-background z-50">
 			<div className="w-full max-w-5xl flex items-center justify-between">
@@ -111,14 +114,25 @@ const NavbarNew = () => {
 				</div>
 				<div className="hidden lg:flex items-center gap-2">
 					{/* no one logged in */}
-					{/* {!_accountType && (
+					{!_accountType && (
 						<>
 							<Button variant="ghost">About</Button>
 							<Button variant="ghost">Contact</Button>
-							<Button variant="ghost">Login</Button>
-							<Button>Register</Button>
+							<Link href="/login">
+								<Button variant="ghost">Login</Button>
+							</Link>
+							<Link href="/register">
+								<Button>Register</Button>
+							</Link>
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+							>
+								<FiMoon className="text-lg" />
+							</Button>
 						</>
-					)} */}
+					)}
 					{/* hunter */}
 					{_accountType === "hunter" && (
 						<>

@@ -1,9 +1,8 @@
 import { IUserHunter, THunterBlogPost } from "@/lib/types";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useLayoutEffect, useState } from "react";
 import { FiLoader, FiMessageSquare } from "react-icons/fi";
 import {
 	MdCheckCircleOutline,
-	MdDelete,
 	MdFavorite,
 	MdFavoriteBorder,
 	MdReport,
@@ -14,7 +13,6 @@ import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from "../ui/dialog";
@@ -277,58 +275,7 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 		refetchData();
 	};
 
-	const changeCommentVisibility = async (commentId: string) => {
-		const { data: latestData, error: latestDataError } = await supabase
-			.from("public_posts")
-			.select("comments")
-			.eq("id", blogData.id)
-			.single();
-
-		if (latestDataError || !latestData) {
-			console.log(latestDataError);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		type IComment = {
-			id: string;
-			content: string;
-			createdAt: string;
-			commenter: {
-				id: string;
-				username: string;
-				full_name: string;
-			};
-			visible: boolean;
-		};
-
-		const newComments = latestData.comments.map((comment: IComment) => {
-			if (comment.id === commentId) {
-				comment.visible = !comment.visible;
-			}
-
-			return comment;
-		});
-
-		const { error } = await supabase
-			.from("public_posts")
-			.update({
-				comments: newComments,
-			})
-			.eq("id", blogData.id);
-
-		if (error) {
-			console.log(error);
-			toast.error("Something went wrong!");
-			return;
-		}
-
-		toast.success("Comment visibility changed!");
-		blogData.comments = newComments;
-		refetchData();
-	};
-
-	useEffect(() => {
+	useLayoutEffect(() => {
 		checkIfLiked();
 	});
 
@@ -340,7 +287,7 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 				</div>
 			)}
 
-			<div className="flex flex-col p-5 rounded-xl bg-secondary">
+			<div className="flex flex-col p-5 rounded-xl bg-secondary w-full">
 				<div className="flex items-center gap-2">
 					<Link
 						className="relative w-8 h-8 lg:w-10 lg:h-10"
@@ -406,46 +353,28 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 
 				<div className="mt-5 flex justify-between">
 					<div className="flex gap-2">
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									onClick={upvoteHandler}
-									variant="ghost"
-									size="icon"
-									className="gap-2"
-								>
-									{isLiked ? (
-										<MdFavorite className="text-lg text-red-500" />
-									) : (
-										<MdFavoriteBorder className="text-lg " />
-									)}
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								{blogData.upvoters ? blogData.upvoters.length : 0} Upvotes
-							</TooltipContent>
-						</Tooltip>
+						<Button onClick={upvoteHandler} variant="ghost" className="gap-2">
+							{isLiked ? (
+								<MdFavorite className="text-lg text-red-500" />
+							) : (
+								<MdFavoriteBorder className="text-lg " />
+							)}
+							{blogData.upvoters ? blogData.upvoters.length : 0}
+						</Button>
 
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={() =>
-										setCommentsOpen(
-											blogData.comments?.length ? !commentsOpen : true,
-										)
-									}
-									className="btn"
-								>
-									<FiMessageSquare className="font-bold" />
-									{/* <span className="ml-2">{blogData.comments?.length ?? 0}</span> */}
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								{blogData.comments?.length ?? 0} Comments
-							</TooltipContent>
-						</Tooltip>
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() =>
+								setCommentsOpen(
+									blogData.comments?.length ? !commentsOpen : true,
+								)
+							}
+							className="gap-2"
+						>
+							<FiMessageSquare className="font-bold" />
+							{blogData.comments?.length ?? 0}
+						</Button>
 					</div>
 
 					{/* report a user */}
@@ -522,7 +451,7 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 					</div>
 				</div>
 
-				<div ref={cardRef}>
+				{/* <div ref={cardRef}>
 					{commentsOpen && (
 						<div className="mt-5 flex flex-col gap-2">
 							{blogData.comments?.map((comment, index) =>
@@ -547,7 +476,7 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 												<AvatarImage src={comment.commenter.avatar_url} />
 											</Avatar>
 										</Link>
-										{/* content */}
+
 										<div className="flex flex-col bg-base-100 w-full rounded-btn p-3">
 											<Link
 												href={
@@ -567,49 +496,14 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 												)}
 											</Link>
 											<ReactMarkdown
-												// components={markdownRenderer}
 												rehypePlugins={[rehypeRaw]}
 												className="prose pb-0 break-words"
 											>
 												{comment.content}
 											</ReactMarkdown>
 										</div>
-										{/* actions */}
 										{currentUser.id === blogData.uploader.id && (
 											<>
-												{/* delete comment modal */}
-												{/* <input
-													type="checkbox"
-													id="deleteCommentModal"
-													className="modal-toggle"
-												/>
-												<div className="modal">
-													<div className="modal-box">
-														<h2 className="text-lg font-bold">
-															Confirm Delete Comment
-														</h2>
-														<p>
-															Are you sure you want to delete this comment? This
-															action can&apos;t be undone.
-														</p>
-
-														<div className="flex gap-2 mt-5 justify-end">
-															<label
-																htmlFor="deleteCommentModal"
-																className="btn btn-ghost"
-															>
-																Cancel
-															</label>
-															<label
-																htmlFor="deleteCommentModal"
-																onClick={() => removeComment(comment.id)}
-																className="btn btn-error"
-															>
-																Delete
-															</label>
-														</div>
-													</div>
-												</div> */}
 												<Dialog>
 													<DialogTrigger>
 														<Button variant="ghost" size="icon">
@@ -672,7 +566,7 @@ const FeedCard = ({ blogData, refetchData }: Props) => {
 							</form>
 						</div>
 					)}
-				</div>
+				</div> */}
 			</div>
 		</>
 	);
