@@ -232,6 +232,7 @@ const ProfilePage: NextPage = () => {
 				onSuccess: (): void => {
 					console.info("✅ User Connections Fetched");
 				},
+				refetchOnWindowFocus: false,
 			},
 			{
 				queryKey: ["recommendedUsers"],
@@ -244,6 +245,7 @@ const ProfilePage: NextPage = () => {
 				onSuccess: () => {
 					console.info("✅ Recommended Users Fetched");
 				},
+				refetchOnWindowFocus: false,
 			},
 			{
 				queryKey: ["userActivities"],
@@ -255,6 +257,7 @@ const ProfilePage: NextPage = () => {
 				onSuccess: () => {
 					console.info("✅ User Activities Fetched");
 				},
+				refetchOnWindowFocus: false,
 			},
 			{
 				queryKey: ["savedJobs"],
@@ -266,6 +269,7 @@ const ProfilePage: NextPage = () => {
 				onSuccess: () => {
 					console.info("✅ User Saved Jobs Fetched");
 				},
+				refetchOnWindowFocus: false,
 			},
 			{
 				queryKey: ["savedCompanies"],
@@ -274,6 +278,10 @@ const ProfilePage: NextPage = () => {
 				onError: () => {
 					toast.error("Failed to fetch saved companies");
 				},
+				onSuccess: () => {
+					console.info("✅ User Saved Companies Fetched");
+				},
+				refetchOnWindowFocus: false,
 			},
 		],
 	});
@@ -357,7 +365,9 @@ const ProfilePage: NextPage = () => {
 									>
 										<TabsList>
 											{PageTabs.map((tab, index) => (
-												<TabsTrigger value={tab.value}>{tab.title}</TabsTrigger>
+												<TabsTrigger key={`tab_${index}`} value={tab.value}>
+													{tab.title}
+												</TabsTrigger>
 											))}
 										</TabsList>
 									</Tabs>

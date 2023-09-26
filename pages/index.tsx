@@ -1,21 +1,12 @@
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { AnimPageTransition } from "@/lib/animations";
-// import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { MdArrowDownward } from "react-icons/md";
-import dynamic from "next/dynamic";
-
-// import Pricing from "@/components/landing/Pricing";
-
-const Pricing = dynamic(() => import("@/components/landing/Pricing"), {
-	ssr: false,
-});
-const Footer = dynamic(() => import("@/components/Footer"), {
-	ssr: false,
-});
+import { useEffectOnce } from "usehooks-ts";
 
 const jobList = [
 	"Web Developer",
@@ -56,7 +47,7 @@ const Home = () => {
 		margin: "-200px",
 	});
 
-	useEffect(() => {
+	useEffectOnce(() => {
 		// set scrollYValue to window.scrollY
 		const handleScroll = () => {
 			setScrollYValue(window.scrollY);
@@ -74,7 +65,7 @@ const Home = () => {
 			clearInterval(interval);
 			window.removeEventListener("scroll", handleScroll);
 		};
-	}, []);
+	});
 
 	return (
 		<>
@@ -137,14 +128,7 @@ const Home = () => {
 						</motion.span>
 					))}
 				</p>
-				{/* <div className="relative w-[500px] h-[75px]">
-					<Image
-						src="/logo/wicket-new-full-vector.svg"
-						className="w-64 fill-primary z-10"
-						fill
-						alt=""
-					/>
-				</div> */}
+
 				<p className="text-3xl flex flex-col justify-center w-full text-center mt-5 z-10">
 					<span>Job hunting as</span>
 					<AnimatePresence mode="wait">
@@ -169,14 +153,8 @@ const Home = () => {
 				</p>
 
 				<div className="flex justify-center mt-10 w-full z-10">
-					{/* <Link href="/register" className="btn btn-primary w-[250px]">
-						Sign up an account
-					</Link>
-					<Link href="/login" className="btn btn-ghost w-[250px]">
-						Sign in your account
-					</Link> */}
-					<Link className="btn btn-primary w-full max-w-md" href="/login">
-						Get started now!
+					<Link className="w-full max-w-md" href="/login">
+						<Button className="w-full">Get an account now for free!</Button>
 					</Link>
 				</div>
 
@@ -309,8 +287,8 @@ const Home = () => {
 
 					{/* button */}
 					<div className="flex flex-col lg:flex-row lg:justify-center gap-4 lg:items-center mt-16 lg:mt-10">
-						<Link href="/register" className="btn btn-primary w-[250px]">
-							Register now
+						<Link href="/register">
+							<Button className="w-full lg:w-auto">Register now</Button>
 						</Link>
 					</div>
 				</div>

@@ -12,23 +12,26 @@ import { Hydrate, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import Footer from "@/components/Footer";
+import NavbarNew from "@/components/NavbarNew";
 import NextThemeProvider from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/lib/supabase";
 import { tanstackClient } from "@/lib/tanstack";
 import { useStore } from "@nanostores/react";
+import { Poppins } from "@next/font/google";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AnimatePresence } from "framer-motion";
 import type { AppProps } from "next/app";
-import dynamic from "next/dynamic";
 import Head from "next/head";
 import { Toaster } from "react-hot-toast";
 import { FiLoader } from "react-icons/fi";
 
-const AppBar = dynamic(() => import("@/components/AppBar"), { ssr: true });
-const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
+const fontLoader = Poppins({
+	subsets: ["latin"],
+	weight: "500",
+});
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const _currentTheme = useStore($themeMode);
@@ -149,12 +152,15 @@ export default function App({ Component, pageProps, router }: AppProps) {
 							<TooltipProvider>
 								<>
 									{/* <AppBar /> */}
-									<Navbar />
+									{/* <Navbar /> */}
+									<NavbarNew />
 
-									<div className="flex justify-center bg-background overflow-x-hidden">
+									<div
+										className={`${fontLoader.className} flex justify-center bg-background overflow-x-hidden`}
+									>
 										<div className="w-full max-w-5xl px-3 lg:px-0 min-h-screen pt-16 print:pt-0 lg:pt-0 ">
 											<AnimatePresence mode="wait">
-												<div className="min-h-screen">
+												<div className="min-h-screen" vaul-drawer-wrapper="">
 													<Component
 														{...pageProps}
 														rotuer={router}

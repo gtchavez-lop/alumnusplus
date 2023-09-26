@@ -133,7 +133,7 @@ const HunterFeedPage: NextPage = () => {
 								</div>
 							) : (
 								<form className="flex-1 flex flex-col gap-2">
-									<Textarea rows={7} />
+									<Textarea placeholder="Write your content here" rows={7} />
 									<div className="flex gap-2">
 										<Button
 											onClick={() => setIsAddingPost(false)}
